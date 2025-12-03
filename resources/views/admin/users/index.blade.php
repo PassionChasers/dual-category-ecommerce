@@ -38,7 +38,7 @@
             <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">#</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Id</th>
                         <th class="px-4 py-2 text-left font-semibold text-gray-700">Name</th>
                         <th class="px-4 py-2 text-left font-semibold text-gray-700">Email</th>
                         <th class="px-4 py-2 text-left font-semibold text-gray-700">Designation</th>
@@ -47,21 +47,19 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    {{-- @forelse($users as $index => $user) --}}
+                    @forelse($users as $user)
                     <tr>
                         <td class="px-4 py-2">
-                            {{-- {{ $users->firstItem() + $index }} --}}
-                            <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
+                            {{$user->id}}
+                            {{-- <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
-                            alt="Default user">
+                            alt="Default user"> --}}
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{-- {{ $user->name }} --}}
-                            bbbb
+                            {{ $user->name }}
                         </td>
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $user->email }} --}}
-                            ccccc
+                            {{ $user->email }}
                         </td>
                         <td class="px-4 py-2 text-gray-600">
                             {{-- {{ $user->designation->designation_name ?? '-' }} --}}
@@ -72,14 +70,13 @@
                             eeeee
                         </td>
                         <td class="px-4 py-2 flex space-x-2">
-                            <button class="edit-btn text-indigo-600 hover:text-indigo-800" 
-                            {{-- data-id="{{ $user->id }}" --}}
-                                {{-- data-name="{{ $user->name }}" data-email="{{ $user->email }}" --}}
+                            <button class="edit-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $user->id }}"
+                                data-name="{{ $user->name }}" data-email="{{ $user->email }}"
                                 {{-- data-designation="{{ $user->designation_id }}" data-department="{{ $user->department_id }}" --}}
                             >
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <form method="POST" action="#" class="inline delete-form">
+                            <form method="POST" action="{{ route('user.destroy', $user->id) }}" class="inline delete-form">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-800">
                                     <i class="fas fa-trash"></i>
@@ -87,11 +84,11 @@
                             </form>
                         </td>
                     </tr>
-                    {{-- @empty
+                    @empty
                     <tr>
                         <td colspan="5" class="px-4 py-4 text-center text-gray-500">No users found.</td>
                     </tr>
-                    @endforelse --}}
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -127,7 +124,7 @@
             </button>
 
             <!-- Modal Title -->
-            <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title">New User</h3>
+            <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title"></h3>
 
             <!-- Form -->
             <form id="user-form" method="POST" class="space-y-4">
@@ -137,7 +134,7 @@
                 <!-- Name -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" name="name" id="user-name"
+                    <input type="text" name="name" id="user-name"  value=" "
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         required>
                 </div>
@@ -145,7 +142,7 @@
                 <!-- Email -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="email" id="user-email"
+                    <input type="email" name="email" id="user-email" value=" "
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         required>
                 </div>
@@ -162,13 +159,13 @@
                     <label class="block text-sm font-medium text-gray-700">Designation</label>
                     <select name="designation_id" id="user-designation"
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
+                        >
                         <option value="">Select Designation</option>
                         {{-- @foreach($designations as $designation)
                         <option value="{{ $designation->id }}">{{ $designation->designation_name }}</option>
                         @endforeach --}}
-                        <option value="">hxjhgxb</option>
-                        <option value="">khagjn</option>
+                        <option value=" ">hxjhgxb</option>
+                        <option value=" ">khagjn</option>
                     </select>
                 </div>
 
@@ -177,13 +174,13 @@
                     <label class="block text-sm font-medium text-gray-700">Department</label>
                     <select name="department_id" id="user-department"
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
+                        >
                         <option value="">Select Department</option>
                         {{-- @foreach($departments as $department)
                         <option value="{{ $department->id }}">{{ $department->department_name }}</option>
                         @endforeach --}}
-                        <option value="">hxjhgxb</option>
-                        <option value="">khagjn</option>
+                        <option value=" ">hxjhgxb</option>
+                        <option value=" ">khagjn</option>
                     </select>
                 </div>
 
@@ -239,7 +236,7 @@
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             modalTitle.innerText = 'Edit User';
-            form.action = `/users/update/${btn.dataset.id}`;
+            form.action = `/users/${btn.dataset.id}`;
             methodInput.value = 'PUT';
             nameInput.value = btn.dataset.name;
             emailInput.value = btn.dataset.email;

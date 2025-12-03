@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCategoryController;
@@ -9,59 +8,76 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AuthController;
 
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
-
+// Redirect / to login if not authenticated
 Route::get('/', function () {
-    return view('admin.dashboard');
-})->name('admin.dashboard');
+    return redirect('/login');
+});
 
 
-//Products
-Route::get('/products', [ProductController::class, 'index'])->name('product.index');
-Route::get('/my-products', [ProductController::class, 'myProducts'])->name('product.myproducts');
+/*
+|--------------------------------------------------------------------------
+| Guest Routes (Not Logged In)
+|--------------------------------------------------------------------------
+*/
+
+// Login Page
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'index'])->name('login');
+    Route::post('/login', [AuthController::class, 'authenticate'])->name('login.authenticate');
+});
 
 
+/*
+|--------------------------------------------------------------------------
+| Authenticated Routes (Logged In Users)
+|--------------------------------------------------------------------------
+*/
 
-//Product Category
-Route::get('category', [ProductCategoryController::class, 'index'])->name('product.category');
+Route::middleware(['auth'])->group(function () {
 
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('admin.dashboard');
 
-// Settings Routes
- Route::prefix('/settings')->name('settings.')->group(function () {
+    Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
-        // General routes
+    //Products
+    Route::get('/products', [ProductController::class, 'index'])->name('product.index');
+    Route::get('/my-products', [ProductController::class, 'myProducts'])->name('product.myproducts');
+
+    //Product Category
+    Route::get('category', [ProductCategoryController::class, 'index'])->name('product.category');
+
+    //Settings
+    Route::prefix('/settings')->name('settings.')->group(function () {
+
         Route::get('/', [SettingController::class, 'index'])->name('general');
-        // Route::post('/', [SettingController::class, 'store'])->name('store');
-        // Route::put('/{setting}', [SettingController::class, 'update'])->name('update');
 
-        // Institutions routes
         Route::get('institutions', [InstitutionsController::class, 'index'])->name('institutions');
-        // Route::get('institutions/create', [InstitutionsController::class, 'create'])->name('institutions.create');
-        // Route::post('institutions', [InstitutionsController::class, 'store'])->name('institutions.store');
-        // Route::get('institutions/{institution}', [InstitutionsController::class, 'show'])->name('institutions.show');
-        // Route::get('institutions/{institution}/edit', [InstitutionsController::class, 'edit'])->name('institutions.edit');
-        // Route::put('institutions/{institution}', [InstitutionsController::class, 'update'])->name('institutions.update');
-        // Route::delete('institutions/{institution}', [InstitutionsController::class, 'destroy'])->name('institutions.destroy');
+
     });
 
+    // Users
+    Route::get('users', [UserController::class, 'index'])->name('users.index');
+    Route::put('users/{id}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('users/{id}', [UserController::class, 'destroy'])->name('user.destroy');
 
 
-// user routes
-Route::get('users', [UserController::class, 'index'])->name('users.index');
 
-//Designations
-Route::get('designations', [DesignationController::class, 'index'])->name('designations.index');
+    //Designations
+    Route::get('designations', [DesignationController::class, 'index'])->name('designations.index');
 
-// Department Routes
-Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
+    // Departments
+    Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
 
-// Admin Profile Route
-Route::get('profile', [ProfileController::class, 'index'])->name('admin.profile');
+    //Profile
+    Route::get('profile', [ProfileController::class, 'index'])->name('admin.profile');
 
-// Audit Log
-Route::get('auditlog', [AuditLogController::class, 'index'])->name('auditlog.index');
+    //Audit Log
+    Route::get('auditlog', [AuditLogController::class, 'index'])->name('auditlog.index');
+
+});

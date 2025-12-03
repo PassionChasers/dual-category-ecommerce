@@ -65,15 +65,13 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Full Name</label>
                     <input type="text" name="name" 
-                    {{-- value="{{ old('name', auth()->user()->name) }}" --}}
-                    value="Shibu Sharma"
+                    value="{{ old('name', auth()->user()->name) }}"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Email Address</label>
                     <input type="email" name="email" 
-                    {{-- value="{{ old('email', auth()->user()->email) }}" --}}
-                    value="shibu@gmail.com"
+                    value="{{ old('email', auth()->user()->email) }}"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
                 </div>
                 <div>

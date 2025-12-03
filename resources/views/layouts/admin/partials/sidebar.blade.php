@@ -267,7 +267,7 @@
                 </div>
         
                 <!-- Logout Icon -->
-                <form action="#" class="ml-2">
+                <form action="{{route('logout')}}" class="ml-2">
                     @csrf
                     <button type="submit"
                     class="text-gray-500 hover:text-red-600 transition"
@@ -458,8 +458,7 @@
     
                     <div>
                         <p class="text-sm font-semibold text-gray-800">
-                            {{-- {{ auth()->user()->name }} --}}
-                            auth user name
+                            {{ auth()->user()->name }}
                         </p>
                         <span class="text-xs font-medium bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-full inline-block mt-1">
                             {{-- {{ auth()->user()->designation->designation_name }} --}}
@@ -469,7 +468,7 @@
                 </div>
     
                 <!-- Logout Icon -->
-                <form action="#" class="ml-2">
+                <form action="{{route('logout')}}" class="ml-2">
                     @csrf
                     <button type="submit"
                     class="text-gray-500 hover:text-red-600 transition"

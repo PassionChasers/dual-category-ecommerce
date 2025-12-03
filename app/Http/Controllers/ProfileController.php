@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.profile');
+        $userid = $request->query('userid'); // get from query string
+        $user = User::findOrFail($userid);   // find user
+        return view('admin.profile', compact('user'));
     }
 
     /**
