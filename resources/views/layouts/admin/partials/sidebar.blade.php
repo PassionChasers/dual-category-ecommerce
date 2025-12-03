@@ -444,7 +444,7 @@
             <div class="flex items-center justify-between">
                 <!-- Profile Section -->
                 <div class="flex items-center space-x-3">
-                    <a href="#" class="group relative">
+                    <a href="{{route('admin.profile')}}" class="group relative">
                         {{-- @if (auth()->user()->employeeDetail && auth()->user()->employeeDetail->profile_picture) --}}
                             {{-- <img class="w-11 h-11 rounded-full object-cover ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
                             src="abc.jpg"

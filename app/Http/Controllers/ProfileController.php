@@ -12,9 +12,7 @@ class ProfileController extends Controller
      */
     public function index(Request $request)
     {
-        $userid = $request->query('userid'); // get from query string
-        $user = User::findOrFail($userid);   // find user
-        return view('admin.profile', compact('user'));
+        return view('admin.profile');
     }
 
     /**
