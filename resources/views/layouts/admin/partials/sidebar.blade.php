@@ -78,7 +78,7 @@
     <div class="flex flex-col w-64 bg-white border-r border-gray-200">
         <!-- Logo -->
         <div class="flex items-center justify-center py-5 px-4 bg-indigo-600">
-            <a href="{{ route('admin.dashboard') }}">
+            <a href="{{ route('admin.dashboard') }}" >
                 <h1 class="text-white font-bold text-xl">Ecommerce</h1>
             </a>
         </div>
@@ -90,7 +90,7 @@
                 <!-- Dashboard -->
                 <a href="{{ route('admin.dashboard') }}"
                 class="sidebar-link flex items-center px-2 py-3 text-sm font-medium rounded-md
-                        {{ request()->routeIs('dashboard') ? 'text-indigo-500 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                        {{ request()->routeIs('admin.dashboard') ? 'text-indigo-500 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
                     <i class="fas fa-tachometer-alt mr-3
                         {{ request()->routeIs('dashboard') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
                     Dashboard
@@ -131,7 +131,7 @@
                             </a> --}}
                             <a href="{{ route('product.category') }}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('task.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                {{ request()->routeIs('product.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-tags mr-2"></i> Product Category
                             </a>
                         {{-- @endif --}}
@@ -227,8 +227,9 @@
                             </a>
                         </div>
 
-                        <a href="#"
-                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">
+                        <a href="{{route('auditlog.index')}}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 
+                            {{ request()->routeIs('auditlog.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fas fa-history mr-2"></i> Audit Logs
                         </a>
                     </div>
@@ -307,7 +308,7 @@
                 <!-- Dashboard -->
                 <a href="{{ route('admin.dashboard')}}"
                     class="sidebar-link flex items-center px-2 py-3 text-sm font-medium rounded-md
-                    {{ request()->routeIs('dashboard') ? 'text-indigo-500 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                    {{ request()->routeIs('admin.dashboard') ? 'text-indigo-500 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
                     <i class="fas fa-tachometer-alt mr-3 {{ request()->routeIs('dashboard') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
                     Dashboard
                 </a>
@@ -345,7 +346,7 @@
                             </a> --}}
                             <a href="{{ route('product.category') }}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('task.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                {{ request()->routeIs('product.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-tags mr-2"></i> Product Category
                             </a>
                         {{-- @endif --}}
@@ -428,8 +429,9 @@
                                 <i class="fas fa-building mr-2"></i> Departments
                             </a>
                         </div>
-                        <a href="#"
-                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100">
+                        <a href="{{route('auditlog.index')}}"
+                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100
+                        {{ request()->routeIs('auditlog.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fas fa-history mr-2"></i> Audit Logs
                         </a>
                     </div>

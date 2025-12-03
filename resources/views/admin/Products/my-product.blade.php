@@ -75,7 +75,7 @@
                 <thead class="bg-gray-100">
                     <tr>
                         <th class="px-4 py-2">#</th>
-                        <th class="px-4 py-2">Product</th>
+                        <th class="px-4 py-2">Product Name</th>
                         <th class="px-4 py-2">Category</th>
                         <th class="px-4 py-2">Priority</th>
                         <th class="px-4 py-2">Assignee</th>
@@ -89,7 +89,9 @@
                     <tr>
                         <td class="px-4 py-2">
                             {{-- {{ $tasks->firstItem() + $index }} --}}
-                            1
+                            <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
+                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
+                            alt="Default user">
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
                             {{-- {{ $task->name ?? '-' }} --}}

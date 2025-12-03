@@ -101,7 +101,7 @@
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Total Employees</dt>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
                                         <dd class="flex items-baseline">
                                             <div class="text-2xl font-semibold text-gray-900">
                                                 {{-- {{ $totalEmployees ?? 0 }} --}}
@@ -122,7 +122,7 @@
                     <div class="px-4 py-4 border-b border-gray-200 bg-yellow-50">
                         <div class="flex items-center justify-between">
                             <h3 class="text-sm font-medium text-yellow-800">
-                                <i class="fas fa-clock mr-1"></i>Pending Tasks
+                                <i class="fas fa-clock mr-1"></i>Pending Products
                             </h3>
                             <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">
                                 {{-- {{ $pendingTask }} --}}
@@ -139,7 +139,7 @@
                                         <i class="fas fa-hourglass-half text-yellow-600 text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate">Task name </p>
+                                        <p class="text-sm font-medium text-gray-900 truncate">Product name </p>
                                         <p class="text-xs text-gray-500 mt-1">Due: 
                                             5
                                         </p>
@@ -174,7 +174,7 @@
                     <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
                         <a href="#"
                             class="text-sm font-medium text-yellow-600 hover:text-yellow-500">
-                            View all pending tasks
+                            View all pending Products
                         </a>
                     </div>
                 </div>
@@ -198,7 +198,7 @@
                                         <i class="fas fa-play-circle text-blue-600 text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate">Task name </p>
+                                        <p class="text-sm font-medium text-gray-900 truncate">Product name </p>
                                         <p class="text-xs text-gray-500 mt-1">Started : ('M d, Y') </p>
                                     </div>
                                 </div>
@@ -226,7 +226,7 @@
                     </div>
                     <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
                         <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500">
-                            View all in-progress tasks
+                            View all in-progress Product
                         </a>
                     </div>
                 </div>
@@ -250,7 +250,7 @@
                                         <i class="fas fa-check text-green-600 text-sm"></i>
                                     </div>
                                     <div class="flex-1 min-w-0">
-                                        <p class="text-sm font-medium text-gray-900 truncate">task name </p>
+                                        <p class="text-sm font-medium text-gray-900 truncate">Product name </p>
                                         <p class="text-xs text-gray-500 mt-1">Completed: 2</p>
                                     </div>
                                 </div>
@@ -279,7 +279,7 @@
                     <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
                         <a href="#"
                             class="text-sm font-medium text-green-600 hover:text-green-500">
-                            View all completed tasks
+                            View all completed Product
                         </a>
                     </div>
                 </div>
@@ -293,7 +293,7 @@
                     <div class="bg-white shadow rounded-lg overflow-hidden">
                         <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
                             <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-medium leading-6 text-gray-900">Recent Tasks</h3>
+                                <h3 class="text-lg font-medium leading-6 text-gray-900">Recent Products</h3>
                             </div>
                         </div>
                         <div class="divide-y divide-gray-200">
@@ -303,7 +303,7 @@
                                     <div class="flex items-center">
                                         <span
                                             class="ml-3 block font-medium">
-                                            Task Name 
+                                            Product Name 
                                         </span>
                                     </div>
                                     <div class="flex items-center space-x-2">
@@ -344,14 +344,14 @@
                             </div>
                             {{-- @empty --}}
                             <div class="flex items-center justify-center py-10">
-                                <p class="text-gray-600 text-lg">No tasks found.</p>
+                                <p class="text-gray-600 text-lg">No Product found.</p>
                             </div>
                             {{-- @endforelse --}}
                         </div>
                         <div class="px-4 py-4 sm:px-6 bg-gray-50 text-sm text-right">
                             <a href="#"
                                 class="font-medium text-indigo-600 hover:text-indigo-500">
-                                View all tasks
+                                View all Products
                             </a>
                         </div>
                     </div>

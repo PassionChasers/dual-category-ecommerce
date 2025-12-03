@@ -4,8 +4,27 @@
 @push('styles')
 @endpush
 
+
 @section('contents')
 <div class="flex-1 p-4 md:p-6 bg-gray-50">
+
+     {{-- Flash Messages --}}
+    @if(session('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: "{{ session('success') }}",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true
+            });
+        });
+    </script>
+    @endif
+    
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800">Product Category Management</h2>
@@ -48,7 +67,9 @@
                     <tr>
                         <td class="px-4 py-2">
                             {{-- {{ $categories->firstItem() + $index }} --}}
-                            1
+                            <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
+                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
+                            alt="Default user">
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
                             {{-- {{ $category->name }} --}}

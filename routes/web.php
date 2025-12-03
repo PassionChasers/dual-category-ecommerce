@@ -8,6 +8,8 @@ use App\Http\Controllers\InstitutionsController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\AuditLogController;
+
 
 // Route::get('/', function () {
 //     return view('welcome');
@@ -59,6 +61,7 @@ Route::get('designations', [DesignationController::class, 'index'])->name('desig
 Route::get('departments', [DepartmentController::class, 'index'])->name('departments.index');
 
 // Admin Profile Route
-Route::get('admin/profile', function () {
-    return view('admin.profile');
-})->name('admin.profile');
+Route::get('profile', [ProfileController::class, 'index'])->name('admin.profile');
+
+// Audit Log
+Route::get('auditlog', [AuditLogController::class, 'index'])->name('auditlog.index');

@@ -12,7 +12,9 @@
         </div>
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
             <form method="GET" class="flex space-x-2">
-                <input type="text" name="search" value="{{ $search }}" placeholder="Search logs..."
+                <input type="text" name="search" 
+                {{-- value="{{ $search }}"  --}}
+                placeholder="Search logs..."
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
                     <i class="fas fa-search"></i>
@@ -35,46 +37,49 @@
                         <th class="px-4 py-2 text-left font-semibold text-gray-700">Action</th>
                         <th class="px-4 py-2 text-left font-semibold text-gray-700">Model</th>
                         <th class="px-4 py-2 text-left font-semibold text-gray-700">IP Address</th>
-                        {{-- <th class="px-4 py-2 text-left font-semibold text-gray-700">Location</th> --}}
                         <th class="px-4 py-2 text-left font-semibold text-gray-700">Date</th>
                         <th class="px-4 py-2 text-left font-semibold text-gray-700">Changes</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    @forelse($logs as $index => $log)
+                    {{-- @forelse($logs as $index => $log) --}}
                     <tr class="hover:bg-gray-50">
-                        <td class="px-4 py-2">{{ $logs->firstItem() + $index }}</td>
                         <td class="px-4 py-2">
-                            {{ $log->user->name ?? 'System' }}
-                            <p class="text-xs text-gray-500">{{ $log->user->email ?? '' }}</p>
+                            {{-- {{ $logs->firstItem() + $index }} --}}
+                            xxx
+                        </td>
+                        <td class="px-4 py-2">
+                            {{-- {{ $log->user->name ?? 'System' }} --}}xxx
+                            <p class="text-xs text-gray-500">
+                                {{-- {{ $log->user->email ?? '' }} --}}
+                            </p>
                         </td>
                         <td class="px-4 py-2">
                             <span class="px-2 py-1 rounded text-xs font-medium 
-                                @if($log->action === 'create') bg-green-100 text-green-700 
+                                {{-- @if($log->action === 'create') bg-green-100 text-green-700 
                                 @elseif($log->action === 'update') bg-yellow-100 text-yellow-700 
                                 @elseif($log->action === 'delete') bg-red-100 text-red-700 
                                 @else bg-gray-100 text-gray-700 @endif">
-                                {{ ucfirst($log->action) }}
+                                {{ ucfirst($log->action) }} --}}
+                                 zzz
                             </span>
                         </td>
-                        <td class="px-4 py-2 text-gray-600">
-                            {{ class_basename($log->auditable_type) }}
+                        <td class="px-4 py-2 text-gray-600 ">
+                            {{-- {{ class_basename($log->auditable_type) }} --}}
                             {{-- (ID: {{ $log->auditable_id }}) --}}
+                            sss
                         </td>
-                        <td class="px-4 py-2 text-gray-600">{{ $log->ip_address ?? '-' }}</td>
+                        <td class="px-4 py-2 text-gray-600">
+                            {{-- {{ $log->ip_address ?? '-' }} --}}
+                            1223:23:22:1
+                        </td>
                         {{-- <td class="px-4 py-2 text-gray-600">{{ $log->location ?? '-' }}</td> --}}
-                        <td class="px-4 py-2 text-gray-600">{{ $log->created_at->format('d M Y, H:i') }}</td>
-                        {{-- <td class="px-4 py-2">
-                            @if($log->old_values || $log->new_values)
-                            <button data-id="{{ $log->id }}" class="view-btn text-indigo-600 hover:underline text-sm">
-                                View Changes
-                            </button>
-                            @else
-                            <span class="text-gray-400">-</span>
-                            @endif
-                        </td> --}}
+                        <td class="px-4 py-2 text-gray-600">
+                            {{-- {{ $log->created_at->format('d M Y, H:i') }} --}}
+                            YYYY
+                        </td>
                         <td class="px-4 py-2">
-                            @if($log->old_values || $log->new_values)
+                            {{-- @if($log->old_values || $log->new_values)
                             <button data-id="{{ $log->id }}" data-user="{{ $log->user->name ?? 'System' }}"
                                 data-action="{{ ucfirst($log->action) }}"
                                 data-table="{{ class_basename($log->auditable_type) }}"
@@ -83,17 +88,17 @@
                                 class="view-btn text-indigo-600 hover:underline text-sm">
                                 View Changes
                             </button>
-                            @else
+                            @else --}}
                             <span class="text-gray-400">-</span>
-                            @endif
+                            {{-- @endif --}}
                         </td>
 
                     </tr>
-                    @empty
+                    {{-- @empty
                     <tr>
                         <td colspan="8" class="px-4 py-4 text-center text-gray-500">No audit logs found.</td>
                     </tr>
-                    @endforelse
+                    @endforelse --}}
                 </tbody>
             </table>
         </div>
@@ -166,47 +171,7 @@
     </div>
 </div>
 
-{{-- <script>
-    document.querySelectorAll('.view-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const auditModal = document.getElementById('audit-modal');
-        const auditUsername = document.getElementById('audit-username');
-        const auditAction = document.getElementById('audit-action');
-        const auditTable = document.getElementById('audit-table');
-        const auditTimestamp = document.getElementById('audit-timestamp');
-        const auditChanges = document.getElementById('audit-changes');
 
-        auditUsername.value = btn.dataset.user;
-        auditAction.value = btn.dataset.action;
-        auditTable.value = btn.dataset.table;
-        auditTimestamp.value = btn.dataset.timestamp;
-
-        const oldValues = JSON.stringify(JSON.parse(btn.dataset.old || '{}'), null, 2);
-        const newValues = JSON.stringify(JSON.parse(btn.dataset.new || '{}'), null, 2);
-
-        auditChanges.innerHTML = `
-            <div>
-                <label class="font-medium text-gray-500">Old Values</label>
-                <pre class="p-2 border rounded bg-gray-50 text-xs overflow-auto max-h-96">${oldValues}</pre>
-            </div>
-            <div>
-                <label class="font-medium text-gray-500">New Values</label>
-                <pre class="p-2 border rounded bg-gray-50 text-xs overflow-auto max-h-96">${newValues}</pre>
-            </div>
-        `;
-
-        auditModal.classList.remove('hidden');
-    });
-});
-
-// Close modal
-document.getElementById('close-audit-modal').addEventListener('click', () => {
-    document.getElementById('audit-modal').classList.add('hidden');
-});
-document.getElementById('audit-cancel-btn').addEventListener('click', () => {
-    document.getElementById('audit-modal').classList.add('hidden');
-});
-</script> --}}
 <script>
     document.querySelectorAll('.view-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -224,10 +189,6 @@ document.getElementById('audit-cancel-btn').addEventListener('click', () => {
 
         const oldValues = JSON.parse(btn.dataset.old || '{}');
         const newValues = JSON.parse(btn.dataset.new || '{}');
-
-        // function formatJSON(obj) {
-        //     return Object.entries(obj).map(([k, v]) => `"${k}": "${v}"`).join(', ');
-        // }
 
         auditChanges.innerHTML = `
             <div class="mb-4">
