@@ -1,0 +1,631 @@
+@extends('layouts.admin.app')
+@section('title', 'Admin Dashboard')
+
+@push('styles')
+
+@endpush
+
+@section('contents')
+    <!-- Main content area -->
+    <div class="flex-1 overflow-auto bg-gray-50">
+        <!-- Dashboard Content -->
+        <div id="dashboard-content" class="content-page p-4 md:p-6">
+            <div class="mb-6 flex justify-between items-center">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+                    <p class="text-gray-600">Welcome back! Here's your overview for today,
+                        <span id="current-date" class="font-medium"></span>.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+                <!-- Active Users -->
+                <a href="{{route('users.index')}}">
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
+                                    <i class="fas fa-users text-white"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Active Users</dt>
+                                        <dd class="flex items-baseline">
+                                            <div class="text-2xl font-semibold text-gray-900">
+                                                {{-- {{ $activeUsers ?? 0 }} --}}
+                                                5
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            
+                <!-- Completed Tasks -->
+                <a href="{{route('product.index')}}">
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-green-500 rounded-md p-3">
+                                    <i class="fas fa-check-circle text-white"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Products</dt>
+                                        <dd class="flex items-baseline">
+                                            <div class="text-2xl font-semibold text-gray-900">
+                                                {{-- {{ $completedTask ?? 0 }} --}}
+                                                3
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <!-- Ongoing Projects -->
+                <a href="{{route('product.category')}}">
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-yellow-500 rounded-md p-3">
+                                    <i class="fas fa-folder-open text-white"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Product Category</dt>
+                                        <dd class="flex items-baseline">
+                                            <div class="text-2xl font-semibold text-gray-900">
+                                                {{-- {{ $inProgressTask ?? 0 }} --}}
+                                                2
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                <!-- Total Employees -->
+                <a href="{{route('users.index')}}">
+                    <div class="bg-white overflow-hidden shadow rounded-lg">
+                        <div class="px-4 py-5 sm:p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 bg-purple-500 rounded-md p-3">
+                                    <i class="fas fa-id-badge text-white"></i>
+                                </div>
+                                <div class="ml-5 w-0 flex-1">
+                                    <dl>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Total Employees</dt>
+                                        <dd class="flex items-baseline">
+                                            <div class="text-2xl font-semibold text-gray-900">
+                                                {{-- {{ $totalEmployees ?? 0 }} --}}
+                                                11
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            <!-- Task Status Overview -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Pending Tasks Card -->
+                <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col h-full">
+                    <div class="px-4 py-4 border-b border-gray-200 bg-yellow-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-medium text-yellow-800">
+                                <i class="fas fa-clock mr-1"></i>Pending Tasks
+                            </h3>
+                            <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                                {{-- {{ $pendingTask }} --}}
+                                2
+                            </span>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-200 overflow-y-auto scrollbar-hide flex-1 max-h-72">
+                        {{-- @foreach($recentTasks->where('status', 0) as $task) --}}
+                        <div class="px-4 py-4 hover:bg-yellow-50 transition-colors duration-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center flex-1 min-w-0">
+                                    <div class="flex-shrink-0 bg-yellow-100 rounded-full p-2 mr-3">
+                                        <i class="fas fa-hourglass-half text-yellow-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate">Task name </p>
+                                        <p class="text-xs text-gray-500 mt-1">Due: 
+                                            5
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="ml-2 flex-shrink-0">
+                                    {{-- @php
+                                    $priorityColors = ['bg-red-100 text-red-800'=>'High','bg-yellow-100
+                                    text-yellow-800'=>'Medium','bg-green-100 text-green-800'=>'Low'];
+                                    $priorityName = optional($task->priority)->name ?? 'Low';
+                                    $colorClass = array_search($priorityName, $priorityColors) ?: 'bg-green-100
+                                    text-green-800';
+                                    @endphp --}}
+                                    <span class="px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full">ABC</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 pl-8">
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-user-tie mr-1"></i>
+                                    <span class="truncate">Assigned by:
+                                        N/A
+                                    </span>
+                                </div>
+                                <div class="mt-1 flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-user mr-1"></i>
+                                    <span class="truncate">Assigned to: N/A</span>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- @endforeach --}}
+                    </div>
+                    <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
+                        <a href="#"
+                            class="text-sm font-medium text-yellow-600 hover:text-yellow-500">
+                            View all pending tasks
+                        </a>
+                    </div>
+                </div>
+
+                <!-- In Progress Tasks Card -->
+                <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col h-full">
+                    <div class="px-4 py-4 border-b border-gray-200 bg-blue-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-medium text-blue-800">
+                                <i class="fas fa-spinner mr-1"></i>In Progress
+                            </h3>
+                            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">3</span>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-200 overflow-y-auto scrollbar-hide flex-1 max-h-72">
+                        {{-- @foreach($recentTasks->where('status', 1) as $task) --}}
+                        <div class="px-4 py-4 hover:bg-blue-50 transition-colors duration-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center flex-1 min-w-0">
+                                    <div class="flex-shrink-0 bg-blue-100 rounded-full p-2 mr-3">
+                                        <i class="fas fa-play-circle text-blue-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate">Task name </p>
+                                        <p class="text-xs text-gray-500 mt-1">Started : ('M d, Y') </p>
+                                    </div>
+                                </div>
+                                <div class="ml-2 flex-shrink-0">
+                                    {{-- @php
+                                    $priorityName = optional($task->priority)->name ?? 'Medium';
+                                    $colorClass = array_search($priorityName, $priorityColors) ?: 'bg-yellow-100
+                                    text-yellow-800';
+                                    @endphp --}}
+                                    <span class="px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 rounded-full">XYZ</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 pl-8">
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-user-tie mr-1"></i>
+                                    <span class="truncate">Assigned by: 'N/A'</span>
+                                </div>
+                                <div class="mt-1 flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-user mr-1"></i>
+                                    <span class="truncate">Assigned to: 'N/A'</span>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- @endforeach --}}
+                    </div>
+                    <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
+                        <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-500">
+                            View all in-progress tasks
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Completed Tasks Card -->
+                <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col h-full">
+                    <div class="px-4 py-4 border-b border-gray-200 bg-green-50">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-sm font-medium text-green-800">
+                                <i class="fas fa-check-circle mr-1"></i>Completed
+                            </h3>
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">5</span>
+                        </div>
+                    </div>
+                    <div class="divide-y divide-gray-200 overflow-y-auto scrollbar-hide flex-1 max-h-72">
+                        {{-- @foreach($recentTasks->where('status', 2) as $task) --}}
+                        <div class="px-4 py-4 hover:bg-green-50 transition-colors duration-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center flex-1 min-w-0">
+                                    <div class="flex-shrink-0 bg-green-100 rounded-full p-2 mr-3">
+                                        <i class="fas fa-check text-green-600 text-sm"></i>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 truncate">task name </p>
+                                        <p class="text-xs text-gray-500 mt-1">Completed: 2</p>
+                                    </div>
+                                </div>
+                                <div class="ml-2 flex-shrink-0">
+                                    {{-- @php
+                                    $priorityName = optional($task->priority)->name ?? 'High';
+                                    $colorClass = array_search($priorityName, $priorityColors) ?: 'bg-red-100
+                                    text-red-800';
+                                    @endphp --}}
+                                    <span class="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-800 rounded-full">xxx</span>
+                                </div>
+                            </div>
+                            <div class="mt-2 pl-8">
+                                <div class="flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-user-tie mr-1"></i>
+                                    <span class="truncate">Assigned by: 'N/A'</span>
+                                </div>
+                                <div class="mt-1 flex items-center text-xs text-gray-500">
+                                    <i class="fas fa-user mr-1"></i>
+                                    <span class="truncate">Assigned to:'N/A'</span>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- @endforeach --}}
+                    </div>
+                    <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
+                        <a href="#"
+                            class="text-sm font-medium text-green-600 hover:text-green-500">
+                            View all completed tasks
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Dashboard Content -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Left Column - 2/3 width -->
+                <div class="lg:col-span-2 space-y-6">
+                    <!-- Recent Tasks Section -->
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-medium leading-6 text-gray-900">Recent Tasks</h3>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            {{-- @forelse($recentTasks->take(5) as $task) --}}
+                            <div class="px-4 py-4 sm:px-6">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <span
+                                            class="ml-3 block font-medium">
+                                            Task Name 
+                                        </span>
+                                    </div>
+                                    <div class="flex items-center space-x-2">
+                                        {{-- @if ($task['status'] == 0) --}}
+                                            <span
+                                                class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded bg-yellow-100 text-yellow-800">
+                                                Pending
+                                            </span>
+                                        {{-- @elseif($task['status'] == 1) --}}
+                                            <span
+                                                class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded bg-blue-100 text-blue-800">
+                                                Progress
+                                            </span>
+                                        {{-- @else --}}
+                                            <span
+                                                class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded bg-green-100 text-green-800">
+                                                Completed
+                                            </span>
+                                        {{-- @endif --}}
+
+                                        {{-- @php
+                                        $dueDate = \Carbon\Carbon::parse($task['due_date']);
+                                        $today = \Carbon\Carbon::today();
+                                        @endphp --}}
+
+                                        <span class="px-2 py-1 rounded text-xs bg-green-500 text-white">
+                                            ('M d, Y') 
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 flex items-center text-sm text-gray-500">
+                                    <i class="fas fa-user-tie mr-1 text-gray-400"></i>
+                                    <span class="mr-3">Assigned By:  'N/A' 
+                                    </span>
+                                    <i class="fas fa-project-diagram mr-1 text-gray-400"></i>
+                                    <span>department_name 'N/A' </span>
+                                </div>
+                            </div>
+                            {{-- @empty --}}
+                            <div class="flex items-center justify-center py-10">
+                                <p class="text-gray-600 text-lg">No tasks found.</p>
+                            </div>
+                            {{-- @endforelse --}}
+                        </div>
+                        <div class="px-4 py-4 sm:px-6 bg-gray-50 text-sm text-right">
+                            <a href="#"
+                                class="font-medium text-indigo-600 hover:text-indigo-500">
+                                View all tasks
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Task Completion Rate -->
+                        <div class="bg-white p-4 shadow rounded-lg">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">Task Completion Rate</h3>
+                            <div class="h-64">
+                                <canvas id="completionRateChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- KPI Performance -->
+                        <div class="bg-white p-4 shadow rounded-lg">
+                            <h3 class="text-lg font-medium text-gray-900 mb-4">KPI Performance</h3>
+                            <div class="h-64">
+                                <canvas id="kpiPerformanceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - 1/3 width -->
+                <div class="space-y-6">
+                    <!-- Attendance Section -->
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                            <h3 class="text-lg font-medium leading-6 text-gray-900">Attendance</h3>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-500">Today's Status</p>
+                                    {{-- @if ($checkedIn && !$checkedOut)
+                                    <p id="attendance-status" class="text-[16px] font-semibold text-gray-900">
+                                        Checked In: {{ $checkInFormatted }}
+                                    </p>
+                                    @elseif($checkedOut && $checkedIn)
+                                    <p id="attendance-status" class="text-[16px] font-semibold text-gray-900">
+                                        Checked Out: {{ $checkOutFormatted }}
+                                    </p>
+                                    @else --}}
+                                    <p id="attendance-status" class="text-[16px] font-semibold text-gray-900">
+                                        Checked In: --:-- --
+                                    </p>
+                                    {{-- @endif --}}
+                                </div>
+                                <div id="attendance-timer" class="text-xl font-bold text-indigo-600"></div>
+                            </div>
+                            <div class="border-t border-gray-200 pt-4">
+                                <h4 class="text-sm font-medium text-gray-500 mb-2">This Week</h4>
+                                {{-- @php
+                                $days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                                $todayIndex = now()->dayOfWeek;
+                                @endphp --}}
+
+                                <div class="grid grid-cols-7 gap-1 text-center">
+                                    {{-- @foreach ($days as $index => $day) --}}
+                                    <div class="py-1">
+                                        <p class="text-xs text-gray-500">day </p>
+                                        {{-- @if ($index < $todayIndex)  --}}
+                                            <div
+                                                class="w-6 h-6 mx-auto mt-1 rounded-full bg-green-100 flex items-center justify-center">
+                                                <i class="fas fa-check text-green-600 text-xs"></i>
+                                            </div>
+                                        {{-- @elseif ($index === $todayIndex)
+                                            @if ($todayIndex === 6)
+                                                <div
+                                                class="w-6 h-6 mx-auto mt-1 rounded-full bg-red-100 flex items-center justify-center">
+                                                    <i class="fas fa-times text-red-600 text-xs"></i>
+                                                </div>
+                                            @else
+                                                <div
+                                                class="w-6 h-6 mx-auto mt-1 rounded-full bg-yellow-100 flex items-center justify-center">
+                                                    <i class="fas fa-clock text-yellow-600 text-xs"></i>
+                                                </div>
+                                            @endif
+                                        @else
+                                            <div
+                                            class="w-6 h-6 mx-auto mt-1 rounded-full bg-gray-100 flex items-center justify-center">
+                                                <i class="fas fa-minus text-gray-500 text-xs"></i>
+                                            </div>
+                                        @endif --}}
+                                    </div>
+                                    {{-- @endforeach --}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Organization Hierarchy -->
+                    <div class="bg-white shadow rounded-lg overflow-hidden">
+                        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+                            <h3 class="text-lg font-medium leading-6 text-gray-900">Organization Hierarchy</h3>
+                        </div>
+                        <div class="p-6 bg-gray-50">
+                            <div class="space-y-4">
+                                @php
+                                // function renderUsers($level, $usersByDesignation)
+                                // {
+                                    // if (!isset($usersByDesignation[$level])) {
+                                    // return;
+                                    // }
+
+                                    echo '<div class="ml-' . (2 * 8) . ' pl-4 border-l-4 border-gray-300 space-y-2">';
+
+                                        // Show all users of this hierarchy level
+                                        // foreach ($usersByDesignation[$level] as $user) {
+                                        echo '<div
+                                            class="flex items-center transform hover:scale-105 transition-transform duration-500">
+                                            ';
+                                            echo '<div
+                                                class="flex-shrink-0 w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold">
+                                                ';
+                                                echo 1 + 1;
+                                                echo '</div>';
+                                            echo '<div class="ml-3">';
+                                                echo '<p class="text-sm font-medium text-gray-900">'.'name' . '</p>';
+                                                echo '<p class="text-xs text-gray-500">' .'designation_name'. '</p>';
+                                                echo '</div>';
+                                            echo '</div>';
+                                        // }
+
+                                        // After listing all users of this level, go to the next hierarchy level once
+                                        // renderUsers($level + 1, $usersByDesignation);
+
+                                        echo '</div>';
+                                // }
+                                @endphp 
+
+                                {{-- @php renderUsers(0, $usersByDesignation); @endphp --}}
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+            </div>
+        </div>
+        <div class="bg-gray-200 text-left p-4 w-full">
+            <p class="text-sm text-gray-600">&copy; Passion Chasers. All rights reserved.</p>
+        </div>
+    </div>
+@endsection
+
+{{-- @push('scripts')
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+            let checkInRaw = @json($checkInRaw); // e.g. "2025-08-13 15:11:00"
+            let checkOutRaw = @json($checkOutRaw); // e.g. "2025-08-13 17:45:00"
+            let timerEl = document.getElementById("attendance-timer");
+
+            let checkInTimestamp = checkInRaw ? Math.floor(new Date(checkInRaw).getTime() / 1000) : null;
+            let checkOutTimestamp = checkOutRaw ? Math.floor(new Date(checkOutRaw).getTime() / 1000) : null;
+
+            if (checkInTimestamp && !checkOutTimestamp) {
+                // Start live timer until user checks out
+                startTimer(checkInTimestamp, timerEl);
+            } else if (checkInTimestamp && checkOutTimestamp) {
+                // Already checked out → show total worked time
+                let totalSeconds = checkOutTimestamp - checkInTimestamp;
+                timerEl.textContent = formatTime(totalSeconds);
+            } else {
+                // No check-in yet
+                timerEl.textContent = "00:00:00";
+            }
+        });
+
+        function startTimer(startTimestamp, displayEl) {
+            function updateTimer() {
+                let now = Math.floor(Date.now() / 1000);
+                let totalSeconds = now - startTimestamp;
+                displayEl.textContent = formatTime(totalSeconds);
+            }
+            updateTimer(); // Display immediately
+            setInterval(updateTimer, 1000); // Update every second
+        }
+
+        function formatTime(seconds) {
+            let hrs = Math.floor(seconds / 3600);
+            let mins = Math.floor((seconds % 3600) / 60);
+            let secs = seconds % 60;
+            return String(hrs).padStart(2, '0') + ":" +
+                String(mins).padStart(2, '0') + ":" +
+                String(secs).padStart(2, '0');
+        }
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    // Fetch dynamic data from PHP
+    const weeklyTaskStats = @json($weeklyTaskStats);
+    const kpiScores = @json($kpiScores);
+
+    // ==================== TASK COMPLETION RATE CHART ====================
+    const completionRateCtx = document.getElementById('completionRateChart').getContext('2d');
+    new Chart(completionRateCtx, {
+        type: 'bar',
+        data: {
+            labels: weeklyTaskStats.labels,
+            datasets: [
+                {
+                    label: 'Completed Tasks',
+                    data: weeklyTaskStats.completed,
+                    backgroundColor: '#6366f1',
+                    borderColor: '#6366f1',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Assigned Tasks',
+                    data: weeklyTaskStats.assigned,
+                    backgroundColor: '#a5b4fc',
+                    borderColor: '#a5b4fc',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: { beginAtZero: true }
+            },
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+
+    // ==================== KPI PERFORMANCE CHART ====================
+    const kpiPerformanceCtx = document.getElementById('kpiPerformanceChart').getContext('2d');
+    new Chart(kpiPerformanceCtx, {
+        type: 'radar',
+        data: {
+            labels: kpiScores.labels,
+            datasets: [
+                {
+                    label: 'Your Score',
+                    data: kpiScores.your_score,
+                    backgroundColor: 'rgba(99, 102, 241, 0.2)',
+                    borderColor: 'rgba(99, 102, 241, 1)',
+                    pointBackgroundColor: 'rgba(99, 102, 241, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(99, 102, 241, 1)'
+                },
+                {
+                    label: 'Team Average',
+                    data: kpiScores.team_average,
+                    backgroundColor: 'rgba(165, 180, 252, 0.2)',
+                    borderColor: 'rgba(165, 180, 252, 1)',
+                    pointBackgroundColor: 'rgba(165, 180, 252, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(165, 180, 252, 1)'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: { display: true },
+                    suggestedMin: 0,
+                    suggestedMax: 100
+                }
+            },
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+});
+</script>
+
+@endpush --}}
