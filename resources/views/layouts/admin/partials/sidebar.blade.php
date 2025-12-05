@@ -138,24 +138,6 @@
                     </div>
                 </div>
 
-                <!-- Employee Log -->
-                {{-- <a href="{{ route('admin.employee_logs') }}"
-                    class="sidebar-link flex items-center px-2 py-3 text-sm font-medium">
-                    <i class="fas fa-history mr-3"></i>
-                    Employee Log
-                </a> --}}
-
-
-                <!-- Attendance -->
-                {{-- <a href="{{ route('admin.attendance') }}"
-                    class="sidebar-link flex items-center px-2 py-3 text-sm font-medium
-                    {{ request()->routeIs('attendence.*') ? 'text-indigo-500 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
-                    <i
-                        class="fas fa-user-clock mr-3 
-                        {{ request()->routeIs('attendence.*') ? 'text-indigo-500' : 'text-gray-600' }} ">
-                        </i>
-                        Attendance
-                </a> --}}
 
                 <!-- Settings Dropdown -->
                 <div x-data="{ open: {{ request()->routeIs('settings.*') ? 'true' : 'false' }} }">
@@ -352,22 +334,6 @@
                         {{-- @endif --}}
                     </div>
                 </div>
-
-                <!-- Employee Log -->
-                {{-- <a href="{{ route('admin.employee_logs') }}"
-                    class="sidebar-link flex items-center px-2 py-3 text-sm font-medium
-                    {{ request()->routeIs('employee_logs.*') ? 'text-indigo-500 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
-                    <i class="fas fa-history mr-3 {{ request()->routeIs('logs.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
-                    Employee Log
-                </a> --}}
-
-                <!-- Attendance -->
-                {{-- <a href="{{ route('admin.attendance') }}"
-                    class="sidebar-link flex items-center px-2 py-3 text-sm font-medium
-                    {{ request()->routeIs('attendence.*') ? 'text-indigo-500 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
-                    <i class="fas fa-user-clock mr-3 {{ request()->routeIs('attendence.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
-                    Attendance
-                </a> --}}
 
                 <!-- Settings Dropdown -->
                 <div x-data="{ open: {{ request()->routeIs('settings.*') ? 'true' : 'false' }} }">
