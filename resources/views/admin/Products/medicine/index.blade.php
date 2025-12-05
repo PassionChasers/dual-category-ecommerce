@@ -1,5 +1,5 @@
 @extends('layouts.admin.app')
-@section('title', 'Admin | All Food-Product')
+@section('title', 'Admin | All Product')
 
 @push('styles')
 <!-- add any page-specific styles here -->
@@ -27,8 +27,8 @@
 
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
-            <h2 class="text-2xl font-bold text-gray-800">Food-item Management</h2>
-            <p class="text-gray-600">Manage Food and Categories.</p>
+            <h2 class="text-2xl font-bold text-gray-800">Product Management</h2>
+            <p class="text-gray-600">Manage products, priorities, and categories.</p>
         </div>
 
       
@@ -52,7 +52,7 @@
                 <!-- New Task Button -->
                 <button id="new-task-button"
                     class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap">
-                    <i class="fas fa-plus mr-1"></i> New Food-Item
+                    <i class="fas fa-plus mr-1"></i> New Product
                 </button>
 
                 <!-- Export Button -->
@@ -68,15 +68,15 @@
     <!-- Table -->
     <div class="bg-white shadow rounded-lg overflow-hidden">
         <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between">
-            <h3 class="text-lg font-medium text-gray-900">Food-Item List</h3>
+            <h3 class="text-lg font-medium text-gray-900">Product List</h3>
         </div>
 
         <div class="overflow-x-auto">
             <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2">#id</th>
-                        <th class="px-4 py-2">Food-Item</th>
+                        <th class="px-4 py-2">#</th>
+                        <th class="px-4 py-2">Product Name</th>
                         <th class="px-4 py-2">Category</th>
                         <th class="px-4 py-2">Priority</th>
                         <th class="px-4 py-2">Assignee</th>
@@ -96,11 +96,11 @@
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
                             {{-- {{ $task->name ?? '-' }} --}}
-                            Sample Food-Item Name
+                            Sample Product Name
                         </td>
                         <td class="px-4 py-2 text-gray-600">
                             {{-- {{ $task->category->name ?? '-' }} --}}
-                            Food-Category Name
+                            Product Category Name
                         </td>
                         <td class="px-4 py-2" 
                         {{-- id="priority-badge-{{ $task->id }}" --}}

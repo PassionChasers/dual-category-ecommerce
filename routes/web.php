@@ -10,6 +10,30 @@ use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MedicineController;
+use App\Http\Controllers\MedicineCategoryController;
+use App\Http\Controllers\FoodOrderController;
+use App\Http\Controllers\MedicineOrderController;
+
+
+Route::get('/clear-all', function () {
+    if (app()->environment('local')) {
+        Artisan::call('cache:clear');
+        Artisan::call('route:clear');
+        Artisan::call('config:clear');
+        Artisan::call('view:clear');
+        return 'Cleared in local environment!';
+    }
+    abort(403);
+});
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+// Using Route::view() keeps code simple and fast.
+Route::view('/about', 'frontend.about')->name('about');
+Route::view('/faq', 'frontend.faq')->name('faq');
+Route::view('/support', 'frontend.support')->name('support');
+Route::view('/contact', 'frontend.contact')->name('contact');
+Route::view('/privacy-policy', 'frontend.privacy')->name('privacy');
 
 
 // Redirect / to login if not authenticated
@@ -45,22 +69,26 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 
-    //Products
-    Route::get('/products', [FoodController::class, 'index'])->name('product.food.index');
-    // Route::get('/my-products', [ProductController::class, 'myProducts'])->name('product.myproducts');
+    //-----------Products-Food
+    Route::get('/products-food', [FoodController::class, 'index'])->name('product.food.index');
+    Route::get('/food-category', [FoodCategoryController::class, 'index'])->name('product.food.category');
+    
 
-    //Product Category
-    Route::get('category', [FoodCategoryController::class, 'index'])->name('product.food.category');
+    
+    //--------------Products-Medicine
+    Route::get('/products-medicine', [MedicineController::class, 'index'])->name('product.medicine.index');
+    Route::get('/medicine-category', [MedicineCategoryController::class, 'index'])->name('product.medicine.category');
 
-    //Settings
-    // Route::prefix('/settings')->name('settings.')->group(function () {
+    //-------------Product-Orders
+    //-------------Food Orders
+    Route::get('/food-order-list', [FoodOrderController::class, 'index'])->name('orders.food.index');
 
-    //     Route::get('/', [SettingController::class, 'index'])->name('general');
+    //-------------Medicine Orders
+    Route::get('/medicine-order-list', [MedicineOrderController::class, 'index'])->name('orders.medicine.index');
+ 
 
-    //     Route::get('institutions', [InstitutionsController::class, 'index'])->name('institutions');
 
-    // });
-
+    //--------------Settings
     Route::prefix('/settings')->name('settings.')->group(function () {
         Route::get('/', [SettingController::class, 'index'])->name('general');
         Route::post('/', [SettingController::class, 'store'])->name('store');
@@ -91,6 +119,11 @@ Route::middleware(['auth'])->group(function () {
     Route::put('users/update/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('users/destroy/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
+    //Profile Route
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('admin.profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
+    Route::get('profile', [ProfileController::class, 'index'])->name('admin.profile');
+
     // ====================
     // Department Routes
     // ====================
@@ -98,10 +131,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
     Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
     Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
-    //Profile
-    Route::get('profile', [ProfileController::class, 'index'])->name('admin.profile');
+    
 
     //Audit Log
     Route::get('auditlog', [AuditLogController::class, 'index'])->name('auditlog.index');
 
+});
+
+
+
+Route::fallback(function () {
+    return view('errors.404');
 });

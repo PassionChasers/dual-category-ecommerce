@@ -46,7 +46,7 @@
                 </a>
             
                 <!-- Completed Tasks -->
-                <a href="{{route('product.food.index')}}">
+                <a href="#">
                     <div class="bg-white overflow-hidden shadow rounded-lg">
                         <div class="px-4 py-5 sm:p-6">
                             <div class="flex items-center">
@@ -69,7 +69,7 @@
                     </div>
                 </a>
                 <!-- Ongoing Projects -->
-                <a href="{{route('product.food.category')}}">
+                <a href="#">
                     <div class="bg-white overflow-hidden shadow rounded-lg">
                         <div class="px-4 py-5 sm:p-6">
                             <div class="flex items-center">
