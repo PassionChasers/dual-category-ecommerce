@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class ProductController extends Controller
+class FoodController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('admin.products.index');
+        return view('admin.products.food.index');
     }
 
     /**
@@ -64,8 +64,8 @@ class ProductController extends Controller
 
 
     //MY PRODUCTS FUNCTION
-    public function myProducts(Request $request)
-    {
+    // public function myProducts(Request $request)
+    // {
         // $search = $request->get('search');
         // $statusFilter = $request->get('status');
 
@@ -91,6 +91,6 @@ class ProductController extends Controller
         // $categories = TaskCategory::orderBy('name')->get();
 
         // return view('admin.tasks.index', compact('tasks', 'priorities', 'categories', 'search', 'statusFilter'));
-        return view('admin.products.my-product');
-    }
+    //     return view('admin.products.my-product');
+    // }
 }

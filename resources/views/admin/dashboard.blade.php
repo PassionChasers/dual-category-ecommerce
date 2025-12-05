@@ -46,7 +46,7 @@
                 </a>
             
                 <!-- Completed Tasks -->
-                <a href="{{route('product.index')}}">
+                <a href="{{route('product.food.index')}}">
                     <div class="bg-white overflow-hidden shadow rounded-lg">
                         <div class="px-4 py-5 sm:p-6">
                             <div class="flex items-center">
@@ -55,7 +55,7 @@
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Products</dt>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Foods</dt>
                                         <dd class="flex items-baseline">
                                             <div class="text-2xl font-semibold text-gray-900">
                                                 {{-- {{ $completedTask ?? 0 }} --}}
@@ -69,7 +69,7 @@
                     </div>
                 </a>
                 <!-- Ongoing Projects -->
-                <a href="{{route('product.category')}}">
+                <a href="{{route('product.food.category')}}">
                     <div class="bg-white overflow-hidden shadow rounded-lg">
                         <div class="px-4 py-5 sm:p-6">
                             <div class="flex items-center">
@@ -78,7 +78,7 @@
                                 </div>
                                 <div class="ml-5 w-0 flex-1">
                                     <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Product Category</dt>
+                                        <dt class="text-sm font-medium text-gray-500 truncate">Food Category</dt>
                                         <dd class="flex items-baseline">
                                             <div class="text-2xl font-semibold text-gray-900">
                                                 {{-- {{ $inProgressTask ?? 0 }} --}}
