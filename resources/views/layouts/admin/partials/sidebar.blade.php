@@ -111,30 +111,91 @@
                     </button>
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
-                        {{-- @if (auth()->user()->designation->hierarchy_level == 0) --}}
+                        
+                        {{-- @if (auth()->user()->designation->hierarchy_level == 0)
                             <a href="{{ route('product.index') }}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('product.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-list mr-2"></i> All Products
                             </a>
-                        {{-- @endif --}}
+                        @endif
                         <a href="{{ route('product.myproducts') }}"
                             class="flex items-center px-2 py-2 text-sm rounded-md
                             {{ request()->routeIs('product.myproducts') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fas fa-user-check mr-2"></i> My Products
                         </a>
-                        {{-- @if (auth()->user()->designation->hierarchy_level == 0) --}}
-                            {{-- <a href="#"
+                        @if (auth()->user()->designation->hierarchy_level == 0) 
+                            <a href="#"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('task.priority') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-exclamation-circle mr-2"></i> Product Priority
-                            </a> --}}
+                            </a>
                             <a href="{{ route('product.category') }}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('product.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-tags mr-2"></i> Product Category
                             </a>
-                        {{-- @endif --}}
+                        @endif --}}
+
+                        <!--Dropdown for Medicines -->
+                        <div x-data="{ open: {{ request()->routeIs('medicine.*') ? 'true' : 'false' }} }">
+                            <button @click="open = !open"
+                                class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
+                                {{ request()->routeIs('medicine.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-capsules
+                                    mr-3 {{ request()->routeIs('medicine.*') ? 'text-indigo-500' : 'text-gray-600' }}">
+                                    </i>
+                                    <span>Medicine</span>
+                                </div>
+                                <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
+                            </button>
+
+                            <div x-show="open" class="ml-6 mt-2 space-y-1">
+                                {{-- @if (auth()->user()->designation->hierarchy_level == 0) --}}
+                                    <a href="#"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                        {{ request()->routeIs('medicine.allmedicine') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-list mr-2"></i> All Medicines
+                                    </a>
+                                {{-- @endif --}}
+                                <a href="#"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md
+                                    {{ request()->routeIs('medicine.medicinecategory') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-tags mr-2"></i> Medicine Category
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Dropdown for food -->
+                        <div x-data="{ open: {{ request()->routeIs('food.*') ? 'true' : 'false' }} }">
+                            <button @click="open = !open"
+                                class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
+                                {{ request()->routeIs('food.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-utensils
+                                    mr-3 {{ request()->routeIs('food.*') ? 'text-indigo-500' : 'text-gray-600' }}">
+                                    </i>
+                                    <span>Food</span>
+                                </div>
+                                <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
+                            </button>
+
+                            <div x-show="open" class="ml-6 mt-2 space-y-1">
+                                {{-- @if (auth()->user()->designation->hierarchy_level == 0) --}}
+                                    <a href="#"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                        {{ request()->routeIs('food.allfood') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-list mr-2"></i> All Foods
+                                    </a>
+                                {{-- @endif --}}
+                                <a href="#"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md
+                                    {{ request()->routeIs('food.foodcategory') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-tags mr-2"></i> Food Category
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -295,7 +356,7 @@
                     Dashboard
                 </a>
 
-                <!-- Tasks Dropdown -->
+                <!-- Products Dropdown -->
                 <div x-data="{ open: {{ request()->routeIs('product.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open"
                         class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
@@ -308,32 +369,92 @@
                     </button>
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
-                        {{-- @if (auth()->user()->designation->hierarchy_level == 0) --}}
+
+                        {{-- @if (auth()->user()->designation->hierarchy_level == 0)
                             <a href="{{ route('product.index') }}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('product.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-list mr-2"></i> All Products
                             </a>
-                        {{-- @endif --}}
+                        @endif
                         <a href="{{ route('product.myproducts') }}"
                             class="flex items-center px-2 py-2 text-sm rounded-md
                             {{ request()->routeIs('product.myproducts') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fas fa-user-check mr-2"></i> My Products
                         </a>
-                        {{-- @if (auth()->user()->designation->hierarchy_level == 0) --}}
-                            {{-- <a href="#"
+                        @if (auth()->user()->designation->hierarchy_level == 0)
+                            <a href="#"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('task.priority') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-exclamation-circle mr-2"></i> Product Priority
-                            </a> --}}
+                            </a>
                             <a href="{{ route('product.category') }}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('product.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-tags mr-2"></i> Product Category
                             </a>
-                        {{-- @endif --}}
-                    </div>
+                        @endif --}}
+
+                        <!-- Dropdown for Medicine -->
+                        <div x-data="{ open: {{ request()->routeIs('medicine.*') ? 'true' : 'false' }} }">
+                            <button @click="open = !open"
+                            class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
+                            {{ request()->routeIs('settings.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <div class="flex items-center">
+                                    <i class="fa-solid fa-capsules
+                                    mr-3 {{ request()->routeIs('medicine.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
+                                    <span>Medicine</span>
+                                </div>
+                                <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
+                            </button>
+
+                            <div x-show="open" class="ml-6 mt-2 space-y-1">
+                                {{-- @if (auth()->user()->designation->hierarchy_level == 0) --}}
+                                    <a href="#"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                        {{ request()->routeIs('medicine.allmedicine') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-list mr-2"></i> All Medicines
+                                    </a>
+                                {{-- @endif --}}
+                                <a href="#"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md
+                                    {{ request()->routeIs('medicine.medicinecategory') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-tags mr-2"></i> Medicine Category
+                                </a>
+                            </div>
+                        </div>
+
+                        <!--Dropdown for Food -->
+                        <div x-data="{ open: {{ request()->routeIs('food.*') ? 'true' : 'false' }} }">
+                            <button @click="open = !open"
+                            class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
+                            {{ request()->routeIs('food.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <div class="flex items-center">
+                                    <i class=" fa-solid fa-utensils
+                                    mr-3 {{ request()->routeIs('food.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
+                                    <span>Food</span>
+                                </div>
+                                <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
+                            </button>
+
+                            <div x-show="open" class="ml-6 mt-2 space-y-1">
+                                {{-- @if (auth()->user()->designation->hierarchy_level == 0) --}}
+                                    <a href="#"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                        {{ request()->routeIs('food.allfood') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-list mr-2"></i> All Foods
+                                    </a>
+                                {{-- @endif --}}
+                                <a href="#"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md
+                                    {{ request()->routeIs('food.foodcategory') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-tags mr-2"></i> Food Category
+                                </a>
+                            </div>
+                        </div>
+                    </div>   
                 </div>
+
 
                 <!-- Settings Dropdown -->
                 <div x-data="{ open: {{ request()->routeIs('settings.*') ? 'true' : 'false' }} }">
@@ -362,6 +483,8 @@
                         </a>
                     </div>
                 </div>
+
+         
 
                 <!-- Admin Section -->
                 {{-- @if (auth()->user()->designation->hierarchy_level == 0) --}}
