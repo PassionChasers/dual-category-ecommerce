@@ -1,21 +1,26 @@
 <?php
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\FoodController;
-use App\Http\Controllers\FoodCategoryController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\InstitutionsController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\DesignationController;
-use App\Http\Controllers\DepartmentController;
-use App\Http\Controllers\AuditLogController;
-use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FoodController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\MedicineController;
-use App\Http\Controllers\MedicineCategoryController;
 use App\Http\Controllers\FoodOrderController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DesignationController;
+use App\Http\Controllers\FoodCategoryController;
+use App\Http\Controllers\InstitutionsController;
 use App\Http\Controllers\MedicineOrderController;
+use App\Http\Controllers\MedicineCategoryController;
 
 
+// ---------------------------------
+// Clear Cache (LOCAL ONLY)
+// ---------------------------------
 Route::get('/clear-all', function () {
     if (app()->environment('local')) {
         Artisan::call('cache:clear');
@@ -24,7 +29,7 @@ Route::get('/clear-all', function () {
         Artisan::call('view:clear');
         return 'Cleared in local environment!';
     }
-    abort(403);
+    abort(403);
 });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -37,7 +42,7 @@ Route::view('/privacy-policy', 'frontend.privacy')->name('privacy');
 
 
 // Redirect / to login if not authenticated
-Route::get('/', function () {
+Route::get('/login', function () {
     return redirect('/login');
 });
 
