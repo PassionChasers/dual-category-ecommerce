@@ -16,6 +16,7 @@ use App\Http\Controllers\FoodCategoryController;
 use App\Http\Controllers\InstitutionsController;
 use App\Http\Controllers\MedicineOrderController;
 use App\Http\Controllers\MedicineCategoryController;
+use App\Http\Controllers\OrderController;
 
 
 // ---------------------------------
@@ -85,9 +86,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/medicine-category', [MedicineCategoryController::class, 'index'])->name('product.medicine.category');
 
     //-------------Product-Orders
+    Route::get('/product-order-list', [OrderController::class, 'index'])->name('orders.index');
+
     //-------------Food Orders
     Route::get('/food-order-list', [FoodOrderController::class, 'index'])->name('orders.food.index');
-
+    
     //-------------Medicine Orders
     Route::get('/medicine-order-list', [MedicineOrderController::class, 'index'])->name('orders.medicine.index');
  

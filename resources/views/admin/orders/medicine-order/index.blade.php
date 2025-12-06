@@ -27,8 +27,8 @@
 
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
-            <h2 class="text-2xl font-bold text-gray-800">Food-item Management</h2>
-            <p class="text-gray-600">Manage Food and Categories.</p>
+            <h2 class="text-2xl font-bold text-gray-800">Medicine Management</h2>
+            <p class="text-gray-600">Manage Medicine Order List.</p>
         </div>
 
       
@@ -40,8 +40,10 @@
                 <select name="status" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
                     <option value="">All status</option>
                     <option value="0" >Pending</option>
-                    <option value="1" >In Progress</option>
-                    <option value="2" >Completed</option>
+                    <option value="1" >Accepted</option>
+                    <option value="1" >Verified</option>
+                    <option value="1" >Ready</option>
+                    <option value="2" >Delivered</option>
                 </select>
                 <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
                     <i class="fas fa-search"></i>
@@ -52,7 +54,7 @@
                 <!-- New Task Button -->
                 <button id="new-task-button"
                     class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap">
-                    <i class="fas fa-plus mr-1"></i> New Food-Item
+                    <i class="fas fa-plus mr-1"></i> New Medicine
                 </button>
 
                 <!-- Export Button -->
@@ -68,20 +70,22 @@
     <!-- Table -->
     <div class="bg-white shadow rounded-lg overflow-hidden">
         <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between">
-            <h3 class="text-lg font-medium text-gray-900">Food-Item List</h3>
+            <h3 class="text-lg font-medium text-gray-900">Medicine Order List</h3>
         </div>
 
         <div class="overflow-x-auto">
             <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2">#id</th>
-                        <th class="px-4 py-2">Food-Item</th>
-                        <th class="px-4 py-2">Category</th>
-                        <th class="px-4 py-2">Priority</th>
-                        <th class="px-4 py-2">Assignee</th>
-                        <th class="px-4 py-2">Requested</th>
-                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Order Id</th>
+                        <th class="px-4 py-2">Customer Name</th>
+                        <th class="px-4 py-2">Medicines</th>
+                        <th class="px-4 py-2">Qty</th>
+                        <th class="px-4 py-2">Total Amount</th>
+                        <th class="px-4 py-2">Delivery Type</th>
+                        <th class="px-4 py-2">Prescription Needed</th>
+                        <th class="px-4 py-2">Prescription File</th>
+                        <th class="px-4 py-2">Order Status</th>
                         <th class="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
@@ -89,43 +93,22 @@
                     {{-- @forelse($tasks as $index => $task) --}}
                     <tr>
                         <td class="px-4 py-2">
-                            {{-- {{ $tasks->firstItem() + $index }} --}}
-                            <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
-                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
-                            alt="Default user">
+                           008
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{-- {{ $task->name ?? '-' }} --}}
-                            Sample Food-Item Name
+                            Rahul Sharma
                         </td>
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $task->category->name ?? '-' }} --}}
-                            Food-Category Name
+                            Paracetamol, Ibuprofen
                         </td>
-                        <td class="px-4 py-2" 
-                        {{-- id="priority-badge-{{ $task->id }}" --}}
-                        >
-                            {{-- @php
-                            $colors = [
-                            3 => ['Low', 'bg-green-100 text-green-800'],
-                            2 => ['Medium', 'bg-yellow-100 text-yellow-800'],
-                            1 => ['High', 'bg-red-100 text-red-800'],
-                            ];
-                            $priority = $colors[$task->priority_id] ?? ['None', 'bg-gray-100 text-gray-800'];
-                            @endphp --}}
-                            <span class="px-2 py-1 rounded text-xs 
-                            {{-- {{ $priority[1] }} --}}
-                             ">
-                             {{-- {{ $priority[0] }} --}}
-                                Medium
-                            </span>
+                        <td class="px-4 py-2">
+                            5
                         </td>
 
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $task->assignee?->name ?? '-' }} --}}
-                            Shibu
+                            600
                         </td>
-                        <td class="px-4 py-2">
+                        <td class="px-4 py-2 text-gray-600">
                             {{-- @if($task->is_requested)
                             @if($task->is_approved == 0)
                             <div class="flex space-x-2">
@@ -142,7 +125,14 @@
                             @else
                             <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Not Requested</span>
                             @endif --}}
-                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Accept/Reject</span>
+                            {{-- <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Accept/Reject</span> --}}
+                            Home Delivery
+                        </td>
+                        <td class="px-4 py-2 text-gray-600">
+                            yes/no
+                        </td>
+                        <td class="px-4 py-2 text-gray-600">
+                            <a href="#" class="text-indigo-600 hover:text-indigo-800">View File</a>
                         </td>
 
 
@@ -159,7 +149,7 @@
                         }
                         @endphp --}}
 
-                        <td class="px-4 py-2">
+                        <td class="px-4 py-2 ">
                             <select 
                             {{-- data-task-id="{{ $task->id }}" --}}
                                 class="task-status-select block border rounded-lg px-2 py-1 text-sm
@@ -247,7 +237,7 @@
             </button>
 
             <!-- Modal Title -->
-            <h3 class="text-2xl font-semibold text-gray-900 mb-6" id="modal-title">New Product</h3>
+            <h3 class="text-2xl font-semibold text-gray-900 mb-6" id="modal-title">New Medicine</h3>
 
             <!-- Form -->
             <form id="task-form" method="get" class="space-y-6" action="#">

@@ -27,15 +27,15 @@
 
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
-            <h2 class="text-2xl font-bold text-gray-800">Food-item Management</h2>
-            <p class="text-gray-600">Manage Food and Categories.</p>
+            <h2 class="text-2xl font-bold text-gray-800">All Order Management</h2>
+            <p class="text-gray-600">Manage Food and Medicine Order List</p>
         </div>
 
       
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
             <!-- Search Form -->
             <form method="GET" class="flex flex-wrap w-full gap-2">
-                <input type="text" name="search" value="" placeholder="Search products..."
+                <input type="text" name="search" value="" placeholder="Search Orders by ID..."
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <select name="status" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
                     <option value="">All status</option>
@@ -52,7 +52,7 @@
                 <!-- New Task Button -->
                 <button id="new-task-button"
                     class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap">
-                    <i class="fas fa-plus mr-1"></i> New Food-Item
+                    <i class="fas fa-plus mr-1"></i> New Item
                 </button>
 
                 <!-- Export Button -->
@@ -68,20 +68,22 @@
     <!-- Table -->
     <div class="bg-white shadow rounded-lg overflow-hidden">
         <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between">
-            <h3 class="text-lg font-medium text-gray-900">Food-Item List</h3>
+            <h3 class="text-lg font-medium text-gray-900">Medicine & Food order List</h3>
         </div>
 
         <div class="overflow-x-auto">
             <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2">#id</th>
-                        <th class="px-4 py-2">Food-Item</th>
-                        <th class="px-4 py-2">Category</th>
-                        <th class="px-4 py-2">Priority</th>
-                        <th class="px-4 py-2">Assignee</th>
-                        <th class="px-4 py-2">Requested</th>
-                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Order ID</th>
+                        <th class="px-4 py-2">Customer Name</th>
+                        <th class="px-4 py-2">Customer Contact</th>
+                        <th class="px-4 py-2">Product Type</th>
+                        <th class="px-4 py-2">Store/Restaurant</th>
+                        <th class="px-4 py-2">Total Amount</th>
+                        <th class="px-4 py-2">Order Status</th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Assign Delivery Man</th>
                         <th class="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
@@ -89,63 +91,24 @@
                     {{-- @forelse($tasks as $index => $task) --}}
                     <tr>
                         <td class="px-4 py-2">
-                            {{-- {{ $tasks->firstItem() + $index }} --}}
-                            <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
-                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
-                            alt="Default user">
+                            87678
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{-- {{ $task->name ?? '-' }} --}}
-                            Sample Food-Item Name
+                            Laxman 
                         </td>
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $task->category->name ?? '-' }} --}}
-                            Food-Category Name
-                        </td>
-                        <td class="px-4 py-2" 
-                        {{-- id="priority-badge-{{ $task->id }}" --}}
-                        >
-                            {{-- @php
-                            $colors = [
-                            3 => ['Low', 'bg-green-100 text-green-800'],
-                            2 => ['Medium', 'bg-yellow-100 text-yellow-800'],
-                            1 => ['High', 'bg-red-100 text-red-800'],
-                            ];
-                            $priority = $colors[$task->priority_id] ?? ['None', 'bg-gray-100 text-gray-800'];
-                            @endphp --}}
-                            <span class="px-2 py-1 rounded text-xs 
-                            {{-- {{ $priority[1] }} --}}
-                             ">
-                             {{-- {{ $priority[0] }} --}}
-                                Medium
-                            </span>
-                        </td>
-
-                        <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $task->assignee?->name ?? '-' }} --}}
-                            Shibu
+                            98675432
                         </td>
                         <td class="px-4 py-2">
-                            {{-- @if($task->is_requested)
-                            @if($task->is_approved == 0)
-                            <div class="flex space-x-2">
-                                <button class="accept-btn px-2 py-1 bg-green-100 text-green-800 rounded text-xs"
-                                    data-id="{{ $task->id }}">Accept</button>
-                                <button class="reject-btn px-2 py-1 bg-red-100 text-red-800 rounded text-xs"
-                                    data-id="{{ $task->id }}">Reject</button>
-                            </div>
-                            @elseif($task->is_approved == 1)
-                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Accepted</span>
-                            @elseif($task->is_approved == 2)
-                            <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">Rejected</span>
-                            @endif
-                            @else
-                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Not Requested</span>
-                            @endif --}}
-                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Accept/Reject</span>
+                            Food/medicine
                         </td>
 
-
+                        <td class="px-4 py-2 text-gray-600">
+                            Royal
+                        </td>
+                        <td class="px-4 py-2">
+                            700
+                        </td>
                         {{-- @php
                         if (!function_exists('statusBadge')) {
                         function statusBadge($status) {
@@ -177,6 +140,12 @@
                                 {{-- @selected($task->status == 2) --}}
                                 >Completed</option>
                             </select>
+                        </td>
+                        <td class="px-4 py-2">
+                            2025/11/12
+                        </td>
+                        <td class="px-4 py-2">
+                            assign
                         </td>
 
                         <td class="px-4 py-2 flex space-x-2">

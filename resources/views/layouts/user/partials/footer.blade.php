@@ -8,7 +8,7 @@
                             class="w-10 h-10 rounded-lg gradient-bg flex items-center justify-center text-white font-bold mr-3">
                             <i class="fas fa-tasks"></i>
                         </div>
-                        <h2 class="text-white text-xl font-bold">{{ $setting->app_name }}</h2>
+                        <h2 class="text-white text-xl font-bold">{{ $settings->app_name ?? 'Ecommerce' }}</h2>
                     </div>
                     <p class="mb-6">The modern task management platform for teams who want to achieve more.</p>
                     
@@ -122,7 +122,7 @@
 
             <!-- Copyright -->
             <div class="mt-8 pt-8 border-t border-gray-800 text-sm text-center">
-                <p>&copy; {{ date('Y') }} {{ $setting->app_name }}. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} {{ $settings->app_name ?? 'Ecommerce' }}. All rights reserved.</p>
                 <p class="mt-2">Designed & Developed by
                     <a href="https://passionchasers.com/"> Passion Chasers.</a>
                 </p>

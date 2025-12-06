@@ -1,5 +1,5 @@
 @extends('layouts.user.app')
-@section('title',$setting->app_name . "| Home")
+@section('title','app name'. "| Home")
 
 @push('styles')
 
@@ -22,7 +22,8 @@
                 <span class="text-primary-400">Maximize Productivity</span>
             </h2>
             <p class="text-lg md:text-xl mb-8 text-primary-100">
-                {{ $setting->app_name }} helps individuals and teams organize tasks, track progress, and achieve goals
+                {{ $settings->app_name ?? 'Ecommerce' }}
+                helps individuals and teams organize tasks, track progress, and achieve goals
                 faster with intuitive task management tools.
             </p>
 
@@ -49,11 +50,15 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                 <div class="p-6 rounded-lg hover:bg-gray-50 transition duration-300">
-                    <p class="text-3xl md:text-4xl font-bold text-primary-600">{{$userCount}}+</p>
+                    <p class="text-3xl md:text-4xl font-bold text-primary-600">
+                        {{-- {{$userCount}}+ --}}
+                    </p>
                     <p class="text-gray-600 mt-2">Active Users</p>
                 </div>
                 <div class="p-6 rounded-lg hover:bg-gray-50 transition duration-300">
-                    <p class="text-3xl md:text-4xl font-bold text-primary-600">{{$taskCount}}+</p>
+                    <p class="text-3xl md:text-4xl font-bold text-primary-600">
+                        {{-- {{$taskCount}}+ --}}
+                    </p>
                     <p class="text-gray-600 mt-2">Tasks Completed</p>
                 </div>
                 <div class="p-6 rounded-lg hover:bg-gray-50 transition duration-300">
@@ -73,9 +78,11 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row items-center gap-12">
                 <div class="md:w-1/2">
-                    <h3 class="text-3xl md:text-4xl font-bold mb-6">About {{ $setting->app_name }}</h3>
+                    <h3 class="text-3xl md:text-4xl font-bold mb-6">About 
+                        {{ $settings->app_name ?? 'Ecommerce' }}
+                    </h3>
                     <p class="text-gray-600 mb-4">
-                        {{ $setting->app_name }} was founded in 2020 with a simple mission: to help teams work more
+                        {{ $settings->app_name ?? 'Ecommerce' }} was founded in 2020 with a simple mission: to help teams work more
                         efficiently by providing intuitive task management solutions.
                     </p>
                     <p class="text-gray-600 mb-6">
@@ -135,8 +142,7 @@
                         <i class="fas fa-graduation-cap text-2xl"></i>
                     </div>
                     <h4 class="text-xl font-bold mb-2">Training</h4>
-                    <p class="text-gray-600">Comprehensive training programs for your team to maximize {{
-                        $setting->app_name }}'s potential.</p>
+                    <p class="text-gray-600">Comprehensive training programs for your team to maximize {{ $settings->app_name ?? 'Ecommerce' }}'s potential.</p>
                 </div>
 
                 <div class="services-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
@@ -154,8 +160,7 @@
                         <i class="fas fa-puzzle-piece text-2xl"></i>
                     </div>
                     <h4 class="text-xl font-bold mb-2">Integration</h4>
-                    <p class="text-gray-600">Seamlessly connect {{ $setting->app_name }} with your existing tools and
-                        workflows.</p>
+                    <p class="text-gray-600">Seamlessly connect {{ $settings->app_name ?? 'Ecommerce' }} with your existing tools and workflows.</p>
                 </div>
 
                 <div class="services-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
@@ -249,7 +254,7 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
                 <h3 class="text-3xl md:text-4xl font-bold mb-4">Trusted by Teams Worldwide</h3>
-                <p class="text-gray-600">See what our users say about their experience with {{ $setting->app_name }}</p>
+                <p class="text-gray-600">See what our users say about their experience with {{ $settings->app_name ?? 'Ecommerce' }}</p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -263,7 +268,7 @@
                             <p class="text-gray-500 text-sm">Project Manager</p>
                         </div>
                     </div>
-                    <p class="text-gray-700">"{{ $setting->app_name }} has transformed how our team works. We're 40%
+                    <p class="text-gray-700">"{{ $settings->app_name ?? 'Ecommerce' }} has transformed how our team works. We're 40%
                         more productive since we started using it."</p>
                     <div class="mt-4 flex text-yellow-400">
                         <i class="fas fa-star"></i>
@@ -305,8 +310,8 @@
                             <p class="text-gray-500 text-sm">Software Engineer</p>
                         </div>
                     </div>
-                    <p class="text-gray-700">"I've tried many task managers, but {{ $setting->app_name }} strikes the
-                        perfect balance between simplicity and power."</p>
+                    <p class="text-gray-700">"I've tried many task managers, but 
+                        {{ $setting->app_name??'Ecommerce' }}strikes the perfect balance between simplicity and power."</p>
                     <div class="mt-4 flex text-yellow-400">
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>

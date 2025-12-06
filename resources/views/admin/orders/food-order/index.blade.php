@@ -28,14 +28,14 @@
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800">Food-item Management</h2>
-            <p class="text-gray-600">Manage Food and Categories.</p>
+            <p class="text-gray-600">Manage Order List.</p>
         </div>
 
       
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
             <!-- Search Form -->
             <form method="GET" class="flex flex-wrap w-full gap-2">
-                <input type="text" name="search" value="" placeholder="Search products..."
+                <input type="text" name="search" value="" placeholder="Search Orders By order ID..."
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <select name="status" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
                     <option value="">All status</option>
@@ -68,20 +68,20 @@
     <!-- Table -->
     <div class="bg-white shadow rounded-lg overflow-hidden">
         <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between">
-            <h3 class="text-lg font-medium text-gray-900">Food-Item List</h3>
+            <h3 class="text-lg font-medium text-gray-900">Food Order List</h3>
         </div>
 
         <div class="overflow-x-auto">
             <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2">#id</th>
-                        <th class="px-4 py-2">Food-Item</th>
-                        <th class="px-4 py-2">Category</th>
-                        <th class="px-4 py-2">Priority</th>
-                        <th class="px-4 py-2">Assignee</th>
-                        <th class="px-4 py-2">Requested</th>
-                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Order ID</th>
+                        <th class="px-4 py-2">Customer Name</th>
+                        <th class="px-4 py-2">Items</th>
+                        <th class="px-4 py-2">Qty</th>
+                        <th class="px-4 py-2">Total Amount</th>
+                        <th class="px-4 py-2">Delivery Type</th>
+                        <th class="px-4 py-2">Order Status</th>
                         <th class="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
@@ -89,18 +89,15 @@
                     {{-- @forelse($tasks as $index => $task) --}}
                     <tr>
                         <td class="px-4 py-2">
-                            {{-- {{ $tasks->firstItem() + $index }} --}}
-                            <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
-                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
-                            alt="Default user">
+                           001
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
                             {{-- {{ $task->name ?? '-' }} --}}
-                            Sample Food-Item Name
+                            Shibu Khan
                         </td>
                         <td class="px-4 py-2 text-gray-600">
                             {{-- {{ $task->category->name ?? '-' }} --}}
-                            Food-Category Name
+                            Burger, Fries, Coke
                         </td>
                         <td class="px-4 py-2" 
                         {{-- id="priority-badge-{{ $task->id }}" --}}
@@ -117,13 +114,13 @@
                             {{-- {{ $priority[1] }} --}}
                              ">
                              {{-- {{ $priority[0] }} --}}
-                                Medium
+                                2
                             </span>
                         </td>
 
                         <td class="px-4 py-2 text-gray-600">
                             {{-- {{ $task->assignee?->name ?? '-' }} --}}
-                            Shibu
+                            500
                         </td>
                         <td class="px-4 py-2">
                             {{-- @if($task->is_requested)
@@ -142,7 +139,8 @@
                             @else
                             <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Not Requested</span>
                             @endif --}}
-                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Accept/Reject</span>
+                            {{-- <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Accept/Reject</span> --}}
+                            Home Delivery
                         </td>
 
 
@@ -172,10 +170,16 @@
                                 >Pending</option>
                                 <option value="1" 
                                 {{-- @selected($task->status == 1) --}}
-                                >In Progress</option>
+                                >Accepted</option>
+                                 <option value="0" 
+                                {{-- @selected($task->status == 0) --}}
+                                >Preparing</option>
+                                 <option value="0" 
+                                {{-- @selected($task->status == 0) --}}
+                                >Ready</option>
                                 <option value="2" 
                                 {{-- @selected($task->status == 2) --}}
-                                >Completed</option>
+                                >Delivered</option>
                             </select>
                         </td>
 
