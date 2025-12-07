@@ -1,8 +1,7 @@
 @extends('layouts.user.app')
-@section('title','app name'. "| Home")
+@section('title', ($settings->app_name ?? 'Unified Mobile App') . ' | Home')
 
 @push('styles')
-
 @endpush
 
 @section('content')
@@ -12,38 +11,40 @@
         <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
             <div class="absolute top-20 left-10 w-72 h-72 bg-white rounded-full animate-float"></div>
             <div class="absolute bottom-10 right-10 w-96 h-96 bg-white rounded-full animate-float"
-                style="animation-delay: 2s;"></div>
+                 style="animation-delay: 2s;"></div>
         </div>
 
         <!-- Centered Content -->
-        <div class="max-w-3xl mx-auto px-6 text-center relative z-10">
+        <div class="max-w-4xl mx-auto px-6 text-center relative z-10">
             <h2 class="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-                Streamline Your Workflow,
-                <span class="text-primary-400">Maximize Productivity</span>
+                One Unified App for
+                <span class="text-primary-300">Medicine &amp; Food Delivery</span>
             </h2>
             <p class="text-lg md:text-xl mb-8 text-primary-100">
-                {{ $settings->app_name ?? 'Ecommerce' }}
-                helps individuals and teams organize tasks, track progress, and achieve goals
-                faster with intuitive task management tools.
+                {{ $settings->app_name ?? 'Unified Mobile App' }} lets customers order medicines or food from a single
+                mobile experience, with GPS-based discovery, reward coins, and a powerful web admin portal for
+                configuration, reporting, and ads management.
             </p>
 
             <!-- Buttons -->
             <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <a href="{{ route('login') }}"
-                    class="bg-white text-primary-600 px-6 py-4 rounded-lg font-semibold text-center shadow-lg hover:bg-gray-50 transition duration-300 flex items-center justify-center">
-                    <span>Get Started</span>
+                   class="bg-white text-primary-600 px-6 py-4 rounded-lg font-semibold text-center shadow-lg hover:bg-gray-50 transition duration-300 flex items-center justify-center">
+                    <span>Sign In to Continue</span>
                     <i class="fas fa-arrow-right ml-2"></i>
                 </a>
-                <a href="#demo"
-                    class="bg-transparent border-2 border-white text-white px-6 py-4 rounded-lg font-semibold text-center hover:bg-white hover:bg-opacity-10 transition duration-300 flex items-center justify-center">
-                    <i class="fas fa-play-circle mr-2"></i>
-                    <span>Watch Demo</span>
+                <a href="#modules"
+                   class="bg-transparent border-2 border-white text-white px-6 py-4 rounded-lg font-semibold text-center hover:bg-white hover:bg-opacity-10 transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-mobile-alt mr-2"></i>
+                    <span>Explore Modules</span>
                 </a>
             </div>
 
+            <p class="mt-6 text-sm text-primary-100">
+                Customers use one module at a time — Medical Supplier or Food Delivery — ensuring a focused, streamlined ordering flow.
+            </p>
         </div>
     </section>
-
 
     <!-- Stats Section -->
     <section class="py-10 bg-white">
@@ -52,22 +53,24 @@
                 <div class="p-6 rounded-lg hover:bg-gray-50 transition duration-300">
                     <p class="text-3xl md:text-4xl font-bold text-primary-600">
                         {{-- {{$userCount}}+ --}}
+                        1K+
                     </p>
                     <p class="text-gray-600 mt-2">Active Users</p>
                 </div>
                 <div class="p-6 rounded-lg hover:bg-gray-50 transition duration-300">
                     <p class="text-3xl md:text-4xl font-bold text-primary-600">
-                        {{-- {{$taskCount}}+ --}}
+                        {{-- {{$medicineRequestCount}}+ --}}
+                        8K+
                     </p>
-                    <p class="text-gray-600 mt-2">Tasks Completed</p>
+                    <p class="text-gray-600 mt-2">Medicine Requests &amp; Food Orders</p>
                 </div>
                 <div class="p-6 rounded-lg hover:bg-gray-50 transition duration-300">
-                    <p class="text-3xl md:text-4xl font-bold text-primary-600">95%</p>
-                    <p class="text-gray-600 mt-2">Satisfaction Rate</p>
+                    <p class="text-3xl md:text-4xl font-bold text-primary-600">99.9%</p>
+                    <p class="text-gray-600 mt-2">Platform Uptime</p>
                 </div>
                 <div class="p-6 rounded-lg hover:bg-gray-50 transition duration-300">
                     <p class="text-3xl md:text-4xl font-bold text-primary-600">24/7</p>
-                    <p class="text-gray-600 mt-2">Support</p>
+                    <p class="text-gray-600 mt-2">Order &amp; Notification Support</p>
                 </div>
             </div>
         </div>
@@ -78,107 +81,133 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col md:flex-row items-center gap-12">
                 <div class="md:w-1/2">
-                    <h3 class="text-3xl md:text-4xl font-bold mb-6">About 
-                        {{ $settings->app_name ?? 'Ecommerce' }}
+                    <h3 class="text-3xl md:text-4xl font-bold mb-6">
+                        About {{ $settings->app_name ?? 'Unified Mobile App' }}
                     </h3>
                     <p class="text-gray-600 mb-4">
-                        {{ $settings->app_name ?? 'Ecommerce' }} was founded in 2020 with a simple mission: to help teams work more
-                        efficiently by providing intuitive task management solutions.
+                        {{ $settings->app_name ?? 'Unified Mobile App' }} is designed as a unified experience for
+                        retail customers who need reliable medicine supply and on-demand food delivery from one app.
+                        The system is powered by a cloud-hosted backend, a modern mobile interface, and a feature-rich
+                        web admin portal.
                     </p>
                     <p class="text-gray-600 mb-6">
-                        Our platform combines powerful features with an elegant interface, making it easy for teams of
-                        all sizes to organize, track, and complete their projects successfully.
+                        Customers can select either the Medical Supplier or Food Delivery module, place COD orders, earn
+                        reward coins, and receive real-time notifications. Admins configure menus, suppliers, ads,
+                        reports, and payment settings from a central dashboard.
                     </p>
-                    <div class="flex items-center space-x-4">
+                    <div class="flex items-center flex-wrap gap-4">
                         <div class="flex items-center">
                             <div
                                 class="w-10 h-10 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center mr-3">
-                                <i class="fas fa-check"></i>
+                                <i class="fas fa-map-marker-alt"></i>
                             </div>
-                            <span class="font-medium">Award-winning platform</span>
+                            <span class="font-medium">GPS-based supplier &amp; restaurant discovery</span>
                         </div>
                         <div class="flex items-center">
                             <div
                                 class="w-10 h-10 rounded-full bg-primary-100 text-primary-600 flex items-center justify-center mr-3">
-                                <i class="fas fa-check"></i>
+                                <i class="fas fa-coins"></i>
                             </div>
-                            <span class="font-medium">Global team</span>
+                            <span class="font-medium">Unified reward coin system</span>
                         </div>
                     </div>
                 </div>
                 <div class="md:w-1/2">
                     <div class="rounded-xl overflow-hidden shadow-lg">
-                        <img src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1000&q=80"
-                            alt="Team collaborating" class="w-full h-auto">
+                        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1000&q=80"
+                             alt="Delivery and medical services" class="w-full h-auto">
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Services Section -->
-    <section class="py-16 bg-white" id="services">
+    <!-- Modules / Services Section -->
+    <section class="py-16 bg-white" id="modules">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
-                <h3 class="text-3xl md:text-4xl font-bold mb-4">Our Services</h3>
-                <p class="text-gray-600">We offer comprehensive task management solutions tailored to your team's needs
+                <h3 class="text-3xl md:text-4xl font-bold mb-4">Modules &amp; Services</h3>
+                <p class="text-gray-600">
+                    A modular platform combining a Medical Supplier module, a Food Delivery module, and a web admin
+                    portal — all connected through secure APIs.
                 </p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Medical Supplier -->
                 <div class="services-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
                     <div
                         class="w-14 h-14 rounded-lg bg-indigo-100 text-primary-600 flex items-center justify-center mb-4">
-                        <i class="fas fa-cogs text-2xl"></i>
+                        <i class="fas fa-prescription-bottle-alt text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Implementation</h4>
-                    <p class="text-gray-600">Get started quickly with our expert implementation services and onboarding
-                        support.</p>
+                    <h4 class="text-xl font-bold mb-2">Medical Supplier Module</h4>
+                    <p class="text-gray-600">
+                        Customers request medicines, upload prescriptions, and connect with nearby suppliers using
+                        real-time GPS filters and manual location selection.
+                    </p>
                 </div>
 
+                <!-- Food Delivery -->
                 <div class="services-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
                     <div
                         class="w-14 h-14 rounded-lg bg-green-100 text-secondary-600 flex items-center justify-center mb-4">
-                        <i class="fas fa-graduation-cap text-2xl"></i>
+                        <i class="fas fa-hamburger text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Training</h4>
-                    <p class="text-gray-600">Comprehensive training programs for your team to maximize {{ $settings->app_name ?? 'Ecommerce' }}'s potential.</p>
+                    <h4 class="text-xl font-bold mb-2">Food Delivery Module</h4>
+                    <p class="text-gray-600">
+                        A streamlined food ordering flow with menus, cart management, COD payments, and location-based
+                        restaurant discovery.
+                    </p>
                 </div>
 
+                <!-- Web Admin Portal -->
                 <div class="services-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
                     <div class="w-14 h-14 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
-                        <i class="fas fa-headset text-2xl"></i>
+                        <i class="fas fa-desktop text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Support</h4>
-                    <p class="text-gray-600">24/7 customer support to help you resolve issues and answer questions
-                        quickly.</p>
+                    <h4 class="text-xl font-bold mb-2">Web Admin Portal</h4>
+                    <p class="text-gray-600">
+                        Admins manage users, menus, orders, rewards, popup ads, and reports from a modern browser-based
+                        dashboard.
+                    </p>
                 </div>
 
+                <!-- Reward & Ads -->
                 <div class="services-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
                     <div
                         class="w-14 h-14 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center mb-4">
-                        <i class="fas fa-puzzle-piece text-2xl"></i>
+                        <i class="fas fa-bullhorn text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Integration</h4>
-                    <p class="text-gray-600">Seamlessly connect {{ $settings->app_name ?? 'Ecommerce' }} with your existing tools and workflows.</p>
+                    <h4 class="text-xl font-bold mb-2">Rewards &amp; Popup Ads</h4>
+                    <p class="text-gray-600">
+                        Provide L/I coins on completed orders and configure targeted popup ads to boost engagement
+                        across both modules.
+                    </p>
                 </div>
 
+                <!-- Analytics -->
                 <div class="services-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
                     <div
                         class="w-14 h-14 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-4">
                         <i class="fas fa-chart-pie text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Custom Analytics</h4>
-                    <p class="text-gray-600">Get tailored reports and analytics to track your team's performance
-                        metrics.</p>
+                    <h4 class="text-xl font-bold mb-2">Reports &amp; Analytics</h4>
+                    <p class="text-gray-600">
+                        Generate customer and supplier reports, performance summaries, and export insights in CSV/PDF
+                        formats.
+                    </p>
                 </div>
 
+                <!-- Security -->
                 <div class="services-card bg-white rounded-xl shadow-md p-6 border border-gray-100">
                     <div class="w-14 h-14 rounded-lg bg-red-100 text-red-600 flex items-center justify-center mb-4">
                         <i class="fas fa-shield-alt text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Security</h4>
-                    <p class="text-gray-600">Enterprise-grade security solutions to protect your data and workflows.</p>
+                    <h4 class="text-xl font-bold mb-2">Secure by Design</h4>
+                    <p class="text-gray-600">
+                        Encrypted data, role-based access control, and JWT authentication ensure that every interaction
+                        is secure and auditable.
+                    </p>
                 </div>
             </div>
         </div>
@@ -188,63 +217,89 @@
     <section class="py-16 bg-gradient-to-br from-gray-50 to-indigo-50" id="features">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
-                <h3 class="text-3xl md:text-4xl font-bold mb-4">Powerful Features for Team Productivity</h3>
-                <p class="text-gray-600">Everything you need to organize tasks, collaborate with your team, and hit
-                    deadlines</p>
+                <h3 class="text-3xl md:text-4xl font-bold mb-4">Core Features</h3>
+                <p class="text-gray-600">
+                    Shared functionality across Medical and Food modules, designed for performance, usability, and
+                    scalability.
+                </p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Module Selection -->
                 <div class="features-card bg-white rounded-xl p-6 shadow-sm">
                     <div
                         class="w-14 h-14 rounded-lg bg-indigo-100 text-primary-600 flex items-center justify-center mb-4">
-                        <i class="fas fa-tasks text-2xl"></i>
+                        <i class="fas fa-exchange-alt text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Intuitive Task Management</h4>
-                    <p class="text-gray-600">Create, organize, and prioritize tasks with drag-and-drop simplicity.</p>
+                    <h4 class="text-xl font-bold mb-2">Single-Module Ordering</h4>
+                    <p class="text-gray-600">
+                        Users can switch between Medical and Food modules, with the system enforcing one active order at
+                        a time for clarity and safety.
+                    </p>
                 </div>
 
-                {{-- <div class="features-card bg-white rounded-xl p-6 shadow-sm">
-                    <div
-                        class="w-14 h-14 rounded-lg bg-green-100 text-secondary-600 flex items-center justify-center mb-4">
-                        <i class="fas fa-users text-2xl"></i>
-                    </div>
-                    <h4 class="text-xl font-bold mb-2">Team Collaboration</h4>
-                    <p class="text-gray-600">Assign tasks, share files, and communicate in real-time with your team.</p>
-                </div> --}}
-
+                <!-- Location Services -->
                 <div class="features-card bg-white rounded-xl p-6 shadow-sm">
                     <div class="w-14 h-14 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mb-4">
-                        <i class="fas fa-chart-line text-2xl"></i>
+                        <i class="fas fa-location-arrow text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Progress Tracking</h4>
-                    <p class="text-gray-600">Visualize your progress with charts and analytics to stay on target.</p>
+                    <h4 class="text-xl font-bold mb-2">Location-Based Discovery</h4>
+                    <p class="text-gray-600">
+                        Use GPS or manual location selection to instantly discover nearby suppliers and restaurants with
+                        available items.
+                    </p>
                 </div>
 
+                <!-- Notifications -->
                 <div class="features-card bg-white rounded-xl p-6 shadow-sm">
                     <div
                         class="w-14 h-14 rounded-lg bg-yellow-100 text-yellow-600 flex items-center justify-center mb-4">
                         <i class="fas fa-bell text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Smart Reminders</h4>
-                    <p class="text-gray-600">Never miss a deadline with customizable notifications and alerts.</p>
+                    <h4 class="text-xl font-bold mb-2">Smart Notifications</h4>
+                    <p class="text-gray-600">
+                        Receive push and in-app alerts for request approvals, delivery updates, reward coins, and admin
+                        announcements.
+                    </p>
                 </div>
 
-                {{-- <div class="features-card bg-white rounded-xl p-6 shadow-sm">
+                <!-- COD -->
+                <div class="features-card bg-white rounded-xl p-6 shadow-sm">
+                    <div
+                        class="w-14 h-14 rounded-lg bg-green-100 text-secondary-600 flex items-center justify-center mb-4">
+                        <i class="fas fa-hand-holding-usd text-2xl"></i>
+                    </div>
+                    <h4 class="text-xl font-bold mb-2">Cash on Delivery First</h4>
+                    <p class="text-gray-600">
+                        Both modules initially support Cash on Delivery, with a clean architecture prepared for future
+                        online payment gateways.
+                    </p>
+                </div>
+
+                <!-- Chat -->
+                <div class="features-card bg-white rounded-xl p-6 shadow-sm">
                     <div
                         class="w-14 h-14 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center mb-4">
-                        <i class="fas fa-calendar-alt text-2xl"></i>
+                        <i class="fas fa-comments text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Calendar Integration</h4>
-                    <p class="text-gray-600">Sync tasks with your calendar and plan your schedule efficiently.</p>
-                </div> --}}
+                    <h4 class="text-xl font-bold mb-2">In-App Communication</h4>
+                    <p class="text-gray-600">
+                        Real-time chat between customers and suppliers/restaurants helps clarify orders and delivery
+                        details quickly.
+                    </p>
+                </div>
 
-                {{-- <div class="features-card bg-white rounded-xl p-6 shadow-sm">
+                <!-- Invoices -->
+                <div class="features-card bg-white rounded-xl p-6 shadow-sm">
                     <div class="w-14 h-14 rounded-lg bg-red-100 text-red-600 flex items-center justify-center mb-4">
-                        <i class="fas fa-mobile-alt text-2xl"></i>
+                        <i class="fas fa-file-invoice-dollar text-2xl"></i>
                     </div>
-                    <h4 class="text-xl font-bold mb-2">Mobile Access</h4>
-                    <p class="text-gray-600">Manage tasks on the go with our iOS and Android mobile apps.</p>
-                </div> --}}
+                    <h4 class="text-xl font-bold mb-2">Automatic Invoices</h4>
+                    <p class="text-gray-600">
+                        Generate digital invoices for approved and completed orders, shared via email/SMS and accessible
+                        from the user profile.
+                    </p>
+                </div>
             </div>
         </div>
     </section>
@@ -253,8 +308,11 @@
     <section class="py-16 bg-white" id="testimonials">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-3xl mx-auto mb-16">
-                <h3 class="text-3xl md:text-4xl font-bold mb-4">Trusted by Teams Worldwide</h3>
-                <p class="text-gray-600">See what our users say about their experience with {{ $settings->app_name ?? 'Ecommerce' }}</p>
+                <h3 class="text-3xl md:text-4xl font-bold mb-4">Trusted by Healthcare &amp; Food Businesses</h3>
+                <p class="text-gray-600">
+                    Teams across clinics, pharmacies, and restaurants rely on
+                    {{ $settings->app_name ?? 'Unified Mobile App' }} to streamline their operations.
+                </p>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -262,14 +320,17 @@
                     <div class="flex items-center mb-4">
                         <div
                             class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center font-bold text-primary-700 mr-4 testimonial-avatar">
-                            SN</div>
+                            CN
+                        </div>
                         <div>
-                            <h4 class="font-bold">Shikshya Nepal</h4>
-                            <p class="text-gray-500 text-sm">Project Manager</p>
+                            <h4 class="font-bold">Care Nepal Pharmacy</h4>
+                            <p class="text-gray-500 text-sm">Medical Supplier</p>
                         </div>
                     </div>
-                    <p class="text-gray-700">"{{ $settings->app_name ?? 'Ecommerce' }} has transformed how our team works. We're 40%
-                        more productive since we started using it."</p>
+                    <p class="text-gray-700">
+                        "{{ $settings->app_name ?? 'Unified Mobile App' }} made handling prescription requests and
+                        nearby branches effortless. Our response time dropped and customer satisfaction went up."
+                    </p>
                     <div class="mt-4 flex text-yellow-400">
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
@@ -283,14 +344,17 @@
                     <div class="flex items-center mb-4">
                         <div
                             class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center font-bold text-primary-700 mr-4 testimonial-avatar">
-                            CS</div>
+                            UR
+                        </div>
                         <div>
-                            <h4 class="font-bold">Charu Shrestha</h4>
-                            <p class="text-gray-500 text-sm">Marketing Director</p>
+                            <h4 class="font-bold">Urban Restaurants</h4>
+                            <p class="text-gray-500 text-sm">Restaurant Chain</p>
                         </div>
                     </div>
-                    <p class="text-gray-700">"The collaboration features are fantastic. Our team is always on the same
-                        page now."</p>
+                    <p class="text-gray-700">
+                        "The Food module with cart management, COD, and invoices fits perfectly with our operations.
+                        Our customers love the smooth ordering experience."
+                    </p>
                     <div class="mt-4 flex text-yellow-400">
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
@@ -304,14 +368,17 @@
                     <div class="flex items-center mb-4">
                         <div
                             class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center font-bold text-primary-700 mr-4 testimonial-avatar">
-                            SS</div>
+                            AD
+                        </div>
                         <div>
-                            <h4 class="font-bold">Shibu Sharma</h4>
-                            <p class="text-gray-500 text-sm">Software Engineer</p>
+                            <h4 class="font-bold">Admin Dashboard User</h4>
+                            <p class="text-gray-500 text-sm">Platform Admin</p>
                         </div>
                     </div>
-                    <p class="text-gray-700">"I've tried many task managers, but 
-                        {{ $setting->app_name??'Ecommerce' }}strikes the perfect balance between simplicity and power."</p>
+                    <p class="text-gray-700">
+                        "From a single portal we manage users, menus, ads, and reports. The role-based access and
+                        monitoring tools keep everything under control."
+                    </p>
                     <div class="mt-4 flex text-yellow-400">
                         <i class="fas fa-star"></i>
                         <i class="fas fa-star"></i>
@@ -325,6 +392,6 @@
     </section>
 
 @endsection
+
 @push('scripts')
-    
 @endpush

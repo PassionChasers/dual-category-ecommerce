@@ -16,8 +16,8 @@
                         class="text-gray-600 hover:text-primary-600 transition duration-300 font-medium">Home</a>
                     <a href="#about"
                         class="text-gray-600 hover:text-primary-600 transition duration-300 font-medium">About</a>
-                    <a href="#services"
-                        class="text-gray-600 hover:text-primary-600 transition duration-300 font-medium">Services</a>
+                    {{-- <a href="#services"
+                        class="text-gray-600 hover:text-primary-600 transition duration-300 font-medium">Services</a> --}}
                     <a href="#features"
                         class="text-gray-600 hover:text-primary-600 transition duration-300 font-medium">Features</a>
                     <a href="#testimonials"
@@ -50,8 +50,8 @@
                     class="text-gray-600 hover:text-primary-600 transition duration-300 font-medium">Home</a>
                 <a href="#about"
                     class="text-gray-600 hover:text-primary-600 transition duration-300 font-medium">About</a>
-                <a href="#services"
-                    class="text-gray-600 hover:text-primary-600 transition duration-300 font-medium">Services</a>
+                {{-- <a href="#services"
+                    class="text-gray-600 hover:text-primary-600 transition duration-300 font-medium">Services</a> --}}
                 <a href="#features"
                     class="text-gray-600 hover:text-primary-600 transition duration-300 font-medium">Features</a>
                 <a href="#testimonials"

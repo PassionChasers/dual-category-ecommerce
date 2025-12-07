@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\AuditLogController;
@@ -15,8 +16,8 @@ use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\FoodCategoryController;
 use App\Http\Controllers\InstitutionsController;
 use App\Http\Controllers\MedicineOrderController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\MedicineCategoryController;
-use App\Http\Controllers\OrderController;
 
 
 // ---------------------------------
@@ -69,9 +70,10 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('admin.dashboard');
+    // })->name('admin.dashboard');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
     Route::get('logout', [AuthController::class, 'logout'])->name('logout');
 

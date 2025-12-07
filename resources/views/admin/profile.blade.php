@@ -1,3 +1,5 @@
+{{-- CRUD for this page is pending to do as per the requirement of the E-commerce --}}
+
 @extends('layouts.admin.app')
 @section('title', 'Admin | Profile')
 

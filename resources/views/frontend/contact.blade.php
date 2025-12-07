@@ -1,67 +1,150 @@
 @extends('layouts.user.app')
 
-<<<<<<< Updated upstream
-@section('title', 'Contact Us | ' . $setting->app_name)
-
-@section('content')
-<section class="bg-gray-50 min-h-screen py-8 px-6 md:px-20">
-    <!-- Header -->
-    <div class="max-w-4xl mx-auto text-center mb-6">
-        <h1 class="text-4xl font-bold mb-3 text-primary-600">Contact Us</h1>
-        <p class="text-gray-600 max-w-2xl mx-auto">
-            We’d love to hear from you! Fill out the form below or reach out to our support team — we’ll get back to you as soon as possible.
-        </p>
-    </div>
-
-    <!-- Contact Form -->
-    <form action="#" method="POST" class="max-w-2xl mx-auto bg-white p-10 rounded-2xl shadow-md border border-gray-100">
-        @csrf
-        <div class="grid md:grid-cols-2 gap-4 mb-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
-                <input type="text" name="name" placeholder="Your full name" required
-                    class="w-full p-3 rounded-md border border-gray-300 focus:border-primary-500 focus:ring-primary-500 focus:ring-1 outline-none transition">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-                <input type="email" name="email" placeholder="you@example.com" required
-                    class="w-full p-3 rounded-md border border-gray-300 focus:border-primary-500 focus:ring-primary-500 focus:ring-1 outline-none transition">
-            </div>
-        </div>
-        <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-            <input type="text" name="subject" placeholder="Subject"
-                class="w-full p-3 rounded-md border border-gray-300 focus:border-primary-500 focus:ring-primary-500 focus:ring-1 outline-none transition">
-        </div>
-        <div class="mb-6">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
-            <textarea name="message" rows="5" placeholder="Write your message..." required
-                class="w-full p-3 rounded-md border border-gray-300 focus:border-primary-500 focus:ring-primary-500 focus:ring-1 outline-none transition"></textarea>
-        </div>
-        <button type="submit"
-            class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold py-3 rounded-md shadow-md hover:opacity-90 transition duration-300">
-            Send Message
-        </button>
-=======
-@section('title', 'Contact Us | YourAppName')
+@section('title', 'Contact Us | ' . ($settings->app_name ?? 'Ecommerce'))
 
 @section('content')
 <section class="bg-gradient-to-br from-gray-900 to-gray-800 text-white min-h-screen py-16 px-6 md:px-20">
+    <!-- Header -->
     <div class="max-w-4xl mx-auto text-center mb-12">
         <h1 class="text-4xl font-bold mb-4 text-primary-400">Contact Us</h1>
-        <p class="text-gray-400">We’d love to hear from you! Fill out the form below or reach out via email.</p>
+        <p class="text-gray-400 max-w-2xl mx-auto">
+            We’d love to hear from you! Fill out the form below and our team at
+            {{ $settings->app_name ?? 'Ecommerce' }} will get back to you as soon as possible.
+        </p>
     </div>
 
-    <form action="#" method="POST" class="max-w-2xl mx-auto bg-gray-800 p-8 rounded-2xl border border-gray-700 shadow-lg">
-        @csrf
-        <div class="grid md:grid-cols-2 gap-4 mb-4">
-            <input type="text" name="name" placeholder="Full Name" required class="w-full p-3 rounded-md bg-gray-900 border border-gray-700 text-white focus:border-primary-500 focus:ring-primary-500">
-            <input type="email" name="email" placeholder="Email Address" required class="w-full p-3 rounded-md bg-gray-900 border border-gray-700 text-white focus:border-primary-500 focus:ring-primary-500">
+    <div class="grid lg:grid-cols-3 gap-10 max-w-6xl mx-auto">
+        <!-- Contact Form -->
+        <div class="lg:col-span-2">
+            <form
+                action="#"
+                method="POST"
+                class="bg-gray-800 p-8 md:p-10 rounded-2xl border border-gray-700 shadow-xl"
+            >
+                @csrf
+
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">
+                            Full Name
+                        </label>
+                        <input
+                            type="text"
+                            name="name"
+                            placeholder="Your full name"
+                            required
+                            class="w-full p-3 rounded-md bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:border-primary-500 focus:ring-primary-500 focus:ring-1 outline-none transition"
+                        >
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">
+                            Email Address
+                        </label>
+                        <input
+                            type="email"
+                            name="email"
+                            placeholder="you@example.com"
+                            required
+                            class="w-full p-3 rounded-md bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:border-primary-500 focus:ring-primary-500 focus:ring-1 outline-none transition"
+                        >
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-300 mb-1">
+                        Subject
+                    </label>
+                    <input
+                        type="text"
+                        name="subject"
+                        placeholder="How can we help you?"
+                        class="w-full p-3 rounded-md bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:border-primary-500 focus:ring-primary-500 focus:ring-1 outline-none transition"
+                    >
+                </div>
+
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-1">
+                        Message
+                    </label>
+                    <textarea
+                        name="message"
+                        rows="5"
+                        placeholder="Write your message..."
+                        required
+                        class="w-full p-3 rounded-md bg-gray-900 border border-gray-700 text-white placeholder-gray-500 focus:border-primary-500 focus:ring-primary-500 focus:ring-1 outline-none transition resize-none"
+                    ></textarea>
+                </div>
+
+                <button
+                    type="submit"
+                    class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white font-semibold py-3 rounded-md shadow-md hover:opacity-90 transition duration-300"
+                >
+                    Send Message
+                </button>
+            </form>
         </div>
-        <input type="text" name="subject" placeholder="Subject" class="w-full p-3 mb-4 rounded-md bg-gray-900 border border-gray-700 text-white focus:border-primary-500 focus:ring-primary-500">
-        <textarea name="message" rows="5" placeholder="Your Message" required class="w-full p-3 mb-4 rounded-md bg-gray-900 border border-gray-700 text-white focus:border-primary-500 focus:ring-primary-500"></textarea>
-        <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 py-3 rounded-md font-semibold transition">Send Message</button>
->>>>>>> Stashed changes
-    </form>
+
+        <!-- Contact Info -->
+        <div class="space-y-6">
+            <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-lg">
+                <h2 class="text-lg font-semibold mb-3 text-primary-300">Get in Touch</h2>
+                <p class="text-gray-400 text-sm mb-4">
+                    Have questions about orders, products, or your account?
+                    Our support team is ready to assist you.
+                </p>
+
+                <div class="space-y-3 text-sm">
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-envelope mt-1 text-primary-400"></i>
+                        <div>
+                            <p class="text-gray-300 font-medium">Email</p>
+                            <p class="text-gray-400">
+                                {{ $settings->support_email ?? 'support@example.com' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-phone-alt mt-1 text-primary-400"></i>
+                        <div>
+                            <p class="text-gray-300 font-medium">Phone</p>
+                            <p class="text-gray-400">
+                                {{ $settings->support_phone ?? '+977-0000000000' }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-3">
+                        <i class="fas fa-clock mt-1 text-primary-400"></i>
+                        <div>
+                            <p class="text-gray-300 font-medium">Support Hours</p>
+                            <p class="text-gray-400">Sunday – Friday, 9:00 AM – 6:00 PM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-gray-800 border border-gray-700 rounded-2xl p-6 shadow-lg">
+                <h2 class="text-lg font-semibold mb-3 text-primary-300">Need faster help?</h2>
+                <p class="text-gray-400 text-sm mb-4">
+                    You can also check our FAQ or Support Center for instant answers to common questions.
+                </p>
+                <div class="flex flex-col gap-3">
+                    <a
+                        href="{{ route('faq') }}"
+                        class="inline-flex items-center justify-center px-4 py-2 rounded-md border border-primary-500 text-primary-300 text-sm font-medium hover:bg-primary-500/10 transition"
+                    >
+                        <i class="fas fa-question-circle mr-2"></i> View FAQs
+                    </a>
+                    <a
+                        href="{{ route('support') }}"
+                        class="inline-flex items-center justify-center px-4 py-2 rounded-md bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition"
+                    >
+                        <i class="fas fa-headset mr-2"></i> Go to Support Center
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 @endsection

@@ -40,20 +40,6 @@
 
 <body class="bg-gray-50 font-sans">
 
-    <!-- Dummy test toast (no DB) -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'info',
-                title: "Static datas are used in this admin panel demo.",
-                showConfirmButton: false,
-                timer: 2000
-            });
-        });
-    </script>
-
     <div class="md:flex relative md:h-screen overflow-hidden">
 
         @include('layouts.admin.partials.sidebar')
