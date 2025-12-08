@@ -10,7 +10,7 @@
                             <i class="fas fa-shopping-bag"></i>
                         </div>
                         <h2 class="text-white text-xl font-bold">
-                            {{ $settings->app_name ?? 'Ecommerce' }}
+                            {{ $setting->app_name ?? 'Ecommerce' }}
                         </h2>
                     </div>
                     <p class="mb-6">
@@ -20,8 +20,8 @@
                     <!-- Social Links -->
                     <div class="flex space-x-4">
                         {{-- Twitter (X) --}}
-                        @if(!empty($settings->twitter_url))
-                            <a href="{{ $settings->twitter_url }}" target="_blank"
+                        @if(!empty($setting->twitter_url))
+                            <a href="{{ $setting->twitter_url }}" target="_blank"
                                class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary-600 transition duration-300"
                                title="Twitter (X)">
                                 <span class="text-lg font-bold">𝕏</span>
@@ -29,8 +29,8 @@
                         @endif
 
                         {{-- Facebook --}}
-                        @if(!empty($settings->facebook_url))
-                            <a href="{{ $settings->facebook_url }}" target="_blank"
+                        @if(!empty($setting->facebook_url))
+                            <a href="{{ $setting->facebook_url }}" target="_blank"
                                class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary-600 transition duration-300"
                                title="Facebook">
                                 <i class="fab fa-facebook-f"></i>
@@ -38,8 +38,8 @@
                         @endif
 
                         {{-- LinkedIn --}}
-                        @if(!empty($settings->linkedin_url))
-                            <a href="{{ $settings->linkedin_url }}" target="_blank"
+                        @if(!empty($setting->linkedin_url))
+                            <a href="{{ $setting->linkedin_url }}" target="_blank"
                                class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary-600 transition duration-300"
                                title="LinkedIn">
                                 <i class="fab fa-linkedin-in"></i>
@@ -47,8 +47,8 @@
                         @endif
 
                         {{-- Instagram --}}
-                        @if(!empty($settings->instagram_url))
-                            <a href="{{ $settings->instagram_url }}" target="_blank"
+                        @if(!empty($setting->instagram_url))
+                            <a href="{{ $setting->instagram_url }}" target="_blank"
                                class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:text-white hover:bg-primary-600 transition duration-300"
                                title="Instagram">
                                 <i class="fab fa-instagram"></i>
@@ -143,7 +143,7 @@
             </div>
 
             <!-- Newsletter Subscription -->
-            <div class="mt-16 pt-8 border-t border-gray-800">
+            <div class="hidden mt-16 pt-8 border-t border-gray-800">
                 <div class="md:flex md:items-center md:justify-between">
                     <div class="md:w-1/2 mb-6 md:mb-0">
                         <h3 class="text-white text-lg font-semibold mb-2">Stay in the loop</h3>
@@ -171,7 +171,7 @@
 
             <!-- Copyright -->
             <div class="mt-8 pt-8 border-t border-gray-800 text-sm text-center">
-                <p>&copy; {{ date('Y') }} {{ $settings->app_name ?? 'Ecommerce' }}. All rights reserved.</p>
+                <p>&copy; {{ date('Y') }} {{ $setting->app_name ?? 'Ecommerce' }}. All rights reserved.</p>
                 <p class="mt-2">
                     Designed &amp; Developed by
                     <a href="https://passionchasers.com/" class="text-primary-400 hover:text-primary-300">

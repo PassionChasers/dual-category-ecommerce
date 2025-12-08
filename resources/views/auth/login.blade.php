@@ -42,20 +42,20 @@
         <div class="text-center mb-8">
             <div
                 class="mx-auto w-16 h-16 rounded-lg border border-blue-200 flex items-center justify-center mb-4 overflow-hidden">
-                {{-- @if($setting && $setting->app_logo)
+                @if($setting && $setting->app_logo)
                 <img src="{{ asset('storage/' . $setting->app_logo) }}" alt="{{ $setting->app_name }}"
                     class="w-full h-full object-contain">
-                @else --}}
+                @else
                 <img src="{{ asset('storage/images/passionchasers.png') }}" alt="Default Logo"
                     class="w-full h-full object-contain">
-                {{-- @endif --}}
+                @endif
             </div>
 
             <h1 class="text-3xl font-bold text-gray-800">
-                {{-- {{ $setting->app_name }} --}}
-                Ecommerce
+                {{ $setting->app_name }}
+                {{-- Ecommerce --}}
             </h1>
-            <p class="text-gray-600 mt-2">Inter-Office Ecommerce Management System</p>
+            {{-- <p class="text-gray-600 mt-2">Inter-Office Ecommerce Management System</p> --}}
         </div>
 
         <!-- Login Card -->
@@ -151,7 +151,7 @@
 
         <!-- Copyright Notice -->
         <div class="mt-8 text-center text-xs text-gray-500">
-            &copy; {{ date('Y') }} Ecommerce . All rights reserved.
+            &copy; {{ date('Y') }} {{ $setting->app_name}} . All rights reserved.
         </div>
     </div>
 
