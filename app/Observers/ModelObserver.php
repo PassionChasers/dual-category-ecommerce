@@ -38,7 +38,7 @@ class ModelObserver
      */
     protected function log(string $action, $model, $old = null, $new = null): void
     {
-        // 🚫 Prevent infinite recursion for AuditLog itself
+        //  Prevent infinite recursion for AuditLog itself
         if ($model instanceof AuditLog) {
             return;
         }
