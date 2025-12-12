@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
 
     <title>@yield('title')</title>
 
@@ -39,7 +41,22 @@
 </head>
 
 <body class="bg-gray-50 font-sans">
-
+    @if(session('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            });
+    </script>
+    @endif
+    
     <div class="md:flex relative md:h-screen overflow-hidden">
 
         @include('layouts.admin.partials.sidebar')
@@ -56,7 +73,7 @@
     </div>
 
     <!-- Table Pagination Script (kept same) -->
-    <script>
+    {{-- <script>
         const rowsPerPage = 6;
         let currentPage = 1;
 
@@ -106,7 +123,7 @@
         }
 
         if (rows.length) showPage(currentPage);
-    </script>
+    </script> --}}
 
 </body>
 

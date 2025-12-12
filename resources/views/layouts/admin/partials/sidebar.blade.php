@@ -540,6 +540,12 @@
                                         {{ request()->routeIs('product.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                     <i class="fas fa-list mr-2"></i> All Medicines
                                 </a>
+                                <a href="{{ route('admin.medicalstores.index') }}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md
+                                    {{ request()->routeIs('admin.medicalstores.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-tags mr-2"></i> Medicine Stores
+                                </a>
+
                                 <a href="{{ route('product.medicine.category') }}"
                                     class="flex items-center px-2 py-2 text-sm rounded-md
                                     {{ request()->routeIs('product.medicine.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
@@ -773,7 +779,7 @@
             <div class="flex items-center justify-between">
                 <!-- Profile Section -->
                 <div class="flex items-center space-x-3">
-                    <a href="{{route('admin.profile')}}" class="group relative">
+                    <a href="{{route('admin.profile.edit')}}" class="group relative">
 
                         <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
