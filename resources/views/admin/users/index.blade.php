@@ -76,7 +76,7 @@
                             >
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <form method="POST" action="{{ route('user.destroy', $user->id) }}" class="inline delete-form">
+                            <form method="POST" action="{{ route('users.destroy', $user->id) }}" class="inline delete-form">
                                 @csrf @method('DELETE')
                                 <button type="submit" class="text-red-600 hover:text-red-800">
                                     <i class="fas fa-trash"></i>

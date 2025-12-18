@@ -178,6 +178,7 @@ Route::middleware('auth')->group(function () {
     |   - PUT /profile  -> update profile
     |
     */
+    Route::get('/admin.profile', [ProfileController::class, 'index'])->name('admin.profile');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('admin.profile.edit');
     Route::put('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
 
