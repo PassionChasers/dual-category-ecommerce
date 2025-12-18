@@ -1,681 +1,454 @@
 @extends('layouts.admin.app')
-@section('title', 'Admin | All Product')
+@section('title', 'Admin | Medicines')
 
 @push('styles')
-<!-- add any page-specific styles here -->
+<style>
+    .thumb { width:48px; height:48px; object-fit:cover; border-radius:6px; }
+</style>
 @endpush
 
 @section('contents')
-<div class="flex-1 p-4 md:p-6 bg-gray-50">
 
-    {{-- Flash Messages --}}
-    @if(session('success'))
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: "{{ session('success') }}",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
-        });
-    </script>
-    @endif
+<div class="flex-1 overflow-auto bg-gray-50 p-4 md:p-6">
 
-    <div class="mb-6 flex justify-between items-center flex-wrap">
-        <div class="mb-2 md:mb-0">
-            <h2 class="text-2xl font-bold text-gray-800">Product Management</h2>
-            <p class="text-gray-600">Manage products, priorities, and categories.</p>
+    {{-- HEADER --}}
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-semibold text-gray-800">Medicines</h1>
+            <p class="text-gray-500 mt-1">Create, view and manage medicines</p>
         </div>
 
-      
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-            <!-- Search Form -->
-            <form method="GET" class="flex flex-wrap w-full gap-2">
-                <input type="text" name="search" value="" placeholder="Search products..."
-                    class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <select name="status" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
-                    <option value="">All status</option>
-                    <option value="0" >Pending</option>
-                    <option value="1" >In Progress</option>
-                    <option value="2" >Completed</option>
+        {{-- FILTERS --}}
+        <div class="flex flex-col md:flex-row gap-3 items-stretch">
+            <form method="GET" action="{{ route('admin.medicines.index') }}" class="flex gap-2 items-center">
+
+                <input type="text" name="search" placeholder="Search name, brand or generic..."
+                       value="{{ request('search') }}"
+                       class="px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
+
+                <select name="category" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+                    <option value="">All categories</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->MedicineCategoryId }}" {{ request('category') == $cat->MedicineCategoryId ? 'selected' : '' }}>
+                            {{ $cat->Name }}
+                        </option>
+                    @endforeach
                 </select>
-                <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
+
+                <select name="prescription" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+                    <option value="">Prescription</option>
+                    <option value="yes" {{ request('prescription') === 'yes' ? 'selected' : '' }}>Yes</option>
+                    <option value="no" {{ request('prescription') === 'no' ? 'selected' : '' }}>No</option>
+                </select>
+
+                <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+                    <option value="">Status</option>
+                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                </select>
+
+                <select name="sort_by" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+                    <option value="CreatedAt" {{ request('sort_by')==='CreatedAt' ? 'selected' : '' }}>Newest</option>
+                    <option value="Name" {{ request('sort_by')==='Name' ? 'selected' : '' }}>Name</option>
+                    <option value="Price" {{ request('sort_by')==='Price' ? 'selected' : '' }}>Price</option>
+                </select>
+
+                <select name="per_page" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+                    @foreach([5,10,25,50] as $p)
+                        <option value="{{ $p }}" {{ request('per_page',10)==$p ? 'selected':'' }}>{{ $p }}</option>
+                    @endforeach
+                </select>
+
+                <button type="submit" class="px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200">
                     <i class="fas fa-search"></i>
                 </button>
             </form>
 
-            <div class="flex gap-2 mt-2 md:mt-0">
-                <!-- New Task Button -->
-                <button id="new-task-button"
-                    class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap">
-                    <i class="fas fa-plus mr-1"></i> New Product
-                </button>
-
-                <!-- Export Button -->
-                <a href="#"
-                    class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
-                    <i class="fas fa-file-excel mr-1"></i> Export
-                </a>
-            </div>
+            {{-- CREATE BUTTON --}}
+            <button id="open-create-modal"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                <i class="fas fa-plus"></i> New Medicine
+            </button>
         </div>
-
     </div>
 
-    <!-- Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between">
-            <h3 class="text-lg font-medium text-gray-900">Product List</h3>
+    {{-- TABLE --}}
+    <div class="bg-white shadow rounded-lg">
+        <div class="px-6 py-4 border-b">
+            <h2 class="font-semibold text-gray-800">Medicine List</h2>
         </div>
 
         <div class="overflow-x-auto">
-            <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-100">
-                    <tr>
-                        <th class="px-4 py-2">#</th>
-                        <th class="px-4 py-2">Product Name</th>
-                        <th class="px-4 py-2">Category</th>
-                        <th class="px-4 py-2">Priority</th>
-                        <th class="px-4 py-2">Assignee</th>
-                        <th class="px-4 py-2">Requested</th>
-                        <th class="px-4 py-2">Status</th>
-                        <th class="px-4 py-2">Actions</th>
-                    </tr>
+            <table class="min-w-full text-sm divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 py-3 text-left">#</th>
+                    <th class="px-4 py-3 text-left">Image</th>
+                    <th class="px-4 py-3 text-left">Name</th>
+                    <th class="px-4 py-3 text-left">Category</th>
+                    <th class="px-4 py-3 text-left">Price</th>
+                    <th class="px-4 py-3 text-left">Prescription</th>
+                    <th class="px-4 py-3 text-left">Expiry</th>
+                    <th class="px-4 py-3 text-left">Status</th>
+                    <th class="px-4 py-3 text-right">Actions</th>
+                </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
-                    {{-- @forelse($tasks as $index => $task) --}}
+                <tbody class="bg-white divide-y divide-gray-100">
+
+                @forelse($medicines as $i => $m)
                     <tr>
-                        <td class="px-4 py-2">
-                            {{-- {{ $tasks->firstItem() + $index }} --}}
-                            <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
-                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
-                            alt="Default user">
-                        </td>
-                        <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{-- {{ $task->name ?? '-' }} --}}
-                            Sample Product Name
-                        </td>
-                        <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $task->category->name ?? '-' }} --}}
-                            Product Category Name
-                        </td>
-                        <td class="px-4 py-2" 
-                        {{-- id="priority-badge-{{ $task->id }}" --}}
-                        >
-                            {{-- @php
-                            $colors = [
-                            3 => ['Low', 'bg-green-100 text-green-800'],
-                            2 => ['Medium', 'bg-yellow-100 text-yellow-800'],
-                            1 => ['High', 'bg-red-100 text-red-800'],
-                            ];
-                            $priority = $colors[$task->priority_id] ?? ['None', 'bg-gray-100 text-gray-800'];
-                            @endphp --}}
-                            <span class="px-2 py-1 rounded text-xs 
-                            {{-- {{ $priority[1] }} --}}
-                             ">
-                             {{-- {{ $priority[0] }} --}}
-                                Medium
-                            </span>
-                        </td>
+                        <td class="px-4 py-3">{{ $medicines->firstItem() + $i }}</td>
 
-                        <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $task->assignee?->name ?? '-' }} --}}
-                            Shibu
-                        </td>
-                        <td class="px-4 py-2">
-                            {{-- @if($task->is_requested)
-                            @if($task->is_approved == 0)
-                            <div class="flex space-x-2">
-                                <button class="accept-btn px-2 py-1 bg-green-100 text-green-800 rounded text-xs"
-                                    data-id="{{ $task->id }}">Accept</button>
-                                <button class="reject-btn px-2 py-1 bg-red-100 text-red-800 rounded text-xs"
-                                    data-id="{{ $task->id }}">Reject</button>
-                            </div>
-                            @elseif($task->is_approved == 1)
-                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Accepted</span>
-                            @elseif($task->is_approved == 2)
-                            <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">Rejected</span>
-                            @endif
+                        <td class="px-4 py-3">
+                            @if($m->ImageUrl)
+                                <img src="{{ asset('storage/'.$m->ImageUrl) }}" class="thumb">
                             @else
-                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Not Requested</span>
-                            @endif --}}
-                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Accept/Reject</span>
+                                <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
+                            @endif
                         </td>
 
-
-                        {{-- @php
-                        if (!function_exists('statusBadge')) {
-                        function statusBadge($status) {
-                        return match($status) {
-                        0 => '<span class="px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800">Pending</span>',
-                        1 => '<span class="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">In Progress</span>',
-                        2 => '<span class="px-2 py-1 rounded text-xs bg-green-100 text-green-800">Completed</span>',
-                        default => '<span class="px-2 py-1 rounded text-xs bg-gray-100 text-gray-800">Unknown</span>',
-                        };
-                        }
-                        }
-                        @endphp --}}
-
-                        <td class="px-4 py-2">
-                            <select 
-                            {{-- data-task-id="{{ $task->id }}" --}}
-                                class="task-status-select block border rounded-lg px-2 py-1 text-sm
-                                {{-- {{ $task->status == 0 ? 'bg-yellow-100 text-yellow-800' : ($task->status == 1 ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }} --}}
-                                "
-                                {{-- {{ $task->status == 2 ? 'disabled' : '' }} --}}
-                                >
-                                <option value="0" 
-                                {{-- @selected($task->status == 0) --}}
-                                >Pending</option>
-                                <option value="1" 
-                                {{-- @selected($task->status == 1) --}}
-                                >In Progress</option>
-                                <option value="2" 
-                                {{-- @selected($task->status == 2) --}}
-                                >Completed</option>
-                            </select>
+                        <td class="px-4 py-3">
+                            <div class="font-medium text-gray-900">{{ $m->Name }}</div>
+                            <div class="text-xs text-gray-500">{{ $m->BrandName ?: $m->GenericName }}</div>
                         </td>
 
-                        <td class="px-4 py-2 flex space-x-2">
-                            {{-- <button class="view-btn text-gray-600 hover:text-gray-900" data-id="{{ $task->id }}">
-                                <i class="fas fa-eye"></i>
-                            </button> --}}
-                            <a href="#"
-                                class="view-btn text-gray-600 hover:text-gray-900">
-                                <button type="button">
-                                    <i class="fas fa-eye"></i>
-                                </button>
+                        <td class="px-4 py-3">{{ optional($m->category)->Name }}</td>
+                        <td class="px-4 py-3">৳ {{ number_format($m->Price,2) }}</td>
+
+                        <td class="px-4 py-3">{{ $m->PrescriptionRequired ? 'Yes' : 'No' }}</td>
+                        <td class="px-4 py-3">{{ $m->ExpiryDate ?: '-' }}</td>
+
+                        <td class="px-4 py-3">
+                            <button data-id="{{ $m->MedicineId }}"
+                                class="toggle-active px-2 py-1 text-xs rounded-full border font-medium">
+                                {!! $m->IsActive ? '<span class="text-green-700">Active</span>' : '<span class="text-red-700">Inactive</span>' !!}
+                            </button>
+                        </td>
+
+                        <td class="px-4 py-3 text-right space-x-2">
+                            {{-- VIEW --}}
+                            <a href="{{ route('admin.medicines.show', $m->MedicineId) }}"
+                               class="px-3 py-1 text-sm bg-blue-50 rounded hover:bg-blue-100">
+                                View
                             </a>
 
-                            <button class="edit-btn text-indigo-600 hover:text-indigo-800"
-                             {{-- data-id="{{ $task->id }}" --}}
-                             >
-                                <i class="fas fa-edit"></i>
+                            {{-- EDIT --}}
+                            <button class="edit-btn px-3 py-1 text-sm bg-indigo-50 rounded hover:bg-indigo-100"
+                                data-id="{{ $m->MedicineId }}"
+                                data-name="{{ e($m->Name) }}"
+                                data-generic="{{ e($m->GenericName) }}"
+                                data-brand="{{ e($m->BrandName) }}"
+                                data-description="{{ e($m->Description) }}"
+                                data-price="{{ $m->Price }}"
+                                data-mrp="{{ $m->MRP }}"
+                                data-prescription="{{ $m->PrescriptionRequired ? '1' : '0' }}"
+                                data-manufacturer="{{ e($m->Manufacturer) }}"
+                                data-expiry="{{ $m->ExpiryDate }}"
+                                data-dosage="{{ e($m->DosageForm) }}"
+                                data-strength="{{ e($m->Strength) }}"
+                                data-packaging="{{ e($m->Packaging) }}"
+                                data-category="{{ $m->MedicineCategoryId }}"
+                                data-isactive="{{ $m->IsActive ? '1' : '0' }}"
+                                data-image="{{ $m->ImageUrl ? asset('storage/'.$m->ImageUrl) : '' }}">
+                                Edit
                             </button>
-                            <form method="get" action="#" class="inline delete-form">
-                                {{-- @csrf @method('DELETE') --}}
-                                <button type="submit" class="text-red-600 hover:text-red-800">
-                                    <i class="fas fa-trash"></i>
-                                </button>
+
+                            {{-- DELETE --}}
+                            <form action="{{ route('admin.medicines.destroy',$m->MedicineId) }}"
+                                  method="POST" class="inline delete-form">
+                                @csrf @method('DELETE')
+                                <button class="px-3 py-1 text-sm bg-red-50 rounded hover:bg-red-100">Delete</button>
                             </form>
                         </td>
                     </tr>
-                    {{-- @empty
-                    <tr>
-                        <td colspan="7" class="px-4 py-4 text-center text-gray-500">No tasks found.</td>
-                    </tr>
-                    @endforelse --}}
+                @empty
+                    <tr><td colspan="9" class="px-6 py-6 text-center text-gray-500">No medicines found.</td></tr>
+                @endforelse
+
                 </tbody>
             </table>
         </div>
 
-        <div class="flex justify-between items-center mt-4 px-4 py-2 bg-gray-50 border-t border-gray-200 rounded">
-            <!-- Left: Results info -->
-            <div id="resultsInfo" class="text-gray-700 text-sm">
-                Showing 1 to 10 of 20 results
+        {{-- PAGINATION --}}
+        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
+            <div class="text-sm text-gray-600">
+                Showing {{ $medicines->firstItem() }} to {{ $medicines->lastItem() }} of {{ $medicines->total() }} results
             </div>
-        
-            <!-- Right: Pagination buttons -->
-            <div class="flex space-x-3">
-                <button id="prevPageBtn" class="px-3 py-1 border rounded border-gray-600 text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Previous
-                </button>
-                <button id="nextPageBtn" class="px-3 py-1 border rounded border-gray-600 text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Next
-                </button>                
-            </div>
+            <div>{{ $medicines->links() }}</div>
         </div>
-                       
     </div>
 </div>
 
-<!-- Modal -->
-<div id="task-modal" class="fixed z-50 inset-0 overflow-y-auto hidden">
-    <div class="flex items-center justify-center min-h-screen px-4">
-        <!-- Overlay -->
-        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
+{{-- ======================================================================= --}}
+{{-- =========================== FULL MODAL ================================= --}}
+{{-- ======================================================================= --}}
 
-        <!-- Modal content -->
-        <div class="bg-white rounded-2xl shadow-2xl transform transition-all max-w-2xl w-full p-8 relative z-20">
-            <!-- Close Button -->
-            <button type="button" id="close-modal-btn"
-                class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition">
-                <i class="fas fa-times text-xl"></i>
+<div id="medicine-modal"
+     class="fixed inset-0 z-50 hidden items-center justify-center px-4">
+    <div class="fixed inset-0 bg-black/40"></div>
+
+    <div class="bg-white rounded-lg shadow-lg max-w-3xl w-full z-10">
+        <div class="px-6 py-4 border-b flex justify-between items-center">
+            <h3 id="modal-title" class="text-lg font-semibold text-gray-800">New Medicine</h3>
+            <button id="close-modal" class="text-gray-600 hover:text-gray-800">
+                <i class="fas fa-times"></i>
             </button>
-
-            <!-- Modal Title -->
-            <h3 class="text-2xl font-semibold text-gray-900 mb-6" id="modal-title">New Product</h3>
-
-            <!-- Form -->
-            <form id="task-form" method="get" class="space-y-6" action="#">
-                @csrf
-                <input type="hidden" name="_method" id="form-method" value="POST">
-                <input type="hidden" name="task_id" id="task-id">
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Category -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                        <select name="task_category_id" id="task_category_id" class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2
-                                       focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
-                            <option value="">Select Category</option>
-                            {{-- @foreach($categories as $c) --}}
-                            <option value="">aaaa</option>
-                            {{-- @endforeach --}}
-                            <option value="">bbbb</option>
-                            <option value="">cccc</option>
-                            
-                        </select>
-                    </div>
-
-                    <!-- Priority -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
-                        <select name="priority_id" id="priority_id" class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2
-                                       focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
-                            <option value="">Select Priority</option>
-                            {{-- @foreach($priorities as $p)
-                            <option value="{{ $p->id }}">{{ $p->name }}</option>
-                            @endforeach --}}
-                            <option value="">High</option>
-                            <option value="">medium</option>
-                            <option value="">Low</option>
-                        </select>
-                    </div>
-
-                    <!-- Task Name -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Product Name</label>
-                        <input type="text" name="name" id="task-name" class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2
-                             focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
-                    </div>
-
-                    <!-- Due Date -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
-                        <input type="date" name="due_date" id="due_date" class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2
-                                    focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"
-                            min="{{ date('Y-m-d') }}">
-                    </div>
-
-                    <!-- Description -->
-                    <div class="md:col-span-2">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                        <textarea name="description" id="task-desc" rows="4"
-                            class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2
-                            focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition"></textarea>
-                    </div>
-
-                    <!-- Assignee Search -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Assign To</label>
-                        <input type="hidden" name="assigned_to" id="assigned_to">
-                        <input type="text" id="assigned_to_search" placeholder="Search user by name or email" class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2
-                                      focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
-                        <div id="assigned_to_suggestions"
-                            class="bg-white border mt-1 rounded-lg shadow max-h-48 overflow-auto hidden"></div>
-                    </div>
-
-                    <!-- Assigned By -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Assigned By</label>
-                        <input type="text" value=""
-                            class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100" readonly>
-                    </div>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="button" id="cancel-btn"
-                        class="px-5 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition font-medium">
-                        Cancel
-                    </button>
-                    <button type="submit" id="save-btn"
-                        class="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-medium">
-                        Save
-                    </button>
-                </div>
-            </form>
         </div>
+
+        <form id="medicine-form" method="POST" enctype="multipart/form-data"
+              class="px-6 py-6 space-y-4">
+            @csrf
+            <input type="hidden" id="medicine-id" name="id" value="">
+            <input type="hidden" id="method-field" name="_method" value="POST">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium">Name</label>
+                    <input id="field-name" name="Name" type="text" required
+                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Category</label>
+                    <select id="field-category" name="MedicineCategoryId"
+                            class="mt-1 block w-full border rounded-md px-3 py-2">
+                        <option value="">Select category</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->MedicineCategoryId }}">{{ $cat->Name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Brand / Generic</label>
+                    <input id="field-brand" name="BrandName" class="mt-1 block w-full border rounded-md px-3 py-2"
+                           placeholder="Brand">
+                    <input id="field-generic" name="GenericName" class="mt-1 block w-full border rounded-md px-3 py-2"
+                           placeholder="Generic">
+                </div>
+
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium">Description</label>
+                    <textarea id="field-description" name="Description" rows="3"
+                              class="mt-1 block w-full border rounded-md px-3 py-2"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Price</label>
+                    <input id="field-price" name="Price" type="number" step="0.01"
+                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">MRP</label>
+                    <input id="field-mrp" name="MRP" type="number" step="0.01"
+                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Expiry Date</label>
+                    <input id="field-expiry" name="ExpiryDate" type="date"
+                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <input id="field-prescription" name="PrescriptionRequired" type="checkbox"
+                           class="h-4 w-4">
+                    <label class="text-sm">Prescription Required</label>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Manufacturer</label>
+                    <input id="field-manufacturer" name="Manufacturer"
+                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Dosage Form</label>
+                    <input id="field-dosage" name="DosageForm"
+                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Strength</label>
+                    <input id="field-strength" name="Strength"
+                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium">Packaging</label>
+                    <input id="field-packaging" name="Packaging"
+                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                </div>
+
+                {{-- IMAGE --}}
+                <div class="md:col-span-1">
+                    <label class="block text-sm font-medium">Image</label>
+                    <input id="field-image" name="image" type="file" accept="image/*"
+                           class="mt-1 block w-full">
+                    <img id="image-preview" class="mt-2 w-28 h-28 rounded-md object-cover hidden"/>
+                </div>
+
+                {{-- ACTIVE --}}
+                <div class="md:col-span-2 flex items-center gap-2">
+                    <input id="field-isactive" name="IsActive" type="checkbox" value="1"
+                           class="h-4 w-4">
+                    <label class="text-sm">Active</label>
+                </div>
+
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <button type="button" id="modal-cancel"
+                        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                    Cancel
+                </button>
+
+                <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                    Save
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+
 @endsection
 
 @push('scripts')
-{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const modal = document.getElementById('task-modal');
-    const newBtn = document.getElementById('new-task-button');
-    const closeBtn = document.getElementById('close-modal-btn');
-    const cancelBtn = document.getElementById('cancel-btn');
-    const form = document.getElementById('task-form');
-    const modalTitle = document.getElementById('modal-title');
-    const methodInput = document.getElementById('form-method');
-    const taskIdInput = document.getElementById('task-id');
+document.addEventListener('DOMContentLoaded',()=>{
 
-    // inputs
-    const nameInput = document.getElementById('task-name');
-    const descInput = document.getElementById('task-desc');
-    const categorySelect = document.getElementById('task_category_id');
-    const prioritySelect = document.getElementById('priority_id');
-    const assignedToSearch = document.getElementById('assigned_to_search');
-    const assignedToHidden = document.getElementById('assigned_to');
-    const assignedToSuggestions = document.getElementById('assigned_to_suggestions');
-    const dueDateInput = document.getElementById('due_date');
+    const modal=document.getElementById('medicine-modal');
+    const openCreate=document.getElementById('open-create-modal');
+    const modalTitle=document.getElementById('modal-title');
+    const closeModalBtns=[document.getElementById('close-modal'),document.getElementById('modal-cancel')];
 
-    function openModal() { modal.classList.remove('hidden'); }
-    function closeModal() { modal.classList.add('hidden'); }
+    const form=document.getElementById('medicine-form');
+    const methodField=document.getElementById('method-field');
+    const idField=document.getElementById('medicine-id');
 
-    // open modal for create
-    if (newBtn) {
-        newBtn.addEventListener('click', () => {
-            modalTitle.innerText = 'New Task';
-            form.action = "#";
-            methodInput.value = 'POST';
-            taskIdInput.value = '';
-            nameInput.value = '';
-            descInput.value = '';
-            categorySelect.value = '';
-            prioritySelect.value = '';
-            assignedToHidden.value = '';
-            assignedToSearch.value = '';
-            dueDateInput.value = '';
+    const nameField=document.getElementById('field-name');
+    const categoryField=document.getElementById('field-category');
+    const brandField=document.getElementById('field-brand');
+    const genericField=document.getElementById('field-generic');
+    const descField=document.getElementById('field-description');
+    const priceField=document.getElementById('field-price');
+    const mrpField=document.getElementById('field-mrp');
+    const expiryField=document.getElementById('field-expiry');
+    const prescriptionField=document.getElementById('field-prescription');
+    const manufacturerField=document.getElementById('field-manufacturer');
+    const dosageField=document.getElementById('field-dosage');
+    const strengthField=document.getElementById('field-strength');
+    const packagingField=document.getElementById('field-packaging');
+    const isActiveField=document.getElementById('field-isactive');
+    const imageInput=document.getElementById('field-image');
+    const imagePreview=document.getElementById('image-preview');
+
+    const openModal=()=>{ modal.classList.remove('hidden'); modal.classList.add('flex'); };
+    const closeModal=()=>{
+        modal.classList.add('hidden');
+        form.reset();
+        methodField.value="POST";
+        idField.value="";
+        imagePreview.classList.add('hidden');
+        form.action="{{ route('admin.medicines.store') }}";
+    };
+
+    openCreate.addEventListener('click',()=>{
+        modalTitle.innerText="New Medicine";
+        isActiveField.checked=true;
+        openModal();
+    });
+
+    closeModalBtns.forEach(btn=>btn.addEventListener('click',closeModal));
+
+    // EDIT
+    document.querySelectorAll('.edit-btn').forEach(btn=>{
+        btn.addEventListener('click',function(){
+            modalTitle.innerText='Edit Medicine';
+            methodField.value='PUT';
+            idField.value=this.dataset.id;
+
+            nameField.value=this.dataset.name;
+            brandField.value=this.dataset.brand;
+            genericField.value=this.dataset.generic;
+            descField.value=this.dataset.description;
+            priceField.value=this.dataset.price;
+            mrpField.value=this.dataset.mrp;
+            prescriptionField.checked=this.dataset.prescription==='1';
+            manufacturerField.value=this.dataset.manufacturer;
+            expiryField.value=this.dataset.expiry;
+            dosageField.value=this.dataset.dosage;
+            strengthField.value=this.dataset.strength;
+            packagingField.value=this.dataset.packaging;
+            categoryField.value=this.dataset.category;
+            isActiveField.checked=this.dataset.isactive==='1';
+
+            if(this.dataset.image){
+                imagePreview.src=this.dataset.image;
+                imagePreview.classList.remove('hidden');
+            }
+
+            form.action=`/admin/medicines/${this.dataset.id}`;
             openModal();
         });
-    }
-
-    cancelBtn.addEventListener('click', closeModal);
-    closeBtn.addEventListener('click', closeModal);
-
-
-    // handle edit buttons
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-            try {
-                const res = await fetch(`{{ url('/tasks') }}/${id}`, { headers: { 'Accept': 'application/json' } });
-                if (!res.ok) throw new Error('Failed to load');
-                const task = await res.json();
-
-                modalTitle.innerText = 'Edit Task';
-                form.action = `{{ url('/tasks') }}/${task.id}`;
-                methodInput.value = 'PUT';
-                taskIdInput.value = task.id;
-                nameInput.value = task.name ?? '';
-                descInput.value = task.description ?? '';
-                categorySelect.value = task.task_category_id ?? '';
-                prioritySelect.value = task.priority_id ?? '';
-                assignedToHidden.value = task.assigned_to ?? '';
-                assignedToSearch.value = task.assignee ? `${task.assignee.name} <${task.assignee.email}>` : '';
-                    dueDateInput.value = task.due_date ?? '';
-
-
-                Array.from(form.elements).forEach(el => el.disabled = false);
-                openModal();
-            } catch (err) {
-                Swal.fire('Error', 'Unable to load task details', 'error');
-            }
-        });
     });
 
-    // Delete confirmation
-    document.querySelectorAll('.delete-form').forEach(f => {
-        f.addEventListener('submit', function(e) {
+    // PREVIEW IMAGE
+    imageInput.addEventListener('change',()=>{
+        if(imageInput.files[0]){
+            imagePreview.src=URL.createObjectURL(imageInput.files[0]);
+            imagePreview.classList.remove('hidden');
+        }
+    });
+
+    // DELETE CONFIRMATION
+    document.querySelectorAll('.delete-form').forEach(frm=>{
+        frm.addEventListener('submit',function(e){
             e.preventDefault();
+            let form=this;
+
             Swal.fire({
-                title: 'Are you sure?',
-                text: "This action cannot be undone!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#e3342f',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) f.submit();
+                title:'Are you sure?',
+                text:'This will permanently delete the medicine.',
+                icon:'warning',
+                showCancelButton:true,
+                confirmButtonColor:'#e3342f',
+                cancelButtonColor:'#6c757d',
+                confirmButtonText:'Yes, delete'
+            }).then(r=>{
+                if(r.isConfirmed) form.submit();
             });
         });
     });
 
-    // Debounce helper
-    function debounce(fn, delay=300) {
-        let t;
-        return function(...args) {
-            clearTimeout(t);
-            t = setTimeout(() => fn.apply(this, args), delay);
-        };
-    }
-
-    // AJAX user search
-    async function searchUsers(q) {
-        if (!q) return [];
-        const url = new URL("#", location.origin);
-        url.searchParams.set('q', q);
-        const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-        if (!res.ok) return [];
-        return await res.json();
-    }
-
-    function showSuggestions(container, items) {
-        container.innerHTML = '';
-        if (!items.length) {
-            container.classList.add('hidden');
-            return;
-        }
-        items.forEach(user => {
-            const div = document.createElement('div');
-            div.className = 'px-3 py-2 cursor-pointer hover:bg-gray-100';
-            div.innerText = `${user.name} (${user.email})`;
-            div.dataset.id = user.id;
-            container.appendChild(div);
+    // TOGGLE ACTIVE
+    document.querySelectorAll('.toggle-active').forEach(btn=>{
+        btn.addEventListener('click',()=>{
+            fetch(`/admin/medicines/${btn.dataset.id}/toggle-active`,{
+                method:'POST',
+                headers:{
+                    'X-CSRF-TOKEN':'{{ csrf_token() }}',
+                    'Accept':'application/json'
+                }
+            })
+            .then(r=>r.json())
+            .then(j=>{
+                if(j.success){
+                    Swal.fire({
+                        toast:true,position:'top-end',
+                        icon:'success',title:'Status updated',
+                        showConfirmButton:false,timer:1000
+                    }).then(()=>location.reload());
+                }
+            });
         });
-        container.classList.remove('hidden');
-    }
-
-    assignedToSearch.addEventListener('input', debounce(async () => {
-        const users = await searchUsers(assignedToSearch.value);
-        showSuggestions(assignedToSuggestions, users);
-    }));
-
-    assignedToSuggestions.addEventListener('click', e => {
-        if (e.target.dataset.id) {
-            assignedToHidden.value = e.target.dataset.id;
-            assignedToSearch.value = e.target.innerText;
-            assignedToSuggestions.classList.add('hidden');
-        }
     });
+
 });
-</script>
-
-
-<meta name="csrf-token" content="{{ csrf_token() }}">
-
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-    const csrf = document.querySelector('meta[name="csrf-token"]').content;
-
-    const showToast = (icon, message) => {
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: icon,
-            title: message,
-            showConfirmButton: false,
-            timer: 2000
-        });
-    };
-
-    // Helper for dynamic color update
-    const setSelectColor = (select, type, value) => {
-        select.classList.remove('bg-yellow-100','text-yellow-800','bg-blue-100','text-blue-800','bg-green-100','text-green-800','bg-red-100','text-red-800');
-        if (type === 'status') {
-            if (value == 0) select.classList.add('bg-yellow-100','text-yellow-800');
-            else if (value == 1) select.classList.add('bg-blue-100','text-blue-800');
-            else select.classList.add('bg-green-100','text-green-800');
-        } else if (type === 'priority') {
-            if (value == 1) select.classList.add('bg-red-100','text-red-800');
-            else if (value == 2) select.classList.add('bg-yellow-100','text-yellow-800');
-            else select.classList.add('bg-green-100','text-green-800');
-        }
-    };
-
-    // --- STATUS CHANGE ---
-    document.querySelectorAll('.task-status-select').forEach(select => {
-        select.addEventListener('change', async e => {
-            const taskId = select.dataset.taskId;
-            const newStatus = select.value;
-
-            const confirm = await Swal.fire({
-                title: 'Change Status?',
-                text: 'Are you sure you want to update task status?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, update it',
-                cancelButtonText: 'Cancel'
-            });
-
-            if (!confirm.isConfirmed) {
-                window.location.reload();
-                return;
-            }
-
-            try {
-                const res = await fetch(`{{ url('/tasks') }}/${taskId}/status`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': csrf
-                    },
-                    body: JSON.stringify({ status: newStatus })
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || 'Failed');
-
-                showToast('success', data.message);
-                setSelectColor(select, 'status', newStatus);
-                if (Number(newStatus) === 2) select.disabled = true;
-
-            } catch (err) {
-                showToast('error', err.message);
-                window.location.reload();
-            }
-        });
-    });
-
-    // --- PRIORITY CHANGE ---
-    document.querySelectorAll('.task-priority-select').forEach(select => {
-        select.addEventListener('change', async e => {
-            const taskId = select.dataset.taskId;
-            const priorityId = select.value;
-
-            try {
-                const res = await fetch(`{{ url('/tasks') }}/${taskId}/priority`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                        'X-CSRF-TOKEN': csrf
-                    },
-                    body: JSON.stringify({ priority_id: priorityId })
-                });
-
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || 'Failed');
-
-                showToast('success', data.message);
-                setSelectColor(select, 'priority', priorityId);
-            } catch (err) {
-                showToast('error', err.message);
-            }
-        });
-    });
-});
-// Accept or reject
-document.addEventListener('DOMContentLoaded', () => {
-    const csrf = document.querySelector('meta[name="csrf-token"]').content;
-
-    const showToast = (icon, message) => {
-        Swal.fire({
-            toast: true,
-            position: 'top-end',
-            icon: icon,
-            title: message,
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true
-        });
-    };
-
-    // Accept
-    document.querySelectorAll('.accept-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const taskId = btn.dataset.id;
-            const confirmed = await Swal.fire({
-                title: 'Accept Task?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-            });
-            if (!confirmed.isConfirmed) return;
-
-            try {
-                const res = await fetch(`{{ url('/tasks') }}/${taskId}/approve`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrf,
-                        'Accept': 'application/json'
-                    },
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || 'Failed');
-
-                showToast('success', data.message);
-                setTimeout(() => location.reload(), 2000); // reload after toast disappears
-            } catch (err) {
-                showToast('error', err.message);
-            }
-        });
-    });
-
-    // Reject
-    document.querySelectorAll('.reject-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-            const taskId = btn.dataset.id;
-            const confirmed = await Swal.fire({
-                title: 'Reject Task?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-            });
-            if (!confirmed.isConfirmed) return;
-
-            try {
-                const res = await fetch(`{{ url('/tasks') }}/${taskId}/reject`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrf,
-                        'Accept': 'application/json'
-                    },
-                });
-                const data = await res.json();
-                if (!res.ok) throw new Error(data.message || 'Failed');
-
-                showToast('success', data.message);
-                setTimeout(() => location.reload(), 2000); // reload after toast disappears
-            } catch (err) {
-                showToast('error', err.message);
-            }
-        });
-    });
-});
-
-
 </script>
 @endpush

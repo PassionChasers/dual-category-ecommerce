@@ -8,9 +8,6 @@ use App\Models\Medicine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\View;
-use Carbon\Carbon;
-
 
 class MedicineController extends Controller
 {
@@ -161,66 +158,5 @@ class MedicineController extends Controller
         $medicine->save();
 
         return response()->json(['success' => true, 'IsActive' => $medicine->IsActive]);
-    }
-    public function show($id)
-    {
-        $medicine = Medicine::with('category')->findOrFail($id);
-
-        // If your model stores ratings / review counts, adapt these keys.
-        // We'll attempt to provide defaults if fields don't exist.
-        $medicine->AvgRating = $medicine->AvgRating ?? $medicine->avg_rating ?? null;
-        $medicine->TotalReviews = $medicine->TotalReviews ?? $medicine->total_reviews ?? null;
-
-        // Format date strings for display (optional)
-        $medicine->CreatedAtFormatted = $medicine->CreatedAt ? Carbon::parse($medicine->CreatedAt)->toDayDateTimeString() : null;
-        $medicine->UpdatedAtFormatted = $medicine->UpdatedAt ? Carbon::parse($medicine->UpdatedAt)->toDayDateTimeString() : null;
-        $medicine->ExpiryDateFormatted = $medicine->ExpiryDate ? Carbon::parse($medicine->ExpiryDate)->format('Y-m-d') : null;
-
-        return view('admin.products.medicine.show', compact('medicine'));
-    }
-
-    /**
-     * Print-friendly view (opens a simple template suitable for window.print()).
-     */
-    public function print($id)
-    {
-        $medicine = Medicine::with('category')->findOrFail($id);
-
-        $medicine->AvgRating = $medicine->AvgRating ?? $medicine->avg_rating ?? null;
-        $medicine->TotalReviews = $medicine->TotalReviews ?? $medicine->total_reviews ?? null;
-        $medicine->CreatedAtFormatted = $medicine->CreatedAt ? Carbon::parse($medicine->CreatedAt)->toDayDateTimeString() : null;
-        $medicine->UpdatedAtFormatted = $medicine->UpdatedAt ? Carbon::parse($medicine->UpdatedAt)->toDayDateTimeString() : null;
-        $medicine->ExpiryDateFormatted = $medicine->ExpiryDate ? Carbon::parse($medicine->ExpiryDate)->format('Y-m-d') : null;
-
-        // A simplified print layout (same blade but with print-specific class)
-        return view('admin.products.medicine.print', compact('medicine'));
-    }
-
-    /**
-     * Export PDF using barryvdh/laravel-dompdf if available.
-     * If not installed, gracefully redirect back with a message.
-     */
-    public function exportPdf($id)
-    {
-        $medicine = Medicine::with('category')->findOrFail($id);
-
-        $medicine->AvgRating = $medicine->AvgRating ?? $medicine->avg_rating ?? null;
-        $medicine->TotalReviews = $medicine->TotalReviews ?? $medicine->total_reviews ?? null;
-        $medicine->CreatedAtFormatted = $medicine->CreatedAt ? Carbon::parse($medicine->CreatedAt)->toDayDateTimeString() : null;
-        $medicine->UpdatedAtFormatted = $medicine->UpdatedAt ? Carbon::parse($medicine->UpdatedAt)->toDayDateTimeString() : null;
-        $medicine->ExpiryDateFormatted = $medicine->ExpiryDate ? Carbon::parse($medicine->ExpiryDate)->format('Y-m-d') : null;
-
-        // Check if PDF facade exists (barryvdh/laravel-dompdf)
-        if (class_exists(\Barryvdh\DomPDF\Facade\Pdf::class)) {
-            $pdf = \PDF::loadView('admin.products.medicine.pdf', compact('medicine'))
-                ->setPaper('a4', 'portrait');
-
-            $filename = 'medicine-' . ($medicine->MedicineId ?? time()) . '.pdf';
-            return $pdf->download($filename);
-        }
-
-        // fallback: render print view and instruct user
-        return redirect()->route('admin.medicines.show', $id)
-            ->with('error', 'PDF export package not installed. Install barryvdh/laravel-dompdf to enable PDF export.');
     }
 }
