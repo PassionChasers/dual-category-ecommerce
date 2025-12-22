@@ -223,4 +223,6 @@ class MedicineController extends Controller
         return redirect()->route('admin.medicines.show', $id)
             ->with('error', 'PDF export package not installed. Install barryvdh/laravel-dompdf to enable PDF export.');
     }
+
+   
 }

@@ -59,7 +59,6 @@ class CustomerController extends Controller
         $customer->email = $request->input('email');
         $customer->address = $request->input('address');
         $customer->contact_number = $request->input('contact_number');
-        // Update other fields as necessary
         $customer->save();
 
         return redirect()->route('customers.index')->with('success', 'Customer updated successfully.');

@@ -210,8 +210,6 @@
     const addressInput = document.getElementById('customer_address');
     const emailInput = document.getElementById('customer-email');
     const passwordInput = document.getElementById('customer-password');
-    // const designationInput = document.getElementById('customer_contact_number');
-    // const departmentInput = document.getElementById('customer_address');
 
 
     // Open modal for create

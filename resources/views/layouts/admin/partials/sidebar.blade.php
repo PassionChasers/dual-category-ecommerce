@@ -356,14 +356,14 @@
                     </div>
 
                     {{-- Register Business --}}
-                    <div x-data="{ open: {{ request()->routeIs('register.*') ? 'true' : 'false' }} }">
+                    <div x-data="{ open: {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'true' : 'false' }} }">
                         <button @click="open = !open"
                             class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
-                                {{ request()->routeIs('register.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
+                                {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
                             <span class="flex items-center">
                                 <i
                                     class="fas fa-users-cog mr-3 
-                                        {{ request()->routeIs('register.*') ? 'text-indigo-500' : 'text-gray-600' }}">
+                                        {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'text-indigo-500' : 'text-gray-600' }}">
                                 </i>
                                 Register Business
                             </span>
@@ -376,12 +376,12 @@
 
                         <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
                             <a href="#"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('register.restaurant') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-user mr-2"></i> Food/Restaurant
                             </a>
-                            <a href="#"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('register.medicine') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-id-badge mr-2"></i> Medicine
+                            <a href="{{route('admin.medicalstores.list')}}"
+                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.medicalstores.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <i class="fas fa-id-badge mr-2"></i> Medicalstores
                             </a>
                         </div>
                     </div>
@@ -701,9 +701,9 @@
                     <div x-data="{ open: {{ request()->routeIs('users.*') || request()->routeIs('customers.*') ? 'true' : 'false' }} }">
                         <button @click="open = !open"
                             class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
-                                {{ request()->routeIs('users.*') || request()->routeIs('designations.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
+                                {{ request()->routeIs('users.*') || request()->routeIs('customers.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
                             <span class="flex items-center">
-                                <i class="fas fa-users-cog mr-3 {{ request()->routeIs('users.*') || request()->routeIs('designations.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
+                                <i class="fas fa-users-cog mr-3 {{ request()->routeIs('users.*') || request()->routeIs('customers.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
                                 User Management
                             </span>
                             <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
@@ -728,13 +728,13 @@
 
                     
                     {{-- Register the business --}}
-                    <div x-data="{ open: {{ request()->routeIs('register.*') ? 'true' : 'false' }} }">
+                    <div x-data="{ open: {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'true' : 'false' }} }">
                         <button @click="open = !open"
                             class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
-                                {{ request()->routeIs('register.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
+                                {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
                             <span class="flex items-center">
                                 <i
-                                    class="fas fa-users-cog mr-3 {{ request()->routeIs('register.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
+                                    class="fas fa-users-cog mr-3 {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
                                 Register Business
                             </span>
                             <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
@@ -746,12 +746,12 @@
 
                         <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
                             <a href="#"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('registerFood.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-user mr-2"></i> Food/Restaurant
                             </a>
-                            <a href="#"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('registerMedical.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-id-badge mr-2"></i> Medicine
+                            <a href="{{route('admin.medicalstores.list')}}"
+                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.medicalstores.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <i class="fas fa-id-badge mr-2"></i> Medicalstores
                             </a>
 
                         </div>

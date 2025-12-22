@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Restaurant;
 
 class FoodController extends Controller
 {
@@ -60,6 +61,15 @@ class FoodController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Restaurant users or restaurants
+     */
+    public function allResturants()
+    {
+        $restaurants = User::where('role', 'restaurant')->paginate(8);
+         return view('admin.users.restaurants.index', compact('restaurants'));
     }
 
 

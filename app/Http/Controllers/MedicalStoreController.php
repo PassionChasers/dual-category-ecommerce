@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MedicalStoreRequest;
 use App\Models\MedicalStore;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
@@ -111,12 +112,19 @@ class MedicalStoreController extends Controller
 
     public function destroy($id)
     {
+        $medicalStore = User::findOrFail($id);
+        $customer->delete();
+
+        
+
         $store = MedicalStore::findOrFail($id);
         if ($store->ImageUrl && Storage::disk('public')->exists($store->ImageUrl)) {
             Storage::disk('public')->delete($store->ImageUrl);
         }
         $store->delete();
-        return redirect()->route('admin.medicalstores.index')->with('success','Medical store deleted.');
+
+        return redirect()->route('medicalStores.list')->with('success', 'Medical store deleted.');
+        // return redirect()->route('admin.medicalstores.index')->with('success','Medical store deleted.');
     }
 
     public function toggleActive($id)
@@ -125,5 +133,15 @@ class MedicalStoreController extends Controller
         $store->IsActive = !$store->IsActive;
         $store->save();
         return response()->json(['success' => true, 'IsActive' => $store->IsActive]);
+    }
+
+     /**
+     * all medicine stores 
+     */
+    public function allMedicalstores()
+    {
+        $medicalstores = MedicalStore::with('user')->paginate(8);
+
+        return view('admin.users.medical_stores.index', compact('medicalstores'));
     }
 }

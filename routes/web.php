@@ -182,6 +182,18 @@ Route::middleware('auth')->group(function () {
         Route::delete('/destroy/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
     });
 
+      /*
+    |----------------------------------------------------------------------
+    | MedicalStores
+    |----------------------------------------------------------------------
+    */
+    Route::prefix('medicalStores')->name('medicalStores.')->group(function () {
+        
+        Route::post('/store', [MedicalStoreController::class, 'store'])->name('store');
+        Route::put('/update/{customer}', [MedicalStoreController::class, 'update'])->name('update');
+        Route::delete('/destroy/{customer}', [MedicalStoreController::class, 'destroy'])->name('destroy');
+    });
+
     /*
     |----------------------------------------------------------------------
     | Profile
@@ -262,6 +274,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 // use App\Http\Controllers\MedicalStoreController;
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::get('/', [MedicalStoreController::class, 'allMedicalstores'])->name('medicalstores.list');
     Route::get('medical-stores', [MedicalStoreController::class, 'index'])->name('medicalstores.index');
     Route::post('medical-stores', [MedicalStoreController::class, 'store'])->name('medicalstores.store');
     Route::get('medical-stores/{id}', [MedicalStoreController::class, 'show'])->name('medicalstores.show');
