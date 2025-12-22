@@ -8,6 +8,7 @@ use App\Http\Controllers\FoodController;
 use App\Http\Controllers\HomeController;
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProfileController;
 
@@ -106,6 +107,7 @@ Route::middleware('auth')->group(function () {
     |----------------------------------------------------------------------
     */
     Route::get('/products-medicine', [MedicineController::class, 'index'])->name('product.medicine.index');
+    Route::post('/product-medicine',[MedicineController::class, 'create'])->middleware('auth')->name('product.medicine.store');
     Route::get('/medicine-category', [MedicineCategoryController::class, 'index'])->name('product.medicine.category');
 
     /*
@@ -166,6 +168,18 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [UserController::class, 'store'])->name('store');
         Route::put('/update/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/destroy/{user}', [UserController::class, 'destroy'])->name('destroy');
+    });
+
+      /*
+    |----------------------------------------------------------------------
+    | Customers
+    |----------------------------------------------------------------------
+    */
+    Route::prefix('customers')->name('customers.')->group(function () {
+        Route::get('/', [CustomerController::class, 'index'])->name('index');
+        Route::post('/store', [CustomerController::class, 'store'])->name('store');
+        Route::put('/update/{customer}', [CustomerController::class, 'update'])->name('update');
+        Route::delete('/destroy/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
     });
 
     /*

@@ -12,7 +12,8 @@ class CreateMedicineCategoriesTable extends Migration
     public function up(): void
     {
         Schema::create('MedicineCategories', function (Blueprint $table) {
-            $table->bigIncrements('MedicineCategoryId'); // primary key as in your screenshot
+            // $table->bigIncrements('MedicineCategoryId'); // primary key as in your screenshot
+            $table->uuid('MedicineCategoryId')->primary();
             $table->string('Name', 191);
             $table->text('Description')->nullable();
             $table->boolean('IsActive')->default(true);

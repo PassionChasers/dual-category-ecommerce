@@ -75,10 +75,9 @@
             <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2">#id</th>
+                        <th class="px-4 py-2">#</th>
                         <th class="px-4 py-2">Food-Item</th>
                         <th class="px-4 py-2">Category</th>
-                        <th class="px-4 py-2">Priority</th>
                         <th class="px-4 py-2">Assignee</th>
                         <th class="px-4 py-2">Requested</th>
                         <th class="px-4 py-2">Status</th>
@@ -102,25 +101,6 @@
                             {{-- {{ $task->category->name ?? '-' }} --}}
                             Food-Category Name
                         </td>
-                        <td class="px-4 py-2" 
-                        {{-- id="priority-badge-{{ $task->id }}" --}}
-                        >
-                            {{-- @php
-                            $colors = [
-                            3 => ['Low', 'bg-green-100 text-green-800'],
-                            2 => ['Medium', 'bg-yellow-100 text-yellow-800'],
-                            1 => ['High', 'bg-red-100 text-red-800'],
-                            ];
-                            $priority = $colors[$task->priority_id] ?? ['None', 'bg-gray-100 text-gray-800'];
-                            @endphp --}}
-                            <span class="px-2 py-1 rounded text-xs 
-                            {{-- {{ $priority[1] }} --}}
-                             ">
-                             {{-- {{ $priority[0] }} --}}
-                                Medium
-                            </span>
-                        </td>
-
                         <td class="px-4 py-2 text-gray-600">
                             {{-- {{ $task->assignee?->name ?? '-' }} --}}
                             Shibu

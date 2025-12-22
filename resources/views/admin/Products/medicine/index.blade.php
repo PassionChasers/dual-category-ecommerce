@@ -183,8 +183,7 @@
 {{-- =========================== FULL MODAL ================================= --}}
 {{-- ======================================================================= --}}
 
-<div id="medicine-modal"
-     class="fixed inset-0 z-50 hidden items-center justify-center px-4">
+<div id="medicine-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4">
     <div class="fixed inset-0 bg-black/40"></div>
 
     <div class="bg-white rounded-lg shadow-lg max-w-3xl w-full z-10">
@@ -205,14 +204,12 @@
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium">Name</label>
-                    <input id="field-name" name="Name" type="text" required
-                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-name" name="Name" type="text" required class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Category</label>
-                    <select id="field-category" name="MedicineCategoryId"
-                            class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <select id="field-category" name="MedicineCategoryId" class="mt-1 block w-full border rounded-md px-3 py-2">
                         <option value="">Select category</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->MedicineCategoryId }}">{{ $cat->Name }}</option>
@@ -222,91 +219,76 @@
 
                 <div>
                     <label class="block text-sm font-medium">Brand / Generic</label>
-                    <input id="field-brand" name="BrandName" class="mt-1 block w-full border rounded-md px-3 py-2"
-                           placeholder="Brand">
-                    <input id="field-generic" name="GenericName" class="mt-1 block w-full border rounded-md px-3 py-2"
-                           placeholder="Generic">
+                    <input id="field-brand" name="BrandName" class="mt-1 block w-full border rounded-md px-3 py-2" placeholder="Brand">
+                    <input id="field-generic" name="GenericName" class="mt-1 block w-full border rounded-md px-3 py-2" placeholder="Generic">
                 </div>
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium">Description</label>
-                    <textarea id="field-description" name="Description" rows="3"
-                              class="mt-1 block w-full border rounded-md px-3 py-2"></textarea>
+                    <textarea id="field-description" name="Description" rows="3" class="mt-1 block w-full border rounded-md px-3 py-2"></textarea>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Price</label>
-                    <input id="field-price" name="Price" type="number" step="0.01"
-                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-price" name="Price" type="number" step="0.01" class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">MRP</label>
-                    <input id="field-mrp" name="MRP" type="number" step="0.01"
-                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-mrp" name="MRP" type="number" step="0.01" class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Expiry Date</label>
-                    <input id="field-expiry" name="ExpiryDate" type="date"
-                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-expiry" name="ExpiryDate" type="date" class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div class="flex items-center gap-2">
-                    <input id="field-prescription" name="PrescriptionRequired" type="checkbox"
-                           class="h-4 w-4">
+                    <input id="field-prescription" name="PrescriptionRequired" type="checkbox" class="h-4 w-4">
                     <label class="text-sm">Prescription Required</label>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Manufacturer</label>
-                    <input id="field-manufacturer" name="Manufacturer"
-                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-manufacturer" name="Manufacturer" class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Dosage Form</label>
-                    <input id="field-dosage" name="DosageForm"
-                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-dosage" name="DosageForm" class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Strength</label>
-                    <input id="field-strength" name="Strength"
-                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-strength" name="Strength" class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Packaging</label>
-                    <input id="field-packaging" name="Packaging"
-                           class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-packaging" name="Packaging" class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 {{-- IMAGE --}}
                 <div class="md:col-span-1">
                     <label class="block text-sm font-medium">Image</label>
-                    <input id="field-image" name="image" type="file" accept="image/*"
-                           class="mt-1 block w-full">
+                    <input id="field-image" name="image" type="file" accept="image/*" class="mt-1 block w-full">
                     <img id="image-preview" class="mt-2 w-28 h-28 rounded-md object-cover hidden"/>
                 </div>
 
                 {{-- ACTIVE --}}
                 <div class="md:col-span-2 flex items-center gap-2">
-                    <input id="field-isactive" name="IsActive" type="checkbox" value="1"
-                           class="h-4 w-4">
+                    <input id="field-isactive" name="IsActive" type="checkbox" value="1" class="h-4 w-4">
                     <label class="text-sm">Active</label>
                 </div>
 
             </div>
 
             <div class="flex justify-end gap-2">
-                <button type="button" id="modal-cancel"
-                        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                <button type="button" id="modal-cancel" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
                     Cancel
                 </button>
 
-                <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
                     Save
                 </button>
             </div>
@@ -348,7 +330,11 @@ document.addEventListener('DOMContentLoaded',()=>{
     const imageInput=document.getElementById('field-image');
     const imagePreview=document.getElementById('image-preview');
 
-    const openModal=()=>{ modal.classList.remove('hidden'); modal.classList.add('flex'); };
+    const openModal=()=>{
+        modal.classList.remove('hidden'); 
+        modal.classList.add('flex'); 
+    };
+
     const closeModal=()=>{
         modal.classList.add('hidden');
         form.reset();
@@ -358,11 +344,21 @@ document.addEventListener('DOMContentLoaded',()=>{
         form.action="{{ route('admin.medicines.store') }}";
     };
 
-    openCreate.addEventListener('click',()=>{
-        modalTitle.innerText="New Medicine";
-        isActiveField.checked=true;
+    // openCreate.addEventListener('click',()=>{
+    //     modalTitle.innerText="New Medicine";
+    //     isActiveField.checked=true;
+    //     openModal();
+    // });
+
+    openCreate.addEventListener('click', () => {
+        modalTitle.innerText = "New Medicine";
+        isActiveField.checked = true;
+        methodField.value = 'POST';                 // ensure _method is POST
+        idField.value = '';
+        form.action = "{{ route('admin.medicines.store') }}"; // explicitly set store route
         openModal();
     });
+
 
     closeModalBtns.forEach(btn=>btn.addEventListener('click',closeModal));
 
@@ -393,7 +389,8 @@ document.addEventListener('DOMContentLoaded',()=>{
                 imagePreview.classList.remove('hidden');
             }
 
-            form.action=`/admin/medicines/${this.dataset.id}`;
+            // form.action=`/admin/medicines/${this.dataset.id}`;
+            form.action = `{{ url('admin/medicines') }}/${this.dataset.id}`;
             openModal();
         });
     });

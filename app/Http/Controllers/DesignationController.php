@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 
 class DesignationController extends Controller
@@ -11,7 +12,8 @@ class DesignationController extends Controller
      */
     public function index()
     {
-        return view('admin.designations.index');
+        $users = User::paginate(2); // or any number
+        return view('admin.designations.index', compact('users'));
     }
 
     /**

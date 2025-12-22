@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -12,7 +13,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        // $users = User::paginate(2); // or any number
+        $users = User::whereIn('role', ['admin', 'sub_admin', 'restaurant', 'medical_store'])->paginate(8);
         return view('admin.users.index', compact('users'));
     }
 
@@ -29,7 +31,26 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate the input
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+            'designation' => 'required|string',
+            'department' => 'required|string',
+        ]);
+
+        // Create the user
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'designation' => $request->designation,
+            'department' => $request->department,
+        ]);
+
+        // Optional: flash a success message
+        return redirect()->route('users.index')->with('success', 'User created successfully!');
     }
 
     /**

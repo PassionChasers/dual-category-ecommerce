@@ -348,8 +348,8 @@
                                 class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-user mr-2"></i> Admin
                             </a>
-                            <a href="{{ route('designations.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('designations.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <a href="{{ route('customers.index') }}"
+                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('customers.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-id-badge mr-2"></i> Customer
                             </a>
                         </div>
@@ -698,7 +698,7 @@
                         Administration
                     </h3>
 
-                    <div x-data="{ open: {{ request()->routeIs('users.*') || request()->routeIs('designations.*') ? 'true' : 'false' }} }">
+                    <div x-data="{ open: {{ request()->routeIs('users.*') || request()->routeIs('customers.*') ? 'true' : 'false' }} }">
                         <button @click="open = !open"
                             class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
                                 {{ request()->routeIs('users.*') || request()->routeIs('designations.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
@@ -718,8 +718,8 @@
                                 class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-user mr-2"></i> Admin
                             </a>
-                            <a href="{{ route('designations.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('designations.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <a href="{{ route('customers.index') }}"
+                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('customers.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-id-badge mr-2"></i> Customer
                             </a>
 

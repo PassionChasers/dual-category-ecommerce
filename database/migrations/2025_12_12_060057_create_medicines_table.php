@@ -9,11 +9,13 @@ class CreateMedicinesTable extends Migration
     public function up(): void
     {
         Schema::create('Medicines', function (Blueprint $table) {
-            $table->bigIncrements('MedicineId');
-            $table->unsignedBigInteger('MedicalStoreId')->nullable()->index();
-            // MedicineCategoryId type chosen as unsignedBigInteger for compatibility with bigIncrements.
-            // If your categories use UUIDs change this to ->string('MedicineCategoryId',36)->nullable()->index();
-            $table->unsignedBigInteger('MedicineCategoryId')->nullable()->index();
+
+            // Primary Key (UUID)
+            $table->uuid('MedicineId')->primary();
+
+            // Foreign UUIDs
+            $table->uuid('MedicalStoreId')->nullable()->index();
+            $table->uuid('MedicineCategoryId')->nullable()->index();
 
             $table->string('Name', 191);
             $table->string('GenericName', 191)->nullable();
