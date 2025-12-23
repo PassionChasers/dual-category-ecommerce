@@ -29,6 +29,7 @@ use App\Http\Controllers\MedicineOrderController;
 
 use App\Http\Controllers\MedicineCategoryController;
 use App\Http\Controllers\MedicalStoreController;
+use App\Http\Controllers\RestaurantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -282,4 +283,25 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::delete('medical-stores/{id}', [MedicalStoreController::class, 'destroy'])->name('medicalstores.destroy');
 
     Route::post('medical-stores/{id}/toggle-active', [MedicalStoreController::class, 'toggleActive'])->name('medicalstores.toggleActive');
+
+
+    
 });
+
+// use App\Http\Controllers\RestaurantController;
+
+// Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+//     Route::get('/', [RestaurantController::class, 'allRestaurants'])->name('restaurants.list');
+//     Route::get('medical-stores', [RestaurantController::class, 'index'])->name('medicalstores.index');
+//     Route::post('medical-stores', [RestaurantController::class, 'store'])->name('medicalstores.store');
+//     Route::get('medical-stores/{id}', [RestaurantController::class, 'show'])->name('medicalstores.show');
+//     Route::put('medical-stores/{id}', [RestaurantController::class, 'update'])->name('medicalstores.update');
+//     Route::delete('medical-stores/{id}', [RestaurantController::class, 'destroy'])->name('medicalstores.destroy');
+
+//     Route::post('medical-stores/{id}/toggle-active', [RestaurantController::class, 'toggleActive'])->name('medicalstores.toggleActive');
+// });
+
+Route::get('/', [RestaurantController::class, 'allRestaurants'])->middleware('auth')->name('admin.restaurants.list');
+Route::put('admin/restaurants/{id}', [RestaurantController::class, 'update'])->middleware('auth')->name('admin.restaurants.update');
+Route::delete('admin/restaurants/{id}', [RestaurantController::class, 'destroy'])->middleware('auth')->name('admin.restaurants.destroy');
+Route::get('admin/restaurants/{id}', [RestaurantController::class, 'show'])->name('admin.restaurants.show');

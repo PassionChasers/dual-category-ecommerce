@@ -375,7 +375,7 @@
                         </button>
 
                         <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
-                            <a href="#"
+                            <a href="{{route('admin.restaurants.list')}}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-user mr-2"></i> Food/Restaurant
                             </a>
@@ -530,11 +530,11 @@
                                         {{ request()->routeIs('product.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                     <i class="fas fa-list mr-2"></i> All Medicines
                                 </a>
-                                <a href="{{ route('admin.medicalstores.index') }}"
+                                {{-- <a href="{{ route('admin.medicalstores.index') }}"
                                     class="flex items-center px-2 py-2 text-sm rounded-md
                                     {{ request()->routeIs('admin.medicalstores.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                     <i class="fas fa-tags mr-2"></i> Medicine Stores
-                                </a>
+                                </a> --}}
 
                                 <a href="{{ route('product.medicine.category') }}"
                                     class="flex items-center px-2 py-2 text-sm rounded-md
@@ -745,7 +745,7 @@
                         </button>
 
                         <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
-                            <a href="#"
+                            <a href="{{route('admin.restaurants.list')}}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-user mr-2"></i> Food/Restaurant
                             </a>

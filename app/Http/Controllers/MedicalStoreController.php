@@ -78,10 +78,10 @@ class MedicalStoreController extends Controller
     public function show($id)
     {
         $store = MedicalStore::findOrFail($id);
-        return view('admin.medicalstores.show', compact('store'));
+        return view('admin.users.medical_stores.show', compact('store'));
     }
 
-    public function update(MedicalStoreRequest $request, $id)
+    public function update(Request $request, string $id)
     {
         $store = MedicalStore::findOrFail($id);
 
@@ -107,13 +107,13 @@ class MedicalStoreController extends Controller
 
         $store->update($data);
 
-        return redirect()->route('admin.medicalstores.index')->with('success','Medical store updated.');
+        return redirect()->route('admin.medicalstores.list')->with('success','Medical store updated.');
     }
 
     public function destroy($id)
     {
-        $medicalStore = User::findOrFail($id);
-        $customer->delete();
+        // $medicalStore = MedicalStore::findOrFail($id);
+        // $medicalStore->delete();
 
         
 
@@ -123,7 +123,7 @@ class MedicalStoreController extends Controller
         }
         $store->delete();
 
-        return redirect()->route('medicalStores.list')->with('success', 'Medical store deleted.');
+        return redirect()->route('admin.medicalstores.list')->with('success', 'Medical store deleted.');
         // return redirect()->route('admin.medicalstores.index')->with('success','Medical store deleted.');
     }
 

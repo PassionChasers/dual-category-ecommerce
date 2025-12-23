@@ -49,6 +49,17 @@ class Medicine extends Model
         'TotalReviews' => 'integer',
     ];
 
+
+    protected static function booted()
+    {
+        static::saving(function ($model) {
+            if (empty($model->MedicineId)) {
+                $model->MedicineId = (string) Str::uuid();
+            }
+        });
+    }
+
+    
     // optional relations (no foreign key forced)
     public function category()
     {
@@ -59,5 +70,14 @@ class Medicine extends Model
     {
         return $this->belongsTo(\App\Models\MedicalStore::class, 'MedicalStoreId', 'MedicalStoreId');
     }
+
+    // protected static function booted()
+    // {
+    //     static::creating(function ($model) {
+    //         if (empty($model->MedicineId)) {
+    //             $model->MedicineId = (string) Str::uuid();
+    //         }
+    //     });
+    // }
     
 }

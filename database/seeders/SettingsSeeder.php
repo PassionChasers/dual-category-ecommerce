@@ -15,8 +15,8 @@ class SettingsSeeder extends Seeder
         DB::table('settings')->insert([
             // General settings
             'app_name' => 'My Application',
-            'app_logo' => 'uploads/logo.png',
-            'favicon' => 'uploads/favicon.ico',
+            'app_logo' => 'images/passionchasers.png',
+            'favicon' => 'images/passionchasers.png',
             'meta_title' => 'My Application',
             'meta_description' => 'This is a demo application description',
 

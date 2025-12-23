@@ -117,7 +117,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                            <td colspan="5" class="px-6 py-6 text-center text-gray-500">
                                 No categories found.
                             </td>
                         </tr>

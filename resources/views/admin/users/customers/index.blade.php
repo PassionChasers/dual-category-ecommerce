@@ -29,7 +29,7 @@
 
     <!-- Table -->
     <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between">
+        <div class="px-6 py-4 border-b">
             <h3 class="text-lg font-medium text-gray-900">Customer List</h3>
         </div>
         <div class="overflow-x-auto">
@@ -85,7 +85,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="flex justify-between items-center mt-4 px-4 py-2 bg-gray-50 border-t border-gray-200 rounded">
+        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
 
             <!-- Left: Results info -->
             <div id="resultsInfo" class="text-gray-700 text-sm">

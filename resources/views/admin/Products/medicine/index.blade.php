@@ -174,7 +174,9 @@
             <div class="text-sm text-gray-600">
                 Showing {{ $medicines->firstItem() }} to {{ $medicines->lastItem() }} of {{ $medicines->total() }} results
             </div>
-            <div>{{ $medicines->links() }}</div>
+            <div>
+                {{ $medicines->links() }}
+            </div>
         </div>
     </div>
 </div>

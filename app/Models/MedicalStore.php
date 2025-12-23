@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MedicalStore extends Model
 {
-    protected $table = 'MedicalStores';
+    protected $table = 'medicalstores';
 
     // primary key is UUID non-incrementing
     protected $primaryKey = 'MedicalStoreId';

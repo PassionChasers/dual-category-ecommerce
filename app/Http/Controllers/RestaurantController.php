@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class RestaurantController extends Controller
 {
@@ -34,9 +37,10 @@ class RestaurantController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Restaurant $restaurant)
+    public function show($id)
     {
-        //
+        $restaurant = Restaurant::findOrFail($id);
+        return view('admin.users.restaurants.show', compact('restaurant'));
     }
 
     /**
@@ -50,16 +54,56 @@ class RestaurantController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Restaurant $restaurant)
+    public function update(Request $request, string $id)
     {
-        //
+        $restaurant = Restaurant::findOrFail($id);
+
+        $data = $request->only([
+            'Name','Slug','LicenseNumber','GSTIN','PAN','IsActive','IsFeatured',
+            'OpenTime','CloseTime','RadiusKm','DeliveryFee','MinOrder',
+            'Latitude','Longitude','Priority'
+        ]);
+
+        $data['IsActive'] = $request->has('IsActive') ? (bool)$request->get('IsActive') : $restaurant->IsActive;
+        $data['IsFeatured'] = $request->has('IsFeatured') ? (bool)$request->get('IsFeatured') : $restaurant->IsFeatured;
+
+        if ($request->hasFile('image')) {
+            // delete old
+            if ($restaurant->ImageUrl && Storage::disk('public')->exists($restaurant->ImageUrl)) {
+                Storage::disk('public')->delete($restaurant->ImageUrl);
+            }
+            $file = $request->file('image');
+            $filename = Str::slug($data['Name'] ?? $restaurant->Name) . '-' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('restaurants', $filename, 'public');
+            $data['ImageUrl'] = $path;
+        }
+
+        $restaurant->update($data);
+
+        return redirect()->route('admin.restaurants.list')->with('success','Restaurants updated.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Restaurant $restaurant)
+    public function destroy(string $id)
     {
-        //
+        $restaurant = Restaurant::findOrFail($id);
+        if ($restaurant->ImageUrl && Storage::disk('public')->exists($restaurant->ImageUrl)) {
+            Storage::disk('public')->delete($restaurant->ImageUrl);
+        }
+        $restaurant->delete();
+
+        return redirect()->route('admin.restaurants.list')->with('success', 'Restaurant deleted.');
+    }
+
+         /**
+     * all restaurant 
+     */
+    public function allRestaurants()
+    {
+        $restaurants = Restaurant::with('user')->paginate(8);
+
+        return view('admin.users.restaurants.index', compact('restaurants'));
     }
 }

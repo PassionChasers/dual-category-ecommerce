@@ -10,10 +10,34 @@
             <h2 class="text-2xl font-bold text-gray-800">Medicalstores Management</h2>
             <p class="text-gray-600">Manage all Medical Stores</p>
         </div>
+
+         <div class="flex flex-col md:flex-row gap-3 items-stretch">
+            <form method="GET" action="{{ route('admin.medicalstores.index') }}" class="flex gap-2 items-center">
+                <input name="search" placeholder="Search name, license, gstin or pan" value="{{ request('search') }}" class="px-3 py-2 border rounded-md" />
+                <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+                    <option value="">All status</option>
+                    <option value="active" {{ request('status')=='active' ? 'selected':'' }}>Active</option>
+                    <option value="inactive" {{ request('status')=='inactive' ? 'selected':'' }}>Inactive</option>
+                </select>
+                <select name="per_page" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+                    @foreach([5,10,25,50] as $p)
+                        <option value="{{ $p }}" {{ (int)request('per_page',10)===$p ? 'selected':'' }}>{{ $p }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200"><i class="fas fa-search"></i></button>
+            </form>
+
+            <button id="open-create-modal" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                <i class="fas fa-plus"></i> New Store
+            </button>
+        </div>
     </div>
 
     {{-- TABLE --}}
     <div class="bg-white shadow rounded-lg overflow-hidden">
+         <div class="px-6 py-4 border-b">
+            <h2 class="font-semibold text-gray-800">Medicalstores List</h2>
+        </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
@@ -58,31 +82,73 @@
                             @endif
                         </td>
 
-                        <td class="px-4 py-2 text-gray-600">
-                            <button class="edit-btn text-indigo-600 hover:text-indigo-800" 
-                                data-id="{{ $store->MedicalStoreId }}"
-                                data-name="{{ $store->Name }}"
-                                data-license="{{ $store->LicenseNumber }}"
-                                data-radius="{{ $store->RadiusKm }}"
-                                data-fee="{{ $store->DeliveryFee }}"
-                                data-min="{{ $store->MinOrder }}"
-                                data-active="{{ $store->IsActive }}"
-                                data-featured="{{ $store->IsFeatured }}"
-                            >
-                                <i class="fas fa-edit"></i>
-                            </button>
+                        <td class="px-4 py-4 flex text-gray-600">
+                             <div class="mx-2 my-2">
+                                <a href="{{ route('admin.medicalstores.show', $store->MedicalStoreId) }}">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                {{-- <button class="view-btn text-indigo-600"
+                                    data-id="{{ $store->MedicalStoreId }}"
+                                    data-name="{{ $store->Name }}"
+                                    data-license="{{ $store->LicenseNumber }}"
+                                    data-gstin="{{ $store->GSTIN }}"
+                                    data-pan="{{ $store->PAN }}"
+                                    data-open="{{ $store->OpenTime }}"
+                                    data-close="{{ $store->CloseTime }}"
+                                    data-delivery="{{ $store->DeliveryFee }}"
+                                    data-min="{{ $store->MinOrder }}"
+                                    data-lat="{{ $store->Latitude }}"
+                                    data-lng="{{ $store->Longitude }}"
+                                    data-priority="{{ $store->Priority }}"
+                                    data-active="{{ $store->IsActive }}"
+                                    data-featured="{{ $store->IsFeatured }}"
+                                    data-image="{{ $store->image }}"
+                                > 
+                                </button> --}}
+                                {{-- <button
+                                    class="view-store-btn px-3 py-1 bg-blue-600 text-white rounded"
+                                    data-store='@json($store)'
+                                >
+                                    <i class="fas fa-eye"></i>
+                                </button> --}}
+                             </div>
 
-                            <form method="POST" action="{{ route('admin.medicalstores.destroy', $store->MedicalStoreId) }}" class="inline delete-form">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-800">
-                                    <i class="fas fa-trash"></i>
+                            <div class="mx-2 my-2">
+                                <button class="edit-btn text-indigo-600"
+                                    data-id="{{ $store->MedicalStoreId }}"
+                                    data-name="{{ $store->Name }}"
+                                    data-license="{{ $store->LicenseNumber }}"
+                                    data-gstin="{{ $store->GSTIN }}"
+                                    data-pan="{{ $store->PAN }}"
+                                    data-open="{{ $store->OpenTime }}"
+                                    data-close="{{ $store->CloseTime }}"
+                                    data-delivery="{{ $store->DeliveryFee }}"
+                                    data-min="{{ $store->MinOrder }}"
+                                    data-lat="{{ $store->Latitude }}"
+                                    data-lng="{{ $store->Longitude }}"
+                                    data-priority="{{ $store->Priority }}"
+                                    data-active="{{ $store->IsActive }}"
+                                    data-featured="{{ $store->IsFeatured }}"
+                                    data-image="{{ $store->image }}"
+                                >
+                                    <i class="fas fa-edit"></i>
                                 </button>
-                            </form>
+                            </div>
+
+
+                            <div class="mx-2 my-2">
+                                <form method="POST" action="{{ route('admin.medicalstores.destroy', $store->MedicalStoreId) }}" class="inline delete-form">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="10" class="text-center py-4">No medical stores found.</td>
+                        <td colspan="10" class="text-center py-6 px-6">No medical stores found.</td>
                     </tr>
                 @endforelse
                 </tbody>
@@ -90,115 +156,342 @@
         </div>
 
         {{-- PAGINATION --}}
-        <div class="p-4 bg-gray-50">
-            {{ $medicalstores->links() }}
+        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
+            <div class="p-4 bg-gray-50">
+                {{ $medicalstores->links() }}
+            </div>
         </div>
     </div>
 </div>
 
-{{-- MODAL --}}
+{{-- MODAL FOR EDIT --}}
 <div id="medicalstore-modal" class="fixed inset-0 hidden z-50">
     <div class="flex items-center justify-center min-h-screen bg-black bg-opacity-40">
-        <div class="bg-white p-6 rounded-lg w-full max-w-lg relative">
+        <div class="bg-white p-6 rounded-lg w-full max-w-3xl relative">
 
-            <button id="close-modal-btn" class="absolute top-2 right-2 text-gray-500">
+            <button id="close-modal-btn" class="absolute top-3 right-3 text-gray-500">
                 <i class="fas fa-times"></i>
             </button>
 
             <h3 class="text-lg font-semibold mb-4">Edit Medical Store</h3>
 
-            <form id="medicalstore-form" method="POST">
+            <form id="medicalstore-form" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
-                @method('PUT')
+                <input type="hidden" id="method-field" name="_method" value="PUT">
 
-                <div class="mb-3">
-                    <label>Store Name</label>
-                    <input type="text" name="Name" id="store-name" class="w-full border rounded px-3 py-2">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div>
+                        <label class="block text-sm font-medium">Name</label>
+                        <input id="field-name" name="Name" type="text" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">License Number</label>
+                        <input id="field-license" name="LicenseNumber" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">GSTIN</label>
+                        <input id="field-gstin" name="GSTIN" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">PAN</label>
+                        <input id="field-pan" name="PAN" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Open Time</label>
+                        <input id="field-open" name="OpenTime" type="time" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Close Time</label>
+                        <input id="field-close" name="CloseTime" type="time" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Delivery Fee</label>
+                        <input id="field-delivery" name="DeliveryFee" type="number" step="0.01" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Min Order</label>
+                        <input id="field-minorder" name="MinOrder" type="number" step="0.01" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Latitude</label>
+                        <input id="field-lat" name="Latitude" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Longitude</label>
+                        <input id="field-lng" name="Longitude" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Priority</label>
+                        <input id="field-priority" name="Priority" type="number" value="0" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Image</label>
+                        <input id="field-image" name="image" type="file" accept="image/*">
+                        <img id="image-preview" class="mt-2 w-28 h-28 rounded object-cover hidden">
+                    </div>
                 </div>
 
-                <div class="mb-3">
-                    <label>License Number</label>
-                    <input type="text" name="LicenseNumber" id="store-license" class="w-full border rounded px-3 py-2">
-                </div>
-
-                <div class="mb-3">
-                    <label>Delivery Radius (KM)</label>
-                    <input type="number" step="0.1" name="RadiusKm" id="store-radius" class="w-full border rounded px-3 py-2">
-                </div>
-
-                <div class="mb-3">
-                    <label>Delivery Fee</label>
-                    <input type="number" step="0.01" name="DeliveryFee" id="store-fee" class="w-full border rounded px-3 py-2">
-                </div>
-
-                <div class="mb-3">
-                    <label>Min Order</label>
-                    <input type="number" step="0.01" name="MinOrder" id="store-min" class="w-full border rounded px-3 py-2">
-                </div>
-
-                <div class="mb-3 flex gap-4">
-                    <label>
-                        <input type="checkbox" name="IsActive" id="store-active"> Active
+                <div class="flex gap-6 mt-2">
+                    <label class="flex items-center gap-2">
+                        <input id="field-isactive" name="IsActive" type="checkbox"> Active
                     </label>
-                    <label>
-                        <input type="checkbox" name="IsFeatured" id="store-featured"> Featured
+
+                    <label class="flex items-center gap-2">
+                        <input id="field-isfeatured" name="IsFeatured" type="checkbox"> Featured
                     </label>
                 </div>
 
-                <div class="text-right">
-                    <button type="button" id="cancel-btn" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Update</button>
+                <div class="flex justify-end gap-2">
+                    <button type="button" id="modal-cancel" class="px-4 py-2 bg-gray-200 rounded">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">
+                        Update
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
+
+{{-- ---------------------------
+MODAL FOR VIEW DETAILS OF MEDICALSTORE 
+----------------------------------------}}
+
+{{-- <div id="medicalstoreDetails-modal" class="fixed inset-0 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen bg-black bg-opacity-40">
+        <div class="bg-white p-6 rounded-lg w-full max-w-3xl relative">
+
+            <!-- CLOSE BUTTON -->
+            <button id="close-medicalstoresDetailsModal-btn" class="absolute top-3 right-3 text-gray-500">
+                <i class="fas fa-times"></i>
+            </button>
+
+            <!-- HEADER -->
+            <div class="flex justify-between items-center w-full mb-4">
+                <div>
+                    <h1 id="storeName" class="text-2xl font-semibold text-gray-800"></h1>
+                    <p class="text-gray-500 mt-1">Store details and metadata</p>
+                </div>
+
+                <div class="no-print flex gap-2 items-center">
+                    <a href="{{ route('admin.medicalstores.list') }}" class="p-2 bg-gray-100 rounded hover:bg-gray-200">Back</a>
+                    <button id="printBtn" class="p-2 bg-blue-600 text-white rounded hover:bg-blue-700">Print</button>
+                </div>
+            </div>
+
+            <!-- BODY -->
+            <div class="flex gap-6">
+                <div>
+                    <img id="storeImage" class="w-40 h-40 object-cover rounded bg-gray-100" />
+                </div>
+
+                <div class="flex-1">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <div class="text-sm text-gray-500">License</div>
+                            <div id="license"></div>
+                        </div>
+
+                        <div>
+                            <div class="text-sm text-gray-500">GSTIN</div>
+                            <div id="gstin"></div>
+                        </div>
+
+                        <div>
+                            <div class="text-sm text-gray-500">Delivery Fee</div>
+                            <div id="deliveryFee"></div>
+                        </div>
+
+                        <div>
+                            <div class="text-sm text-gray-500">Min Order</div>
+                            <div id="minOrder"></div>
+                        </div>
+
+                        <div>
+                            <div class="text-sm text-gray-500">Open Time</div>
+                            <div id="openTime"></div>
+                        </div>
+
+                        <div>
+                            <div class="text-sm text-gray-500">Close Time</div>
+                            <div id="closeTime"></div>
+                        </div>
+
+                        <div>
+                            <div class="text-sm text-gray-500">Status</div>
+                            <div id="status"></div>
+                        </div>
+
+                        <div>
+                            <div class="text-sm text-gray-500">Coordinates</div>
+                            <div id="coordinates"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t flex justify-between items-center">
+                <div class="text-sm text-gray-600">
+                    Created: {{ optional($store->CreatedAt ?? $store->created_at)->format('Y-m-d H:i') }}
+                </div>
+
+                <div class="no-print">
+                    <a href="{{ route('admin.medicalstores.list') }}" class="p-2 bg-gray-100 rounded hover:bg-gray-200">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> --}}
+
+
+
+
 {{-- SCRIPT --}}
 <script>
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.onclick = () => {
 
+            const form = document.getElementById('medicalstore-form');
+            form.action = `/admin/medical-stores/${btn.dataset.id}`;
 
-// for edit modal
-document.querySelectorAll('.edit-btn').forEach(btn => {
-    btn.onclick = () => {
-        document.getElementById('medicalstore-form').action =
-            `/admin/medicalstores/${btn.dataset.id}`;
+            document.getElementById('field-name').value = btn.dataset.name || '';
+            document.getElementById('field-license').value = btn.dataset.license || '';
+            document.getElementById('field-gstin').value = btn.dataset.gstin || '';
+            document.getElementById('field-pan').value = btn.dataset.pan || '';
+            document.getElementById('field-open').value = btn.dataset.open || '';
+            document.getElementById('field-close').value = btn.dataset.close || '';
+            document.getElementById('field-delivery').value = btn.dataset.delivery || '';
+            document.getElementById('field-minorder').value = btn.dataset.min || '';
+            document.getElementById('field-lat').value = btn.dataset.lat || '';
+            document.getElementById('field-lng').value = btn.dataset.lng || '';
+            document.getElementById('field-priority').value = btn.dataset.priority || 0;
 
-        document.getElementById('store-name').value = btn.dataset.name;
-        document.getElementById('store-license').value = btn.dataset.license;
-        document.getElementById('store-radius').value = btn.dataset.radius;
-        document.getElementById('store-fee').value = btn.dataset.fee;
-        document.getElementById('store-min').value = btn.dataset.min;
+            document.getElementById('field-isactive').checked = btn.dataset.active == 1;
+            document.getElementById('field-isfeatured').checked = btn.dataset.featured == 1;
 
-        document.getElementById('store-active').checked = btn.dataset.active == 1;
-        document.getElementById('store-featured').checked = btn.dataset.featured == 1;
+            const preview = document.getElementById('image-preview');
+            if (btn.dataset.image) {
+                preview.src = `/storage/${btn.dataset.image}`;
+                preview.classList.remove('hidden');
+            } else {
+                preview.classList.add('hidden');
+            }
 
-        document.getElementById('medicalstore-modal').classList.remove('hidden');
+            document.getElementById('medicalstore-modal').classList.remove('hidden');
+        };
+    });
+
+    document.getElementById('modal-cancel').onclick =
+    document.getElementById('close-modal-btn').onclick = () => {
+        document.getElementById('medicalstore-modal').classList.add('hidden');
     };
-});
 
-document.getElementById('cancel-btn').onclick =
-document.getElementById('close-modal-btn').onclick = () => {
-    document.getElementById('medicalstore-modal').classList.add('hidden');
-};
+    // Image preview on select
+    document.getElementById('field-image').addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const preview = document.getElementById('image-preview');
+                preview.src = reader.result;
+                preview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
 
-// SweetAlert for delete confirmation
-document.querySelectorAll('.delete-form').forEach(f => {
-    f.addEventListener('submit', function(e) {
-        e.preventDefault();
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "This action cannot be undone!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#e3342f',
-            cancelButtonColor: '#6c757d',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.isConfirmed) f.submit();
+
+    // SweetAlert for delete confirmation
+    document.querySelectorAll('.delete-form').forEach(f => {
+        f.addEventListener('submit', function(e) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e3342f',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) f.submit();
+            });
         });
     });
+</script>
+
+
+{{-- for medicalstores details --}}
+{{-- <script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    const modal = document.getElementById('medicalstoreDetails-modal');
+    const closeBtn = document.getElementById('close-medicalstoresDetailsModal-btn');
+
+    document.querySelectorAll('.view-store-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+
+            const store = JSON.parse(this.dataset.store);
+
+            // BASIC
+            document.getElementById('storeName').innerText = store.Name ?? '-';
+            document.getElementById('license').innerText = store.LicenseNumber ?? '-';
+            document.getElementById('gstin').innerText = store.GSTIN ?? '-';
+
+            // PRICING
+            document.getElementById('deliveryFee').innerText =
+                store.DeliveryFee ? '৳' + Number(store.DeliveryFee).toFixed(2) : '-';
+
+            document.getElementById('minOrder').innerText =
+                store.MinOrder ? '৳' + Number(store.MinOrder).toFixed(2) : '-';
+
+            // TIME
+            document.getElementById('openTime').innerText = store.OpenTime ?? '-';
+            document.getElementById('closeTime').innerText = store.CloseTime ?? '-';
+
+            // STATUS
+            document.getElementById('status').innerHTML =
+                store.IsActive
+                    ? '<span class="text-green-600">Active</span>'
+                    : '<span class="text-red-600">Inactive</span>';
+
+            // LOCATION
+            document.getElementById('coordinates').innerText =
+                (store.Latitude && store.Longitude)
+                    ? store.Latitude + ', ' + store.Longitude
+                    : '-';
+
+            // IMAGE
+            const img = document.getElementById('storeImage');
+            img.src = store.ImageUrl
+                ? `/storage/${store.ImageUrl}`
+                : '/images/no-image.png';
+
+            modal.classList.remove('hidden');
+        });
+    });
+
+    closeBtn.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
+
 });
 </script>
+
+ --}}
+
 
 @endsection

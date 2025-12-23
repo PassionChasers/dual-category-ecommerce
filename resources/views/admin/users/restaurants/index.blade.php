@@ -1,241 +1,321 @@
 @extends('layouts.admin.app')
-@section('title', 'Admin | User Management')
-
-@push('styles')
-@endpush
+@section('title', 'Admin | Restaurants Management')
 
 @section('contents')
 <div class="flex-1 p-4 md:p-6 bg-gray-50">
+
+    {{-- HEADER --}}
     <div class="mb-6 flex justify-between items-center flex-wrap">
-        <div class="mb-2 md:mb-0">
-            <h2 class="text-2xl font-bold text-gray-800">User Management</h2>
-            <p class="text-gray-600">Manage all users and their designations</p>
+        <div>
+            <h2 class="text-2xl font-bold text-gray-800">Restaurants Management</h2>
+            <p class="text-gray-600">Manage all Restaurants.</p>
         </div>
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
-            <form method="GET" class="flex flex-wrap w-full gap-2">
-                <input type="text" name="search" 
-                {{-- value="{{ $search }}"  --}}
-                placeholder="Search users..."
-                    class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
-                    <i class="fas fa-search"></i>
-                </button>
+
+         <div class="flex flex-col md:flex-row gap-3 items-stretch">
+            <form method="GET" action="{{ route('admin.medicalstores.index') }}" class="flex gap-2 items-center">
+                <input name="search" placeholder="Search name, license, gstin or pan" value="{{ request('search') }}" class="px-3 py-2 border rounded-md" />
+                <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+                    <option value="">All status</option>
+                    <option value="active" {{ request('status')=='active' ? 'selected':'' }}>Active</option>
+                    <option value="inactive" {{ request('status')=='inactive' ? 'selected':'' }}>Inactive</option>
+                </select>
+                <select name="per_page" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+                    @foreach([5,10,25,50] as $p)
+                        <option value="{{ $p }}" {{ (int)request('per_page',10)===$p ? 'selected':'' }}>{{ $p }}</option>
+                    @endforeach
+                </select>
+                <button type="submit" class="px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200"><i class="fas fa-search"></i></button>
             </form>
-            <button id="new-user-button" class="iw-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
-                <i class="fas fa-plus mr-1"></i> New User
+
+            <button id="open-create-modal" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                <i class="fas fa-plus"></i> New Restaurant
             </button>
         </div>
     </div>
 
-    <!-- Table -->
+    {{-- TABLE --}}
     <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between">
-            <h3 class="text-lg font-medium text-gray-900">User List</h3>
+         <div class="px-6 py-4 border-b">
+            <h2 class="font-semibold text-gray-800">Restaurants List</h2>
         </div>
         <div class="overflow-x-auto">
-            <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Id</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Name</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Email</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Designation</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Department</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-700">ID</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Restaurant Name</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Owner</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-700">License</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Radius (KM)</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Delivery Fee</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Min Order</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Status</th>
+                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Featured</th>
                         <th class="px-4 py-2 text-left font-semibold text-gray-700">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="userTableBody" class="divide-y divide-gray-200">
-                    @forelse($users as $user)
+
+                <tbody class="divide-y divide-gray-200">
+                @forelse($restaurants as $store)
                     <tr>
-                        <td class="px-4 py-2">
-                            {{$user->id}}
-                        </td>
-                        <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{ $user->name }}
-                        </td>
+                        <td class="px-4 py-2">{{ $store->RestaurantId }}</td>
+                        <td class="px-4 py-2 font-semibold text-gray-800">{{ $store->Name }}</td>
+                        <td class="px-4 py-2 font-semibold text-gray-800">{{ $store->user->name ?? '-' }}</td>
+                        <td class="px-4 py-2 text-gray-600">{{ $store->LicenseNumber ?? '-' }}</td>
+                        <td class="px-4 py-2 text-gray-600">{{ $store->RadiusKm }}</td>
+                        <td class="px-4 py-2 text-gray-600">Rs {{ $store->DeliveryFee }}</td>
+                        <td class="px-4 py-2 text-gray-600">Rs {{ $store->MinOrder }}</td>
+
                         <td class="px-4 py-2 text-gray-600">
-                            {{ $user->email }}
+                            @if($store->IsActive)
+                                <span class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded">Active</span>
+                            @else
+                                <span class="px-2 py-1 text-xs bg-red-100 text-red-700 rounded">Inactive</span>
+                            @endif
                         </td>
+
                         <td class="px-4 py-2 text-gray-600">
-                            {{ $user->designation?? '-' }}
+                            @if($store->IsFeatured)
+                                <span class="px-2 py-1 text-xs bg-yellow-100 text-yellow-700 rounded">Yes</span>
+                            @else
+                                <span class="px-2 py-1 text-xs bg-gray-100 rounded">No</span>
+                            @endif
                         </td>
-                        <td class="px-4 py-2 text-gray-600">
-                            {{ $user->department ?? '-' }}
-                        </td>
-                        <td class="px-4 py-2 flex space-x-2">
-                            <button class="edit-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $user->id }}"
-                                data-name="{{ $user->name }}" data-email="{{ $user->email }}"
-                                data-designation="{{ $user->designation }}" data-department="{{ $user->department }}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <form method="POST" action="{{ route('users.destroy', $user->id) }}" class="inline delete-form">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-800">
-                                    <i class="fas fa-trash"></i>
+
+                        <td class="px-4 py-4 flex text-gray-600">
+                             <div class="mx-2 my-2">
+                                {{-- <button class="view-btn text-indigo-600"
+                                    data-id="{{ $store->RestaurantId }}"
+                                    data-name="{{ $store->Name }}"
+                                    data-license="{{ $store->LicenseNumber }}"
+                                    data-gstin="{{ $store->GSTIN }}"
+                                    data-pan="{{ $store->PAN }}"
+                                    data-open="{{ $store->OpenTime }}"
+                                    data-close="{{ $store->CloseTime }}"
+                                    data-delivery="{{ $store->DeliveryFee }}"
+                                    data-min="{{ $store->MinOrder }}"
+                                    data-lat="{{ $store->Latitude }}"
+                                    data-lng="{{ $store->Longitude }}"
+                                    data-priority="{{ $store->Priority }}"
+                                    data-active="{{ $store->IsActive }}"
+                                    data-featured="{{ $store->IsFeatured }}"
+                                    data-image="{{ $store->image }}"
+                                >
+                                    <i class="fas fa-eye"></i>
+                                </button> --}}
+                                <a href="{{ route('admin.restaurants.show', $store->RestaurantId) }}">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                             </div>
+
+                            <div class="mx-2 my-2">
+                                <button class="edit-btn text-indigo-600"
+                                    data-id="{{ $store->RestaurantId }}"
+                                    data-name="{{ $store->Name }}"
+                                    data-license="{{ $store->LicenseNumber }}"
+                                    data-gstin="{{ $store->GSTIN }}"
+                                    data-pan="{{ $store->PAN }}"
+                                    data-open="{{ $store->OpenTime }}"
+                                    data-close="{{ $store->CloseTime }}"
+                                    data-delivery="{{ $store->DeliveryFee }}"
+                                    data-min="{{ $store->MinOrder }}"
+                                    data-lat="{{ $store->Latitude }}"
+                                    data-lng="{{ $store->Longitude }}"
+                                    data-priority="{{ $store->Priority }}"
+                                    data-active="{{ $store->IsActive }}"
+                                    data-featured="{{ $store->IsFeatured }}"
+                                    data-image="{{ $store->image }}"
+                                >
+                                    <i class="fas fa-edit"></i>
                                 </button>
-                            </form>
+                            </div>
+
+
+                            <div class="mx-2 my-2">
+                                <form method="POST" action="{{ route('admin.restaurants.destroy', $store->RestaurantId) }}" class="inline delete-form">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
-                    @empty
+                @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-4 text-center text-gray-500">No users found.</td>
+                        <td colspan="10" class="text-center px-6 py-6">No medical stores found.</td>
                     </tr>
-                    @endforelse
-                    
+                @endforelse
                 </tbody>
             </table>
         </div>
-        <div class="flex justify-between items-center mt-4 px-4 py-2 bg-gray-50 border-t border-gray-200 rounded">
 
-            <!-- Left: Results info -->
-            <div id="resultsInfo" class="text-gray-700 text-sm">
-                Showing <strong>{{ $users->firstItem() ?? 0 }}</strong> to <strong>{{ $users->lastItem() ?? 0 }}</strong> of <strong>{{ $users->total() }}</strong> results
+        {{-- PAGINATION --}}
+        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
+            <div class="p-4 bg-gray-50">
+                {{ $restaurants->links() }}
             </div>
-        
-            <!-- Right: Pagination buttons -->
-           <div class="mt-3 px-4">
-                {{ $users->links() }}
-            </div>
-            
         </div>
     </div>
 </div>
 
+{{-- MODAL --}}
+<div id="restaurant-modal" class="fixed inset-0 hidden z-50">
+    <div class="flex items-center justify-center min-h-screen bg-black bg-opacity-40">
+        <div class="bg-white p-6 rounded-lg w-full max-w-3xl relative">
 
-{{--------------------MODAL----------------
---------------------------------------- --}}
-
-<div id="user-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
-    <div class="flex items-center justify-center min-h-screen px-4">
-        <!-- Overlay -->
-        <div class="fixed inset-0 bg-gray-500 opacity-75"></div>
-
-        <!-- Modal content with border -->
-        <div class="bg-white rounded-lg shadow-xl border border-gray-300 transform transition-all max-w-lg w-full p-6 relative">
-            <!-- Close Button -->
-            <button type="button" id="close-modal-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-lg"></i>
+            <button id="close-modal-btn" class="absolute top-3 right-3 text-gray-500">
+                <i class="fas fa-times"></i>
             </button>
 
-            <!-- Modal Title -->
-            <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title"></h3>
+            <h3 class="text-lg font-semibold mb-4">Edit Medical Store</h3>
 
-            <!-- Form -->
-            <form id="user-form" method="POST" class="space-y-4">
+            <form id="restaurant-form" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
-                <input type="hidden" id="form-method" name="_method" value="POST">
+                <input type="hidden" id="method-field" name="_method" value="PUT">
 
-                <!-- Name -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" name="name" id="user-name"  value=" "
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                    <div>
+                        <label class="block text-sm font-medium">Name</label>
+                        <input id="field-name" name="Name" type="text" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">License Number</label>
+                        <input id="field-license" name="LicenseNumber" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">GSTIN</label>
+                        <input id="field-gstin" name="GSTIN" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">PAN</label>
+                        <input id="field-pan" name="PAN" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Open Time</label>
+                        <input id="field-open" name="OpenTime" type="time" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Close Time</label>
+                        <input id="field-close" name="CloseTime" type="time" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Delivery Fee</label>
+                        <input id="field-delivery" name="DeliveryFee" type="number" step="0.01" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Min Order</label>
+                        <input id="field-minorder" name="MinOrder" type="number" step="0.01" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Latitude</label>
+                        <input id="field-lat" name="Latitude" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Longitude</label>
+                        <input id="field-lng" name="Longitude" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Priority</label>
+                        <input id="field-priority" name="Priority" type="number" value="0" class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium">Image</label>
+                        <input id="field-image" name="image" type="file" accept="image/*">
+                        <img id="image-preview" class="mt-2 w-28 h-28 rounded object-cover hidden">
+                    </div>
                 </div>
 
-                <!-- Email -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="email" id="user-email" value=" "
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
+                <div class="flex gap-6 mt-2">
+                    <label class="flex items-center gap-2">
+                        <input id="field-isactive" name="IsActive" type="checkbox"> Active
+                    </label>
+
+                    <label class="flex items-center gap-2">
+                        <input id="field-isfeatured" name="IsFeatured" type="checkbox"> Featured
+                    </label>
                 </div>
 
-                <!-- Password -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" name="password" id="user-password" placeholder="Enter Password or While updating keep blank for no change"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                </div>
-
-                <!-- Designation -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Designation</label>
-                    <select name="designation" id="user-designation"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        >
-                        <option value="">Select Designation</option>
-                        @foreach($users as $user)
-                        <option value="{{ $user->designation }}">{{ $user->designation }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Department -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Department</label>
-                    <select name="department" id="user-department"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        >
-                        <option value="">Select Department</option>
-                        @foreach($users as $user)
-                        <option value="{{ $user->department }}">{{ $user->department }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex justify-end space-x-2">
-                    <button type="button" id="cancel-btn"
-                        class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
-                    <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save</button>
+                <div class="flex justify-end gap-2">
+                    <button type="button" id="modal-cancel" class="px-4 py-2 bg-gray-200 rounded">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">
+                        Update
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
 
-@endsection
 
-@push('scripts')
-{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+{{-- SCRIPT --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const modal = document.getElementById('user-modal');
-    const newBtn = document.getElementById('new-user-button');
-    const cancelBtn = document.getElementById('cancel-btn');
-    const closeBtn = document.getElementById('close-modal-btn');
-    const form = document.getElementById('user-form');
-    const modalTitle = document.getElementById('modal-title');
-    const methodInput = document.getElementById('form-method');
-    const nameInput = document.getElementById('user-name');
-    const emailInput = document.getElementById('user-email');
-    const passwordInput = document.getElementById('user-password');
-    const designationInput = document.getElementById('user-designation');
-    const departmentInput = document.getElementById('user-department');
-
-
-    // Open modal for create
-    newBtn.addEventListener('click', () => {
-        modalTitle.innerText = 'New User';
-        form.action = "{{ route('users.store') }}";
-        methodInput.value = 'POST';
-        nameInput.value = '';
-        emailInput.value = '';
-        passwordInput.value = '';
-        designationInput.value = '';
-        modal.classList.remove('hidden');
-    });
-
-    // Cancel and close
-    cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
-    closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
-
-    // Open modal for edit
     document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            modalTitle.innerText = 'Edit User';
-            form.action = `/users/update/${btn.dataset.id}`;
-            methodInput.value = 'PUT';
-            nameInput.value = btn.dataset.name;
-            emailInput.value = btn.dataset.email;
-            passwordInput.value = ''; // leave blank
-            designationInput.value = btn.dataset.designation;
-            departmentInput.value = btn.dataset.department;
-            modal.classList.remove('hidden');
-        });
+        btn.onclick = () => {
+
+            const form = document.getElementById('restaurant-form');
+            form.action = `/admin/restaurants/${btn.dataset.id}`;
+
+            document.getElementById('field-name').value = btn.dataset.name || '';
+            document.getElementById('field-license').value = btn.dataset.license || '';
+            document.getElementById('field-gstin').value = btn.dataset.gstin || '';
+            document.getElementById('field-pan').value = btn.dataset.pan || '';
+            document.getElementById('field-open').value = btn.dataset.open || '';
+            document.getElementById('field-close').value = btn.dataset.close || '';
+            document.getElementById('field-delivery').value = btn.dataset.delivery || '';
+            document.getElementById('field-minorder').value = btn.dataset.min || '';
+            document.getElementById('field-lat').value = btn.dataset.lat || '';
+            document.getElementById('field-lng').value = btn.dataset.lng || '';
+            document.getElementById('field-priority').value = btn.dataset.priority || 0;
+
+            document.getElementById('field-isactive').checked = btn.dataset.active == 1;
+            document.getElementById('field-isfeatured').checked = btn.dataset.featured == 1;
+
+            const preview = document.getElementById('image-preview');
+            if (btn.dataset.image) {
+                preview.src = `/storage/${btn.dataset.image}`;
+                preview.classList.remove('hidden');
+            } else {
+                preview.classList.add('hidden');
+            }
+
+            document.getElementById('restaurant-modal').classList.remove('hidden');
+        };
     });
+
+    document.getElementById('modal-cancel').onclick =
+    document.getElementById('close-modal-btn').onclick = () => {
+        document.getElementById('restaurant-modal').classList.add('hidden');
+    };
+
+    // Image preview on select
+    document.getElementById('field-image').addEventListener('change', e => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const preview = document.getElementById('image-preview');
+                preview.src = reader.result;
+                preview.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
 
     // SweetAlert for delete confirmation
     document.querySelectorAll('.delete-form').forEach(f => {
@@ -254,20 +334,7 @@
             });
         });
     });
-});
-
-
-// Toast alerts
-@if(session('success'))
-Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: "{{ session('success') }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
-@endif
-
-@if(session('error'))
-Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: "{{ session('error') }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
-@endif
-
-@if($errors->any())
-Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: "{{ $errors->first() }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
-@endif
 </script>
-@endpush
+
+
+@endsection
