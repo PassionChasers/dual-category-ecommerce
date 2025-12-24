@@ -14,119 +14,105 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
-            [
-                'id' => (string) Str::uuid(), // UUID primary key
-                'name' => 'Admin User',
-                'email' => 'admin@gmail.com',
+        $users = [];
+
+        // 2 Admins
+        $admins = [
+            ['name' => 'Admin', 'email' => 'admin@gmail.com'],
+            ['name' => 'Admin2', 'email' => 'admin2@gmail.com'],
+        ];
+        foreach ($admins as $admin) {
+            $users[] = [
+                'id' => (string) Str::uuid(),
+                'name' => $admin['name'],
+                'email' => $admin['email'],
                 'password' => Hash::make('password'),
                 'designation' => 'CEO',
-                'department' => 'Food',
+                'department' => 'Management',
                 'role' => 'admin',
-                'contact_number' =>'9811349989',
-                'address' => 'Duhabi',
+                'contact_number' => '981100' . rand(1000, 9999),
+                'address' => 'Biratnagar',
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'id' => (string) Str::uuid(), // UUID primary key
-                'name' => 'Rabin Chaudhary',
-                'email' => 'rabin@gmail.com',
+            ];
+        }
+
+        // 10 Medical Store Users
+        for ($i = 1; $i <= 10; $i++) {
+            $users[] = [
+                'id' => (string) Str::uuid(),
+                'name' => "MedicalStoreUser $i",
+                'email' => "medstore$i@gmail.com",
                 'password' => Hash::make('password'),
-                'designation' => 'CEO',
-                'department' => 'Medicine',
-                'role' => 'sub_admin',
-                'contact_number' =>'9816321861',
-                'address' => 'BRT',
-                'remember_token' => Str::random(10),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id' => (string) Str::uuid(), // UUID primary key
-                'name' => 'Ram Chaudhary',
-                'email' => 'ram@gmail.com',
-                'password' => Hash::make('password'),
-                'designation' => 'CEO',
-                'department' => 'Food',
-                'role' => 'restaurant',
-                'contact_number' =>'9816321899',
-                'address' => 'BRT',
-                'remember_token' => Str::random(10),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'id' => (string) Str::uuid(), // UUID primary key
-                'name' => 'Sita Chaudhary',
-                'email' => 'sita@gmail.com',
-                'password' => Hash::make('password'),
-                'designation' => 'CEO',
+                'designation' => 'Manager',
                 'department' => 'Medicine',
                 'role' => 'medical_store',
-                'contact_number' =>'9816321811',
-                'address' => 'BRT',
+                'contact_number' => '981200' . rand(1000, 9999),
+                'address' => 'Biratnagar',
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'id' => (string) Str::uuid(), // UUID primary key
-                'name' => 'Madhu Yadav',
-                'email' => 'madhu@gmail.com',
+            ];
+        }
+
+        // 10 Restaurant Users
+        for ($i = 1; $i <= 10; $i++) {
+            $users[] = [
+                'id' => (string) Str::uuid(),
+                'name' => "RestaurantUser $i",
+                'email' => "restaurant$i@gmail.com",
+                'password' => Hash::make('password'),
+                'designation' => 'Manager',
+                'department' => 'Food',
+                'role' => 'restaurant',
+                'contact_number' => '981300' . rand(1000, 9999),
+                'address' => 'Biratnagar',
+                'remember_token' => Str::random(10),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        // 20 Customers
+        for ($i = 1; $i <= 20; $i++) {
+            $users[] = [
+                'id' => (string) Str::uuid(),
+                'name' => "Customer $i",
+                'email' => "customer$i@gmail.com",
                 'password' => Hash::make('password'),
                 'designation' => '',
                 'department' => '',
                 'role' => 'customer',
-                'contact_number' =>'9816322222',
-                'address' => 'BRT',
+                'contact_number' => '981400' . rand(1000, 9999),
+                'address' => 'Biratnagar',
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'id' => (string) Str::uuid(), // UUID primary key
-                'name' => 'Sonu Chaudhary',
-                'email' => 'sonu@gmail.com',
+            ];
+        }
+
+        // 5 Delivery Personnel
+        for ($i = 1; $i <= 5; $i++) {
+            $users[] = [
+                'id' => (string) Str::uuid(),
+                'name' => "DeliveryMan $i",
+                'email' => "delivery$i@gmail.com",
                 'password' => Hash::make('password'),
-                'designation' => 'CEO',
-                'department' => 'Medicine',
-                'role' => 'customer',
-                'contact_number' =>'9816321333',
-                'address' => 'BRT',
-                'remember_token' => Str::random(10),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-               [
-                'id' => (string) Str::uuid(), // UUID primary key
-                'name' => 'Sunil Chaudhary',
-                'email' => 'sunil@gmail.com',
-                'password' => Hash::make('password'),
-                'designation' => 'CEO',
-                'department' => 'Medicine',
+                'designation' => 'Delivery',
+                'department' => 'Logistics',
                 'role' => 'delivery',
-                'contact_number' =>'9816321444',
-                'address' => 'BRT',
+                'contact_number' => '981500' . rand(1000, 9999),
+                'address' => 'Biratnagar',
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ],
-            [
-                'id' => (string) Str::uuid(), // UUID primary key
-                'name' => 'Saurav Nepal',
-                'email' => 'saurav@gmail.com',
-                'password' => Hash::make('password'),
-                'designation' => 'CEO',
-                'department' => 'Medicine',
-                'role' => 'delivery',
-                'contact_number' =>'9816321800',
-                'address' => 'BRT',
-                'remember_token' => Str::random(10),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+            ];
+        }
+
+        // Insert all users
+        DB::table('users')->insert($users);
+
+        $this->command->info('Users seeded: ' . count($users));
     }
 }

@@ -56,8 +56,8 @@ class MedicineController extends Controller
         $query->orderBy($sortBy, $sortOrder);
 
         // Pagination
-        $perPage = (int) $request->get('per_page', 10);
-        $perPage = in_array($perPage, [5, 10, 25, 50]) ? $perPage : 10;
+        $perPage = (int) $request->get('per_page', 5);
+        $perPage = in_array($perPage, [5, 10, 25, 50]) ? $perPage : 5;
 
         $medicines = $query->paginate($perPage)->appends($request->except('page'));
 

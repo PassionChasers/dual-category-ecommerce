@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Order;
 
 class OrderController extends Controller
 {
@@ -33,9 +34,10 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($orderId)
     {
-        //
+        $order = Order::findOrFail($orderId);
+        return view('admin.orders.show', compact('order'));
     }
 
     /**
@@ -57,8 +59,54 @@ class OrderController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($orderId)
     {
-        //
+        $order = Order::findOrFail($orderId);
+
+        $order->delete(); // order_items auto-deleted
+
+        return back()->with('success', 'Order and its items deleted successfully.');
+
+    }
+
+
+    // All orders
+    public function allOrders()
+    {
+        $allOrders = Order::latest()->paginate(5);
+        return view('admin.orders.index',compact('allOrders'));
+    }
+
+    //Food orders
+    public function foodOrders()
+    {
+        $foodOrders = Order::where('order_type', 'food')
+        // ->where('restaurant_id', auth()->user()->restaurant->id)
+        ->latest()
+        ->paginate(5);
+
+        return view('admin.orders.food-order.index',compact('foodOrders'));
+
+    }
+
+    //Medicine Orders
+    public function medicineOrders()
+    {
+        $medicineOrders = Order::where('order_type', 'medicine')
+        // ->where('medicalstore_id', auth()->user()->medicalStore->MedicalStoreId)
+        ->latest()
+        ->paginate(5);
+
+        return view('admin.orders.medicine-order.index',compact('medicineOrders'));
+
+    }
+
+    //Customer Orders
+    public function customersOrders()
+    {
+        $customerOrders = Order::where('user_id', auth()->id())
+        ->latest()
+        ->get();
+
     }
 }

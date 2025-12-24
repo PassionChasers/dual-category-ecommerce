@@ -78,4 +78,9 @@ class Restaurant extends Model
     {
         return $this->belongsTo(User::class, 'UserId', 'id');
     }
+
+    public function foods()
+    {
+        return $this->hasMany(Food::class, 'RestaurantId', 'RestaurantId');
+    }
 }

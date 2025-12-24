@@ -41,10 +41,10 @@ class MedicalStoreController extends Controller
         $perPage = (int) $request->get('per_page', 10);
         $perPage = in_array($perPage, [5,10,25,50]) ? $perPage : 10;
 
-        $stores = $query->paginate($perPage)->appends($request->except('page'));
+        $medicalstores = $query->paginate($perPage)->appends($request->except('page'));
 
-        return view('admin.medicalstores.index', [
-            'stores' => $stores,
+        return view('admin.users.medical_stores.searchedMedicalstore', [
+            'medicalstores' => $medicalstores,
         ]);
     }
 
@@ -140,7 +140,7 @@ class MedicalStoreController extends Controller
      */
     public function allMedicalstores()
     {
-        $medicalstores = MedicalStore::with('user')->paginate(8);
+        $medicalstores = MedicalStore::with('user')->paginate(4);
 
         return view('admin.users.medical_stores.index', compact('medicalstores'));
     }

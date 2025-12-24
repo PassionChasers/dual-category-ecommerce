@@ -102,7 +102,7 @@ class RestaurantController extends Controller
      */
     public function allRestaurants()
     {
-        $restaurants = Restaurant::with('user')->paginate(8);
+        $restaurants = Restaurant::with('user')->paginate(4);
 
         return view('admin.users.restaurants.index', compact('restaurants'));
     }

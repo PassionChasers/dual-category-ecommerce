@@ -152,9 +152,10 @@
 
         {{-- PAGINATION --}}
         <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
-            <div class="p-4 bg-gray-50">
-                {{ $restaurants->links() }}
+            <div class="text-sm text-gray-600">
+                Showing <strong>{{ $restaurants->firstItem() ?? 0 }}</strong> to <strong>{{ $restaurants->lastItem() ?? 0 }}</strong> of <strong>{{ $restaurants->total() }}</strong> results
             </div>
+            <div class="mt-3 md:mt-0">{{ $restaurants->links() }}</div>
         </div>
     </div>
 </div>

@@ -1,5 +1,5 @@
 @extends('layouts.admin.app')
-@section('title', 'Admin | All Food-Product')
+@section('title', 'Admin | Food Order Management')
 
 @push('styles')
 <!-- add any page-specific styles here -->
@@ -27,15 +27,15 @@
 
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
-            <h2 class="text-2xl font-bold text-gray-800">Food-item Management</h2>
-            <p class="text-gray-600">Manage Order List.</p>
+            <h2 class="text-2xl font-bold text-gray-800">Food Order Management</h2>
+            <p class="text-gray-600">Manage Food Orders List</p>
         </div>
 
       
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
             <!-- Search Form -->
             <form method="GET" class="flex flex-wrap w-full gap-2">
-                <input type="text" name="search" value="" placeholder="Search Orders By order ID..."
+                <input type="text" name="search" value="" placeholder="Search Orders by ID..."
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <select name="status" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
                     <option value="">All status</option>
@@ -52,7 +52,7 @@
                 <!-- New Task Button -->
                 <button id="new-task-button"
                     class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap">
-                    <i class="fas fa-plus mr-1"></i> New Food-Item
+                    <i class="fas fa-plus mr-1"></i> New Item
                 </button>
 
                 <!-- Export Button -->
@@ -66,173 +66,158 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between">
-            <h3 class="text-lg font-medium text-gray-900">Food Order List</h3>
-        </div>
 
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+         <div class="px-6 py-4 border-b">
+            <h2 class="font-semibold text-gray-800">Orders List</h2>
+        </div>
         <div class="overflow-x-auto">
-            <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2">Order ID</th>
-                        <th class="px-4 py-2">Customer Name</th>
-                        <th class="px-4 py-2">Items</th>
-                        <th class="px-4 py-2">Qty</th>
-                        <th class="px-4 py-2">Total Amount</th>
-                        <th class="px-4 py-2">Delivery Type</th>
-                        <th class="px-4 py-2">Order Status</th>
+                        <th class="px-4 py-2">#</th>
+                        <th class="px-4 py-2">Order Id</th>
+                        <th class="px-4 py-2">Customer</th>
+                        <th class="px-4 py-2">Contact</th>
+                        <th class="px-4 py-2">Type</th>
+                        <th class="px-4 py-2">Store</th>
+                        <th class="px-4 py-2">Total</th>
+                        <th class="px-4 py-2">Payment</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Assign Rider</th>
                         <th class="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
+
                 <tbody class="divide-y divide-gray-200">
-                    {{-- @forelse($tasks as $index => $task) --}}
-                    <tr>
-                        <td class="px-4 py-2">
-                           001
-                        </td>
-                        <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{-- {{ $task->name ?? '-' }} --}}
-                            Shibu Khan
-                        </td>
-                        <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $task->category->name ?? '-' }} --}}
-                            Burger, Fries, Coke
-                        </td>
-                        <td class="px-4 py-2" 
-                        {{-- id="priority-badge-{{ $task->id }}" --}}
-                        >
-                            {{-- @php
-                            $colors = [
-                            3 => ['Low', 'bg-green-100 text-green-800'],
-                            2 => ['Medium', 'bg-yellow-100 text-yellow-800'],
-                            1 => ['High', 'bg-red-100 text-red-800'],
-                            ];
-                            $priority = $colors[$task->priority_id] ?? ['None', 'bg-gray-100 text-gray-800'];
-                            @endphp --}}
-                            <span class="px-2 py-1 rounded text-xs 
-                            {{-- {{ $priority[1] }} --}}
-                             ">
-                             {{-- {{ $priority[0] }} --}}
-                                2
-                            </span>
-                        </td>
+                    @forelse($foodOrders as $order)
+                        <tr>
+                            {{-- Serial --}}
+                            <td class="px-4 py-2">
+                                {{ ($foodOrders->currentPage() - 1) * $foodOrders->perPage() + $loop->iteration }}
+                            </td>
 
-                        <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $task->assignee?->name ?? '-' }} --}}
-                            500
-                        </td>
-                        <td class="px-4 py-2">
-                            {{-- @if($task->is_requested)
-                            @if($task->is_approved == 0)
-                            <div class="flex space-x-2">
-                                <button class="accept-btn px-2 py-1 bg-green-100 text-green-800 rounded text-xs"
-                                    data-id="{{ $task->id }}">Accept</button>
-                                <button class="reject-btn px-2 py-1 bg-red-100 text-red-800 rounded text-xs"
-                                    data-id="{{ $task->id }}">Reject</button>
-                            </div>
-                            @elseif($task->is_approved == 1)
-                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Accepted</span>
-                            @elseif($task->is_approved == 2)
-                            <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">Rejected</span>
-                            @endif
-                            @else
-                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Not Requested</span>
-                            @endif --}}
-                            {{-- <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs whitespace-nowrap">Accept/Reject</span> --}}
-                            Home Delivery
-                        </td>
+                            {{-- Order Number --}}
+                            <td class="px-4 py-2 font-semibold">
+                                {{ $order->order_number }}
+                            </td>
 
+                            {{-- Customer --}}
+                            <td class="px-4 py-2">
+                                {{ $order->user->name ?? 'N/A' }}
+                            </td>
 
-                        {{-- @php
-                        if (!function_exists('statusBadge')) {
-                        function statusBadge($status) {
-                        return match($status) {
-                        0 => '<span class="px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800">Pending</span>',
-                        1 => '<span class="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">In Progress</span>',
-                        2 => '<span class="px-2 py-1 rounded text-xs bg-green-100 text-green-800">Completed</span>',
-                        default => '<span class="px-2 py-1 rounded text-xs bg-gray-100 text-gray-800">Unknown</span>',
-                        };
-                        }
-                        }
-                        @endphp --}}
+                            {{-- Contact --}}
+                            <td class="px-4 py-2 text-gray-600">
+                                {{ $order->user->contact_number ?? 'N/A' }}
+                            </td>
 
-                        <td class="px-4 py-2">
-                            <select 
-                            {{-- data-task-id="{{ $task->id }}" --}}
-                                class="task-status-select block border rounded-lg px-2 py-1 text-sm
-                                {{-- {{ $task->status == 0 ? 'bg-yellow-100 text-yellow-800' : ($task->status == 1 ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }} --}}
-                                "
-                                {{-- {{ $task->status == 2 ? 'disabled' : '' }} --}}
-                                >
-                                <option value="0" 
-                                {{-- @selected($task->status == 0) --}}
-                                >Pending</option>
-                                <option value="1" 
-                                {{-- @selected($task->status == 1) --}}
-                                >Accepted</option>
-                                 <option value="0" 
-                                {{-- @selected($task->status == 0) --}}
-                                >Preparing</option>
-                                 <option value="0" 
-                                {{-- @selected($task->status == 0) --}}
-                                >Ready</option>
-                                <option value="2" 
-                                {{-- @selected($task->status == 2) --}}
-                                >Delivered</option>
-                            </select>
-                        </td>
+                            {{-- Order Type --}}
+                            <td class="px-4 py-2">
+                                @if($order->order_type === 'food')
+                                    <span class="px-2 py-1 text-xs rounded bg-orange-100 text-orange-800">
+                                        🍔 Food
+                                    </span>
+                                @else
+                                    <span class="px-2 py-1 text-xs rounded bg-green-100 text-green-800">
+                                        💊 Medicine
+                                    </span>
+                                @endif
+                            </td>
 
-                        <td class="px-4 py-2 flex space-x-2">
-                            {{-- <button class="view-btn text-gray-600 hover:text-gray-900" data-id="{{ $task->id }}">
-                                <i class="fas fa-eye"></i>
-                            </button> --}}
-                            <a href="#"
-                                class="view-btn text-gray-600 hover:text-gray-900">
-                                <button type="button">
+                            {{-- Store --}}
+                            <td class="px-4 py-2">
+                                {{ $order->restaurant->Name ?? 'N/A' }}
+                            </td>
+
+                            {{-- Total --}}
+                            <td class="px-4 py-2 font-semibold">
+                                Rs. {{ number_format($order->total_amount, 2) }}
+                            </td>
+
+                            {{-- Payment --}}
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 rounded text-xs
+                                    {{ $order->payment_status === 'paid'
+                                        ? 'bg-green-100 text-green-800'
+                                        : 'bg-yellow-100 text-yellow-800' }}">
+                                    {{ strtoupper($order->payment_method) }} -
+                                    {{ ucfirst($order->payment_status) }}
+                                </span>
+                            </td>
+
+                            {{-- Status --}}
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 rounded text-xs
+                                    @switch($order->order_status)
+                                        @case('pending') bg-yellow-100 text-yellow-800 @break
+                                        @case('accepted') bg-blue-100 text-blue-800 @break
+                                        @case('preparing') bg-orange-100 text-orange-800 @break
+                                        @case('packed') bg-purple-100 text-purple-800 @break
+                                        @case('out_for_delivery') bg-indigo-100 text-indigo-800 @break
+                                        @case('delivered') bg-green-100 text-green-800 @break
+                                        @case('cancelled') bg-red-100 text-red-800 @break
+                                    @endswitch
+                                ">
+                                    {{ ucfirst(str_replace('_',' ', $order->order_status)) }}
+                                </span>
+                            </td>
+
+                            {{-- Date --}}
+                            <td class="px-4 py-2">
+                                {{ $order->created_at->format('Y-m-d') }}
+                            </td>
+
+                            {{-- Assign Rider --}}
+                            <td class="px-4 py-2">
+                                <select class="border rounded px-2 py-1 text-sm">
+                                    <option value="">Select Rider</option>
+                                    {{-- loop riders here --}}
+                                </select>
+                            </td>
+
+                            {{-- Actions --}}
+                            <td class="px-4 py-2 flex space-x-3">
+                                <a href="{{ route('orders.show', $order->id) }}"
+                                class="text-gray-600 hover:text-gray-900">
                                     <i class="fas fa-eye"></i>
-                                </button>
-                            </a>
+                                </a>
 
-                            <button class="edit-btn text-indigo-600 hover:text-indigo-800"
-                             {{-- data-id="{{ $task->id }}" --}}
-                             >
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <form method="get" action="#" class="inline delete-form">
-                                {{-- @csrf @method('DELETE') --}}
-                                <button type="submit" class="text-red-600 hover:text-red-800">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                    {{-- @empty
-                    <tr>
-                        <td colspan="7" class="px-4 py-4 text-center text-gray-500">No tasks found.</td>
-                    </tr>
-                    @endforelse --}}
+                                <a href="#"
+                                class="text-indigo-600 hover:text-indigo-800">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+
+                                {{-- ------------
+                                DELETE ORDER 
+                                ----------------}}
+                                <form method="POST" action="{{ route('orders.destroy', $order->id) }}" class="inline delete-form" data-status="{{ $order->order_status }}">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-red-600 hover:text-red-800">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="12" class="px-4 py-4 text-center text-gray-500">
+                                No orders found.
+                            </td>
+                        </tr>       
+                    @endforelse                
                 </tbody>
             </table>
         </div>
 
-        <div class="flex justify-between items-center mt-4 px-4 py-2 bg-gray-50 border-t border-gray-200 rounded">
-            <!-- Left: Results info -->
-            <div id="resultsInfo" class="text-gray-700 text-sm">
-                Showing 1 to 10 of 20 results
+        {{-- PAGINATION --}}
+        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
+            <div class="text-sm text-gray-600">
+                Showing <strong>{{ $foodOrders->firstItem() ?? 0 }}</strong> to <strong>{{ $foodOrders->lastItem() ?? 0 }}</strong> of <strong>{{ $foodOrders->total() }}</strong> results
             </div>
-        
-            <!-- Right: Pagination buttons -->
-            <div class="flex space-x-3">
-                <button id="prevPageBtn" class="px-3 py-1 border rounded border-gray-600 text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Previous
-                </button>
-                <button id="nextPageBtn" class="px-3 py-1 border rounded border-gray-600 text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Next
-                </button>                
-            </div>
+            <div class="mt-3 md:mt-0">{{ $foodOrders->links() }}</div>
         </div>
-                       
     </div>
 </div>
 
@@ -427,19 +412,35 @@
     });
 
     // Delete confirmation
-    document.querySelectorAll('.delete-form').forEach(f => {
-        f.addEventListener('submit', function(e) {
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
             e.preventDefault();
+
+            const status = form.dataset.status;
+            const blockedStatuses = ['accepted', 'preparing', 'packed'];
+
+            if (blockedStatuses.includes(status)) {
+                Swal.fire({
+                    title: 'Action Not Allowed!',
+                    text: 'This order cannot be deleted in its current status.',
+                    icon: 'warning',
+                    confirmButtonColor: '#6c757d'
+                });
+                return;
+            }
+
             Swal.fire({
                 title: 'Are you sure?',
-                text: "This action cannot be undone!",
+                text: 'This action cannot be undone!',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#e3342f',
                 cancelButtonColor: '#6c757d',
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
-                if (result.isConfirmed) f.submit();
+                if (result.isConfirmed) {
+                    form.submit();
+                }
             });
         });
     });
