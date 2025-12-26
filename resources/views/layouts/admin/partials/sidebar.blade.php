@@ -113,31 +113,7 @@
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
 
-                        {{-- @if (auth()->user()->designation->hierarchy_level == 0)
-                        <a href="{{ route('product.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('product.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-list mr-2"></i> All Products
-                        </a>
-                        @endif
-                        <a href="{{ route('product.myproducts') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                            {{ request()->routeIs('product.myproducts') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-user-check mr-2"></i> My Products
-                        </a>
-                        @if (auth()->user()->designation->hierarchy_level == 0)
-                        <a href="#"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('task.priority') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-exclamation-circle mr-2"></i> Product Priority
-                        </a>
-                        <a href="{{ route('product.category') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('product.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-tags mr-2"></i> Product Category
-                        </a>
-                        @endif --}}
-
+                        
                         <!--Dropdown for Medicines -->
                         <div x-data="{ open: {{ request()->routeIs('product.medicine.*') ? 'true' : 'false' }} }">
                             <button @click="open = !open"
@@ -233,56 +209,7 @@
                         </a>
 
 
-                        {{-- @if (for only medicine) --}}
-                        {{-- <a href="{{ route('orders.medicine.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-clock mr-2"></i> Pending Verification
-                        </a>
-                        <a href="{{ route('orders.medicine.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-user-check mr-2"></i> Accepted Orders
-                        </a>
-                        <a href="{{ route('orders.medicine.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-box-open mr-2"></i> Packed Orders
-                        </a>
-                        <a href="{{ route('orders.medicine.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-check-double mr-2"></i> Delivered Orders
-                        </a> --}}
-                        {{-- @endif --}}
-
-                        {{-- @if (for only food) --}}
-                        {{-- <a href="{{ route('orders.food.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-file-circle-plus mr-2"></i> New Orders
-                        </a>
-                        <a href="{{ route('orders.food.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-user-check mr-2"></i> Accepted Orders
-                        </a>
-                        <a href="{{ route('orders.food.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-fire-burner mr-2"></i> Preparing Orders
-                        </a>
-                        <a href="{{ route('orders.food.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-box-open mr-2"></i> Packed Orders
-                        </a>
-                        <a href="{{ route('orders.food.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-check-double mr-2"></i> Delivered Orders
-                        </a> --}}
-                        {{-- @endif --}}
+                        
 
 
                     </div>
@@ -485,31 +412,7 @@
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
 
-                        {{-- @if (auth()->user()->designation->hierarchy_level == 0)
-                        <a href="{{ route('product.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('product.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-list mr-2"></i> All Products
-                        </a>
-                        @endif
-                        <a href="{{ route('product.myproducts') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                            {{ request()->routeIs('product.myproducts') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-user-check mr-2"></i> My Products
-                        </a>
-                        @if (auth()->user()->designation->hierarchy_level == 0)
-                        <a href="#"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('task.priority') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-exclamation-circle mr-2"></i> Product Priority
-                        </a>
-                        <a href="{{ route('product.category') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('product.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-tags mr-2"></i> Product Category
-                        </a>
-                        @endif --}}
-
+                        
                         <!-- Dropdown for Medicine -->
                         <div x-data="{ open: {{ request()->routeIs('product.medicine.*') ? 'true' : 'false' }} }">
                             <button @click="open = !open"
@@ -530,11 +433,7 @@
                                         {{ request()->routeIs('product.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                     <i class="fas fa-list mr-2"></i> All Medicines
                                 </a>
-                                {{-- <a href="{{ route('admin.medicalstores.index') }}"
-                                    class="flex items-center px-2 py-2 text-sm rounded-md
-                                    {{ request()->routeIs('admin.medicalstores.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                    <i class="fas fa-tags mr-2"></i> Medicine Stores
-                                </a> --}}
+                                
 
                                 <a href="{{ route('product.medicine.category') }}"
                                     class="flex items-center px-2 py-2 text-sm rounded-md
@@ -606,58 +505,9 @@
                             <i class="fa-solid fa-utensils mr-2"></i> Food Orders
                         </a>
 
-                        {{-- For Medical Store --}}
-                        {{-- @if (auth user is medical store) --}}
-                        {{-- <a href="{{ route('orders.medicine.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-clock mr-2"></i> Pending Verification
-                        </a>
-                        <a href="{{ route('orders.medicine.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-user-check mr-2"></i> Accepted Orders
-                        </a>
-                        <a href="{{ route('orders.medicine.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-box-open mr-2"></i> Packed Orders
-                        </a>
-                        <a href="{{ route('orders.medicine.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-check-double mr-2"></i> Delivered Orders
-                        </a> --}}
-                        {{-- @endif --}}
+                        
 
-                        {{-- For Restuarent --}}
-                        {{-- @if (auth user is Restuarent) --}}
-                        {{-- <a href="{{ route('orders.food.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-file-circle-plus mr-2"></i> New Orders
-                        </a>
-                        <a href="{{ route('orders.food.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-user-check mr-2"></i> Accepted Orders
-                        </a>
-                        <a href="{{ route('orders.food.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-fire-burner mr-2"></i> Preparing Orders
-                        </a>
-                        <a href="{{ route('orders.food.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-box-open mr-2"></i> Packed Orders
-                        </a>
-                        <a href="{{ route('orders.food.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-check-double mr-2"></i> Delivered Orders
-                        </a> --}}
-                        {{-- @endif --}}
+                       
 
                     </div>
                 </div>

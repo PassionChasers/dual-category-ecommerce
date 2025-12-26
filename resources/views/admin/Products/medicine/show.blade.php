@@ -359,8 +359,7 @@
                 setTimeout(() => {
                     w.focus();
                     w.print();
-                    // Optionally close the popup after printing (commented out to let users inspect)
-                    // w.close();
+                   
                 }, 250);
             }).catch(() => {
                 setTimeout(() => { w.focus(); w.print(); }, 300);

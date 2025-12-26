@@ -30,9 +30,7 @@
         <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <a href="{{ url('/login') }}"
                 class="bg-white px-6 py-4 rounded-lg font-semibold text-center shadow-lg hover:bg-gray-50 transition duration-300 flex items-center justify-center">
-                {{-- <span class=" text-grey-600 ">Sign In to Continue</span> --}}
-
-                {{-- <span class="text-gradient">Sign In to Continue</span> --}}
+                
                 <span class="text-indigo-800">Sign In to Continue</span>
 
                 <i class="fas fa-arrow-right ml-2 text-indigo-800"></i>

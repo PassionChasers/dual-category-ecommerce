@@ -85,84 +85,57 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    {{-- @forelse($tasks as $index => $task) --}}
+                    
                     <tr>
                         <td class="px-4 py-2">
-                            {{-- {{ $tasks->firstItem() + $index }} --}}
+                            
                             <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
                             alt="Default user">
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{-- {{ $task->name ?? '-' }} --}}
+                            
                             Sample Product
                         </td>
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $task->category->name ?? '-' }} --}}
+                            
                             Sample Category
                         </td>
                         <td class="px-4 py-2" 
-                        {{-- id="priority-badge-{{ $task->id }}" --}}
+                       
                         >
-                            {{-- @php
-                            $colors = [
-                            3 => ['Low', 'bg-green-100 text-green-800'],
-                            2 => ['Medium', 'bg-yellow-100 text-yellow-800'],
-                            1 => ['High', 'bg-red-100 text-red-800'],
-                            ];
-                            $priority = $colors[$task->priority_id] ?? ['None', 'bg-gray-100 text-gray-800'];
-                            @endphp
-                            <span class="px-2 py-1 rounded text-xs {{ $priority[1] }}">{{ $priority[0] }}</span> --}}
+                            
                             <span class="px-2 py-1 rounded text-xs "> 
                                 High
                             </span>
                         </td>
 
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $task->assignee?->name ?? '-' }} --}}
+                            
                             John Doe
                         </td>
                         <td class="px-4 py-2">
-                            {{-- @if($task->is_requested)
-                            @if($task->is_approved == 0) --}}
+                            
                             <div class="flex space-x-2">    
                                 <button class="accept-btn px-2 py-1 bg-green-100 text-green-800 rounded text-xs"
-                                    {{-- data-id="{{ $task->id }}" --}}
+                                 
                                     >Accept</button>
                                 <button class="reject-btn px-2 py-1 bg-red-100 text-red-800 rounded text-xs"
-                                    {{-- data-id="{{ $task->id }}" --}}
+                                   
                                     >Reject</button>
                             </div>
-                            {{-- @elseif($task->is_approved == 1)
-                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">Accepted</span>
-                            @elseif($task->is_approved == 2)
-                            <span class="px-2 py-1 bg-red-100 text-red-800 rounded text-xs">Rejected</span>
-                            @endif
-                            @else
-                            <span class="px-2 py-1 bg-gray-100 text-gray-800 rounded text-xs">Not Requested</span>
-                            @endif --}}
+                            
                         </td>
 
 
-                        {{-- @php
-                        if (!function_exists('statusBadge')) {
-                        function statusBadge($status) {
-                        return match($status) {
-                        0 => '<span class="px-2 py-1 rounded text-xs bg-yellow-100 text-yellow-800">Pending</span>',
-                        1 => '<span class="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">In Progress</span>',
-                        2 => '<span class="px-2 py-1 rounded text-xs bg-green-100 text-green-800">Completed</span>',
-                        default => '<span class="px-2 py-1 rounded text-xs bg-gray-100 text-gray-800">Unknown</span>',
-                        };
-                        }
-                        }
-                        @endphp --}}
+                       
 
                         <td class="px-4 py-2">
                             <select data-task-id=""
                                 class="task-status-select block border rounded-lg px-2 py-1 text-sm
-                                {{-- {{ $task->status == 0 ? 'bg-yellow-100 text-yellow-800' : ($task->status == 1 ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800') }} --}}
+                     
                                 "
-                                {{-- {{ $task->status == 2 ? 'disabled' : '' }} --}}
+                                
                                 >
                                 <option value="0">Pending</option>
                                 <option value="1">In Progress</option>
@@ -189,17 +162,13 @@
                             </form>
                         </td>
                     </tr>
-                    {{-- @empty
-                    <tr>
-                        <td colspan="7" class="px-4 py-4 text-center text-gray-500">No tasks found.</td>
-                    </tr>
-                    @endforelse --}}
+                    
                 </tbody>
             </table>
         </div>
 
         <div class="px-4 py-4 bg-gray-50">
-            {{-- {{ $tasks->onEachSide(1)->links() }} --}}
+            
         </div>
     </div>
 </div>
@@ -234,9 +203,7 @@
                         <select name="task_category_id" id="task_category_id" class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2
                                        focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
                             <option value="">Select Category</option>
-                            {{-- @foreach($categories as $c)
-                            <option value="{{ $c->id }}">{{ $c->name }}</option>
-                            @endforeach --}}
+                           
                             <option value="">aaa</option>
                             <option value="">aaa</option>
                             <option value="">aaa</option>
@@ -249,9 +216,7 @@
                         <select name="priority_id" id="priority_id" class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2
                                        focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
                             <option value="">Select Priority</option>
-                            {{-- @foreach($priorities as $p)
-                            <option value="{{ $p->id }}">{{ $p->name }}</option>
-                            @endforeach --}}
+                            
                             <option value="">High</option>
                             <option value="">Medium</option>
                             <option value="">Low</option>
@@ -317,7 +282,7 @@
 @endsection
 
 @push('scripts')
-{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('task-modal');

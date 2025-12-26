@@ -180,7 +180,7 @@
 @endsection
 
 @push('scripts')
-{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('customer-modal');
@@ -226,8 +226,7 @@
             contactNumberInput.value = btn.dataset.contact_number;
             emailInput.value = btn.dataset.email;
             passwordInput.value = ''; // leave blank
-            // designationInput.value = btn.dataset.designation;
-            // departmentInput.value = btn.dataset.department;
+           
             modal.classList.remove('hidden');
         });
     });

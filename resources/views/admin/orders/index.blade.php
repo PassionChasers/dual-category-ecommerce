@@ -188,13 +188,7 @@
                                     <i class="fas fa-eye"></i>
                                 </a>
 
-                                {{---------------- 
-                                EDIT ORDER 
-                                ----------------}}
-                                {{-- <a href="#"
-                                class="text-indigo-600 hover:text-indigo-800">
-                                    <i class="fas fa-edit"></i>
-                                </a> --}}
+                                
                                 <a href="javascript:void(0)"
                                 class="text-indigo-600 hover:text-indigo-800 edit-btn"
                                 data-id="{{ $order->id }}">
@@ -237,7 +231,7 @@
 @endsection
 
 @push('scripts')
-    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+   
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             

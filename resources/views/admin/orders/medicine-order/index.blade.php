@@ -267,9 +267,7 @@
                         <select name="priority_id" id="priority_id" class="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2
                                        focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition">
                             <option value="">Select Priority</option>
-                            {{-- @foreach($priorities as $p)
-                            <option value="{{ $p->id }}">{{ $p->name }}</option>
-                            @endforeach --}}
+                            
                             <option value="">High</option>
                             <option value="">medium</option>
                             <option value="">Low</option>
@@ -335,7 +333,7 @@
 @endsection
 
 @push('scripts')
-{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('task-modal');

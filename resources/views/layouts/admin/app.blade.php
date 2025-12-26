@@ -72,58 +72,7 @@
         </div>
     </div>
 
-    <!-- Table Pagination Script (kept same) -->
-    {{-- <script>
-        const rowsPerPage = 6;
-        let currentPage = 1;
-
-        const table = document.querySelector('table tbody');
-        const rows = table ? Array.from(table.querySelectorAll('tr')) : [];
-        const totalRows = rows.length;
-        const totalPages = Math.ceil(totalRows / rowsPerPage);
-
-        const resultsInfo = document.getElementById('resultsInfo');
-        const prevBtn = document.getElementById('prevPageBtn');
-        const nextBtn = document.getElementById('nextPageBtn');
-
-        function updateButtonColors() {
-            if (!prevBtn || !nextBtn) return;
-
-            prevBtn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
-            nextBtn.classList.remove('bg-indigo-600', 'text-white', 'border-indigo-600');
-
-            prevBtn.classList.add('border-gray-600', 'text-gray-800');
-            nextBtn.classList.add('border-gray-600', 'text-gray-800');
-
-            if (currentPage === 1 && totalPages > 1) {
-                nextBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
-            } else if (currentPage === totalPages && totalPages > 1) {
-                prevBtn.classList.add('bg-indigo-600', 'text-white', 'border-indigo-600');
-            }
-        }
-
-        function showPage(page) {
-            if (!rows.length) return;
-
-            const start = (page - 1) * rowsPerPage;
-            const end = Math.min(start + rowsPerPage, totalRows);
-
-            rows.forEach((row, i) => {
-                row.style.display = i >= start && i < end ? '' : 'none';
-            });
-
-            if (resultsInfo) {
-                resultsInfo.textContent = `Showing ${start + 1} to ${end} of ${totalRows} results`;
-            }
-
-            if (prevBtn) prevBtn.disabled = page === 1;
-            if (nextBtn) nextBtn.disabled = page === totalPages;
-
-            updateButtonColors();
-        }
-
-        if (rows.length) showPage(currentPage);
-    </script> --}}
+    
 
 </body>
 

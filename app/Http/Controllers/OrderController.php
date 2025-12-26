@@ -81,7 +81,7 @@ class OrderController extends Controller
     public function foodOrders()
     {
         $foodOrders = Order::where('order_type', 'food')
-        // ->where('restaurant_id', auth()->user()->restaurant->id)
+       
         ->latest()
         ->paginate(5);
 
@@ -93,7 +93,7 @@ class OrderController extends Controller
     public function medicineOrders()
     {
         $medicineOrders = Order::where('order_type', 'medicine')
-        // ->where('medicalstore_id', auth()->user()->medicalStore->MedicalStoreId)
+       
         ->latest()
         ->paginate(5);
 

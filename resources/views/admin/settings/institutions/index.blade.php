@@ -46,53 +46,46 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    {{-- @forelse($institutions as $index => $institution) --}}
+                   
                     <tr>
                         <td class="px-4 py-2">
-                            {{-- {{ $institutions->firstItem() + $index }} --}}
+                            
                             1
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{-- {{ $institution->client_id }} --}}
+                            
                             CID001
                         </td>
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $institution->name }} --}}
+                           
                             Institution Name
                         </td>
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $institution->email ?? '-' }} --}}
+                            
                             abc@gmail.com
                         </td>
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $institution->phone ?? '-' }} --}}
+                           
                             +980000000
                         </td>
                         <td class="px-4 py-2 flex space-x-2">
-                            {{-- @if(auth()->user()->designation->hierarchy_level == 0) --}}
+                           
                             <button class="edit-btn text-indigo-600 hover:text-indigo-800"
-                                {{-- data-id="{{ $institution->id }}" data-client="{{ $institution->client_id }}"
-                                data-name="{{ $institution->name }}" data-email="{{ $institution->email }}"
-                                data-phone="{{ $institution->phone }}" data-address="{{ $institution->address }}"
-                                data-website="{{ $institution->website }}" --}}
+                               
                                 >
                                 <i class="fas fa-edit"></i>
                             </button>
-                            {{-- @endif --}}
+                            
                             <form method="get" action="#"
                                 class="inline delete-form">
-                                {{-- @csrf @method('DELETE') --}}
+                                
                                 <button type="submit" class="text-red-600 hover:text-red-800">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
                         </td>
                     </tr>
-                    {{-- @empty
-                    <tr>
-                        <td colspan="6" class="px-4 py-4 text-center text-gray-500">No institutions found.</td>
-                    </tr>
-                    @endforelse --}}
+                  
                 </tbody>
             </table>
         </div>
@@ -173,7 +166,7 @@
 @endsection
 
 @push('scripts')
-{{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const modal = document.getElementById('institution-modal');
@@ -229,19 +222,7 @@
         document.querySelectorAll('.delete-form').forEach(f => {
             f.addEventListener('submit', function(e) {
                 e.preventDefault();
-                // Swal.fire({
-                //     title: 'Are you sure?',
-                //     text: "This action cannot be undone!",
-                //     icon: 'warning',
-                //     showCancelButton: true,
-                //     confirmButtonColor: '#e3342f',
-                //     cancelButtonColor: '#6c757d',
-                //     confirmButtonText: 'Yes, delete it!'
-                // }).then((result) => {
-                //     if (result.isConfirmed) {
-                //         f.submit();
-                //     }
-                // });
+               
                 Swal.fire({
                     toast: true,
                     position: 'top-end', // top-right

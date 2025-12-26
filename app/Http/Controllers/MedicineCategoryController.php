@@ -12,8 +12,7 @@ class MedicineCategoryController extends Controller
 {
     public function __construct()
     {
-        // If you have admin middleware:
-        // $this->middleware('auth');
+       
     }
 
     /**
@@ -101,30 +100,7 @@ class MedicineCategoryController extends Controller
             ->with('success', "Category '{$category->Name}' moved to trash.");
     }
 
-    /**
-     * Restore a soft-deleted resource.
-     */
-    // public function restore($id)
-    // {
-    //     $category = MedicineCategory::withTrashed()->findOrFail($id);
-    //     $category->restore();
-
-    //     return redirect()->route('admin.medicine-categories.index')
-    //         ->with('success', "Category '{$category->Name}' restored.");
-    // }
-
-    /**
-     * Permanently delete a soft-deleted resource.
-     */
-    // public function forceDelete($id)
-    // {
-    //     $category = MedicineCategory::withTrashed()->findOrFail($id);
-    //     $name = $category->Name;
-    //     $category->forceDelete();
-
-    //     return redirect()->route('admin.medicine-categories.index')
-    //         ->with('success', "Category '{$name}' permanently deleted.");
-    // }
+   
 
     /**
      * Toggle IsActive flag (AJAX friendly).

@@ -87,7 +87,7 @@
                         @endphp
 
                         @if($relatedRoute)
-                            {{-- <a href="{{ $relatedRoute }}" class="text-blue-600 text-sm hover:underline">Open {{ class_basename($n->related_type) }}</a> --}}
+                            
                         @endif
 
                         {{-- Mark as Read --}}

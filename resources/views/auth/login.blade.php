@@ -11,12 +11,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    {{-- @if($setting && $setting->favicon)
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/' . $setting->favicon) }}">
-    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->favicon) }}">
-    @else
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/passionchasers.png') }}">
-    @endif --}}
+    
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/images/passionchasers.png') }}">
 
 
@@ -55,7 +50,7 @@
                 {{ $setting->app_name }}
                 {{-- Ecommerce --}}
             </h1>
-            {{-- <p class="text-gray-600 mt-2">Inter-Office Ecommerce Management System</p> --}}
+           
         </div>
 
         <!-- Login Card -->
@@ -139,14 +134,7 @@
             </div>
 
             <!-- Footer Links -->
-            {{-- <div class="bg-gray-50 px-6 py-4 rounded-b-xl border-t border-gray-200">
-                <div class="text-center text-sm text-gray-600">
-                    Don't have an account?
-                    <a href="{{ route('register') }}" class="font-medium text-indigo-600 hover:text-indigo-500 ml-1">
-                        Register here
-                    </a>
-                </div>
-            </div> --}}
+         
         </div>
 
         <!-- Copyright Notice -->
