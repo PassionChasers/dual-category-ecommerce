@@ -34,14 +34,18 @@
       
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
             <!-- Search Form -->
-            <form method="GET" class="flex flex-wrap w-full gap-2">
-                <input type="text" name="search" value="" placeholder="Search Orders by ID..."
+            <form method="GET" id="orderSearchForm" class="flex flex-wrap w-full gap-2">
+                <input type="text" name="search" placeholder="Search Orders by Product or Customer..."
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <select name="status" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
-                    <option value="">All status</option>
-                    <option value="0" >Pending</option>
-                    <option value="1" >In Progress</option>
-                    <option value="2" >Completed</option>
+                    <option value="">All Status</option>
+                    <option value="pending">Pending</option>
+                    <option value="accepted">Accepted</option>
+                    <option value="preparing">Preparing</option>
+                    <option value="packed">Packed</option>
+                    <option value="out_for_delivery">Out for Delivery</option>
+                    <option value="delivered">Delivered</option>
+                    <option value="cancelled">Cancelled</option>
                 </select>
                 <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
                     <i class="fas fa-search"></i>
@@ -75,13 +79,14 @@
             <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2">#</th>
-                        <th class="px-4 py-2">Order Id</th>
+                        <th class="px-4 py-2">SN</th>
+                        {{-- <th class="px-4 py-2">Order Id</th> --}}
+                        <th class="px-4 py-2">Products</th>
                         <th class="px-4 py-2">Customer</th>
                         <th class="px-4 py-2">Contact</th>
                         <th class="px-4 py-2">Type</th>
                         <th class="px-4 py-2">Store</th>
-                        <th class="px-4 py-2">Total</th>
+                        {{-- <th class="px-4 py-2">Total</th> --}}
                         <th class="px-4 py-2">Payment</th>
                         <th class="px-4 py-2">Status</th>
                         <th class="px-4 py-2">Date</th>
@@ -90,7 +95,7 @@
                     </tr>
                 </thead>
 
-                <tbody class="divide-y divide-gray-200">
+                <tbody id="ordersTableBody" class="divide-y divide-gray-200">
                     @forelse($allOrders as $order)
                         <tr>
                             {{-- Serial --}}
@@ -99,8 +104,31 @@
                             </td>
 
                             {{-- Order Number --}}
-                            <td class="px-4 py-2 font-semibold">
+                            {{-- <td class="px-4 py-2 font-semibold">
                                 {{ $order->order_number }}
+                            </td> --}}
+
+                            {{-- Products --}}
+                            {{-- <td class="px-4 py-2 font-semibold">
+                                <div class="max-h-20 overflow-y-auto space-y-1 pr-1">
+                                @foreach($order->items as $index => $item)
+                                    {{ $item->product_name }}
+                                @endforeach
+                                </div>
+                            </td> --}}
+                            <td class="px-4 py-2 font-semibold">
+                                <div
+                                    class="max-h-20 overflow-y-auto space-y-1
+                                        [&::-webkit-scrollbar]:hidden
+                                        [-ms-overflow-style:none]
+                                        [scrollbar-width:none]"
+                                >
+                                    @foreach($order->items as $item)
+                                        <div class="text-sm">
+                                            {{ $item->product_name }}
+                                        </div>
+                                    @endforeach
+                                </div>
                             </td>
 
                             {{-- Customer --}}
@@ -132,9 +160,9 @@
                             </td>
 
                             {{-- Total --}}
-                            <td class="px-4 py-2 font-semibold">
+                            {{-- <td class="px-4 py-2 font-semibold">
                                 Rs. {{ number_format($order->total_amount, 2) }}
-                            </td>
+                            </td> --}}
 
                             {{-- Payment --}}
                             <td class="px-4 py-2">
@@ -273,242 +301,10 @@
                         }
                     });
                 });
-            });
-
-            // Debounce helper
-            function debounce(fn, delay=300) {
-                let t;
-                return function(...args) {
-                    clearTimeout(t);
-                    t = setTimeout(() => fn.apply(this, args), delay);
-                };
-            }
-
-            // AJAX user search
-            async function searchUsers(q) {
-                if (!q) return [];
-                const url = new URL("#", location.origin);
-                url.searchParams.set('q', q);
-                const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
-                if (!res.ok) return [];
-                return await res.json();
-            }
-
-            function showSuggestions(container, items) {
-                container.innerHTML = '';
-                if (!items.length) {
-                    container.classList.add('hidden');
-                    return;
-                }
-                items.forEach(user => {
-                    const div = document.createElement('div');
-                    div.className = 'px-3 py-2 cursor-pointer hover:bg-gray-100';
-                    div.innerText = `${user.name} (${user.email})`;
-                    div.dataset.id = user.id;
-                    container.appendChild(div);
-                });
-                container.classList.remove('hidden');
-            }
-
-            assignedToSearch.addEventListener('input', debounce(async () => {
-                const users = await searchUsers(assignedToSearch.value);
-                showSuggestions(assignedToSuggestions, users);
-            }));
-
-            assignedToSuggestions.addEventListener('click', e => {
-                if (e.target.dataset.id) {
-                    assignedToHidden.value = e.target.dataset.id;
-                    assignedToSearch.value = e.target.innerText;
-                    assignedToSuggestions.classList.add('hidden');
-                }
-            });
-        });
-    </script>
-
-
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const csrf = document.querySelector('meta[name="csrf-token"]').content;
-
-            const showToast = (icon, message) => {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: icon,
-                    title: message,
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-            };
-
-            // Helper for dynamic color update
-            const setSelectColor = (select, type, value) => {
-                select.classList.remove('bg-yellow-100','text-yellow-800','bg-blue-100','text-blue-800','bg-green-100','text-green-800','bg-red-100','text-red-800');
-                if (type === 'status') {
-                    if (value == 0) select.classList.add('bg-yellow-100','text-yellow-800');
-                    else if (value == 1) select.classList.add('bg-blue-100','text-blue-800');
-                    else select.classList.add('bg-green-100','text-green-800');
-                } else if (type === 'priority') {
-                    if (value == 1) select.classList.add('bg-red-100','text-red-800');
-                    else if (value == 2) select.classList.add('bg-yellow-100','text-yellow-800');
-                    else select.classList.add('bg-green-100','text-green-800');
-                }
-            };
-
-            // --- STATUS CHANGE ---
-            document.querySelectorAll('.task-status-select').forEach(select => {
-                select.addEventListener('change', async e => {
-                    const taskId = select.dataset.taskId;
-                    const newStatus = select.value;
-
-                    const confirm = await Swal.fire({
-                        title: 'Change Status?',
-                        text: 'Are you sure you want to update task status?',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Yes, update it',
-                        cancelButtonText: 'Cancel'
-                    });
-
-                    if (!confirm.isConfirmed) {
-                        window.location.reload();
-                        return;
-                    }
-
-                    try {
-                        const res = await fetch(`{{ url('/tasks') }}/${taskId}/status`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': csrf
-                            },
-                            body: JSON.stringify({ status: newStatus })
-                        });
-
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.message || 'Failed');
-
-                        showToast('success', data.message);
-                        setSelectColor(select, 'status', newStatus);
-                        if (Number(newStatus) === 2) select.disabled = true;
-
-                    } catch (err) {
-                        showToast('error', err.message);
-                        window.location.reload();
-                    }
-                });
-            });
-
-            // --- PRIORITY CHANGE ---
-            document.querySelectorAll('.task-priority-select').forEach(select => {
-                select.addEventListener('change', async e => {
-                    const taskId = select.dataset.taskId;
-                    const priorityId = select.value;
-
-                    try {
-                        const res = await fetch(`{{ url('/tasks') }}/${taskId}/priority`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'Accept': 'application/json',
-                                'X-CSRF-TOKEN': csrf
-                            },
-                            body: JSON.stringify({ priority_id: priorityId })
-                        });
-
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.message || 'Failed');
-
-                        showToast('success', data.message);
-                        setSelectColor(select, 'priority', priorityId);
-                    } catch (err) {
-                        showToast('error', err.message);
-                    }
-                });
-            });
-        });
-        // Accept or reject
-        document.addEventListener('DOMContentLoaded', () => {
-            const csrf = document.querySelector('meta[name="csrf-token"]').content;
-
-            const showToast = (icon, message) => {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: icon,
-                    title: message,
-                    showConfirmButton: false,
-                    timer: 2000,
-                    timerProgressBar: true
-                });
-            };
-
-            // Accept
-            document.querySelectorAll('.accept-btn').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const taskId = btn.dataset.id;
-                    const confirmed = await Swal.fire({
-                        title: 'Accept Task?',
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonText: 'Yes',
-                    });
-                    if (!confirmed.isConfirmed) return;
-
-                    try {
-                        const res = await fetch(`{{ url('/tasks') }}/${taskId}/approve`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrf,
-                                'Accept': 'application/json'
-                            },
-                        });
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.message || 'Failed');
-
-                        showToast('success', data.message);
-                        setTimeout(() => location.reload(), 2000); // reload after toast disappears
-                    } catch (err) {
-                        showToast('error', err.message);
-                    }
-                });
-            });
-
-            // Reject
-            document.querySelectorAll('.reject-btn').forEach(btn => {
-                btn.addEventListener('click', async () => {
-                    const taskId = btn.dataset.id;
-                    const confirmed = await Swal.fire({
-                        title: 'Reject Task?',
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Yes',
-                    });
-                    if (!confirmed.isConfirmed) return;
-
-                    try {
-                        const res = await fetch(`{{ url('/tasks') }}/${taskId}/reject`, {
-                            method: 'PATCH',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrf,
-                                'Accept': 'application/json'
-                            },
-                        });
-                        const data = await res.json();
-                        if (!res.ok) throw new Error(data.message || 'Failed');
-
-                        showToast('success', data.message);
-                        setTimeout(() => location.reload(), 2000); // reload after toast disappears
-                    } catch (err) {
-                        showToast('error', err.message);
-                    }
-                });
-            });
+            });  
         });
     </script>
 @endpush
+
+
+    

@@ -69,19 +69,11 @@
                             +980000000
                         </td>
                         <td class="px-4 py-2 flex space-x-2">
-                            {{-- @if(auth()->user()->designation->hierarchy_level == 0) --}}
-                            <button class="edit-btn text-indigo-600 hover:text-indigo-800"
-                                {{-- data-id="{{ $institution->id }}" data-client="{{ $institution->client_id }}"
-                                data-name="{{ $institution->name }}" data-email="{{ $institution->email }}"
-                                data-phone="{{ $institution->phone }}" data-address="{{ $institution->address }}"
-                                data-website="{{ $institution->website }}" --}}
-                                >
+                            <button class="edit-btn text-indigo-600 hover:text-indigo-800">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            {{-- @endif --}}
                             <form method="get" action="#"
                                 class="inline delete-form">
-                                {{-- @csrf @method('DELETE') --}}
                                 <button type="submit" class="text-red-600 hover:text-red-800">
                                     <i class="fas fa-trash"></i>
                                 </button>

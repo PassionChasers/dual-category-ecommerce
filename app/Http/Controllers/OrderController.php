@@ -78,16 +78,16 @@ class OrderController extends Controller
     }
 
     //Food orders
-    public function foodOrders()
-    {
-        $foodOrders = Order::where('order_type', 'food')
-        // ->where('restaurant_id', auth()->user()->restaurant->id)
-        ->latest()
-        ->paginate(5);
+    // public function foodOrders()
+    // {
+    //     $foodOrders = Order::where('order_type', 'food')
+    //     // ->where('restaurant_id', auth()->user()->restaurant->id)
+    //     ->latest()
+    //     ->paginate(5);
 
-        return view('admin.orders.food-order.index',compact('foodOrders'));
+    //     return view('admin.orders.food-order.index',compact('foodOrders'));
 
-    }
+    // }
 
     //Medicine Orders
     public function medicineOrders()
@@ -109,4 +109,39 @@ class OrderController extends Controller
         ->get();
 
     }
+
+
+public function foodOrders(Request $request)
+{
+    $foodOrdersQuery = Order::with(['items', 'user', 'restaurant'])
+        ->where('order_type', 'food'); // only food orders
+
+    // Search by Order ID
+    if ($request->filled('search')) {
+        $foodOrdersQuery->where('order_number', 'like', '%' . $request->search . '%');
+    }
+
+    // Filter by Status
+    if ($request->filled('status')) {
+        switch ($request->status) {
+            case '0': // Pending
+                $foodOrdersQuery->where('order_status', 'pending');
+                break;
+            case '1': // In Progress
+                $foodOrdersQuery->whereIn('order_status', ['accepted', 'preparing', 'packed']);
+                break;
+            case '2': // Completed
+                $foodOrdersQuery->where('order_status', 'delivered');
+                break;
+        }
+    }
+
+    // Paginate results (keep query parameters for search/filter)
+    $foodOrders = $foodOrdersQuery->latest()->paginate(5)->withQueryString();
+
+    return view('admin.orders.food-order.index', compact('foodOrders'));
+}
+
+
+
 }

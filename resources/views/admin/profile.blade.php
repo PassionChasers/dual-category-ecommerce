@@ -31,33 +31,15 @@
             <div class="flex flex-col items-center pb-6 border-b border-gray-200 mb-6">
                 <div class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center cursor-pointer"
                     id="profile-picture-wrapper">
-                    {{-- @if(auth()->user()->employeeDetail && auth()->user()->employeeDetail->profile_picture) --}}
-                    <img 
-                    {{-- src="{{ asset(auth()->user()->employeeDetail->profile_picture) }}" --}}
-                    src=""{{ asset('storage/images/default-user.png') }}"
-                        class="w-full h-full object-cover" id="profile-picture-preview">
-                    {{-- @else
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor" id="profile-picture-placeholder">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <img src="" class="hidden w-full h-full object-cover" id="profile-picture-preview">
-                    @endif --}}
-                    <div
-                        class="absolute inset-0 bg-black/50 flex justify-center items-center opacity-0 hover:opacity-100 transition">
+                    <img src="{{ asset('storage/images/default-user.png') }}" class="w-full h-full object-cover" id="profile-picture-preview">
+                    <div class="absolute inset-0 bg-black/50 flex justify-center items-center opacity-0 hover:opacity-100 transition">
                         <span class="text-xs text-white">Change Photo</span>
                     </div>
                 </div>
                 <input type="file" name="profile_picture" id="profile-picture-input" class="hidden" accept="image/*">
 
                 <div class="flex gap-2 mt-3">
-                    <button type="button" id="change-picture-btn"
-                        class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-100">Change</button>
-                    {{-- <button type="button" id="remove-picture-btn"
-                        class="px-3 py-1 text-sm border border-red-300 text-red-600 rounded-md hover:bg-red-50 {{ !auth()->user()->profile_picture ? 'hidden' : '' }}">
-                        Remove
-                    </button> --}}
+                    <button type="button" id="change-picture-btn" class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-100">Change</button>
                 </div>
             </div>
 

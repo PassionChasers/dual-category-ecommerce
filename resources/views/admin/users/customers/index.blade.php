@@ -167,14 +167,6 @@
                 <!-- Address -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Address</label>
-                    {{-- <select name="department" id="user-department"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        >
-                        <option value="">Select Department</option>
-                        @foreach($users as $user)
-                        <option value="{{ $user->department }}">{{ $user->department }}</option>
-                        @endforeach
-                    </select> --}}
                     <input type="text" name="address" id="customer_address" value=" "
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         required>
@@ -241,8 +233,6 @@
             contactNumberInput.value = btn.dataset.contact_number;
             emailInput.value = btn.dataset.email;
             passwordInput.value = ''; // leave blank
-            // designationInput.value = btn.dataset.designation;
-            // departmentInput.value = btn.dataset.department;
             modal.classList.remove('hidden');
         });
     });

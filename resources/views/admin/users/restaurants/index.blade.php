@@ -84,25 +84,6 @@
 
                         <td class="px-4 py-4 flex text-gray-600">
                              <div class="mx-2 my-2">
-                                {{-- <button class="view-btn text-indigo-600"
-                                    data-id="{{ $store->RestaurantId }}"
-                                    data-name="{{ $store->Name }}"
-                                    data-license="{{ $store->LicenseNumber }}"
-                                    data-gstin="{{ $store->GSTIN }}"
-                                    data-pan="{{ $store->PAN }}"
-                                    data-open="{{ $store->OpenTime }}"
-                                    data-close="{{ $store->CloseTime }}"
-                                    data-delivery="{{ $store->DeliveryFee }}"
-                                    data-min="{{ $store->MinOrder }}"
-                                    data-lat="{{ $store->Latitude }}"
-                                    data-lng="{{ $store->Longitude }}"
-                                    data-priority="{{ $store->Priority }}"
-                                    data-active="{{ $store->IsActive }}"
-                                    data-featured="{{ $store->IsFeatured }}"
-                                    data-image="{{ $store->image }}"
-                                >
-                                    <i class="fas fa-eye"></i>
-                                </button> --}}
                                 <a href="{{ route('admin.restaurants.show', $store->RestaurantId) }}">
                                     <i class="fas fa-eye"></i>
                                 </a>

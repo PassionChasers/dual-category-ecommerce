@@ -126,7 +126,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/medicine-order-list', [OrderController::class, 'medicineOrders'])->name('orders.medicine.index');
 
     Route::get('product-orders-details/{id}', [OrderController::class, 'show'])->name('orders.show');
+    
     Route::delete('delete-product-orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
+
+    Route::get('orders/search', [OrderController::class, 'search'])->name('orders.search');
+
 
     /*
     |----------------------------------------------------------------------
@@ -299,8 +303,3 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::delete('admin/restaurants/{id}', [RestaurantController::class, 'destroy'])->name('restaurants.destroy');
     Route::get('admin/restaurants/{id}', [RestaurantController::class, 'show'])->name('restaurants.show');
 });
-
-// Route::get('/admin/restaurants', [RestaurantController::class, 'allRestaurants'])->middleware('auth')->name('admin.restaurants.list');
-// Route::put('admin/restaurants/{id}', [RestaurantController::class, 'update'])->middleware('auth')->name('admin.restaurants.update');
-// Route::delete('admin/restaurants/{id}', [RestaurantController::class, 'destroy'])->middleware('auth')->name('admin.restaurants.destroy');
-// Route::get('admin/restaurants/{id}', [RestaurantController::class, 'show'])->name('admin.restaurants.show');
