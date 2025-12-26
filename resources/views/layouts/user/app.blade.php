@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>{{ $settings->app_name ?? 'Ecommerce' }} - Modern Task Management System</title>
-    {{-- <script src="https://cdn.tailwindcss.com"></script> --}}
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -192,8 +192,6 @@
     @endif
     </script>
 
-    {{-- <div class="flex h-screen overflow-hidden"> --}}
-        {{-- @include('layouts.user.partials.sidebar') --}}
         <div class="flex flex-col flex-1">
             <!-- Top navigation -->
 
