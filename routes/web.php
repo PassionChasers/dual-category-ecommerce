@@ -31,6 +31,8 @@ use App\Http\Controllers\MedicineCategoryController;
 use App\Http\Controllers\MedicalStoreController;
 use App\Http\Controllers\RestaurantController;
 
+
+
 /*
 |--------------------------------------------------------------------------
 | Maintenance / Utility Routes
