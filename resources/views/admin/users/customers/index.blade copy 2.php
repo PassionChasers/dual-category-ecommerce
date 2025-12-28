@@ -164,6 +164,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // AJAX search/filter/pagination
+
     // Set input values from URL parameters
     function setInputsFromUrl(url) {
         const params = new URLSearchParams(url.split('?')[1] || '');

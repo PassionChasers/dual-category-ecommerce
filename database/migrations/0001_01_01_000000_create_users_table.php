@@ -21,6 +21,7 @@ return new class extends Migration
             $table->enum('role', ['customer', 'restaurant', 'medical_store', 'delivery', 'admin','sub_admin']);
             $table->string('contact_number');
             $table->text('address')->nullable();
+            $table->boolean('IsActive')->default('false');
             $table->rememberToken();
             $table->timestamps();
         });

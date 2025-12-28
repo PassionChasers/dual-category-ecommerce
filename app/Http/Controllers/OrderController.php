@@ -70,38 +70,112 @@ class OrderController extends Controller
     }
 
 
-    // All orders
-    public function allOrders()
+    //----------------------
+    //  All orders
+    //----------------------
+    public function allOrders(Request $request)
     {
-        $allOrders = Order::latest()->paginate(5);
-        return view('admin.orders.index',compact('allOrders'));
+        $query = Order::query();
+
+        // Search by product name (order_items table)
+
+        if ($request->filled('search')) {
+
+            $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->whereHas('items', function ($q) use ($search) {
+                $q->where('product_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        //Filter by order status
+        if ($request->filled('orderStatus')) {
+            $query->where('order_status', $request->orderStatus);
+        }
+
+        // Paginate results with query parameters
+        $allOrders = $query->latest()->paginate(5)->appends($request->all());
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.orders.searchedProducts', compact('allOrders'))->render();
+        }
+        //Normal load
+        return view('admin.orders.index', compact('allOrders'));
     }
 
-    //Food orders
-    // public function foodOrders()
-    // {
-    //     $foodOrders = Order::where('order_type', 'food')
-    //     // ->where('restaurant_id', auth()->user()->restaurant->id)
-    //     ->latest()
-    //     ->paginate(5);
-
-    //     return view('admin.orders.food-order.index',compact('foodOrders'));
-
-    // }
-
-    //Medicine Orders
-    public function medicineOrders()
+    //----------------------
+    // Food orders
+    //----------------------
+    public function foodOrders(Request $request)
     {
-        $medicineOrders = Order::where('order_type', 'medicine')
-        // ->where('medicalstore_id', auth()->user()->medicalStore->MedicalStoreId)
-        ->latest()
-        ->paginate(5);
+        $query = Order::query()->where('order_type', 'food');
 
-        return view('admin.orders.medicine-order.index',compact('medicineOrders'));
+        // Search by product name (order_items table)
+        if ($request->filled('search')) {
+
+            $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->whereHas('items', function ($q) use ($search) {
+                $q->where('product_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        //Filter by order status
+        if ($request->filled('orderStatus')) {
+            $query->where('order_status', $request->orderStatus);
+        }
+
+        // Paginate results with query parameters
+        $foodOrders = $query->latest()->paginate(5)->appends($request->all());
+        $allOrders = $foodOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.orders.searchedProducts', compact('allOrders'))->render();
+        }
+        //Normal load
+        return view('admin.orders.food-order.index', compact('foodOrders'));
+    }
+
+    //---------------------
+    // Medicine Orders
+    //---------------------
+    public function medicineOrders(Request $request)
+    {
+        $query = Order::query()->where('order_type', 'medicine');
+
+        // Search by product name (order_items table)
+        if ($request->filled('search')) {
+
+            $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->whereHas('items', function ($q) use ($search) {
+                $q->where('product_name', 'like', '%' . $search . '%');
+            });
+        }
+
+        //Filter by order status
+        if ($request->filled('orderStatus')) {
+            $query->where('order_status', $request->orderStatus);
+        }
+
+        // Paginate results with query parameters
+        $medicineOrders = $query->latest()->paginate(5)->appends($request->all());
+        $allOrders = $medicineOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.orders.searchedProducts', compact('allOrders'))->render();
+        }
+        //Normal load
+        return view('admin.orders.medicine-order.index', compact('medicineOrders'));
 
     }
 
-    //Customer Orders
+    //----------------------
+    // Customer Orders
+    //----------------------
     public function customersOrders()
     {
         $customerOrders = Order::where('user_id', auth()->id())
@@ -109,39 +183,6 @@ class OrderController extends Controller
         ->get();
 
     }
-
-
-public function foodOrders(Request $request)
-{
-    $foodOrdersQuery = Order::with(['items', 'user', 'restaurant'])
-        ->where('order_type', 'food'); // only food orders
-
-    // Search by Order ID
-    if ($request->filled('search')) {
-        $foodOrdersQuery->where('order_number', 'like', '%' . $request->search . '%');
-    }
-
-    // Filter by Status
-    if ($request->filled('status')) {
-        switch ($request->status) {
-            case '0': // Pending
-                $foodOrdersQuery->where('order_status', 'pending');
-                break;
-            case '1': // In Progress
-                $foodOrdersQuery->whereIn('order_status', ['accepted', 'preparing', 'packed']);
-                break;
-            case '2': // Completed
-                $foodOrdersQuery->where('order_status', 'delivered');
-                break;
-        }
-    }
-
-    // Paginate results (keep query parameters for search/filter)
-    $foodOrders = $foodOrdersQuery->latest()->paginate(5)->withQueryString();
-
-    return view('admin.orders.food-order.index', compact('foodOrders'));
-}
-
 
 
 }

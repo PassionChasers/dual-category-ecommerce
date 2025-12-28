@@ -33,24 +33,20 @@
 
       
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+
             <!-- Search Form -->
-            <form method="GET" id="orderSearchForm" class="flex flex-wrap w-full gap-2">
-                <input type="text" name="search" placeholder="Search Orders by Product or Customer..."
-                    class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <select name="status" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
-                    <option value="">All Status</option>
-                    <option value="pending">Pending</option>
-                    <option value="accepted">Accepted</option>
-                    <option value="preparing">Preparing</option>
-                    <option value="packed">Packed</option>
-                    <option value="out_for_delivery">Out for Delivery</option>
-                    <option value="delivered">Delivered</option>
-                    <option value="cancelled">Cancelled</option>
-                </select>
-                <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
-                    <i class="fas fa-search"></i>
-                </button>
-            </form>
+            <input type="text" id="search" name="search" placeholder="Search by ProductName or CustomerName..." value="{{ request('search') }}"
+                class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <select id="orderStatus" name="orderStatus" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
+                <option value="">All Status</option>
+                <option value="pending" {{ request('orderStatus')=='pending' ? 'selected' : '' }}>Pending</option>
+                <option value="accepted" {{ request('orderStatus')=='accepted' ? 'selected' : '' }}>Accepted</option>
+                <option value="preparing" {{ request('orderStatus')=='preparing' ? 'selected' : '' }}>Preparing</option>
+                <option value="packed" {{ request('orderStatus')=='packed' ? 'selected' : '' }}>Packed</option>
+                <option value="out_for_delivery" {{ request('orderStatus')=='out_for_delivery' ? 'selected' : '' }}>Out for Delivery</option>
+                <option value="delivered" {{ request('orderStatus')=='delivered' ? 'selected' : '' }}>Delivered</option>
+                <option value="cancelled" {{ request('orderStatus')=='cancelled' ? 'selected' : '' }}>Cancelled</option>
+            </select>
 
             <div class="flex gap-2 mt-2 md:mt-0">
                 <!-- New Task Button -->
@@ -66,16 +62,15 @@
                 </a>
             </div>
         </div>
-
     </div>
 
     <!-- Table -->
 
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-         <div class="px-6 py-4 border-b">
+    <div class="bg-white shadow rounded-lg overflow-hidden" id="tableData">
+        <div class="px-6 py-4 border-b">
             <h2 class="font-semibold text-gray-800">Orders List</h2>
         </div>
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto" id="tableData">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
@@ -85,7 +80,7 @@
                         <th class="px-4 py-2">Customer</th>
                         <th class="px-4 py-2">Contact</th>
                         <th class="px-4 py-2">Type</th>
-                        <th class="px-4 py-2">Store</th>
+                        <th class="px-4 py-2">MedicalStore/Restaurant</th>
                         {{-- <th class="px-4 py-2">Total</th> --}}
                         <th class="px-4 py-2">Payment</th>
                         <th class="px-4 py-2">Status</th>
@@ -95,7 +90,7 @@
                     </tr>
                 </thead>
 
-                <tbody id="ordersTableBody" class="divide-y divide-gray-200">
+                <tbody id="tableBody" class="divide-y divide-gray-200">
                     @forelse($allOrders as $order)
                         <tr>
                             {{-- Serial --}}
@@ -206,39 +201,35 @@
                             </td>
 
                             {{-- Actions --}}
-                            <td class="px-4 py-2 flex space-x-3">
+                            <td class="px-4 py-2">
+                                <div class="flex items-center justify-center gap-3 h-full">
 
-                                {{-- ------------
-                                VIEW ORDERS DETAILS 
-                                -------------------}}
-                                <a href="{{ route('orders.show', $order->id) }}"
-                                class="text-gray-600 hover:text-gray-900">
-                                    <i class="fas fa-eye"></i>
-                                </a>
+                                    {{-- VIEW --}}
+                                    <a href="{{ route('orders.show', $order->id) }}"
+                                    class="text-gray-600 hover:text-gray-900">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
 
-                                {{---------------- 
-                                EDIT ORDER 
-                                ----------------}}
-                                {{-- <a href="#"
-                                class="text-indigo-600 hover:text-indigo-800">
-                                    <i class="fas fa-edit"></i>
-                                </a> --}}
-                                <a href="javascript:void(0)"
-                                class="text-indigo-600 hover:text-indigo-800 edit-btn"
-                                data-id="{{ $order->id }}">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                                    {{-- EDIT --}}
+                                    <a href="javascript:void(0)"
+                                    class="text-indigo-600 hover:text-indigo-800 edit-btn"
+                                    data-id="{{ $order->id }}">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
 
-                                {{-- ------------
-                                DELETE ORDER 
-                                ----------------}}
-                                <form method="POST" action="{{ route('orders.destroy', $order->id) }}" class="inline delete-form" data-status="{{ $order->order_status }}">
-                                    @csrf @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-800">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
+                                    {{-- DELETE --}}
+                                    <form method="POST"
+                                        action="{{ route('orders.destroy', $order->id) }}"
+                                        class="delete-form"
+                                        data-status="{{ $order->order_status }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
 
+                                </div>
                             </td>
                         </tr>
                         @empty
@@ -254,10 +245,12 @@
 
         {{-- PAGINATION --}}
         <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
-            <div class="text-sm text-gray-600">
+            <div class="text-sm text-gray-600" id="pageNo">
                 Showing <strong>{{ $allOrders->firstItem() ?? 0 }}</strong> to <strong>{{ $allOrders->lastItem() ?? 0 }}</strong> of <strong>{{ $allOrders->total() }}</strong> results
             </div>
-            <div class="mt-3 md:mt-0">{{ $allOrders->links() }}</div>
+            <div class="mt-3 md:mt-0" id="pageLink">
+                {{ $allOrders->links() }}
+            </div>
         </div>
     </div>
 </div>
@@ -266,44 +259,100 @@
 
 @push('scripts')
     {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
+    <!-- AJAX Script -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            
-            // Delete confirmation
-            document.querySelectorAll('.delete-form').forEach(form => {
-                form.addEventListener('submit', function (e) {
-                    e.preventDefault();
 
-                    const status = form.dataset.status;
-                    const blockedStatuses = ['accepted', 'preparing', 'packed'];
+        // Function to set input values from URL parameters
+        function setInputsFromUrl(url) {
+            const params = new URLSearchParams(url.split('?')[1] || '');
 
-                    if (blockedStatuses.includes(status)) {
-                        Swal.fire({
-                            title: 'Action Not Allowed!',
-                            text: 'This order cannot be deleted in its current status.',
-                            icon: 'warning',
-                            confirmButtonColor: '#6c757d'
-                        });
-                        return;
-                    }
+            if (params.has('search')) {
+                document.getElementById('search').value = params.get('search');
+            }
 
+            if (params.has('orderStatus')) {
+                document.getElementById('orderStatus').value = params.get('orderStatus');
+            }
+        }
+
+        // Function to fetch data via AJAX
+        function fetchData(url = null) {
+            const search = document.getElementById('search').value;
+            const orderStatus = document.getElementById('orderStatus').value;
+
+            let fetchUrl = url 
+                ? url 
+                : `/product-order-list?search=${search}&orderStatus=${orderStatus}`;
+
+            //Keep inputs filled when clicking pagination
+            if (url) {
+                setInputsFromUrl(url);
+            }
+
+            fetch(fetchUrl, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('tableData').innerHTML = data;
+
+                // Restore input values after replacing table (important)
+                if (url) setInputsFromUrl(url);
+            });
+        }
+
+        //Live search
+        document.getElementById('search').addEventListener('keyup', function () {
+            fetchData();
+        });
+
+        //Status filter
+        document.getElementById('orderStatus').addEventListener('change', function () {
+            fetchData();
+        });
+
+        //AJAX pagination (IMPORTANT)
+        document.addEventListener('click', function (e) {
+            const pageLink = e.target.closest('.pagination a');
+            if (pageLink) {
+                e.preventDefault();
+                fetchData(pageLink.getAttribute('href'));
+            }
+
+            //For Delete Confirmation
+            const form = e.target.closest('.delete-form');
+            if (form) {
+                e.preventDefault();
+
+                const status = form.dataset.status;
+                const blockedStatuses = ['accepted', 'preparing', 'packed'];
+
+                if (blockedStatuses.includes(status)) {
                     Swal.fire({
-                        title: 'Are you sure?',
-                        text: 'This action cannot be undone!',
+                        title: 'Action Not Allowed!',
+                        text: 'This order cannot be deleted in its current status.',
                         icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#e3342f',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Yes, delete it!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
+                        confirmButtonColor: '#6c757d'
                     });
+                    return;
+                }
+                Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e3342f',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();
+                    }
                 });
-            });  
+            }
         });
     </script>
+
 @endpush
 
 
