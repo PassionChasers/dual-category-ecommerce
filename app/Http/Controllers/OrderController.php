@@ -75,130 +75,153 @@ class OrderController extends Controller
     //----------------------
     public function allOrders(Request $request)
     {
-        $query = Order::query();
+        $query = Order::with([
+            'items', 
+            'customer.user'
+        ]);
 
-        // Search by product name (order_items table)
-
+        // Search by Product Name OR Customer Name
         if ($request->filled('search')) {
+            $search = trim($request->search);
 
-            $search = ucfirst(strtolower($request->search)); // First letter uppercase
+            $query->where(function ($q) use ($search) {
 
-            $query->whereHas('items', function ($q) use ($search) {
-                $q->where('product_name', 'like', '%' . $search . '%');
+                // Search by product name (order_items table)
+                $q->whereHas('items', function ($q2) use ($search) {
+                    $q2->where('ItemName', 'like', "%{$search}%");
+                })
+
+                // OR search by customer name (customers table)
+                ->orWhereHas('customer', function ($q3) use ($search) {
+                    $q3->where('Name', 'like', "%{$search}%");
+                });
             });
         }
 
-        //Filter by order status
+        // Filter by Order Status
         if ($request->filled('orderStatus')) {
-            $query->where('order_status', $request->orderStatus);
+            $query->where('Status', $request->orderStatus);
         }
 
-        // Paginate results with query parameters
-        $allOrders = $query->latest()->paginate(5)->appends($request->all());
+        // Pagination (CreatedAt is custom column)
+        $allOrders = $query
+            ->latest('CreatedAt')
+            ->paginate(4)
+            ->appends($request->all());
 
-        //AJAX response
-        if($request->ajax()){
+        // AJAX response
+        if ($request->ajax()) {
             return view('admin.orders.searchedProducts', compact('allOrders'))->render();
         }
-        //Normal load
+
+        // Normal page load
         return view('admin.orders.index', compact('allOrders'));
     }
+
 
     //----------------------
     // Food orders
     //----------------------
+
     public function foodOrders(Request $request)
     {
-<<<<<<< HEAD
-        $query = Order::query()->where('order_type', 'food');
-=======
-        $foodOrders = Order::where('order_type', 'food')
-       
-        ->latest()
-        ->paginate(5);
->>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
+        $query = Order::with(['items', 'customer.user'])
 
-        // Search by product name (order_items table)
+            // Must have at least one Medicine item
+            ->whereHas('items', function ($q) {
+                $q->where('ItemType', 'MenuItem');
+            })
+
+            // Must NOT have any NON-Medicine item
+            ->whereDoesntHave('items', function ($q) {
+                $q->where('ItemType', '!=', 'MenuItem');
+            });
+
+        // Search by product or customer name
         if ($request->filled('search')) {
+            $search = trim($request->search);
 
-            $search = ucfirst(strtolower($request->search)); // First letter uppercase
-
-            $query->whereHas('items', function ($q) use ($search) {
-                $q->where('product_name', 'like', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('items', function ($q2) use ($search) {
+                    $q2->where('ItemName', 'like', "%{$search}%");
+                })
+                ->orWhereHas('customer', function ($q3) use ($search) {
+                    $q3->where('Name', 'like', "%{$search}%");
+                });
             });
         }
 
-        //Filter by order status
+        // Filter by order status
         if ($request->filled('orderStatus')) {
-            $query->where('order_status', $request->orderStatus);
+            $query->where('Status', $request->orderStatus);
         }
 
-        // Paginate results with query parameters
-        $foodOrders = $query->latest()->paginate(5)->appends($request->all());
-        $allOrders = $foodOrders;
+        $allOrders = $query
+            ->latest('CreatedAt')
+            ->paginate(4)
+            ->appends($request->all());
 
-        //AJAX response
-        if($request->ajax()){
-            return view('admin.orders.searchedProducts', compact('allOrders'))->render();
+        // AJAX response
+        if ($request->ajax()) {
+            return view('admin.orders.food-order.searchedProducts', compact('allOrders'))->render();
         }
-        //Normal load
-        return view('admin.orders.food-order.index', compact('foodOrders'));
+
+        return view('admin.orders.food-order.index', compact('allOrders'));
     }
+
 
     //---------------------
     // Medicine Orders
     //---------------------
+
     public function medicineOrders(Request $request)
     {
-        $query = Order::query()->where('order_type', 'medicine');
+        $query = Order::with(['items', 'customer.user'])
 
-        // Search by product name (order_items table)
+            // Must have at least one Medicine item
+            ->whereHas('items', function ($q) {
+                $q->where('ItemType', 'Medicine');
+            })
+
+            // Must NOT have any NON-Medicine item
+            ->whereDoesntHave('items', function ($q) {
+                $q->where('ItemType', '!=', 'Medicine');
+            });
+
+        // Search by product or customer name
         if ($request->filled('search')) {
+            $search = trim($request->search);
 
-            $search = ucfirst(strtolower($request->search)); // First letter uppercase
-
-            $query->whereHas('items', function ($q) use ($search) {
-                $q->where('product_name', 'like', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('items', function ($q2) use ($search) {
+                    $q2->where('ItemName', 'like', "%{$search}%");
+                })
+                ->orWhereHas('customer', function ($q3) use ($search) {
+                    $q3->where('Name', 'like', "%{$search}%");
+                });
             });
         }
 
-        //Filter by order status
+        // Filter by order status
         if ($request->filled('orderStatus')) {
-            $query->where('order_status', $request->orderStatus);
+            $query->where('Status', $request->orderStatus);
         }
 
-        // Paginate results with query parameters
-        $medicineOrders = $query->latest()->paginate(5)->appends($request->all());
-        $allOrders = $medicineOrders;
+        $allOrders = $query
+            ->latest('CreatedAt')
+            ->paginate(4)
+            ->appends($request->all());
 
-        //AJAX response
-        if($request->ajax()){
-            return view('admin.orders.searchedProducts', compact('allOrders'))->render();
+        // AJAX response
+        if ($request->ajax()) {
+            return view('admin.orders.medicine-order.searchedProducts', compact('allOrders'))->render();
         }
-        //Normal load
-        return view('admin.orders.medicine-order.index', compact('medicineOrders'));
 
+        return view('admin.orders.medicine-order.index', compact('allOrders'));
     }
 
-<<<<<<< HEAD
-    //----------------------
-    // Customer Orders
-    //----------------------
-=======
-    //Medicine Orders
-    public function medicineOrders()
-    {
-        $medicineOrders = Order::where('order_type', 'medicine')
-       
-        ->latest()
-        ->paginate(5);
-
-        return view('admin.orders.medicine-order.index',compact('medicineOrders'));
-
-    }
 
     //Customer Orders
->>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
     public function customersOrders()
     {
         $customerOrders = Order::where('user_id', auth()->id())

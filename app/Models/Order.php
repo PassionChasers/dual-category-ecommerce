@@ -9,6 +9,13 @@ class Order extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
+    const CREATED_AT = 'CreatedAt';
+    const UPDATED_AT = 'UpdatedAt';
+
+    // Specify custom table name
+    protected $table = 'Orders';
+    protected $primaryKey = 'OrderId';
+
     protected static function boot()
     {
         parent::boot();
@@ -19,42 +26,34 @@ class Order extends Model
     }
 
     protected $fillable = [
-        'user_id',
-        'order_type',
-        'restaurant_id',
-        'medicalstore_id',
-        'order_number',
-        'subtotal',
-        'delivery_charge',
-        'tax',
-        'discount',
-        'total_amount',
-        'payment_method',
-        'payment_status',
-        'order_status',
-        'delivery_address',
-        'notes',
-        'prescription_image',
-        'prescription_verified'
+        'CustomerId',
+        'OrderNumber',
+        'Status',
+        'TotalAmount',
+        'RequiresPrescription',
+        'PrescriptionImageUrl',
+        'DeliveryAddress',
+        'SpecialInstructions',
     ];
+    
 
-    // Order.php
-    public function user() {
-        return $this->belongsTo(User::class);
-    }
+    // public function restaurant() {
+    //     return $this->belongsTo(Restaurant::class,'restaurant_id', 'RestaurantId');
+    // }
 
-    public function restaurant() {
-        return $this->belongsTo(Restaurant::class,'restaurant_id', 'RestaurantId');
-    }
-
-    public function medicalstore() {
-        return $this->belongsTo(MedicalStore::class, 'medicalstore_id', 'MedicalStoreId');
-    }
+    // public function medicalstore() {
+    //     return $this->belongsTo(MedicalStore::class, 'medicalstore_id', 'MedicalStoreId');
+    // }
 
     // Order.php
     public function items()
     {
-        return $this->hasMany(OrderItem::class, 'order_id', 'id');
+        return $this->hasMany(OrderItem::class, 'OrderId', 'OrderId'); //First is related model(OrderItem), second is foreign key in OrderItem, third is local key in Order
+    }
+
+    // Relationship with Customer
+    public function customer() {
+        return $this->belongsTo(Customer::class, 'CustomerId', 'CustomerId');
     }
 
     /**

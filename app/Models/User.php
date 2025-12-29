@@ -20,10 +20,10 @@ class User extends Authenticatable
 
     protected $table = 'Users';
 
-    // ✅ Primary key (assumed)
+    // Primary key (assumed)
     protected $primaryKey = 'UserId'; // change if different
 
-    // ✅ PostgreSQL case-sensitive columns
+    // PostgreSQL case-sensitive columns
     protected $fillable = [
         'Name',
         'Email',
@@ -32,7 +32,7 @@ class User extends Authenticatable
         'AvatarUrl',
     ];
 
-    // ✅ Laravel should not expect created_at / updated_at
+    // Laravel should not expect created_at / updated_at
     public $timestamps = false;
 
        /**
@@ -58,4 +58,12 @@ class User extends Authenticatable
     {
         return $this->attributes['Name'] ?? null;
     }
+
+    // User → Customer
+    public function customer()
+    {
+        return $this->hasOne(Customer::class, 'UserId', 'UserId');
+    }
+
+    
 }
