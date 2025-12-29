@@ -6,26 +6,26 @@ use Illuminate\Database\Eloquent\Model;
 
 class Medicine extends Model
 {
+    // Table name with capital first letter
     protected $table = 'Medicines';
 
     // Primary key is UUID string
     protected $primaryKey = 'MedicineId';
-    public $incrementing = false;      // important: not auto-incrementing
-    protected $keyType = 'string';     // store as string
+    public $incrementing = false;
+    protected $keyType = 'string';
 
+    // Timestamps enabled (uses created_at & updated_at from migrations)
+    public $timestamps = true;
     const CREATED_AT = 'CreatedAt';
     const UPDATED_AT = 'UpdatedAt';
 
     protected $fillable = [
-        'MedicineId',
-        'MedicalStoreId',
         'MedicineCategoryId',
         'Name',
         'GenericName',
         'BrandName',
         'Description',
         'Price',
-        'MRP',
         'PrescriptionRequired',
         'Manufacturer',
         'ExpiryDate',
@@ -49,18 +49,15 @@ class Medicine extends Model
         'TotalReviews' => 'integer',
     ];
 
-
     protected static function booted()
     {
         static::saving(function ($model) {
             if (empty($model->MedicineId)) {
-                $model->MedicineId = (string) Str::uuid();
+                $model->MedicineId = (string) \Illuminate\Support\Str::uuid();
             }
         });
     }
 
-    
-    // optional relations (no foreign key forced)
     public function category()
     {
         return $this->belongsTo(\App\Models\MedicineCategory::class, 'MedicineCategoryId', 'MedicineCategoryId');
@@ -70,7 +67,4 @@ class Medicine extends Model
     {
         return $this->belongsTo(\App\Models\MedicalStore::class, 'MedicalStoreId', 'MedicalStoreId');
     }
-
-   
-    
 }

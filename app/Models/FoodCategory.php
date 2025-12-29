@@ -9,7 +9,8 @@ class FoodCategory extends Model
 {
     use HasFactory;
 
-    protected $table = 'foodcategories'; // your table name
+    // Table name with capital first letter
+    protected $table = 'FoodCategories';
 
     protected $primaryKey = 'FoodCategoryId'; // UUID primary key
     public $incrementing = false;
@@ -21,9 +22,10 @@ class FoodCategory extends Model
         'IsActive',
     ];
 
-    // Timestamps
-    const CREATED_AT = 'CreatedAt';
-    const UPDATED_AT = 'UpdatedAt';
+    // Timestamps enabled
+    public $timestamps = true;
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
 
     // Relationship: FoodCategory has many Foods
     public function foods()

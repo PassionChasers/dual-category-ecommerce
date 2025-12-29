@@ -48,17 +48,9 @@ class ModelObserver
             $ip = Request::ip() ?? '127.0.0.1';
             $location = null;
 
-            // Attempt to resolve location, but don’t break if fails
-            try {
-                if ($ip && class_exists(Location::class)) {
-                    $position = Location::get($ip);
-                    if ($position) {
-                        $location = trim(($position->cityName ?? '') . ', ' . ($position->countryName ?? ''), ', ');
-                    }
-                }
-            } catch (\Throwable $e) {
-                $location = null; // fallback silently
-            }
+            // OPTIMIZED: Removed blocking IP geolocation lookup
+            // It was slow and called on every model change.
+            // If needed, dispatch as async job instead.
 
             $oldValues = $old ? json_encode($old, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR) : null;
             $newValues = $new ? json_encode($new, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR) : null;

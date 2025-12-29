@@ -9,6 +9,7 @@ use App\Models\Setting;
 use App\Observers\ModelObserver;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Database\Eloquent\Model;
 
 
@@ -27,29 +28,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $modelsPath = app_path('Models');
-        $modelFiles = File::allFiles($modelsPath);
+        // OPTIMIZED: Only observe critical models to reduce database overhead
+        $observedModels = [
+            \App\Models\User::class,
+            \App\Models\Order::class,
+            \App\Models\Invoice::class,
+            \App\Models\Customer::class,
+            \App\Models\MedicalStore::class,
+            \App\Models\Restaurant::class,
+        ];
 
-        foreach ($modelFiles as $file) {
-            // Get full namespace of the model class
-            $class = 'App\\Models\\' . $file->getBasename('.php');
-
-            // Skip AuditLog model to prevent recursive logging
-            if ($class === \App\Models\AuditLog::class) {
-                continue;
-            }
-
-            // Register observer only if it's a valid Eloquent model
-            if (class_exists($class) && is_subclass_of($class, Model::class)) {
-                $class::observe(ModelObserver::class);
+        foreach ($observedModels as $model) {
+            if (class_exists($model)) {
+                $model::observe(ModelObserver::class);
             }
         }
-        // Share 'setting' with all views
+
+        // OPTIMIZED: Cache settings to avoid repeated database queries (1 hour TTL)
         View::composer('*', function ($view) {
-            $setting = Setting::first();
+            $setting = Cache::remember('app_settings', 3600, function () {
+                return Setting::first();
+            });
             $view->with('setting', $setting);
         });
-
-        
     }
 }

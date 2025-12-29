@@ -6,7 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $table = 'products'; // Name of your existing table
-    protected $primaryKey = 'id';  // Primary key column
-    public $timestamps = false;   // Disable timestamps if not used
+    // Standard snake_case table name
+    protected $table = 'products';
+
+    // Primary key is int from migrations
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    protected $keyType = 'int';
+
+    // Timestamps enabled
+    public $timestamps = true;
+
+    protected $fillable = [];
 }
+
