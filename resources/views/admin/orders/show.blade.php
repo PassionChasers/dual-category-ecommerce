@@ -19,7 +19,7 @@
         {{-- Header --}}
         <div class="mb-6 flex items-center justify-between">
             <div>
-                <h1 class="text-2xl font-semibold text-gray-800">Order #{{ $order->order_number }}</h1>
+                <h1 class="text-2xl font-semibold text-gray-800">Order #{{ $order->OrderNumber }}</h1>
                 <p class="text-gray-500 mt-1">Details of this order</p>
             </div>
 
@@ -36,20 +36,20 @@
                 {{-- Customer Info --}}
                 <div>
                     <h2 class="font-semibold text-gray-700 mb-2">Customer Info</h2>
-                    <p class="text-gray-600">{{ $order->user->name ?? '-' }}</p>
-                    <p class="text-gray-600">{{ $order->user->contact_number ?? '-' }}</p>
-                    <p class="text-gray-600">{{ $order->delivery_address ?? '-' }}</p>
+                    <p class="text-gray-600">{{ $order->customer->Name ?? '-' }}</p>
+                    <p class="text-gray-600">{{ $order->customer->user->Phone ?? 'N/A' }}</p>
+                    <p class="text-gray-600">{{ $order->DeliveryAddress ?? '-' }}</p>
                 </div>
 
                 {{-- Store / Restaurant Info --}}
-                <div>
+                {{-- <div>
                     <h2 class="font-semibold text-gray-700 mb-2">Store / Restaurant</h2>
                     <p class="text-gray-600">{{ $order->medicalstore?->Name ?? $order->restaurant?->Name ?? '-' }}</p>
                     <p class="text-gray-600 text-sm">{{ ucfirst($order->order_type) }}</p>
-                </div>
+                </div> --}}
 
                 {{-- Payment Info --}}
-                <div>
+                {{-- <div>
                     <h2 class="font-semibold text-gray-700 mb-2">Payment Info</h2>
                     <p class="text-gray-600">Method: {{ strtoupper($order->payment_method) }}</p>
                     <p class="text-gray-600">
@@ -67,7 +67,7 @@
                     <p class="text-gray-600">Tax: ₹{{ number_format($order->tax,2) }}</p>
                     <p class="text-gray-600">Discount: ₹{{ number_format($order->discount,2) }}</p>
                     <p class="text-gray-800 font-semibold">Total: ₹{{ number_format($order->total_amount,2) }}</p>
-                </div>
+                </div> --}}
 
                 {{-- Order Status & Notes --}}
                 <div>
@@ -80,23 +80,24 @@
                             @case('preparing') <span class="text-orange-700">Preparing</span> @break
                             @case('packed') <span class="text-purple-700">Packed</span> @break
                             @case('out_for_delivery') <span class="text-indigo-700">Out for Delivery</span> @break
-                            @case('delivered') <span class="text-green-700">Delivered</span> @break
-                            @case('cancelled') <span class="text-red-700">Cancelled</span> @break
+                            @case('Completed') <span class="text-green-700">Delivered</span> @break
+                            @case('Cancelled') <span class="text-red-700">Cancelled</span> @break
                             @default <span class="text-gray-700">Unknown</span>
                         @endswitch
                     </p>
-                    <p class="text-gray-600 mt-2">Notes: {{ $order->notes ?? '-' }}</p>
+                    <p class="text-gray-600 mt-2">Notes: {{ $order->SpecialInstructions ?? '-' }}</p>
                 </div>
 
                 {{-- Prescription (if medicine) --}}
                 @if($order->order_type === 'medicine')
                 <div>
                     <h2 class="font-semibold text-gray-700 mb-2">Prescription</h2>
-                    @if($order->prescription_image)
-                        <img src="{{ asset('storage/'.$order->prescription_image) }}" alt="Prescription" class="thumb-lg mb-2">
-                        <p class="text-sm">
-                            Verified: {!! $order->prescription_verified ? '<span class="text-green-700">Yes</span>' : '<span class="text-red-700">No</span>' !!}
+                    <p class="text-sm">
+                            Require: {!! $order->RequiresPrescription ? '<span class="text-green-700">Yes</span>' : '<span class="text-red-700">No</span>' !!}
                         </p>
+                    @if($order->PrescriptionImageUrl)
+                        <img src="{{ asset('storage/'.$order->PrescriptionImageUrl) }}" alt="Prescription" class="thumb-lg mb-2">
+                        
                     @else
                         <p class="text-gray-500">No prescription uploaded</p>
                     @endif
@@ -113,7 +114,7 @@
                         <table class="min-w-full divide-y divide-gray-200 text-sm">
                             <thead class="bg-gray-100">
                                 <tr>
-                                    <th class="px-4 py-2">#</th>
+                                    {{-- <th class="px-4 py-2">#</th> --}}
                                     <th class="px-4 py-2">Product / Medicine</th>
                                     <th class="px-4 py-2">Quantity</th>
                                     <th class="px-4 py-2">Price (₹)</th>
@@ -123,14 +124,23 @@
                             <tbody class="divide-y divide-gray-200">
                                 @foreach($order->items as $index => $item)
                                 <tr>
-                                    <td class="px-4 py-2">{{ $index + 1 }}</td>
-                                    <td class="px-4 py-2">{{ $item->product_name }}</td>
-                                    <td class="px-4 py-2">{{ $item->quantity }}</td>
-                                    <td class="px-4 py-2">{{ number_format($item->price, 2) }}</td>
-                                    <td class="px-4 py-2">{{ number_format($item->total, 2) }}</td>
+                                    
+                                    <td class="px-4 py-2">
+                                        @foreach($order->items as $item)
+                                            {{-- <td class="px-4 py-2">{{ $index + 1 }}</td> --}}
+                                            {{-- <div class="text-sm">
+                                                {{ $item->ItemType }}
+                                            </div> --}}
+                                            <td class="px-4 py-2">{{ $item->ItemName }}</td>
+                                            <td class="px-4 py-2">{{ $item->Quantity }}</td>
+                                            <td class="px-4 py-2">{{ $item->UnitPrice }}</td>
+                                        @endforeach
+                                    </td>
+                                    <td class="px-4 py-2">{{ $order->TotalAmount }}</td>
                                 </tr>
                                 @endforeach
                             </tbody>
+{{--                             
                             <tfoot class="bg-gray-100">
                                 <tr>
                                     <th colspan="4" class="px-4 py-2 text-right font-semibold">Subtotal</th>
@@ -152,7 +162,7 @@
                                     <th colspan="4" class="px-4 py-2 text-right font-bold text-lg">Total</th>
                                     <th class="px-4 py-2 font-bold text-lg">₹{{ number_format($order->total_amount, 2) }}</th>
                                 </tr>
-                            </tfoot>
+                            </tfoot> --}}
                         </table>
                     @else
                         <p class="text-gray-500">No items found for this order.</p>
@@ -161,7 +171,7 @@
 
                 {{-- Footer --}}
                 <div class="px-6 py-4 border-t text-sm text-gray-600 flex justify-between">
-                    <div>Order Created: {{ $order->created_at->format('Y-m-d H:i') }}</div>
+                    <div>Order Created: {{ $order->CreatedAt->format('Y-m-d H:i') }}</div>
                     <div class="no-print">
                         <a href="{{ route('orders.index') }}" class="px-3 py-2 bg-gray-100 rounded hover:bg-gray-200">Back</a>
                     </div>

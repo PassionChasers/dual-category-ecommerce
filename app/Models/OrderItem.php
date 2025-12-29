@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class OrderItem extends Model
 {
     // Standard snake_case table name (from migrations)
-    protected $table = 'order_items';
+     protected $table = 'OrderItems';
 
     // Primary key is UUID
     protected $primaryKey = 'OrderItemId';
-    public $incrementing = false;
-    protected $keyType = 'string';
+
+    public $incrementing = false; // if using UUID
+    protected $keyType = 'string'; // if UUID
 
     // Timestamps enabled
     public $timestamps = true;
@@ -37,6 +38,6 @@ class OrderItem extends Model
 
     public function order()
     {
-        return $this->belongsTo(Order::class, 'order_id', 'id');
+        return $this->belongsTo(Order::class, 'OrderId', 'OrderId'); //Second is foreign key in OrderItem, third is local key in Order
     }
 }

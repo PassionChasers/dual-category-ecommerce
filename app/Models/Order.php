@@ -6,8 +6,9 @@ use Illuminate\Support\Str;
 
 class Order extends Model
 {
-    // Table name with standard snake_case
-    protected $table = 'orders';
+
+    // Specify custom table name
+    protected $table = 'Orders';
 
     // Primary key is UUID
     protected $primaryKey = 'OrderId';
@@ -16,7 +17,8 @@ class Order extends Model
 
     // Timestamps enabled
     public $timestamps = true;
-      const CREATED_AT = 'CreatedAt';
+
+    const CREATED_AT = 'CreatedAt';
     const UPDATED_AT = 'UpdatedAt';
 
     protected $fillable = [
@@ -46,24 +48,22 @@ class Order extends Model
         });
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id', 'id');
-    }
+    // public function restaurant() {
+    //     return $this->belongsTo(Restaurant::class,'restaurant_id', 'RestaurantId');
+    // }
 
-    public function restaurant()
-    {
-        return $this->belongsTo(Restaurant::class, 'restaurant_id', 'RestaurantId');
-    }
-
-    public function medicalstore()
-    {
-        return $this->belongsTo(MedicalStore::class, 'medicalstore_id', 'MedicalStoreId');
-    }
+    // public function medicalstore() {
+    //     return $this->belongsTo(MedicalStore::class, 'medicalstore_id', 'MedicalStoreId');
+    // }
 
     public function items()
     {
-        return $this->hasMany(OrderItem::class, 'order_id', 'id');
+        return $this->hasMany(OrderItem::class, 'OrderId', 'OrderId'); //First is related model(OrderItem), second is foreign key in OrderItem, third is local key in Order
+    }
+
+    // Relationship with Customer
+    public function customer() {
+        return $this->belongsTo(Customer::class, 'CustomerId', 'CustomerId');
     }
 
     /**
