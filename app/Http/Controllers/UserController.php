@@ -11,10 +11,40 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
+    // public function index()
+    // {
         
-        $users = User::whereIn('role', ['admin', 'sub_admin'])->paginate(8);
+    //     $users = User::whereIn('role', ['admin', 'sub_admin'])->paginate(8);
+    //     return view('admin.users.index', compact('users'));
+    // }
+
+    public function index(Request $request)
+    {
+        $query = User::query()->where('role', 'admin');
+
+        // Search by user name
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+            // $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        //Filter by online status
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus);
+        }
+
+        // Paginate results with query parameters
+        $users = $query->latest()->paginate(5)->appends($request->all());
+        // $allOrders = $medicineOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.users.searchedUsers', compact('users'))->render();
+        }
+        //Normal load
         return view('admin.users.index', compact('users'));
     }
 

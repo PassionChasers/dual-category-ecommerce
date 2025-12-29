@@ -8,7 +8,7 @@ class Setting extends Model
 {
     // Allow mass assignment for all attributes
     // protected $guarded = [];
-    // protected $table = 'Settings';
+    protected $table = 'Settings';
 
     // OR if you want to be strict, use fillable instead of guarded:
     protected $fillable = [

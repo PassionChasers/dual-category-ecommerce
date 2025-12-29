@@ -25,11 +25,23 @@ class User extends Authenticatable
 
     // ✅ PostgreSQL case-sensitive columns
     protected $fillable = [
+<<<<<<< HEAD
+        'name',
+        'email',
+        'password',
+        'designation',
+        'department',
+        'role',
+        'contact_number',
+        'address',
+        'IsActive',
+=======
         'Name',
         'Email',
         'PasswordHash',
         'Phone',
         'AvatarUrl',
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
     ];
 
     // ✅ Laravel should not expect created_at / updated_at
@@ -38,7 +50,20 @@ class User extends Authenticatable
        /**
      * Tell Laravel which column stores the password
      */
+<<<<<<< HEAD
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'IsActive' => 'boolean',
+        'password' => 'hashed',
+    ];
+
+    /**
+     * Automatically generate UUID when creating a new user.
+     */
+    protected static function boot()
+=======
     public function getAuthPassword()
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
     {
         return $this->attributes['PasswordHash'];
     }
