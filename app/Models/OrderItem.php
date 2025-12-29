@@ -6,16 +6,33 @@ use Illuminate\Database\Eloquent\Model;
 
 class OrderItem extends Model
 {
+    // Standard snake_case table name (from migrations)
     protected $table = 'order_items';
-    public $incrementing = false; // if using UUID
-    protected $keyType = 'string'; // if UUID
+
+    // Primary key is UUID
+    protected $primaryKey = 'OrderItemId';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    // Timestamps enabled
+    public $timestamps = true;
 
     protected $fillable = [
-        'order_id',
-        'product_name',
-        'quantity',
-        'price',
-        'total',
+        'OrderId',
+        'ItemId',
+        'ItemType',
+        'ItemName',
+        'ItemImageUrl',
+        'Quantity',
+        'UnitPrice',
+        'BusinessId',
+        'BusinessType',
+        'ForwardedAt',
+        'AssignedByAdmin',
+        'Status',
+        'AcceptedAt',
+        'ReadyAt',
+        'CompletedAt',
     ];
 
     public function order()

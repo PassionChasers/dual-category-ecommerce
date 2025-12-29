@@ -7,17 +7,22 @@ use Illuminate\Support\Str;
 
 class MedicineCategory extends Model
 {
+    // Table name with capital first letter
     protected $table = 'MedicineCategories';
+
     protected $primaryKey = 'MedicineCategoryId';
     public $incrementing = false;
     protected $keyType = 'string';
-    public $timestamps = false;
+
+    // Timestamps enabled (migrations use timestamps())
+    public $timestamps = true;
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
 
     protected $fillable = [
         'Name',
         'Description',
         'IsActive',
-        'CreatedAt',
     ];
 
     protected static function booted()

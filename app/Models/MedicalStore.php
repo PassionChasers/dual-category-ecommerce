@@ -6,18 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class MedicalStore extends Model
 {
-    protected $table = 'medicalstores';
+    // Table name with capital first letter
+    protected $table = 'MedicalStores';
 
-    // primary key is UUID non-incrementing
+    // Primary key is UUID non-incrementing
     protected $primaryKey = 'MedicalStoreId';
     public $incrementing = false;
     protected $keyType = 'string';
 
-    // if you want Laravel to manage timestamps, keep $timestamps = true
+    // Timestamps enabled (uses created_at & updated_at)
     public $timestamps = true;
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
 
     protected $fillable = [
-        'MedicalStoreId',
         'UserId',
         'Name',
         'Slug',
@@ -25,7 +27,6 @@ class MedicalStore extends Model
         'GSTIN',
         'PAN',
         'IsActive',
-        'IsFeatured',
         'OpenTime',
         'CloseTime',
         'RadiusKm',
@@ -34,8 +35,6 @@ class MedicalStore extends Model
         'Latitude',
         'Longitude',
         'Priority',
-        'ImageUrl',
-        'CreatedAt'
     ];
 
     // Casts
@@ -52,15 +51,12 @@ class MedicalStore extends Model
         'Priority' => 'integer',
     ];
 
-    // If you need a slug auto-generation helper
+    // Boot method for UUID generation and slug
     public static function booted()
     {
         static::creating(function ($model) {
             if (empty($model->MedicalStoreId)) {
                 $model->MedicalStoreId = (string) \Illuminate\Support\Str::uuid();
-            }
-            if (empty($model->CreatedAt)) {
-                $model->CreatedAt = now();
             }
             if (empty($model->Slug) && !empty($model->Name)) {
                 $model->Slug = \Illuminate\Support\Str::slug($model->Name);

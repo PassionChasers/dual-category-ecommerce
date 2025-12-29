@@ -9,9 +9,10 @@ class Food extends Model
 {
     use HasFactory;
 
-    protected $table = 'foods';
+    // Table name with capital first letter
+    protected $table = 'Foods';
 
-    protected $primaryKey = 'FoodId'; // UUID primary key
+    protected $primaryKey = 'FoodId';
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -24,11 +25,14 @@ class Food extends Model
         'MRP',
         'ImageUrl',
         'IsActive',
+        'AvgRating',
+        'TotalReviews',
     ];
 
-    // Timestamps
-    const CREATED_AT = 'CreatedAt';
-    const UPDATED_AT = 'UpdatedAt';
+    // Timestamps enabled
+    public $timestamps = true;
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
 
     // Relationships
     public function category()

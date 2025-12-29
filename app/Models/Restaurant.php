@@ -2,30 +2,34 @@
 
 namespace App\Models;
 
+use GuzzleHttp\Promise\Is;
 use Illuminate\Database\Eloquent\Model;
 
 class Restaurant extends Model
 {
-     protected $table = 'restaurants';
+    // Table name with capital first letter
+    protected $table = 'Restaurants';
 
-    // primary key is UUID non-incrementing
+    // Primary key is UUID non-incrementing
     protected $primaryKey = 'RestaurantId';
     public $incrementing = false;
     protected $keyType = 'string';
 
-    // if you want Laravel to manage timestamps, keep $timestamps = true
+    // Timestamps enabled (uses created_at & updated_at)
     public $timestamps = true;
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = 'updated_at';
 
     protected $fillable = [
-        'RestaurantId',
         'UserId',
         'Name',
         'Slug',
         'LicenseNumber',
         'GSTIN',
+        'IsPureVeg',
+        'CuisineType',
+        'PrepTimeMin',
         'PAN',
-        'IsActive',
-        'IsFeatured',
         'OpenTime',
         'CloseTime',
         'RadiusKm',
@@ -35,7 +39,9 @@ class Restaurant extends Model
         'Longitude',
         'Priority',
         'ImageUrl',
-        'CreatedAt'
+        'IsActive',
+        'Address',
+        'FLICNo',
     ];
 
     // Casts
@@ -52,15 +58,12 @@ class Restaurant extends Model
         'Priority' => 'integer',
     ];
 
-    // If you need a slug auto-generation helper
+    // Boot method for UUID generation and slug
     public static function booted()
     {
         static::creating(function ($model) {
             if (empty($model->RestaurantId)) {
                 $model->RestaurantId = (string) \Illuminate\Support\Str::uuid();
-            }
-            if (empty($model->CreatedAt)) {
-                $model->CreatedAt = now();
             }
             if (empty($model->Slug) && !empty($model->Name)) {
                 $model->Slug = \Illuminate\Support\Str::slug($model->Name);

@@ -52,32 +52,63 @@ class DashboardController extends Controller
         $activityFeed = collect();
 
         try {
-            // --- Top-level counts ---
-            $stats['totalUsers']         = User::count();
-            $stats['activeUsers']        = User::where('is_active', true)->count();
+            // OPTIMIZED: Use single query with aggregates instead of multiple count() calls
+            $userStats = DB::table('users')
+                ->select(
+                    DB::raw('COUNT(*) as total'),
+                    DB::raw('SUM(CASE WHEN is_active = true THEN 1 ELSE 0 END) as active')
+                )
+                ->first();
+
+            $stats['totalUsers']  = (int) ($userStats->total ?? 0);
+            $stats['activeUsers'] = (int) ($userStats->active ?? 0);
+
+            // Quick counts for simple models
             $stats['totalCustomers']     = Customer::count();
             $stats['totalMedicalStores'] = MedicalStore::count();
             $stats['totalRestaurants']   = Restaurant::count();
 
-            $stats['totalOrders']   = Order::count();
-            $stats['pendingOrders'] = Order::where('status', 'pending')->count();
-            $stats['inProgressOrders'] = Order::whereIn('status', [
-                'accepted', 'preparing', 'dispatched'
-            ])->count();
-            $stats['completedOrders'] = Order::whereIn('status', [
-                'delivered', 'completed'
-            ])->count();
-            $stats['cancelledOrders'] = Order::where('status', 'cancelled')->count();
+            // OPTIMIZED: Single query for all order statuses
+            $orderStats = DB::table('orders')
+                ->select(
+                    DB::raw('COUNT(*) as total'),
+                    DB::raw('SUM(CASE WHEN status = "pending" THEN 1 ELSE 0 END) as pending'),
+                    DB::raw('SUM(CASE WHEN status IN ("accepted", "preparing", "dispatched") THEN 1 ELSE 0 END) as inprogress'),
+                    DB::raw('SUM(CASE WHEN status IN ("delivered", "completed") THEN 1 ELSE 0 END) as completed'),
+                    DB::raw('SUM(CASE WHEN status = "cancelled" THEN 1 ELSE 0 END) as cancelled')
+                )
+                ->first();
 
-            $stats['totalRevenue'] = (float) Invoice::where('payment_status', 'paid')
-                ->sum('total_amount');
+            $stats['totalOrders']       = (int) ($orderStats->total ?? 0);
+            $stats['pendingOrders']     = (int) ($orderStats->pending ?? 0);
+            $stats['inProgressOrders']  = (int) ($orderStats->inprogress ?? 0);
+            $stats['completedOrders']   = (int) ($orderStats->completed ?? 0);
+            $stats['cancelledOrders']   = (int) ($orderStats->cancelled ?? 0);
 
-            $stats['avgOrderValue'] = (float) Invoice::where('payment_status', 'paid')
-                ->avg('total_amount');
+            // OPTIMIZED: Single query for revenue stats
+            $invoiceStats = DB::table('invoices')
+                ->where('payment_status', 'paid')
+                ->select(
+                    DB::raw('SUM(total_amount) as total_revenue'),
+                    DB::raw('AVG(total_amount) as avg_value')
+                )
+                ->first();
 
-            $stats['totalRewardCoinsIssued'] = (int) RewardCoin::sum('amount');
-            $stats['totalRewardCoinsUsed']   = (int) RewardCoin::where('is_used', true)->sum('amount');
+            $stats['totalRevenue'] = (float) ($invoiceStats->total_revenue ?? 0);
+            $stats['avgOrderValue'] = (float) ($invoiceStats->avg_value ?? 0);
 
+            // OPTIMIZED: Single query for reward coins
+            $coinStats = DB::table('reward_coins')
+                ->select(
+                    DB::raw('SUM(amount) as issued'),
+                    DB::raw('SUM(CASE WHEN is_used = true THEN amount ELSE 0 END) as used')
+                )
+                ->first();
+
+            $stats['totalRewardCoinsIssued'] = (int) ($coinStats->issued ?? 0);
+            $stats['totalRewardCoinsUsed']   = (int) ($coinStats->used ?? 0);
+
+            // Quick counts for ads and notifications
             $stats['activeAds']           = Ad::where('is_active', true)->count();
             $stats['unreadNotifications'] = Notification::where('is_read', false)->count();
 
