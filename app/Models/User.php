@@ -14,16 +14,18 @@ class User extends Authenticatable
     /**
      * Primary key is UUID
      */
-    protected $primaryKey = 'id';
+    // protected $primaryKey = 'id';
     public $incrementing = false;       // not auto-incrementing
     protected $keyType = 'string';      // stored as string
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    protected $table = 'Users';
+
+    // ✅ Primary key (assumed)
+    protected $primaryKey = 'UserId'; // change if different
+
+    // ✅ PostgreSQL case-sensitive columns
     protected $fillable = [
+<<<<<<< HEAD
         'name',
         'email',
         'password',
@@ -33,23 +35,22 @@ class User extends Authenticatable
         'contact_number',
         'address',
         'IsActive',
+=======
+        'Name',
+        'Email',
+        'PasswordHash',
+        'Phone',
+        'AvatarUrl',
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
+    // ✅ Laravel should not expect created_at / updated_at
+    public $timestamps = false;
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
+       /**
+     * Tell Laravel which column stores the password
      */
+<<<<<<< HEAD
     protected $casts = [
         'email_verified_at' => 'datetime',
         'IsActive' => 'boolean',
@@ -60,13 +61,26 @@ class User extends Authenticatable
      * Automatically generate UUID when creating a new user.
      */
     protected static function boot()
+=======
+    public function getAuthPassword()
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
     {
-        parent::boot();
+        return $this->attributes['PasswordHash'];
+    }
 
-        static::creating(function ($model) {
-            if (empty($model->{$model->getKeyName()})) {
-                $model->{$model->getKeyName()} = (string) Str::uuid();
-            }
-        });
+    /**
+     * Accessor for auth()->user()->email
+     */
+    public function getEmailAttribute()
+    {
+        return $this->attributes['Email'] ?? null;
+    }
+
+    /**
+     * Accessor for auth()->user()->name
+     */
+    public function getNameAttribute()
+    {
+        return $this->attributes['Name'] ?? null;
     }
 }

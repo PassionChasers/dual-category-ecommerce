@@ -210,12 +210,21 @@
                                         <i class="fas fa-eye"></i>
                                     </a>
 
+<<<<<<< HEAD
                                     {{-- EDIT --}}
                                     <a href="javascript:void(0)"
                                     class="text-indigo-600 hover:text-indigo-800 edit-btn"
                                     data-id="{{ $order->id }}">
                                         <i class="fas fa-edit"></i>
                                     </a>
+=======
+                                
+                                <a href="javascript:void(0)"
+                                class="text-indigo-600 hover:text-indigo-800 edit-btn"
+                                data-id="{{ $order->id }}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
 
                                     {{-- DELETE --}}
                                     <form method="POST"
@@ -258,8 +267,12 @@
 @endsection
 
 @push('scripts')
+<<<<<<< HEAD
     {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
     <!-- AJAX Script -->
+=======
+   
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
     <script>
 
         // Function to set input values from URL parameters

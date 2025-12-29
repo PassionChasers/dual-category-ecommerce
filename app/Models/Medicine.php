@@ -71,13 +71,6 @@ class Medicine extends Model
         return $this->belongsTo(\App\Models\MedicalStore::class, 'MedicalStoreId', 'MedicalStoreId');
     }
 
-    // protected static function booted()
-    // {
-    //     static::creating(function ($model) {
-    //         if (empty($model->MedicineId)) {
-    //             $model->MedicineId = (string) Str::uuid();
-    //         }
-    //     });
-    // }
+   
     
 }

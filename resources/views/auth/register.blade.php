@@ -54,76 +54,7 @@
                 <h2 class="text-xl font-semibold text-gray-800 text-center">Create Account</h2>
                 <p class="text-gray-500 text-xs text-center mt-1">Join to access the dashboard</p>
 
-                {{-- <form class="mt-4 space-y-3" action="{{ route('register.store')}}">
-                    <!-- Full Name -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Full Name</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-user text-gray-400 text-sm"></i>
-                            </div>
-                            <input id="fullName" name="fullName" type="text" required
-                                class="text-sm pl-9 w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition input-focus"
-                                placeholder="John Doe">
-                        </div>
-                    </div>
-
-                    <!-- Email -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Email</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-envelope text-gray-400 text-sm"></i>
-                            </div>
-                            <input id="email" type="email" name="email" required
-                                class="text-sm pl-9 w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition input-focus"
-                                placeholder="you@example.com">
-                        </div>
-                    </div>
-
-                    <!-- Password -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Password</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400 text-sm"></i>
-                            </div>
-                            <input id="password" type="password" required
-                                class="text-sm pl-9 w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition input-focus"
-                                placeholder="••••••••">
-                        </div>
-                    </div>
-
-                    <!-- Confirm Password -->
-                    <div>
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Confirm Password</label>
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <i class="fas fa-lock text-gray-400 text-sm"></i>
-                            </div>
-                            <input id="confirmPassword" type="password" required
-                                class="text-sm pl-9 w-full p-2.5 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition input-focus"
-                                placeholder="••••••••">
-                        </div>
-                    </div>
-
-                    <!-- Terms -->
-                    <div class="flex items-center pt-1">
-                        <input id="terms" type="checkbox"
-                            class="h-3.5 w-3.5 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" required>
-                        <label for="terms" class="ml-2 block text-xs text-gray-600">
-                            I agree to the <a href="#" class="text-indigo-600 hover:underline">terms</a>
-                        </label>
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="pt-2">
-                        <button type="submit"
-                            class="w-full py-2.5 px-4 border border-transparent rounded-md text-xs font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-indigo-500 transition">
-                            Create Account
-                        </button>
-                    </div>
-                </form> --}}
+                
                 <form class="mt-4 space-y-3" action="{{ route('register.store') }}" method="POST">
                     @csrf
 

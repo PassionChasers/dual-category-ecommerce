@@ -2,39 +2,10 @@
 @section('title', 'Verify Email | Passion Chasers')
 
 @push('styles')
-{{-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css"> --}}
+
 @endpush
 @section('contents')
-{{-- <div class="min-h-screen flex items-center justify-center p-4 bg-gray-50">
-    <div class="bg-white p-8 rounded-xl shadow-md max-w-md w-full text-center">
-        <h1 class="text-2xl font-bold text-gray-800 mb-4">Verify Your Email</h1>
-        <p class="text-gray-600 mb-6">
-            Before accessing tasks, please verify your email address. Check your inbox for the verification link.
-        </p>
 
-        @if(session('resent'))
-            <div class="mb-4 text-green-600 font-medium">
-                A fresh verification link has been sent to your email address.
-            </div>
-        @endif
-
-        <form method="POST" action="{{ route('verification.send') }}">
-            @csrf
-            <button type="submit"
-                class="py-2 px-4 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">
-                Resend Verification Email
-            </button>
-        </form>
-
-        <form method="POST" action="{{ route('logout') }}" class="mt-4">
-            @csrf
-            <button type="submit"
-                class="py-2 px-4 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition">
-                Logout
-            </button>
-        </form>
-    </div>
-</div> --}}
 <div class="min-h-screen flex items-center justify-center bg-gray-100 p-6">
     <div class="bg-white shadow-xl rounded-xl px-8 py-6 max-w-md w-full text-center border border-gray-200">
   

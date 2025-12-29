@@ -13,7 +13,7 @@
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
             <form method="GET" class="flex space-x-2">
                 <input type="text" name="search" 
-                {{-- value="{{ $search }}"  --}}
+                
                 placeholder="Search logs..."
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">

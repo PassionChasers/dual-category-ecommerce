@@ -112,9 +112,7 @@ class MedicalStoreController extends Controller
 
     public function destroy($id)
     {
-        // $medicalStore = MedicalStore::findOrFail($id);
-        // $medicalStore->delete();
-
+       
         
 
         $store = MedicalStore::findOrFail($id);
@@ -124,7 +122,7 @@ class MedicalStoreController extends Controller
         $store->delete();
 
         return redirect()->route('admin.medicalstores.list')->with('success', 'Medical store deleted.');
-        // return redirect()->route('admin.medicalstores.index')->with('success','Medical store deleted.');
+       
     }
 
     public function toggleActive($id)

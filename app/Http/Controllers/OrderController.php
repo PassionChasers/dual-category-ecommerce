@@ -109,7 +109,14 @@ class OrderController extends Controller
     //----------------------
     public function foodOrders(Request $request)
     {
+<<<<<<< HEAD
         $query = Order::query()->where('order_type', 'food');
+=======
+        $foodOrders = Order::where('order_type', 'food')
+       
+        ->latest()
+        ->paginate(5);
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
 
         // Search by product name (order_items table)
         if ($request->filled('search')) {
@@ -173,9 +180,25 @@ class OrderController extends Controller
 
     }
 
+<<<<<<< HEAD
     //----------------------
     // Customer Orders
     //----------------------
+=======
+    //Medicine Orders
+    public function medicineOrders()
+    {
+        $medicineOrders = Order::where('order_type', 'medicine')
+       
+        ->latest()
+        ->paginate(5);
+
+        return view('admin.orders.medicine-order.index',compact('medicineOrders'));
+
+    }
+
+    //Customer Orders
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
     public function customersOrders()
     {
         $customerOrders = Order::where('user_id', auth()->id())

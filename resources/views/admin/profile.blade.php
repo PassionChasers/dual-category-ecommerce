@@ -31,15 +31,32 @@
             <div class="flex flex-col items-center pb-6 border-b border-gray-200 mb-6">
                 <div class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-200 bg-gray-100 flex items-center justify-center cursor-pointer"
                     id="profile-picture-wrapper">
+<<<<<<< HEAD
                     <img src="{{ asset('storage/images/default-user.png') }}" class="w-full h-full object-cover" id="profile-picture-preview">
                     <div class="absolute inset-0 bg-black/50 flex justify-center items-center opacity-0 hover:opacity-100 transition">
+=======
+                    
+                    <img 
+                  
+                    src="{{ asset('storage/images/default-user.png') }}"
+                        class="w-full h-full object-cover" id="profile-picture-preview">
+                   
+                    <div
+                        class="absolute inset-0 bg-black/50 flex justify-center items-center opacity-0 hover:opacity-100 transition">
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
                         <span class="text-xs text-white">Change Photo</span>
                     </div>
                 </div>
                 <input type="file" name="profile_picture" id="profile-picture-input" class="hidden" accept="image/*">
 
                 <div class="flex gap-2 mt-3">
+<<<<<<< HEAD
                     <button type="button" id="change-picture-btn" class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-100">Change</button>
+=======
+                    <button type="button" id="change-picture-btn"
+                        class="px-3 py-1 text-sm border border-gray-300 rounded-md hover:bg-gray-100">Change</button>
+                   
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
                 </div>
             </div>
 
@@ -61,14 +78,14 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Phone Number</label>
                     <input type="text" name="phone"
-                        {{-- value="{{ old('phone', auth()->user()->employeeDetail->phone ?? '') }}" --}}
+                   
                         value="9806789543"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Address</label>
                     <input type="text" name="address"
-                        {{-- value="{{ old('address', auth()->user()->employeeDetail->address ?? '') }}" --}}
+                        
                         value="Kathmandu, Nepal"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
                 </div>
@@ -78,15 +95,15 @@
             <h3 class="text-lg font-semibold text-gray-700 mb-4">Organization Information</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                 <input type="text" 
-                {{-- value="{{ auth()->user()->institution->name ?? 'Not assigned' }}" --}}
+                
                 value="ABC Institution"
                     class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100" disabled>
                 <input type="text" 
-                {{-- value="{{ auth()->user()->designation->designation_name ?? 'Not assigned' }}" --}}
+               
                 value="Manager"
                     class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100" disabled>
                 <input type="text" 
-                {{-- value="{{ auth()->user()->department->department_name ?? 'Not assigned' }}" --}}
+               
                 value="Sales Department"
                     class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100 md:col-span-2"
                     disabled>

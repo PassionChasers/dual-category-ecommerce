@@ -314,6 +314,7 @@
                     }
                 });
 
+<<<<<<< HEAD
                 // Build HTML for popup
                 const html = `
                     <!doctype html>
@@ -330,6 +331,26 @@
                     </body>
                     </html>
                 `;
+=======
+        // Wait until images in popup have loaded, then print
+        const checkAndPrint = () => {
+            const imgs = Array.from(popupDoc.querySelectorAll('img'));
+            let promises = imgs.map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => img.addEventListener('load', resolve, { once:true }));
+            });
+            Promise.all(promises).then(() => {
+                // Small timeout to let layout settle
+                setTimeout(() => {
+                    w.focus();
+                    w.print();
+                   
+                }, 250);
+            }).catch(() => {
+                setTimeout(() => { w.focus(); w.print(); }, 300);
+            });
+        };
+>>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
 
                 // Open popup window
                 const w = window.open('', '_blank', 'width=900,height=1100,scrollbars=yes');

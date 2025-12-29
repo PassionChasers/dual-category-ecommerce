@@ -1,5 +1,5 @@
 <div class="px-6 py-4 border-b">
-    <h3 class="text-lg font-medium text-gray-900">Customer List</h3>
+    <h3 class="text-lg font-medium text-gray-900">User Management</h3>
 </div>
 <div class="overflow-x-auto">
     <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
@@ -42,7 +42,7 @@
                         data-contact_number="{{ $user->contact_number }}" data-address="{{ $user->address }}">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <form method="POST" action="{{ route('customers.destroy', $user->id) }}" class="inline delete-form">
+                    <form method="POST" action="{{ route('users.destroy', $user->id) }}" class="inline delete-form">
                         @csrf @method('DELETE')
                         <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                         <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">

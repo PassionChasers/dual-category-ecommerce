@@ -47,30 +47,29 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    {{-- @forelse($departments as $index => $department) --}}
+                    
                     <tr>
                         <td class="px-4 py-2">
-                            {{-- {{ $departments->firstItem() + $index }} --}}
+                           \
                             <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
                             alt="Default user">
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{-- {{ $department->department_name }} --}}
+                           
                             bbb
                         </td>
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $department->department_code ?? '-' }} --}}
+                           
                             ccc
                         </td>
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $department->description ?? '-' }} --}}
+                          
                             ddd
                         </td>
                         <td class="px-4 py-2 flex space-x-2">
                             <button class="edit-btn text-indigo-600 hover:text-indigo-800"
-                                {{-- data-id="{{ $department->id }}" data-name="{{ $department->department_name }}"
-                                data-code="{{ $department->department_code }}" data-description="{{ $department->description }}" --}}
+                               
                                 >
                                 <i class="fas fa-edit"></i>
                             </button>
@@ -82,11 +81,7 @@
                             </form>
                         </td>
                     </tr>
-                    {{-- @empty
-                    <tr>
-                        <td colspan="5" class="px-4 py-4 text-center text-gray-500">No departments found.</td>
-                    </tr>
-                    @endforelse --}}
+                  
                 </tbody>
             </table>
         </div>

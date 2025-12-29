@@ -99,17 +99,7 @@
                                 <i class="fas fa-chevron-right text-xs text-primary-600 mr-2"></i>Help Center
                             </a>
                         </li>
-                        {{-- Optional: add shipping / returns pages if you have routes --}}
-                        {{-- <li>
-                            <a href="{{ route('shipping') }}" class="hover:text-white transition duration-300 flex items-center">
-                                <i class="fas fa-chevron-right text-xs text-primary-600 mr-2"></i>Shipping &amp; Returns
-                            </a>
-                        </li> --}}
-                        {{-- <li>
-                            <a href="{{ route('order.track') }}" class="hover:text-white transition duration-300 flex items-center">
-                                <i class="fas fa-chevron-right text-xs text-primary-600 mr-2"></i>Track Order
-                            </a>
-                        </li> --}}
+                        
                     </ul>
                 </div>
 
@@ -132,12 +122,7 @@
                                 <i class="fas fa-chevron-right text-xs text-primary-600 mr-2"></i>Privacy Policy
                             </a>
                         </li>
-                        {{-- Optional: terms page --}}
-                        {{-- <li>
-                            <a href="{{ route('terms') }}" class="hover:text-white transition duration-300 flex items-center">
-                                <i class="fas fa-chevron-right text-xs text-primary-600 mr-2"></i>Terms &amp; Conditions
-                            </a>
-                        </li> --}}
+                       
                     </ul>
                 </div>
             </div>

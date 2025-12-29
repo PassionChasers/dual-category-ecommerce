@@ -111,18 +111,7 @@
                     class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
             </div>
 
-            {{--
-            <!-- Social Media -->
-            <h3 class="text-lg font-semibold text-gray-700 mb-4">Social Media</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <input type="url" name="facebook_url" placeholder="Facebook"
-                    value="{{ old('facebook_url', $setting->facebook_url ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
-                <input type="url" name="twitter_url" placeholder="Twitter"
-                    value="{{ old('twitter_url', $setting->twitter_url ?? '') }}"
-                    class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
-            </div> --}}
-            <!-- Social Media -->
+            
             <h3 class="text-lg font-semibold text-gray-700 mb-4">Social Media</h3>
             <p class="text-sm text-gray-500 mb-4">
                 Add links to your organization’s social media profiles (optional)

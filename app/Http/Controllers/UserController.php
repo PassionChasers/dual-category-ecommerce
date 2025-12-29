@@ -13,7 +13,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        // $users = User::paginate(2); // or any number
+        
         $users = User::whereIn('role', ['admin', 'sub_admin'])->paginate(8);
         return view('admin.users.index', compact('users'));
     }

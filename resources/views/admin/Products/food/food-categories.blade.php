@@ -63,45 +63,39 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    {{-- @forelse($categories as $index => $category) --}}
+                    
                     <tr>
                         <td class="px-4 py-2">
-                            {{-- {{ $categories->firstItem() + $index }} --}}
+                            
                             <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
                             src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
                             alt="Default user">
                         </td>
                         <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{-- {{ $category->name }} --}}
+                            
                             XYZ Category
                         </td>
                         <td class="px-4 py-2 text-gray-600">
-                            {{-- {{ $category->description }} --}}
+                            
                             This is a sample category description.
 
                         </td>
                         <td class="px-4 py-2 flex space-x-2">
                             <button class="edit-btn text-indigo-600 hover:text-indigo-800"
-                                {{-- data-id="{{ $category->id }}" --}}
-                                {{-- data-name="{{ $category->name }}" --}}
-                                {{-- data-description="{{ $category->description }}" --}}
+                               
                                 >
                                 <i class="fas fa-edit"></i>
                             </button>
                             <form method="get" action="#"
                                 class="inline delete-form">
-                                {{-- @csrf @method('DELETE') --}}
+                              
                                 <button type="submit" class="text-red-600 hover:text-red-800">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
                         </td>
                     </tr>
-                    {{-- @empty
-                    <tr>
-                        <td colspan="4" class="px-4 py-4 text-center text-gray-500">No categories found.</td>
-                    </tr>
-                    @endforelse --}}
+                  
                 </tbody>
             </table>
         </div>
