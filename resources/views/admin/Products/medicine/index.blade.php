@@ -3,7 +3,12 @@
 
 @push('styles')
 <style>
-    .thumb { width:48px; height:48px; object-fit:cover; border-radius:6px; }
+    .thumb {
+        width: 48px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
 </style>
 @endpush
 
@@ -23,28 +28,29 @@
             <form method="GET" action="{{ route('admin.medicines.index') }}" class="flex gap-2 items-center">
 
                 <input type="text" name="search" placeholder="Search name, brand or generic..."
-                       value="{{ request('search') }}"
-                       class="px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
+                    value="{{ request('search') }}"
+                    class="px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
 
                 <select name="category" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
                     <option value="">All categories</option>
                     @foreach($categories as $cat)
-                        <option value="{{ $cat->MedicineCategoryId }}" {{ request('category') == $cat->MedicineCategoryId ? 'selected' : '' }}>
-                            {{ $cat->Name }}
-                        </option>
+                    <option value="{{ $cat->MedicineCategoryId }}" {{ request('category')==$cat->MedicineCategoryId ?
+                        'selected' : '' }}>
+                        {{ $cat->Name }}
+                    </option>
                     @endforeach
                 </select>
 
                 <select name="prescription" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
                     <option value="">Prescription</option>
-                    <option value="yes" {{ request('prescription') === 'yes' ? 'selected' : '' }}>Yes</option>
-                    <option value="no" {{ request('prescription') === 'no' ? 'selected' : '' }}>No</option>
+                    <option value="yes" {{ request('prescription')==='yes' ? 'selected' : '' }}>Yes</option>
+                    <option value="no" {{ request('prescription')==='no' ? 'selected' : '' }}>No</option>
                 </select>
 
                 <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
                     <option value="">Status</option>
-                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
-                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                    <option value="active" {{ request('status')==='active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ request('status')==='inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
 
                 <select name="sort_by" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
@@ -55,7 +61,7 @@
 
                 <select name="per_page" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
                     @foreach([5,10,25,50] as $p)
-                        <option value="{{ $p }}" {{ request('per_page',10)==$p ? 'selected':'' }}>{{ $p }}</option>
+                    <option value="{{ $p }}" {{ request('per_page',10)==$p ? 'selected' :'' }}>{{ $p }}</option>
                     @endforeach
                 </select>
 
@@ -81,29 +87,37 @@
         <div class="overflow-x-auto">
             <table class="min-w-full text-sm divide-y divide-gray-200">
                 <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-3 text-left">#</th>
-                    <th class="px-4 py-3 text-left">Image</th>
-                    <th class="px-4 py-3 text-left">Name</th>
-                    <th class="px-4 py-3 text-left">Category</th>
-                    <th class="px-4 py-3 text-left">Price</th>
-                    <th class="px-4 py-3 text-left">Prescription</th>
-                    <th class="px-4 py-3 text-left">Expiry</th>
-                    <th class="px-4 py-3 text-left">Status</th>
-                    <th class="px-4 py-3 text-right">Actions</th>
-                </tr>
+                    <tr>
+                        <th class="px-4 py-3 text-left">#</th>
+                        <th class="px-4 py-3 text-left">Image</th>
+                        <th class="px-4 py-3 text-left">Name</th>
+                        <th class="px-4 py-3 text-left">Category</th>
+                        <th class="px-4 py-3 text-left">Price</th>
+                        <th class="px-4 py-3 text-left">Prescription</th>
+                        <th class="px-4 py-3 text-left">Expiry</th>
+                        <th class="px-4 py-3 text-left">Status</th>
+                        <th class="px-4 py-3 text-right">Actions</th>
+                    </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-100">
 
-                @forelse($medicines as $i => $m)
+                    @forelse($medicines as $i => $m)
                     <tr>
                         <td class="px-4 py-3">{{ $medicines->firstItem() + $i }}</td>
 
                         <td class="px-4 py-3">
                             @if($m->ImageUrl)
-                                <img src="{{ asset('storage/'.$m->ImageUrl) }}" class="thumb">
+                            {{-- <img src="https://pcsdecom.azurewebsites.net{{$m->ImageUrl}}"
+                                title="https://pcsdecom.azurewebsites.net{{$m->ImageUrl}" class="thumb"> --}}
+                            {{-- <img src="{{ url('/' . ltrim($m->ImageUrl, '/')) }}" class="thumb"> --}}
+                            <img src="https://pcsdecom.azurewebsites.net{{ $m->ImageUrl }}"
+                                title="https://pcsdecom.azurewebsites.net{{ $m->ImageUrl }}" class="thumb">
+
+
                             @else
-                                <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
+                            <div
+                                class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">
+                                No</div>
                             @endif
                         </td>
 
@@ -121,49 +135,45 @@
                         <td class="px-4 py-3">
                             <button data-id="{{ $m->MedicineId }}"
                                 class="toggle-active px-2 py-1 text-xs rounded-full border font-medium">
-                                {!! $m->IsActive ? '<span class="text-green-700">Active</span>' : '<span class="text-red-700">Inactive</span>' !!}
+                                {!! $m->IsActive ? '<span class="text-green-700">Active</span>' : '<span
+                                    class="text-red-700">Inactive</span>' !!}
                             </button>
                         </td>
 
                         <td class="px-4 py-3 text-right space-x-2">
                             {{-- VIEW --}}
                             <a href="{{ route('admin.medicines.show', $m->MedicineId) }}"
-                               class="px-3 py-1 text-sm bg-blue-50 rounded hover:bg-blue-100">
+                                class="px-3 py-1 text-sm bg-blue-50 rounded hover:bg-blue-100">
                                 View
                             </a>
 
                             {{-- EDIT --}}
                             <button class="edit-btn px-3 py-1 text-sm bg-indigo-50 rounded hover:bg-indigo-100"
-                                data-id="{{ $m->MedicineId }}"
-                                data-name="{{ e($m->Name) }}"
-                                data-generic="{{ e($m->GenericName) }}"
-                                data-brand="{{ e($m->BrandName) }}"
-                                data-description="{{ e($m->Description) }}"
-                                data-price="{{ $m->Price }}"
-                                data-mrp="{{ $m->MRP }}"
-                                data-prescription="{{ $m->PrescriptionRequired ? '1' : '0' }}"
-                                data-manufacturer="{{ e($m->Manufacturer) }}"
-                                data-expiry="{{ $m->ExpiryDate }}"
-                                data-dosage="{{ e($m->DosageForm) }}"
-                                data-strength="{{ e($m->Strength) }}"
-                                data-packaging="{{ e($m->Packaging) }}"
-                                data-category="{{ $m->MedicineCategoryId }}"
+                                data-id="{{ $m->MedicineId }}" data-name="{{ e($m->Name) }}"
+                                data-generic="{{ e($m->GenericName) }}" data-brand="{{ e($m->BrandName) }}"
+                                data-description="{{ e($m->Description) }}" data-price="{{ $m->Price }}"
+                                data-mrp="{{ $m->MRP }}" data-prescription="{{ $m->PrescriptionRequired ? '1' : '0' }}"
+                                data-manufacturer="{{ e($m->Manufacturer) }}" data-expiry="{{ $m->ExpiryDate }}"
+                                data-dosage="{{ e($m->DosageForm) }}" data-strength="{{ e($m->Strength) }}"
+                                data-packaging="{{ e($m->Packaging) }}" data-category="{{ $m->MedicineCategoryId }}"
                                 data-isactive="{{ $m->IsActive ? '1' : '0' }}"
                                 data-image="{{ $m->ImageUrl ? asset('storage/'.$m->ImageUrl) : '' }}">
                                 Edit
                             </button>
 
                             {{-- DELETE --}}
-                            <form action="{{ route('admin.medicines.destroy',$m->MedicineId) }}"
-                                  method="POST" class="inline delete-form">
+                            <form action="{{ route('admin.medicines.destroy',$m->MedicineId) }}" method="POST"
+                                class="inline delete-form">
                                 @csrf @method('DELETE')
                                 <button class="px-3 py-1 text-sm bg-red-50 rounded hover:bg-red-100">Delete</button>
                             </form>
                         </td>
                     </tr>
-                @empty
-                    <tr><td colspan="9" class="px-6 py-6 text-center text-gray-500">No medicines found.</td></tr>
-                @endforelse
+                    @empty
+                    <tr>
+                        <td colspan="9" class="px-6 py-6 text-center text-gray-500">No medicines found.</td>
+                    </tr>
+                    @endforelse
 
                 </tbody>
             </table>
@@ -172,7 +182,8 @@
         {{-- PAGINATION --}}
         <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
             <div class="text-sm text-gray-600">
-                Showing {{ $medicines->firstItem() }} to {{ $medicines->lastItem() }} of {{ $medicines->total() }} results
+                Showing {{ $medicines->firstItem() }} to {{ $medicines->lastItem() }} of {{ $medicines->total() }}
+                results
             </div>
             <div>
                 {{ $medicines->links() }}
@@ -196,8 +207,7 @@
             </button>
         </div>
 
-        <form id="medicine-form" method="POST" enctype="multipart/form-data"
-              class="px-6 py-6 space-y-4">
+        <form id="medicine-form" method="POST" enctype="multipart/form-data" class="px-6 py-6 space-y-4">
             @csrf
             <input type="hidden" id="medicine-id" name="id" value="">
             <input type="hidden" id="method-field" name="_method" value="POST">
@@ -206,43 +216,51 @@
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium">Name</label>
-                    <input id="field-name" name="Name" type="text" required class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-name" name="Name" type="text" required
+                        class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Category</label>
-                    <select id="field-category" name="MedicineCategoryId" class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <select id="field-category" name="MedicineCategoryId"
+                        class="mt-1 block w-full border rounded-md px-3 py-2">
                         <option value="">Select category</option>
                         @foreach($categories as $cat)
-                            <option value="{{ $cat->MedicineCategoryId }}">{{ $cat->Name }}</option>
+                        <option value="{{ $cat->MedicineCategoryId }}">{{ $cat->Name }}</option>
                         @endforeach
                     </select>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Brand / Generic</label>
-                    <input id="field-brand" name="BrandName" class="mt-1 block w-full border rounded-md px-3 py-2" placeholder="Brand">
-                    <input id="field-generic" name="GenericName" class="mt-1 block w-full border rounded-md px-3 py-2" placeholder="Generic">
+                    <input id="field-brand" name="BrandName" class="mt-1 block w-full border rounded-md px-3 py-2"
+                        placeholder="Brand">
+                    <input id="field-generic" name="GenericName" class="mt-1 block w-full border rounded-md px-3 py-2"
+                        placeholder="Generic">
                 </div>
 
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium">Description</label>
-                    <textarea id="field-description" name="Description" rows="3" class="mt-1 block w-full border rounded-md px-3 py-2"></textarea>
+                    <textarea id="field-description" name="Description" rows="3"
+                        class="mt-1 block w-full border rounded-md px-3 py-2"></textarea>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Price</label>
-                    <input id="field-price" name="Price" type="number" step="0.01" class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-price" name="Price" type="number" step="0.01"
+                        class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">MRP</label>
-                    <input id="field-mrp" name="MRP" type="number" step="0.01" class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-mrp" name="MRP" type="number" step="0.01"
+                        class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium">Expiry Date</label>
-                    <input id="field-expiry" name="ExpiryDate" type="date" class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-expiry" name="ExpiryDate" type="date"
+                        class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div class="flex items-center gap-2">
@@ -252,7 +270,8 @@
 
                 <div>
                     <label class="block text-sm font-medium">Manufacturer</label>
-                    <input id="field-manufacturer" name="Manufacturer" class="mt-1 block w-full border rounded-md px-3 py-2">
+                    <input id="field-manufacturer" name="Manufacturer"
+                        class="mt-1 block w-full border rounded-md px-3 py-2">
                 </div>
 
                 <div>
@@ -274,7 +293,7 @@
                 <div class="md:col-span-1">
                     <label class="block text-sm font-medium">Image</label>
                     <input id="field-image" name="image" type="file" accept="image/*" class="mt-1 block w-full">
-                    <img id="image-preview" class="mt-2 w-28 h-28 rounded-md object-cover hidden"/>
+                    <img id="image-preview" class="mt-2 w-28 h-28 rounded-md object-cover hidden" />
                 </div>
 
                 {{-- ACTIVE --}}
@@ -304,7 +323,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded',()=>{
+    document.addEventListener('DOMContentLoaded',()=>{
 
     const modal=document.getElementById('medicine-modal');
     const openCreate=document.getElementById('open-create-modal');

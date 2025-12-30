@@ -10,6 +10,7 @@ use App\Observers\ModelObserver;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\View;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -19,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-       //
+        //
     }
 
     /**
@@ -45,11 +46,16 @@ class AppServiceProvider extends ServiceProvider
             }
         }
         // Share 'setting' with all views
-        View::composer('*', function ($view) {
-            $setting = Setting::first();
-            $view->with('setting', $setting);
+        // View::composer('*', function ($view) {
+        //     $setting = Setting::first();
+        //     $view->with('setting', $setting);
+        // });
+        $settings = Cache::rememberForever('settings', function () {
+            return Setting::first();
         });
 
-        
+        view()->share('setting', $settings);
+
+
     }
 }
