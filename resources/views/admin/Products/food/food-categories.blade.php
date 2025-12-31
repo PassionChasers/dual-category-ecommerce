@@ -1,244 +1,192 @@
 @extends('layouts.admin.app')
-@section('title', 'Admin | Product Category')
+
+@php use Illuminate\Support\Str; @endphp
 
 @push('styles')
+<style>
+    /* Match product list row height (image row ~48px) */
+    .category-table td { height: 48px; }
+</style>
 @endpush
 
-
+@section('title', 'Admin | Product Category')
 @section('contents')
 <div class="flex-1 p-4 md:p-6 bg-gray-50">
-
-     {{-- Flash Messages --}}
-    @if(session('success'))
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            Swal.fire({
-                toast: true,
-                position: 'top-end',
-                icon: 'success',
-                title: "{{ session('success') }}",
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
-        });
-    </script>
-    @endif
-    
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800">Product Category Management</h2>
             <p class="text-gray-600">Manage all Product categories</p>
         </div>
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
-            <form method="GET" class="flex flex-wrap w-full gap-2">
+            <form method="GET" action="{{ route('product.food.category') }}" class="flex flex-wrap w-full gap-2">
                 <input type="text" name="search" placeholder="Search categories..."
-                    class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500 "
-                    >
+                    class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+                    value="{{ request('search') ?? '' }}">
                 <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
                     <i class="fas fa-search"></i>
                 </button>
             </form>
             <button id="new-category-button"
-                class="iw-full md:w-[200px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
                 <i class="fas fa-plus mr-1"></i> New Category
             </button>
         </div>
     </div>
 
-    <!-- Table -->
     <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between">
-            <h3 class="text-lg font-medium text-gray-900">Category List</h3>
+        <div class="px-6 py-4 border-b">
+            <h2 class="font-semibold text-gray-800">Category List</h2>
         </div>
-
         <div class="overflow-x-auto">
-            <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
+            <table class="min-w-full divide-y divide-gray-200 text-sm category-table">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">#</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Category Name</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Description</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Actions</th>
+                        <th class="px-4 py-2">SN</th>
+                        <th class="px-4 py-2">Name</th>
+                        <th class="px-4 py-2">Description</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    
-                    <tr>
-                        <td class="px-4 py-2">
-                            
-                            <img class="w-11 h-11 rounded-full ring-2 ring-indigo-100 group-hover:ring-indigo-300 transition"
-                            src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&q=80&w=100&h=100&fit=crop"
-                            alt="Default user">
-                        </td>
-                        <td class="px-4 py-2 font-semibold text-gray-800">
-                            
-                            XYZ Category
-                        </td>
-                        <td class="px-4 py-2 text-gray-600">
-                            
-                            This is a sample category description.
-
-                        </td>
-                        <td class="px-4 py-2 flex space-x-2">
-                            <button class="edit-btn text-indigo-600 hover:text-indigo-800"
-                               
-                                >
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <form method="get" action="#"
-                                class="inline delete-form">
-                              
-                                <button type="submit" class="text-red-600 hover:text-red-800">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                  
+                    @forelse($categories as $cat)
+                        <tr>
+                            <td class="px-4 py-2">{{ ($categories->currentPage() - 1) * $categories->perPage() + $loop->iteration }}</td>
+                            <td class="px-4 py-2 font-semibold">{{ $cat->Name }}</td>
+                            <td class="px-4 py-2">{{ Str::limit($cat->Description, 100) }}</td>
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 rounded text-xs {{ $cat->IsActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $cat->IsActive ? 'Active' : 'Inactive' }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-2">
+                                <div class="flex items-center justify-center gap-3">
+                                    <button class="edit-category-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $cat->MenuCategoryId }}" data-name="{{ $cat->Name }}" data-description="{{ $cat->Description }}" data-isactive="{{ $cat->IsActive }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <form method="POST" action="{{ route('product.food.category.destroy', $cat->MenuCategoryId) }}" class="delete-form inline">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800 delete-category-btn" data-name="{{ $cat->Name }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-4 text-center text-gray-500">No categories found.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
-
-        <div class="flex justify-between items-center mt-4 px-4 py-2 bg-gray-50 border-t border-gray-200 rounded">
-            <!-- Left: Results info -->
-            <div id="resultsInfo" class="text-gray-700 text-sm">
-                Showing 1 to 10 of 20 results
+        {{-- PAGINATION --}}
+        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
+            <div class="text-sm text-gray-600">
+                Showing <strong>{{ $categories->firstItem() ?? 0 }}</strong> to <strong>{{ $categories->lastItem() ?? 0 }}</strong> of <strong>{{ $categories->total() }}</strong> results
             </div>
-        
-            <!-- Right: Pagination buttons -->
-            <div class="flex space-x-3">
-                <button id="prevPageBtn" class="px-3 py-1 border rounded border-gray-600 text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Previous
-                </button>
-                <button id="nextPageBtn" class="px-3 py-1 border rounded border-gray-600 text-gray-800 disabled:opacity-50 disabled:cursor-not-allowed">
-                    Next
-                </button>                
+            <div class="mt-3 md:mt-0">
+                {{ $categories->links() }}
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal -->
-<div id="category-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
-    <div class="flex items-center justify-center min-h-screen px-4">
-        <div class="fixed inset-0 bg-gray-500 opacity-75"></div>
-        <div class="bg-white rounded-lg shadow-xl transform transition-all max-w-lg w-full p-6 relative">
-            <!-- Close button -->
-            <button type="button" id="close-modal-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-lg"></i>
-            </button>
-            <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title">New Category</h3>
-            <form id="category-form" method="POST" class="space-y-4">
+    <!-- Modal -->
+    <div id="category-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md">
+            <button id="close-category-modal" class="float-right text-gray-500">&times;</button>
+            <h3 id="category-modal-title" class="text-lg font-medium mb-4">New Category</h3>
+            <form id="category-form" method="POST" action="" class="space-y-4">
                 @csrf
-                <input type="hidden" id="form-method" name="_method" value="POST">
+                <input type="hidden" name="_method" id="category-form-method" value="POST">
+
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Category Name</label>
-                    <input type="text" name="name" id="category-name"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
+                    <label class="block text-sm font-medium">Name</label>
+                    <input type="text" name="Name" id="category-name" class="mt-1 block w-full border rounded px-3 py-2" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea name="description" id="category-description"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                    <label class="block text-sm font-medium">Description</label>
+                    <textarea name="Description" id="category-description" class="mt-1 block w-full border rounded px-3 py-2" rows="3"></textarea>
                 </div>
-                <div class="flex justify-end space-x-2">
-                    <button type="button" id="cancel-btn"
-                        class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
-                    <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save</button>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="IsActive" id="category-active" value="1" checked>
+                    <label for="category-active" class="text-sm">Active</label>
+                </div>
+
+                <div class="flex justify-end gap-2">
+                    <button type="button" id="category-cancel" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Save</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
 @endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('category-modal');
     const newBtn = document.getElementById('new-category-button');
-    const cancelBtn = document.getElementById('cancel-btn');
-    const closeBtn = document.getElementById('close-modal-btn');
+    const closeBtn = document.getElementById('close-category-modal');
+    const cancelBtn = document.getElementById('category-cancel');
     const form = document.getElementById('category-form');
-    const modalTitle = document.getElementById('modal-title');
-    const methodInput = document.getElementById('form-method');
+    const title = document.getElementById('category-modal-title');
+    const methodInput = document.getElementById('category-form-method');
     const nameInput = document.getElementById('category-name');
     const descInput = document.getElementById('category-description');
+    const activeInput = document.getElementById('category-active');
 
-    // Open modal for create
     newBtn.addEventListener('click', () => {
-        modalTitle.innerText = 'New Category';
-        form.action = "#";
+        title.innerText = 'New Category';
+        form.action = "{{ route('product.food.category.store') }}";
         methodInput.value = 'POST';
         nameInput.value = '';
         descInput.value = '';
+        activeInput.checked = true;
         modal.classList.remove('hidden');
     });
 
-    // Cancel and close
-    cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
     closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
-    // Open modal for edit
-    document.querySelectorAll('.edit-btn').forEach(btn => {
+    document.querySelectorAll('.edit-category-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            modalTitle.innerText = 'Edit Category';
-            form.action = `/task/category/${btn.dataset.id}`;
+            title.innerText = 'Edit Category';
+            form.action = `/food-category/${btn.dataset.id}`;
             methodInput.value = 'PUT';
             nameInput.value = btn.dataset.name;
             descInput.value = btn.dataset.description;
+            activeInput.checked = btn.dataset.isactive == 1 || btn.dataset.isactive === 'true';
             modal.classList.remove('hidden');
         });
     });
 
-    // SweetAlert for delete confirmation
-    document.querySelectorAll('.delete-form').forEach(f => {
-        f.addEventListener('submit', function(e) {
+    // Delete confirmation with sweet alert
+    document.querySelectorAll('.delete-category-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
             e.preventDefault();
+            const categoryName = btn.dataset.name;
+            const form = btn.closest('.delete-form');
+            
             Swal.fire({
-                title: 'Are you sure?',
-                text: "This action cannot be undone!",
+                title: 'Delete Category',
+                text: `Are you sure you want to delete "${categoryName}"?`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#e3342f',
-                cancelButtonColor: '#6c757d',
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    f.submit();
+                    form.submit();
                 }
             });
         });
     });
 });
-
-// Toast alerts
-@if(session('success'))
-Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: 'success',
-    title: "{{ session('success') }}",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true
-});
-@endif
-
-@if ($errors->any())
-Swal.fire({
-    toast: true,
-    position: 'top-end',
-    icon: 'error',
-    title: "{{ $errors->first() }}",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true
-});
-@endif
 </script>
 @endpush
