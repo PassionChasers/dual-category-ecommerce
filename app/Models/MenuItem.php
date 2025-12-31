@@ -22,6 +22,7 @@ class MenuItem extends Model
     const UPDATED_AT = 'UpdatedAt';
 
     protected $fillable = [
+        'MenuItemId',
         'MenuCategoryId',
         'Name',
         'Description',

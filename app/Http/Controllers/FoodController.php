@@ -3,16 +3,30 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Restaurant;
+use App\Models\User;
 
 class FoodController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.products.food.index');
+        $search = $request->get('search');
+        
+        $query = User::where('Role', 'restaurant');
+        
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'like', "%{$search}%")
+                    ->orWhere('Email', 'like', "%{$search}%")
+                    ->orWhere('Phone', 'like', "%{$search}%");
+            });
+        }
+        
+        $users = $query->paginate(15)->withQueryString();
+        
+        return view('admin.products.food.index', compact('users', 'search'));
     }
 
     /**
@@ -28,7 +42,19 @@ class FoodController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'Name' => 'required|string|max:255',
+            'Email' => 'required|email|unique:Users,Email',
+            'PasswordHash' => 'required|string|min:6',
+            'Phone' => 'nullable|string|max:20',
+        ]);
+
+        $validated['PasswordHash'] = bcrypt($validated['PasswordHash']);
+        $validated['Role'] = 'restaurant';
+
+        User::create($validated);
+
+        return redirect()->route('food.index')->with('success', 'Restaurant created successfully!');
     }
 
     /**
@@ -52,7 +78,24 @@ class FoodController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'Name' => 'required|string|max:255',
+            'Email' => 'required|email|unique:Users,Email,' . $id,
+            'PasswordHash' => 'nullable|string|min:6',
+            'Phone' => 'nullable|string|max:20',
+        ]);
+
+        if (!empty($validated['PasswordHash'])) {
+            $validated['PasswordHash'] = bcrypt($validated['PasswordHash']);
+        } else {
+            unset($validated['PasswordHash']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route('food.index')->with('success', 'Restaurant updated successfully!');
     }
 
     /**
@@ -60,16 +103,19 @@ class FoodController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+
+        return redirect()->route('food.index')->with('success', 'Restaurant deleted successfully!');
     }
 
     /**
-     * Restaurant users or restaurants
+     * Get all restaurants
      */
-    public function allResturants()
+    public function allRestaurants()
     {
-        $restaurants = User::where('role', 'restaurant')->paginate(8);
-         return view('admin.users.restaurants.index', compact('restaurants'));
+        $restaurants = User::where('Role', 'restaurant')->paginate(8);
+        return view('admin.users.restaurants.index', compact('restaurants'));
     }
 
 

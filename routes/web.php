@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MenuItemController;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerController;
@@ -101,7 +102,10 @@ Route::middleware('auth')->group(function () {
     | Product Routes - Food
     |----------------------------------------------------------------------
     */
-    Route::get('/products-food', [FoodController::class, 'index'])->name('product.food.index');
+    Route::resource('food', FoodController::class);
+    // menu-items resource and products-food page now use MenuItemController
+    Route::resource('menu-items', MenuItemController::class);
+    Route::get('/products-food', [\App\Http\Controllers\MenuItemController::class, 'index'])->name('product.food.index');
     Route::get('/food-category', [FoodCategoryController::class, 'index'])->name('product.food.category');
 
     /*

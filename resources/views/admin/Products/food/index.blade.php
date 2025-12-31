@@ -2,6 +2,21 @@
 @section('title', 'Admin | User Management')
 
 @push('styles')
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .thumb {
+        width: 64px;
+        height: 48px;
+        object-fit: cover;
+        border-radius: 6px;
+    }
+    .desc-clickable { cursor: pointer; }
+</style>
 @endpush
 
 @section('contents')
@@ -14,14 +29,14 @@
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
             <form method="GET" class="flex flex-wrap w-full gap-2">
                 <input type="text" name="search" 
-                {{-- value="{{ $search }}"  --}}
+                value="{{ $search ?? '' }}"
                 placeholder="Search restaurants..."
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
                 <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
                     <i class="fas fa-search"></i>
                 </button>
             </form>
-            <button id="new-user-button" class="iw-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none" disabled>
+            <button id="new-user-button" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
                 <i class="fas fa-plus mr-1"></i> New Restaurant
             </button>
         </div>
@@ -29,75 +44,79 @@
 
     <!-- Table -->
     <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between">
-            <h3 class="text-lg font-medium text-gray-900">Restaurants List</h3>
+        <div class="px-6 py-4 border-b">
+            <h2 class="font-semibold text-gray-800">Food Products List</h2>
         </div>
         <div class="overflow-x-auto">
-            <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">#id</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Name</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Email</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Contact</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Address</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Active Status</th>
-                        <th class="px-4 py-2 text-left font-semibold text-gray-700">Actions</th>
+                        <th class="px-4 py-2">SN</th>
+                        <th class="px-4 py-2">Image</th>
+                        <th class="px-4 py-2">Name</th>
+                        <th class="px-4 py-2">Description</th>
+                        <th class="px-4 py-2">Category</th>
+                        <th class="px-4 py-2">Price</th>
+                        <th class="px-4 py-2">Type</th>
+                        <th class="px-4 py-2">Available</th>
+                        <th class="px-4 py-2">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="userTableBody" class="divide-y divide-gray-200">
-                    @forelse($users as $user)
-                    <tr>
-                        <td class="px-4 py-2">
-                            {{$user->id}}
-                        </td>
-                        <td class="px-4 py-2 font-semibold text-gray-800">
-                            {{ $user->name }}
-                        </td>
-                        <td class="px-4 py-2 text-gray-600">
-                            {{ $user->email }}
-                        </td>
-                        <td class="px-4 py-2 text-gray-600">
-                            {{ $user->contact_number?? '-' }}
-                        </td>
-                        <td class="px-4 py-2 text-gray-600">
-                            {{ $user->address ?? '-' }}
-                        </td>
-                        <td class="px-4 py-2 flex space-x-2">
-                            <button class="edit-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $user->id }}"
-                                data-name="{{ $user->name }}" data-email="{{ $user->email }}"
-                                data-contact_number="{{ $user->contact_number }}" data-address="{{ $user->address }}">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <form method="POST" action="{{ route('customers.destroy', $user->id) }}" class="inline delete-form">
-                                @csrf @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-800">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
+                <tbody class="divide-y divide-gray-200">
+                    @forelse($menuItems as $item)
+                        <tr>
+                            <td class="px-4 py-2">{{ ($menuItems->currentPage() - 1) * $menuItems->perPage() + $loop->iteration }}</td>
+                            <td class="px-4 py-2">
+                                @if($item->ImageUrl)
+                                    <img src="{{ asset('storage/'.$item->ImageUrl) }}" alt="{{ $item->Name }}" class="thumb">
+                                @else
+                                    <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
+                                @endif
+                            </td>
+                            <td class="px-4 py-2 font-semibold">{{ $item->Name }}</td>
+                            <td class="px-4 py-2">
+                                <div class="line-clamp-2 desc-clickable" title="{{ $item->Description }}" data-desc="{{ $item->Description }}" data-img="{{ $item->ImageUrl }}" data-name="{{ $item->Name }}">
+                                    {{ $item->Description }}
+                                </div>
+                            </td>
+                            <td class="px-4 py-2">{{ $item->category->Name ?? '-' }}</td>
+                            <td class="px-4 py-2">৳ {{ number_format($item->Price,2) }}</td>
+                            <td class="px-4 py-2">{{ $item->IsVeg ? 'Veg' : 'Non-Veg' }}</td>
+                            <td class="px-4 py-2">
+                                <span class="px-2 py-1 rounded text-xs {{ $item->IsAvailable ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $item->IsAvailable ? 'Available' : 'Unavailable' }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-2">
+                                <div class="flex items-center justify-center gap-3">
+                                    <button class="edit-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $item->MenuItemId }}" data-name="{{ $item->Name }}" data-description="{{ $item->Description }}" data-price="{{ $item->Price }}" data-category="{{ $item->MenuCategoryId }}" data-isveg="{{ $item->IsVeg }}" data-isavailable="{{ $item->IsAvailable }}" data-image="{{ $item->ImageUrl }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <form method="POST" action="{{ route('menu-items.destroy', $item->MenuItemId) }}" class="delete-form inline">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="5" class="px-4 py-4 text-center text-gray-500">No users found.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="9" class="px-4 py-4 text-center text-gray-500">No menu items found.</td>
+                        </tr>
                     @endforelse
-                    
                 </tbody>
             </table>
         </div>
-        <div class="flex justify-between items-center mt-4 px-4 py-2 bg-gray-50 border-t border-gray-200 rounded">
-
-            <!-- Left: Results info -->
-            <div id="resultsInfo" class="text-gray-700 text-sm">
-                Showing <strong>{{ $users->firstItem() ?? 0 }}</strong> to <strong>{{ $users->lastItem() ?? 0 }}</strong> of <strong>{{ $users->total() }}</strong> results
+        {{-- PAGINATION --}}
+        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
+            <div class="text-sm text-gray-600">
+                Showing <strong>{{ $menuItems->firstItem() ?? 0 }}</strong> to <strong>{{ $menuItems->lastItem() ?? 0 }}</strong> of <strong>{{ $menuItems->total() }}</strong> results
             </div>
-        
-            <!-- Right: Pagination buttons -->
-           <div class="mt-3 px-4">
-                {{ $users->links() }}
+            <div class="mt-3 md:mt-0">
+                {{ $menuItems->links() }}
             </div>
-            
         </div>
     </div>
 </div>
@@ -122,47 +141,67 @@
             <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title"></h3>
 
             <!-- Form -->
-            <form id="customer-form" method="POST" class="space-y-4">
+            <form id="customer-form" method="POST" class="space-y-4" enctype="multipart/form-data">
                 @csrf
                 <input type="hidden" id="form-method" name="_method" value="POST">
 
                 <!-- Name -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" name="name" id="customer-name"  value=" "
+                    <input type="text" name="Name" id="customer-name"  value=""
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         required>
                 </div>
 
-                <!-- Email -->
+                <!-- Description -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="email" id="customer-email" value=" "
+                    <label class="block text-sm font-medium text-gray-700">Description</label>
+                    <textarea name="Description" id="customer-description" rows="3"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        required></textarea>
+                </div>
+
+                <!-- Price -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Price</label>
+                    <input type="number" name="Price" id="customer-price" step="0.01" value=""
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         required>
                 </div>
 
-                <!-- Password -->
+                <!-- Category -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" name="password" id="customer-password" placeholder="Enter Password or While updating keep blank for no change"
+                    <label class="block text-sm font-medium text-gray-700">Category</label>
+                    <select name="MenuCategoryId" id="customer-category"
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                        required>
+                        <option value="">Select Category</option>
+                        @foreach($categories ?? [] as $category)
+                            <option value="{{ $category->MenuCategoryId }}">{{ $category->Name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Is Veg -->
+                <div class="flex items-center">
+                    <input type="checkbox" name="IsVeg" id="customer-isveg" value="1"
+                        class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                    <label for="customer-isveg" class="ml-2 block text-sm text-gray-700">Is Vegetarian</label>
+                </div>
+
+                <!-- Is Available -->
+                <div class="flex items-center">
+                    <input type="checkbox" name="IsAvailable" id="customer-isavailable" value="1" checked
+                        class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                    <label for="customer-isavailable" class="ml-2 block text-sm text-gray-700">Is Available</label>
+                </div>
+
+                <!-- Image -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Image</label>
+                    <input type="file" name="ImageUrl" id="customer-image" accept="image/*"
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                </div>
-
-                <!-- Contact -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-                    <input type="text" name="contact_number" id="customer_contact_number" value=" "
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
-                </div>
-
-                <!-- Address -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Address</label>
-                    <input type="text" name="address" id="customer_address" value=" "
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
+                    <p class="mt-1 text-xs text-gray-500">Leave blank to keep existing image</p>
                 </div>
 
                 <!-- Buttons -->
@@ -191,23 +230,26 @@
     const modalTitle = document.getElementById('modal-title');
     const methodInput = document.getElementById('form-method');
     const nameInput = document.getElementById('customer-name');
-    const contactNumberInput = document.getElementById('customer_contact_number');
-    const addressInput = document.getElementById('customer_address');
-    const emailInput = document.getElementById('customer-email');
-    const passwordInput = document.getElementById('customer-password');
+    const descriptionInput = document.getElementById('customer-description');
+    const priceInput = document.getElementById('customer-price');
+    const categoryInput = document.getElementById('customer-category');
+    const isVegInput = document.getElementById('customer-isveg');
+    const isAvailableInput = document.getElementById('customer-isavailable');
+    const imageInput = document.getElementById('customer-image');
 
 
     // Open modal for create
     newBtn.addEventListener('click', () => {
-        modalTitle.innerText = 'New Customer';
-        form.action = "{{ route('customers.store') }}";
+        modalTitle.innerText = 'New Item';
+        form.action = "{{ route('menu-items.store') }}";
         methodInput.value = 'POST';
         nameInput.value = '';
-        addressInput.value='';
-        contactNumberInput.value = '';
-        emailInput.value = '';
-        passwordInput.value = '';
-        // designationInput.value = '';
+        descriptionInput.value = '';
+        priceInput.value = '';
+        categoryInput.value = '';
+        isVegInput.checked = false;
+        isAvailableInput.checked = true;
+        imageInput.value = '';
         modal.classList.remove('hidden');
     });
 
@@ -218,14 +260,16 @@
     // Open modal for edit
     document.querySelectorAll('.edit-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            modalTitle.innerText = 'Edit User';
-            form.action = `/customers/update/${btn.dataset.id}`;
+            modalTitle.innerText = 'Edit Item';
+            form.action = `/menu-items/${btn.dataset.id}`;
             methodInput.value = 'PUT';
             nameInput.value = btn.dataset.name;
-            addressInput.value = btn.dataset.address;
-            contactNumberInput.value = btn.dataset.contact_number;
-            emailInput.value = btn.dataset.email;
-            passwordInput.value = ''; // leave blank
+            descriptionInput.value = btn.dataset.description;
+            priceInput.value = btn.dataset.price;
+            categoryInput.value = btn.dataset.category;
+            isVegInput.checked = btn.dataset.isveg == 1 || btn.dataset.isveg === 'true';
+            isAvailableInput.checked = btn.dataset.isavailable == 1 || btn.dataset.isavailable === 'true';
+            imageInput.value = '';
            
             modal.classList.remove('hidden');
         });
@@ -245,6 +289,23 @@
                 confirmButtonText: 'Yes, delete it!'
             }).then((result) => {
                 if (result.isConfirmed) f.submit();
+            });
+        });
+    });
+
+    // Show full description (and image) in modal on click
+    document.querySelectorAll('.desc-clickable').forEach(el => {
+        el.addEventListener('click', () => {
+            const desc = el.dataset.desc || el.textContent;
+            const img = el.dataset.img || '';
+            const name = el.dataset.name || '';
+            let html = '';
+            if (img) html += `<img src="${img}" alt="${name}" style="max-width:100%;display:block;margin-bottom:8px;border-radius:6px;">`;
+            html += `<div style="text-align:left">${desc}</div>`;
+            Swal.fire({
+                title: name || 'Description',
+                html: html,
+                width: 600
             });
         });
     });
