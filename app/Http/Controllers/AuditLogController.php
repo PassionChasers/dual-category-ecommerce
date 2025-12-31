@@ -2,63 +2,29 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use Illuminate\Http\Request;
 
 class AuditLogController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.audit_logs.index');
-    }
+        $search = $request->input('search');
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $logs = AuditLog::with('user')
+            ->when($search, function ($query) use ($search) {
+                $query->where('Action', 'like', "%$search%")
+                      ->orWhere('AuditableType', 'like', "%$search%")
+                      ->orWhere('IpAddress', 'like', "%$search%")
+                      ->orWhereHas('user', function ($q) use ($search) {
+                          $q->where('Name', 'like', "%$search%");
+                      });
+            })
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return view('admin.audit_logs.index', compact('logs', 'search'));
     }
 }
