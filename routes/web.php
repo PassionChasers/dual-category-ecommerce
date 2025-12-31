@@ -106,7 +106,10 @@ Route::middleware('auth')->group(function () {
     // menu-items resource and products-food page now use MenuItemController
     Route::resource('menu-items', MenuItemController::class);
     Route::get('/products-food', [\App\Http\Controllers\MenuItemController::class, 'index'])->name('product.food.index');
-    Route::get('/food-category', [FoodCategoryController::class, 'index'])->name('product.food.category');
+    Route::get('/food-category', [\App\Http\Controllers\MenuCategoryController::class, 'index'])->name('product.food.category');
+    Route::post('/food-category', [\App\Http\Controllers\MenuCategoryController::class, 'store'])->name('product.food.category.store');
+    Route::put('/food-category/{id}', [\App\Http\Controllers\MenuCategoryController::class, 'update'])->name('product.food.category.update');
+    Route::delete('/food-category/{id}', [\App\Http\Controllers\MenuCategoryController::class, 'destroy'])->name('product.food.category.destroy');
 
     /*
     |----------------------------------------------------------------------

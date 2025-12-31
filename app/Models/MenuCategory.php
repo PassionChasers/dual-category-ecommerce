@@ -4,24 +4,25 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\MenuItem;
 
 class MenuCategory extends Model
 {
     use HasFactory;
 
-    // Table name with capital first letter
+    // Table name
     protected $table = 'MenuCategories';
 
     protected $primaryKey = 'MenuCategoryId';
     public $incrementing = false;
     protected $keyType = 'string';
 
-    // Timestamps enabled
-    public $timestamps = true;
+    // Custom timestamp column names
     const CREATED_AT = 'CreatedAt';
-    const UPDATED_AT = 'UpdatedAt';
+    const UPDATED_AT = null;  // Table doesn't have UpdatedAt column
 
     protected $fillable = [
+        'MenuCategoryId',
         'Name',
         'Description',
         'IsActive',
