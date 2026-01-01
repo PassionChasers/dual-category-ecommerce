@@ -32,8 +32,8 @@ class MedicineCategoryController extends Controller
         // Search across Name and Description
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
-                $q->where('Name', 'like', "%{$search}%")
-                    ->orWhere('Description', 'like', "%{$search}%");
+                $q->whereRaw('LOWER("Name") LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER("Description") LIKE ?', ["%{$search}%"]);
             });
         }
 

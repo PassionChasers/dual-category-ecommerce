@@ -18,14 +18,9 @@ class MedicineController extends Controller
     {
         $query = Medicine::query();
 
-        // Search name, brand, generic, description
+        // Search by name (case-insensitive)
         if ($search = $request->get('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'like', "%{$search}%")
-                    ->orWhere('BrandName', 'like', "%{$search}%")
-                    ->orWhere('GenericName', 'like', "%{$search}%")
-                    ->orWhere('Description', 'like', "%{$search}%");
-            });
+            $query->whereRaw('LOWER("Name") LIKE ?', ["%{$search}%"]);
         }
 
         // Filter by category

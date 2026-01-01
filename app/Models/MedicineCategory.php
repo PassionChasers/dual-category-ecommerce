@@ -14,10 +14,9 @@ class MedicineCategory extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    // Timestamps enabled (migrations use timestamps())
-    public $timestamps = true;
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
+    // Custom timestamp column names - table only has CreatedAt
+    const CREATED_AT = 'CreatedAt';
+    const UPDATED_AT = null;  // Table doesn't have updated_at column
 
     protected $fillable = [
         'Name',
