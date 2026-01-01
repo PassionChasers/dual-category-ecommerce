@@ -68,7 +68,7 @@
                             <td class="px-4 py-2">{{ ($menuItems->currentPage() - 1) * $menuItems->perPage() + $loop->iteration }}</td>
                             <td class="px-4 py-2">
                                 @if($item->ImageUrl)
-                                    <img src="{{ asset('storage/'.$item->ImageUrl) }}" alt="{{ $item->Name }}" class="thumb">
+                                    <img src="https://pcsdecom.azurewebsites.net{{$item->ImageUrl}}" class="thumb">
                                 @else
                                     <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
                                 @endif

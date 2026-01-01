@@ -4,7 +4,7 @@
 
 @push('styles')
     <style>
-        .thumb { width:48px; height:48px; object-fit:cover; border-radius:6px; }
+        .thumb { width:64px; height:48px; object-fit:cover; border-radius:6px; }
     </style>
 @endpush
 
@@ -13,21 +13,29 @@
     <div class="flex-1 overflow-auto bg-gray-50 p-4 md:p-6">
 
         {{-- HEADER --}}
-        <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
+        <div class="mb-6 flex justify-between items-center flex-wrap">
+            <div class="mb-2 md:mb-0">
                 <h1 class="text-2xl font-semibold text-gray-800">Medicines</h1>
                 <p class="text-gray-500 mt-1">Create, view and manage medicines</p>
             </div>
 
             {{-- FILTERS --}}
-            <div class="flex flex-col md:flex-row gap-3 items-stretch">
-                <form method="GET" action="{{ route('admin.medicines.index') }}" class="flex gap-2 items-center">
-
-                    <input type="text" name="search" placeholder="Search name, brand or generic..."
-                        value="{{ request('search') }}"
-                        class="px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
-
-                    <select name="category" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
+                <form method="GET" action="{{ route('admin.medicines.index') }}" class="flex flex-wrap gap-2 w-full md:w-auto">
+                    <div class="flex gap-2 flex-1 min-w-[150px]">
+                        <input
+                            type="text"
+                            name="search"
+                            placeholder="Search medicines..."
+                            value="{{ request('search') }}"
+                            class="flex-1 px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                        />
+                        <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    
+                    <select name="category" onchange="this.form.submit()" class="px-3 py-2 border rounded-md text-sm">
                         <option value="">All categories</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->MedicineCategoryId }}" {{ request('category') == $cat->MedicineCategoryId ? 'selected' : '' }}>
@@ -36,39 +44,15 @@
                         @endforeach
                     </select>
 
-                    <select name="prescription" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
-                        <option value="">Prescription</option>
-                        <option value="yes" {{ request('prescription') === 'yes' ? 'selected' : '' }}>Yes</option>
-                        <option value="no" {{ request('prescription') === 'no' ? 'selected' : '' }}>No</option>
-                    </select>
-
-                    <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
+                    <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md text-sm">
                         <option value="">Status</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
-
-                    <select name="sort_by" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
-                        <option value="CreatedAt" {{ request('sort_by')==='CreatedAt' ? 'selected' : '' }}>Newest</option>
-                        <option value="Name" {{ request('sort_by')==='Name' ? 'selected' : '' }}>Name</option>
-                        <option value="Price" {{ request('sort_by')==='Price' ? 'selected' : '' }}>Price</option>
-                    </select>
-
-                    <select name="per_page" onchange="this.form.submit()" class="px-3 py-2 border rounded-md">
-                        @foreach([5,10,25,50] as $p)
-                            <option value="{{ $p }}" {{ request('per_page',10)==$p ? 'selected':'' }}>{{ $p }}</option>
-                        @endforeach
-                    </select>
-
-                    <button type="submit" class="px-3 py-2 bg-gray-100 rounded-md hover:bg-gray-200">
-                        <i class="fas fa-search"></i>
-                    </button>
                 </form>
 
-                {{-- CREATE BUTTON --}}
-                <button id="open-create-modal"
-                    class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                    <i class="fas fa-plus"></i> New Medicine
+                <button id="open-create-modal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                    <i class="fas fa-plus mr-1"></i> New Medicine
                 </button>
             </div>
         </div>
@@ -120,46 +104,40 @@
                             <td class="px-4 py-3">{{ $m->ExpiryDate ?: '-' }}</td>
 
                             <td class="px-4 py-3">
-                                <button data-id="{{ $m->MedicineId }}"
-                                    class="toggle-active px-2 py-1 text-xs rounded-full border font-medium">
-                                    {!! $m->IsActive ? '<span class="text-green-700">Active</span>' : '<span class="text-red-700">Inactive</span>' !!}
-                                </button>
+                                <span class="px-2 py-1 rounded text-xs {{ $m->IsActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                    {{ $m->IsActive ? 'Active' : 'Inactive' }}
+                                </span>
                             </td>
 
-                            <td class="px-4 py-3 text-right space-x-2">
-                                {{-- VIEW --}}
-                                <a href="{{ route('admin.medicines.show', $m->MedicineId) }}"
-                                class="px-3 py-1 text-sm bg-blue-50 rounded hover:bg-blue-100">
-                                    View
-                                </a>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center justify-center gap-3">
+                                    <button class="edit-btn text-indigo-600 hover:text-indigo-800" 
+                                        data-id="{{ $m->MedicineId }}"
+                                        data-name="{{ e($m->Name) }}"
+                                        data-generic="{{ e($m->GenericName) }}"
+                                        data-brand="{{ e($m->BrandName) }}"
+                                        data-description="{{ e($m->Description) }}"
+                                        data-price="{{ $m->Price }}"
+                                        data-mrp="{{ $m->MRP }}"
+                                        data-prescription="{{ $m->PrescriptionRequired ? '1' : '0' }}"
+                                        data-manufacturer="{{ e($m->Manufacturer) }}"
+                                        data-expiry="{{ $m->ExpiryDate }}"
+                                        data-dosage="{{ e($m->DosageForm) }}"
+                                        data-strength="{{ e($m->Strength) }}"
+                                        data-packaging="{{ e($m->Packaging) }}"
+                                        data-category="{{ $m->MedicineCategoryId }}"
+                                        data-isactive="{{ $m->IsActive ? '1' : '0' }}"
+                                        data-image="{{ $m->ImageUrl ? $m->ImageUrl : '' }}">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
 
-                                {{-- EDIT --}}
-                                <button class="edit-btn px-3 py-1 text-sm bg-indigo-50 rounded hover:bg-indigo-100"
-                                    data-id="{{ $m->MedicineId }}"
-                                    data-name="{{ e($m->Name) }}"
-                                    data-generic="{{ e($m->GenericName) }}"
-                                    data-brand="{{ e($m->BrandName) }}"
-                                    data-description="{{ e($m->Description) }}"
-                                    data-price="{{ $m->Price }}"
-                                    data-mrp="{{ $m->MRP }}"
-                                    data-prescription="{{ $m->PrescriptionRequired ? '1' : '0' }}"
-                                    data-manufacturer="{{ e($m->Manufacturer) }}"
-                                    data-expiry="{{ $m->ExpiryDate }}"
-                                    data-dosage="{{ e($m->DosageForm) }}"
-                                    data-strength="{{ e($m->Strength) }}"
-                                    data-packaging="{{ e($m->Packaging) }}"
-                                    data-category="{{ $m->MedicineCategoryId }}"
-                                    data-isactive="{{ $m->IsActive ? '1' : '0' }}"
-                                    data-image="{{ $m->ImageUrl ? asset('storage/'.$m->ImageUrl) : '' }}">
-                                    Edit
-                                </button>
-
-                                {{-- DELETE --}}
-                                <form action="{{ route('admin.medicines.destroy',$m->MedicineId) }}"
-                                    method="POST" class="inline delete-form">
-                                    @csrf @method('DELETE')
-                                    <button class="px-3 py-1 text-sm bg-red-50 rounded hover:bg-red-100">Delete</button>
-                                </form>
+                                    <form action="{{ route('admin.medicines.destroy',$m->MedicineId) }}" method="POST" class="delete-form inline">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                     @empty
