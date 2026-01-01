@@ -1,9 +1,9 @@
 <div class="px-6 py-4 border-b">
-            <h2 class="font-semibold text-gray-800">Orders List</h2>
-        </div>
+    <h2 class="font-semibold text-gray-800">Orders List</h2>
+</div>
 <div class="overflow-x-auto" id="tableData">
 <table class="min-w-full divide-y divide-gray-200 text-sm">
-    <thead class="bg-gray-100">
+    <thead class="bg-gray-50">
         <tr>
             <th class="px-4 py-2">SN</th>
             <th class="px-4 py-2">Product Name</th>
@@ -135,29 +135,34 @@
                     <div class="flex items-center justify-center gap-3 h-full">
 
                         {{-- VIEW --}}
-                        <a href="{{ route('orders.show', $order->OrderId) }}"
+                        @php
+                            // Get unique item types for this order
+                            $types = $order->items->pluck('ItemType')->unique();
+
+                            // Convert to comma-separated string
+                            $typeParam = $types->implode(','); // e.g., "Menuitem,Medicine"
+                        @endphp
+
+                        <a href="{{ route('orders.show', ['id' => $order->OrderId, 'type' => $typeParam]) }}"
                         class="text-gray-600 hover:text-gray-900">
                             <i class="fas fa-eye"></i>
                         </a>
 
                         {{-- EDIT --}}
-                        <a href="javascript:void(0)"
-                        class="text-indigo-600 hover:text-indigo-800 edit-btn"
-                        data-id="{{ $order->OrderId }}">
-                            <i class="fas fa-edit"></i>
-                        </a>
+                        <button id="editBtn"
+                        onclick='openEditModal(@json($order))'
+                        class="text-indigo-600 hover:text-indigo-800 edit-btn"><i class="fas fa-edit"></i></button>
 
-                        {{-- DELETE --}}
+                        {{-- Cancel --}}
                         <form method="POST"
-                            action="{{ route('orders.destroy', $order->OrderId) }}"
-                            class="delete-form"
-                            data-status="{{ $order->Status }}">
+                            action="{{ route('orders.cancel', $order->OrderId) }}"
+                            class="cancel-form">
                             @csrf
-                            @method('DELETE')
+                            @method('PATCH')
                             <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                             <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
                             <button type="submit" class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-trash"></i>
+                                <i class="fas fa-times"></i>
                             </button>
                         </form>
 

@@ -17,6 +17,8 @@ class OrderItem extends Model
 
     // Timestamps enabled
     public $timestamps = true;
+    const CREATED_AT = 'CreatedAt';
+    const UPDATED_AT = 'UpdatedAt';
 
     protected $fillable = [
         'OrderId',

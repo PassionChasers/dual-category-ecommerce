@@ -72,7 +72,7 @@ class MedicalStore extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'UserId', 'id');
+        return $this->belongsTo(User::class, 'UserId', 'UserId');
     }
 
 }

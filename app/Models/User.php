@@ -23,6 +23,9 @@ class User extends Authenticatable
     // Primary key (assumed)
     protected $primaryKey = 'UserId'; // change if different
 
+    const CREATED_AT = 'CreatedAt';
+    const UPDATED_AT = 'UpdatedAt';
+
     // PostgreSQL case-sensitive columns
     protected $fillable = [
         'Name',
@@ -63,6 +66,16 @@ class User extends Authenticatable
     public function customer()
     {
         return $this->hasOne(Customer::class, 'UserId', 'UserId');
+    }
+
+    public function restaurants()
+    {
+        return $this->hasMany(Restaurant::class, 'UserId', 'UserId');
+    }
+
+    public function medicalstores()
+    {
+        return $this->hasMany(MedicalStore::class, 'UserId', 'UserId');
     }
 
     

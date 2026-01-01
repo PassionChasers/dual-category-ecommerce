@@ -42,7 +42,7 @@
                         data-contact_number="{{ $user->contact_number }}" data-address="{{ $user->address }}">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <form method="POST" action="{{ route('customers.destroy', $user->id) }}" class="inline delete-form">
+                    <form method="POST" action="#" class="inline delete-form">
                         @csrf @method('DELETE')
                         <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                         <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
