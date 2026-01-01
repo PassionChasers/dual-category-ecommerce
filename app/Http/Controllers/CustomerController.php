@@ -13,7 +13,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $query = User::query()->where('role', 'customer');
+        $query = User::query()->where('Role', 'Customer');
 
         // Search by user name
         if ($request->filled('search')) {

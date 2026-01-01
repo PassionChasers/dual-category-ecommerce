@@ -140,6 +140,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('orders/search', [OrderController::class, 'search'])->name('orders.search');
 
+    Route::put('/orders/update', [OrderController::class, 'update'])->name('orders.update');
+    // Update order status to Cancelled
+    Route::patch('orders/cancel/{id}', [OrderController::class, 'cancel'])->name('orders.cancel');
+
 
     /*
     |----------------------------------------------------------------------
