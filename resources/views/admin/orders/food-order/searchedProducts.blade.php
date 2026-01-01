@@ -13,7 +13,7 @@
             <th class="px-4 py-2">Delivery Address</th>
             <th class="px-4 py-2">Customer Name</th>
             <th class="px-4 py-2">Contact No.</th>
-            {{-- <th class="px-4 py-2">Assign Delivery Man</th> --}}
+            <th class="px-4 py-2">Assign Store</th>
             <th class="px-4 py-2">Status</th>
             <th class="px-4 py-2">Date</th>
             <th class="px-4 py-2">Actions</th>
@@ -96,33 +96,33 @@
                     {{ $order->customer->user->Phone ?? 'N/A' }}
                 </td>
 
-                {{-- Delivery Man --}}
-                {{-- <td class="px-4 py-2 text-gray-600">
-                    {{ $order-> ?? 'N/A' }}
-                </td> --}}
-                {{-- Assign Rider --}}
-                {{-- <td class="px-4 py-2">
-                    <select class="border rounded px-2 py-1 text-sm">
-                        <option value="">Select Rider</option> --}}
-                        {{-- loop riders here --}}
-                    {{-- </select>
-                </td> --}}
+                {{-- Assign Stores --}}
+                <td class="px-4 py-2">
+                    <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
+                        <option value="">Assign Store</option>
+                        @foreach($allRestaurants as $restaurant)
+                            <option value="{{ $restaurant->RestaurantId }}"
+                                {{ $order->items->first() && $order->items->first()->BusinessId == $restaurant->RestaurantId ? 'selected' : '' }}>
+                                {{ $restaurant->Name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </td>
 
                 {{-- Status --}}
                 <td class="px-4 py-2">
-                    <span class="px-2 py-1 rounded text-xs
-                        @switch($order->Status)
-                            @case('pending') bg-yellow-100 text-yellow-800 @break
-                            @case('accepted') bg-blue-100 text-blue-800 @break
-                            @case('preparing') bg-orange-100 text-orange-800 @break
-                            @case('packed') bg-purple-100 text-purple-800 @break
-                            @case('out_for_delivery') bg-indigo-100 text-indigo-800 @break
-                            @case('Completed') bg-green-100 text-green-800 @break
-                            @case('Cancelled') bg-red-100 text-red-800 @break
-                        @endswitch
-                    ">
-                        {{ ucfirst(str_replace('_',' ', $order->Status)) }}
-                    </span>
+                    @php
+                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled'];
+                    @endphp
+
+                    <select class="order-status border rounded px-2 py-1 text-sm" 
+                            data-order-id="{{ $order->OrderId }}">
+                        @foreach($statuses as $status)
+                            <option value="{{ $status }}" {{ $order->Status === $status ? 'selected' : '' }}>
+                                {{ $status }}
+                            </option>
+                        @endforeach
+                    </select>
                 </td>
 
                 {{-- Date --}}
@@ -225,6 +225,104 @@
                     }
                 });
             });
-        });  
+        });
+        
+        // Assign Store
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        document.querySelectorAll('.assign-store').forEach(select => {
+            select.addEventListener('change', function () {
+
+                const restaurantId = this.value;
+                const orderId = this.dataset.orderId;
+
+                if (!restaurantId || !orderId) return;
+
+                fetch("{{ route('orders.assign-store') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        restaurant_id: restaurantId
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data); // Debug: see what server returns
+                    if (data.success) {
+                        Swal.fire({
+                            toast: true,
+                            icon: 'success',
+                            title: data.message,
+                            timer: 1500,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: data.message || 'Failed to assign store'
+                        });
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Something went wrong'
+                    });
+                });
+
+            });
+        });
+
+
+        // Update Order Status
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        document.querySelectorAll('.order-status').forEach(select => {
+            select.addEventListener('change', function () {
+                const orderId = this.dataset.orderId;
+                const status = this.value;
+
+                fetch("{{ route('orders.update-status') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        status: status
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: data.message || 'Failed to update status'
+                        });
+                    }
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Something went wrong'
+                    });
+                });
+            });
+        });
     });
 </script>

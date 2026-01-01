@@ -111,19 +111,18 @@
 
                 {{-- Status --}}
                 <td class="px-4 py-2">
-                    <span class="px-2 py-1 rounded text-xs
-                        @switch($order->Status)
-                            @case('pending') bg-yellow-100 text-yellow-800 @break
-                            @case('accepted') bg-blue-100 text-blue-800 @break
-                            @case('preparing') bg-orange-100 text-orange-800 @break
-                            @case('packed') bg-purple-100 text-purple-800 @break
-                            @case('out_for_delivery') bg-indigo-100 text-indigo-800 @break
-                            @case('Completed') bg-green-100 text-green-800 @break
-                            @case('Cancelled') bg-red-100 text-red-800 @break
-                        @endswitch
-                    ">
-                        {{ ucfirst(str_replace('_',' ', $order->Status)) }}
-                    </span>
+                    @php
+                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled'];
+                    @endphp
+
+                    <select class="order-status border rounded px-2 py-1 text-sm" 
+                            data-order-id="{{ $order->OrderId }}">
+                        @foreach($statuses as $status)
+                            <option value="{{ $status }}" {{ $order->Status === $status ? 'selected' : '' }}>
+                                {{ $status }}
+                            </option>
+                        @endforeach
+                    </select>
                 </td>
 
                 {{-- Date --}}
@@ -227,6 +226,53 @@
                     if (result.isConfirmed) {
                         form.submit();
                     }
+                });
+            });
+        });
+
+
+
+        // Update Order Status
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        document.querySelectorAll('.order-status').forEach(select => {
+            select.addEventListener('change', function () {
+                const orderId = this.dataset.orderId;
+                const status = this.value;
+
+                fetch("{{ route('orders.update-status') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        status: status
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            toast: true,
+                            position: 'top-end',
+                            icon: 'success',
+                            title: data.message,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: data.message || 'Failed to update status'
+                        });
+                    }
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Something went wrong'
+                    });
                 });
             });
         });
