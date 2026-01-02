@@ -12,8 +12,8 @@
             <th class="px-4 py-2">Total Amount</th>
             <th class="px-4 py-2">Delivery Address</th>
             <th class="px-4 py-2">Customer Name</th>
-            <th class="px-4 py-2">Contact No.</th>
-            <th class="px-4 py-2">Assign Delivery Man</th>
+            {{-- <th class="px-4 py-2">Contact No.</th> --}}
+            <th class="px-4 py-2">Assign Store</th>
             <th class="px-4 py-2">Status</th>
             <th class="px-4 py-2">Date</th>
             <th class="px-4 py-2">Actions</th>
@@ -92,22 +92,16 @@
                 </td>
 
                 {{-- Contact --}}
-                <td class="px-4 py-2 text-gray-600">
+                {{-- <td class="px-4 py-2 text-gray-600">
                     {{ $order->customer->user->Phone ?? 'N/A' }}
-                </td>
+                </td> --}}
 
                 {{-- Delivery Man --}}
                 <td class="px-4 py-2 text-gray-600">
                     {{-- {{ $order-> ?? 'N/A' }} --}}
                     lkgjhbh
                 </td>
-                {{-- Assign Rider --}}
-                {{-- <td class="px-4 py-2">
-                    <select class="border rounded px-2 py-1 text-sm">
-                        <option value="">Select Rider</option> --}}
-                        {{-- loop riders here --}}
-                    {{-- </select>
-                </td> --}}
+               
 
                 {{-- Status --}}
                 <td class="px-4 py-2">
@@ -143,7 +137,7 @@
                             $typeParam = $types->implode(','); // e.g., "Menuitem,Medicine"
                         @endphp
 
-                        <a href="{{ route('orders.show', ['id' => $order->OrderId, 'type' => $typeParam]) }}"
+                        <a href="{{ route('orders.showProductDetail', ['id' => $order->OrderId, 'type' => $typeParam]) }}"
                         class="text-gray-600 hover:text-gray-900">
                             <i class="fas fa-eye"></i>
                         </a>

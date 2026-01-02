@@ -143,7 +143,7 @@
                             $typeParam = $types->implode(','); // e.g., "Menuitem,Medicine"
                         @endphp
 
-                        <a href="{{ route('orders.show', ['id' => $order->OrderId, 'type' => $typeParam]) }}"
+                        <a href="{{ route('orders.showMedicineDetail', ['id' => $order->OrderId, 'type' => $typeParam]) }}"
                         class="text-gray-600 hover:text-gray-900">
                             <i class="fas fa-eye"></i>
                         </a>
