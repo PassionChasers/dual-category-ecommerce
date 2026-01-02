@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Restaurant;
+use App\Models\MedicalStore;
 
 class OrderController extends Controller
 {
@@ -181,17 +184,13 @@ class OrderController extends Controller
 
         // Filter by is Status
         if ($request->filled('status')) {
-            if ($request->status === 'Completed')
-                $query->where('Status', 'Completed');
-            elseif ($request->status === 'Cancelled')
-                $query->where('Status', 'Cancelled');
+            $query->where('Status', $request->status);
         }
 
         // Sorting
-        $allowedSorts = ['CreatedAt', 'Status', 'TotalAmount'];
+        $allowedSorts = ['CreatedAt', 'TotalAmount'];
         $sortBy = in_array($request->get('sort_by'), $allowedSorts) ? $request->get('sort_by') : 'CreatedAt';
         $sortOrder = $request->get('sort_order') === 'asc' ? 'asc' : 'desc';
-        $sortBy = in_array($request->sort_by, ['CreatedAt']) ? $request->sort_by : 'CreatedAt';
         $query->orderBy($sortBy, $sortOrder);
 
         /* Pagination */
@@ -200,7 +199,7 @@ class OrderController extends Controller
 
         $allOrders = $query->paginate($perPage)->appends($request->except('page'));
 
-        $itemTypes = \App\Models\OrderItem::select('ItemType')
+        $itemTypes = OrderItem::select('ItemType')
         ->distinct()
         ->pluck('ItemType');
 
@@ -236,17 +235,13 @@ class OrderController extends Controller
 
         // Filter by is Status
         if ($request->filled('status')) {
-            if ($request->status === 'Completed')
-                $query->where('Status', 'Completed');
-            elseif ($request->status === 'Cancelled')
-                $query->where('Status', 'Cancelled');
+            $query->where('Status', $request->status);
         }
 
         // Sorting
-        $allowedSorts = ['CreatedAt', 'Status', 'TotalAmount'];
+        $allowedSorts = ['CreatedAt', 'TotalAmount'];
         $sortBy = in_array($request->get('sort_by'), $allowedSorts) ? $request->get('sort_by') : 'CreatedAt';
         $sortOrder = $request->get('sort_order') === 'asc' ? 'asc' : 'desc';
-        $sortBy = in_array($request->sort_by, ['CreatedAt']) ? $request->sort_by : 'CreatedAt';
         $query->orderBy($sortBy, $sortOrder);
 
         /* Pagination */
@@ -255,11 +250,16 @@ class OrderController extends Controller
 
         $allOrders = $query->paginate($perPage)->appends($request->except('page'));
 
-        $itemTypes = \App\Models\OrderItem::select('ItemType')
+        $itemTypes = OrderItem::select('ItemType')
         ->distinct()
         ->pluck('ItemType');
 
-        return view('admin.orders.food-order.index', compact('allOrders', 'itemTypes'));
+        //fetch all active restaurants
+        $allRestaurants = Restaurant::where('IsActive', true)
+        ->orderBy('Priority', 'asc')
+        ->get();
+
+        return view('admin.orders.food-order.index', compact('allOrders', 'itemTypes','allRestaurants'));
     }
 
 
@@ -297,17 +297,13 @@ class OrderController extends Controller
 
         // Filter by is Status
         if ($request->filled('status')) {
-            if ($request->status === 'Completed')
-                $query->where('Status', 'Completed');
-            elseif ($request->status === 'Cancelled')
-                $query->where('Status', 'Cancelled');
+            $query->where('Status', $request->status);
         }
 
         // Sorting
-        $allowedSorts = ['CreatedAt', 'Status', 'TotalAmount'];
+        $allowedSorts = ['CreatedAt', 'TotalAmount'];
         $sortBy = in_array($request->get('sort_by'), $allowedSorts) ? $request->get('sort_by') : 'CreatedAt';
         $sortOrder = $request->get('sort_order') === 'asc' ? 'asc' : 'desc';
-        $sortBy = in_array($request->sort_by, ['CreatedAt']) ? $request->sort_by : 'CreatedAt';
         $query->orderBy($sortBy, $sortOrder);
 
         /* Pagination */
@@ -320,18 +316,113 @@ class OrderController extends Controller
         ->distinct()
         ->pluck('ItemType');
 
-        return view('admin.orders.medicine-order.index', compact('allOrders', 'itemTypes'));
-    }
-
-
-    //Customer Orders
-    public function customersOrders()
-    {
-        $customerOrders = Order::where('user_id', auth()->id())
-        ->latest()
+        $allMedicalStores = MedicalStore::where('IsActive', true)
+        ->orderBy('Priority', 'asc')
         ->get();
 
+        return view('admin.orders.medicine-order.index', compact('allOrders', 'itemTypes','allMedicalStores'));
     }
+
+
+
+    // Assign Medical Store to Medicine Order / Restaurant to Food Order
+    public function assignStore(Request $request)
+    {
+        try {
+            // Validate request
+            $request->validate([
+                'order_id' => 'required|exists:Orders,OrderId',
+                'medical_store_id' => 'nullable|exists:MedicalStores,MedicalStoreId',
+                'restaurant_id'    => 'nullable|exists:Restaurants,RestaurantId',
+            ]);
+
+            $order = Order::find($request->order_id);
+
+            if (!$order) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Order not found'
+                ], 404);
+            }
+
+            // Prevent assigning for Completed / Cancelled orders
+            // if (in_array($order->Status, ['Completed', 'Cancelled'])) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Cannot assign store/restaurant to this order because it is Cancelled or Completed.'
+            //     ], 403);
+            // }
+
+            // Determine which assignment to do
+            if ($request->filled('medical_store_id')) {
+                // Assign Medical Store
+                OrderItem::where('OrderId', $order->OrderId)
+                    ->update(['BusinessId' => $request->medical_store_id]);
+
+                $message = 'Medical store assigned successfully';
+            } elseif ($request->filled('restaurant_id')) {
+                // Assign Restaurant
+                OrderItem::where('OrderId', $order->OrderId)
+                    ->update(['BusinessId' => $request->restaurant_id]);
+
+                $message = 'Restaurant assigned successfully';
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No store or restaurant ID provided'
+                ], 422);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => $message
+            ], 200);
+
+        } catch (\Throwable $e) {
+            \Log::error('Assign store/restaurant error: '.$e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error: '.$e->getMessage()
+            ], 500);
+        }
+    }
+
+
+    public function updateStatus(Request $request)
+    {
+        try {
+            $request->validate([
+                'order_id' => 'required|exists:Orders,OrderId',
+                'status'   => 'required|in:Pending,Accepted,Preparing,Packed,Completed,Cancelled',
+            ]);
+
+            $order = Order::find($request->order_id);
+
+            // Optional: prevent status change if Completed/Cancelled
+            // if (in_array($order->Status, ['Completed', 'Cancelled'])) {
+            //     return response()->json([
+            //         'success' => false,
+            //         'message' => 'Cannot change status of Completed or Cancelled orders'
+            //     ], 403);
+            // }
+
+            $order->Status = $request->status;
+            $order->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order status updated successfully'
+            ]);
+
+        } catch (\Throwable $e) {
+            \Log::error('Update status error: '.$e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error: '.$e->getMessage()
+            ], 500);
+        }
+    }
+
 
 
 }

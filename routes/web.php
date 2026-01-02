@@ -102,7 +102,7 @@ Route::middleware('auth')->group(function () {
     | Product Routes - Food
     |----------------------------------------------------------------------
     */
-    // Route::resource('food', FoodController::class);
+    Route::resource('food', FoodController::class);
     // menu-items resource and products-food page now use MenuItemController
     Route::resource('menu-items', MenuItemController::class);
     Route::get('/products-food', [\App\Http\Controllers\MenuItemController::class, 'index'])->name('product.food.index');
@@ -143,6 +143,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/orders/update', [OrderController::class, 'update'])->name('orders.update');
     // Update order status to Cancelled
     Route::patch('orders/cancel/{id}', [OrderController::class, 'cancel'])->name('orders.cancel');
+    //Assign Medical Store to Medicine Order
+    Route::post('/orders/assign-store', [OrderController::class, 'assignStore'])
+    ->name('orders.assign-store');
+    // Update order status (general)
+    Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+
 
 
     /*
