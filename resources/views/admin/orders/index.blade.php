@@ -29,16 +29,16 @@
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800">All Order Management</h2>
             <p class="text-gray-600">Manage Food and Medicine Order List</p>
-        </div>
+        </div><br>
 
       
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
 
             <form method="GET" action="{{ route('orders.index') }}" class="flex gap-2 items-center">
-                <div class="px-3 py-2 rounded-md hover:bg-gray-200">
+                <div class="px-1 py-2 rounded-md hover:bg-gray-200">
                     <input type="text" name="search" placeholder="Search by product name..."
                     value="{{ request('search') }}"
-                    class="px-3 py-2 border rounded-md bg-white focus:ring-indigo-500 focus:border-indigo-500" 
+                    class="px-1 py-2 border rounded-md bg-white focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                     <button type="submit" class="px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
                         <i class="fas fa-search"></i>
