@@ -102,7 +102,7 @@ Route::middleware('auth')->group(function () {
     | Product Routes - Food
     |----------------------------------------------------------------------
     */
-    Route::resource('food', FoodController::class);
+    // Route::resource('food', FoodController::class);
     // menu-items resource and products-food page now use MenuItemController
     Route::resource('menu-items', MenuItemController::class);
     Route::get('/products-food', [\App\Http\Controllers\MenuItemController::class, 'index'])->name('product.food.index');
