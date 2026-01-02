@@ -42,24 +42,13 @@ class Order extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            if (empty($model->id)) {
-                $model->id = (string) Str::uuid();
+            if (empty($model->OrderId)) {
+                $model->OrderId = (string) Str::uuid();
             }
         });
     }
 
-    // public function restaurant() {
-    //     return $this->belongsTo(Restaurant::class,'restaurant_id', 'RestaurantId');
-    // }
 
-    // public function medicalstore() {
-    //     return $this->belongsTo(MedicalStore::class, 'medicalstore_id', 'MedicalStoreId');
-    // }
-
-    public function items()
-    {
-        return $this->hasMany(OrderItem::class, 'OrderId', 'OrderId'); //First is related model(OrderItem), second is foreign key in OrderItem, third is local key in Order
-    }
 
     // Relationship with Customer
     public function customer() {
@@ -69,10 +58,15 @@ class Order extends Model
     /**
      * Automatically delete order items when order is deleted
      */
-    protected static function booted()
+    // protected static function booted()
+    // {
+    //     static::deleting(function ($order) {
+    //         $order->items()->delete();
+    //     });
+    // }
+
+    public function items()
     {
-        static::deleting(function ($order) {
-            $order->items()->delete();
-        });
+        return $this->hasMany(OrderItem::class, 'OrderId', 'OrderId'); //First is related model(OrderItem), second is foreign key in OrderItem, third is local key in Order
     }
 }

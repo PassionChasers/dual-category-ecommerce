@@ -72,7 +72,12 @@ class MedicalStore extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'UserId', 'id');
+        return $this->belongsTo(User::class, 'UserId', 'UserId');
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class, 'BusinessId', 'MedicalStoreId'); //First is related model(OrderItem), second is foreign key in OrderItem, third is local key in MedicalStore
     }
 
 }

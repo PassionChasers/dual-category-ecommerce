@@ -20,7 +20,7 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        $query = User::query()->where('role', 'admin');
+        $query = User::query()->where('Role', 'Admin');
 
         // Search by user name
         if ($request->filled('search')) {

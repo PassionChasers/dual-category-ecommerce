@@ -140,6 +140,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('orders/search', [OrderController::class, 'search'])->name('orders.search');
 
+    Route::put('/orders/update', [OrderController::class, 'update'])->name('orders.update');
+    // Update order status to Cancelled
+    Route::patch('orders/cancel/{id}', [OrderController::class, 'cancel'])->name('orders.cancel');
+    //Assign Medical Store to Medicine Order
+    Route::post('/orders/assign-store', [OrderController::class, 'assignStore'])
+    ->name('orders.assign-store');
+    // Update order status (general)
+    Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+
+
 
     /*
     |----------------------------------------------------------------------
