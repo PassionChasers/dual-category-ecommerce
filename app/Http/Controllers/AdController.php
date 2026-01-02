@@ -7,59 +7,41 @@ use Illuminate\Http\Request;
 
 class AdController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $ads = Ad::latest()->paginate(10);
+        return view('admin.ads.index', compact('ads'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'title' => 'required',
+            'image' => 'required|image',
+            'position' => 'required'
+        ]);
+
+        $data['image'] = $request->file('image')->store('ads', 'public');
+
+        Ad::create($data);
+
+        return back()->with('success', 'Ad created successfully');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Ad $ad)
+    public function toggle(Ad $ad)
     {
-        //
+        // $ad->update(['is_active' => !$ad->is_active]);
+        // return back();
+
+        $ad->IsActive = !$ad->IsActive;
+        $ad->save();
+
+    return back()->with('success', 'Ad status updated successfully.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Ad $ad)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Ad $ad)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Ad $ad)
     {
-        //
+        $ad->delete();
+        return back()->with('success', 'Ad deleted');
     }
 }

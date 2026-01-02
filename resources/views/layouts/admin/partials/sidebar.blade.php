@@ -207,11 +207,6 @@
                                 {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fa-solid fa-utensils mr-2"></i> Food Orders
                         </a>
-
-
-                        
-
-
                     </div>
                 </div>
 
@@ -244,6 +239,15 @@
                             <i class="fas fa-university mr-2"></i> Institution Setup
                         </a>
                     </div>
+                </div>
+
+                {{-- ADS Settings --}}
+                <div>
+                    <a href="{{route('admin.ads.index')}}"
+                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 
+                            {{ request()->routeIs('admin.ads.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                        <i class="fas fa-ad mr-2"></i>Manage Ads
+                    </a>
                 </div>
 
                 <!-- Admin Section -->
@@ -504,11 +508,6 @@
                                 {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fa-solid fa-utensils mr-2"></i> Food Orders
                         </a>
-
-                        
-
-                       
-
                     </div>
                 </div>
 
@@ -540,6 +539,14 @@
                     </div>
                 </div>
 
+                {{-- ADS Settings --}}
+                <div>
+                    <a href="{{route('admin.ads.index')}}"
+                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 
+                            {{ request()->routeIs('admin.ads.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                        <i class="fas fa-ad mr-2"></i> Manage Ads
+                    </a>
+                </div>
 
 
                 <!-- Admin Section -->

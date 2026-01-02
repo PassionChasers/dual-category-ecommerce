@@ -29,7 +29,7 @@
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800">Medicine Order Management</h2>
             <p class="text-gray-600">Medicine Order List</p>
-        </div>
+        </div><br>
 
       
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
@@ -43,7 +43,7 @@
                     <button type="submit" class="px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
                         <i class="fas fa-search"></i>
                     </button>
-                </div>
+                </div><br>
 
                 <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="">All Status</option>

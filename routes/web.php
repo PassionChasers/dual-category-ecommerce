@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Artisan;
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdController;
 use App\Http\Controllers\FoodController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuItemController;
@@ -134,18 +135,30 @@ Route::middleware('auth')->group(function () {
     // Medicine orders
     Route::get('/medicine-order-list', [OrderController::class, 'medicineOrders'])->name('orders.medicine.index');
 
-    Route::get('product-orders-details/{id}', [OrderController::class, 'show'])->name('orders.show');
+    //All product order details Route
+    Route::get('all-product-orders-details/{id}', [OrderController::class, 'showProductDetails'])->name('orders.showProductDetail');
+
+    //Food order Details route
+    Route::get('food-orders-details/{id}', [OrderController::class, 'showFoodDetails'])->name('orders.showFoodDetail');
+
+    //Medicine order details route
+    Route::get('medicine-orders-details/{id}', [OrderController::class, 'showMedicineDetails'])->name('orders.showMedicineDetail');
     
+    //Delete order route
     Route::delete('delete-product-orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
 
+    //search order route
     Route::get('orders/search', [OrderController::class, 'search'])->name('orders.search');
 
+    //update order route
     Route::put('/orders/update', [OrderController::class, 'update'])->name('orders.update');
+
     // Update order status to Cancelled
     Route::patch('orders/cancel/{id}', [OrderController::class, 'cancel'])->name('orders.cancel');
+
     //Assign Medical Store to Medicine Order
-    Route::post('/orders/assign-store', [OrderController::class, 'assignStore'])
-    ->name('orders.assign-store');
+    Route::post('/orders/assign-store', [OrderController::class, 'assignStore'])->name('orders.assign-store');
+    
     // Update order status (general)
     Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
 
@@ -321,4 +334,14 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::put('admin/restaurants/{id}', [RestaurantController::class, 'update'])->name('restaurants.update');
     Route::delete('admin/restaurants/{id}', [RestaurantController::class, 'destroy'])->name('restaurants.destroy');
     Route::get('admin/restaurants/{id}', [RestaurantController::class, 'show'])->name('restaurants.show');
+});
+
+
+// use App\Http\Controllers\AdController;
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/ads', [AdController::class, 'index'])->name('ads.index');
+    Route::post('/ads', [AdController::class, 'store'])->name('ads.store');
+    Route::put('/ads/{ad}', [AdController::class, 'update'])->name('ads.update');
+    Route::delete('/ads/{ad}', [AdController::class, 'destroy'])->name('ads.destroy');
+    Route::patch('/ads/{ad}/toggle', [AdController::class, 'toggle'])->name('ads.toggle');
 });

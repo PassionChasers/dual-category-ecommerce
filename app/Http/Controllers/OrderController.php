@@ -15,7 +15,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        return view('admin.orders.index');
+        //
     }
 
     /**
@@ -37,29 +37,86 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, $orderId)
+    public function showProductDetails(Request $request, $orderId)
     {
-        $orderTypes = $request->query('type'); // could be "MenuItem", "Medicine", or "MenuItem,Medicine"
+        $orderTypes = $request->query('type'); // MenuItem | Medicine | MenuItem,Medicine
 
-        $query = Order::with(['customer']);
+        // Convert type to array
+        $typesArray = [];
+        if (!empty($orderTypes) && $orderTypes !== 'null') {
+            $typesArray = explode(',', $orderTypes);
+        }
+
+        $query = Order::with('customer');
 
         // Load items conditionally
-        if (!empty($orderTypes) && $orderTypes !== 'null') {
-            // Convert comma-separated string to array
-            $typesArray = explode(',', $orderTypes);
-
+        if (!empty($typesArray)) {
             $query->with(['items' => function ($q) use ($typesArray) {
                 $q->whereIn('ItemType', $typesArray);
             }]);
         } else {
-            // fallback: load all items
             $query->with('items');
         }
 
         $order = $query->findOrFail($orderId);
 
-        return view('admin.orders.show', compact('order', 'orderTypes'));
+        return view('admin.orders.show', compact('order'));
     }
+
+    public function showMedicineDetails(Request $request, $orderId)
+    {
+        $orderTypes = $request->query('type'); // MenuItem | Medicine | MenuItem,Medicine
+
+        // Convert type to array
+        $typesArray = [];
+        if (!empty($orderTypes) && $orderTypes !== 'null') {
+            $typesArray = explode(',', $orderTypes);
+        }
+
+        $query = Order::with('customer');
+
+        // Load items conditionally
+        if (!empty($typesArray)) {
+            $query->with(['items' => function ($q) use ($typesArray) {
+                $q->whereIn('ItemType', $typesArray);
+            }]);
+        } else {
+            $query->with('items');
+        }
+
+        $order = $query->findOrFail($orderId);
+
+        return view('admin.orders.medicine-order.show', compact('order'));
+        
+    }
+
+
+    public function showFoodDetails(Request $request, $orderId)
+    {
+        $orderTypes = $request->query('type'); // MenuItem | Medicine | MenuItem,Medicine
+
+        // Convert type to array
+        $typesArray = [];
+        if (!empty($orderTypes) && $orderTypes !== 'null') {
+            $typesArray = explode(',', $orderTypes);
+        }
+
+        $query = Order::with('customer');
+
+        // Load items conditionally
+        if (!empty($typesArray)) {
+            $query->with(['items' => function ($q) use ($typesArray) {
+                $q->whereIn('ItemType', $typesArray);
+            }]);
+        } else {
+            $query->with('items');
+        }
+
+        $order = $query->findOrFail($orderId);
+    
+        return view('admin.orders.food-order.show', compact('order'));
+    }
+
 
 
 
@@ -199,11 +256,21 @@ class OrderController extends Controller
 
         $allOrders = $query->paginate($perPage)->appends($request->except('page'));
 
+        //fetch all active restaurants
+        $allRestaurants = Restaurant::where('IsActive', true)
+        ->orderBy('Priority', 'asc')
+        ->get();
+
+        //fetch all active medicalstores
+        $allMedicalStores = MedicalStore::where('IsActive', true)
+        ->orderBy('Priority', 'asc')
+        ->get();
+
         $itemTypes = OrderItem::select('ItemType')
         ->distinct()
         ->pluck('ItemType');
 
-        return view('admin.orders.index', compact('allOrders', 'itemTypes'));
+        return view('admin.orders.index', compact('allOrders', 'itemTypes', 'allRestaurants', 'allMedicalStores'));
     }
 
 
