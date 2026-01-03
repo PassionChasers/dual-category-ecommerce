@@ -15,6 +15,8 @@ class MenuItemController extends Controller
     public function index(Request $request)
     {
         $search = $request->get('search');
+        $category = $request->get('category');
+        $type = $request->get('type');
 
         $query = MenuItem::with('category');
 
@@ -23,6 +25,14 @@ class MenuItemController extends Controller
                 $q->where('Name', 'like', "%{$search}%")
                     ->orWhere('Description', 'like', "%{$search}%");
             });
+        }
+
+        if ($category) {
+            $query->where('MenuCategoryId', $category);
+        }
+
+        if ($type !== null && $type !== '') {
+            $query->where('IsVeg', (int)$type);
         }
 
         $menuItems = $query->orderBy('CreatedAt', 'desc')

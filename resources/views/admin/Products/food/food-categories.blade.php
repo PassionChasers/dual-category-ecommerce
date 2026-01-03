@@ -18,13 +18,16 @@
             <p class="text-gray-600">Manage all Product categories</p>
         </div>
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
-            <form method="GET" action="{{ route('product.food.category') }}" class="flex flex-wrap w-full gap-2">
-                <input type="text" name="search" placeholder="Search categories..."
+            <form id="filter-form" class="flex flex-wrap gap-2 w-full md:w-auto">
+                <input type="text" id="search-input" name="search" placeholder="Search categories..."
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
                     value="{{ request('search') ?? '' }}">
-                <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
-                    <i class="fas fa-search"></i>
-                </button>
+                
+                <select id="status-filter" name="status" class="px-3 py-2 border rounded-md text-sm">
+                    <option value="">All</option>
+                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                </select>
             </form>
             <button id="new-category-button"
                 class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
@@ -33,7 +36,7 @@
         </div>
     </div>
 
-    <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div id="categories-container" class="bg-white shadow rounded-lg overflow-hidden">
         <div class="px-6 py-4 border-b">
             <h2 class="font-semibold text-gray-800">Category List</h2>
         </div>
@@ -140,6 +143,93 @@ document.addEventListener('DOMContentLoaded', () => {
     const descInput = document.getElementById('category-description');
     const activeInput = document.getElementById('category-active');
 
+    // AJAX SEARCH & FILTERS
+    const filterForm = document.getElementById('filter-form');
+    const searchInput = document.getElementById('search-input');
+    const statusFilter = document.getElementById('status-filter');
+    const categoriesContainer = document.getElementById('categories-container');
+
+    const performSearch = () => {
+        const formData = new FormData(filterForm);
+        const params = new URLSearchParams(formData);
+        const url = `{{ route('product.food.category') }}?${params.toString()}`;
+        
+        console.log('Fetching:', url);
+        console.log('Status value:', statusFilter.value);
+        console.log('Search value:', searchInput.value);
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'text/html'
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            console.log('Response received, length:', html.length);
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(html, 'text/html');
+            const newContainer = newDoc.getElementById('categories-container');
+            console.log('Container found:', !!newContainer);
+            if (newContainer) {
+                categoriesContainer.innerHTML = newContainer.innerHTML;
+                // Re-sync filter values
+                const newStatusFilter = document.getElementById('status-filter');
+                const newSearchInput = document.getElementById('search-input');
+                if (newStatusFilter) newStatusFilter.value = statusFilter.value;
+                if (newSearchInput) newSearchInput.value = searchInput.value;
+                reattachEventListeners();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    };
+
+    // Debounce for search input
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 500);
+    });
+
+    // Immediate search for status filter
+    statusFilter.addEventListener('change', performSearch);
+
+    const reattachEventListeners = () => {
+        document.querySelectorAll('.edit-category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                title.innerText = 'Edit Category';
+                form.action = `/food-category/${btn.dataset.id}`;
+                methodInput.value = 'PUT';
+                nameInput.value = btn.dataset.name;
+                descInput.value = btn.dataset.description;
+                activeInput.checked = btn.dataset.isactive == 1 || btn.dataset.isactive === 'true';
+                modal.classList.remove('hidden');
+            });
+        });
+
+        document.querySelectorAll('.delete-category-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const categoryName = btn.dataset.name;
+                const deleteForm = btn.closest('.delete-form');
+                
+                Swal.fire({
+                    title: 'Delete Category',
+                    text: `Are you sure you want to delete "${categoryName}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        deleteForm.submit();
+                    }
+                });
+            });
+        });
+    };
+
     newBtn.addEventListener('click', () => {
         title.innerText = 'New Category';
         form.action = "{{ route('product.food.category.store') }}";
@@ -153,40 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
     cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
-    document.querySelectorAll('.edit-category-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            title.innerText = 'Edit Category';
-            form.action = `/food-category/${btn.dataset.id}`;
-            methodInput.value = 'PUT';
-            nameInput.value = btn.dataset.name;
-            descInput.value = btn.dataset.description;
-            activeInput.checked = btn.dataset.isactive == 1 || btn.dataset.isactive === 'true';
-            modal.classList.remove('hidden');
-        });
-    });
-
-    // Delete confirmation with sweet alert
-    document.querySelectorAll('.delete-category-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const categoryName = btn.dataset.name;
-            const form = btn.closest('.delete-form');
-            
-            Swal.fire({
-                title: 'Delete Category',
-                text: `Are you sure you want to delete "${categoryName}"?`,
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    form.submit();
-                }
-            });
-        });
-    });
+    // Initial attachment of event listeners
+    reattachEventListeners();
 });
 </script>
 @endpush

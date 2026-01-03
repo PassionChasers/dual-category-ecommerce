@@ -21,21 +21,19 @@
 
             {{-- FILTERS --}}
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
-                <form method="GET" action="{{ route('admin.medicines.index') }}" class="flex flex-wrap gap-2 w-full md:w-auto">
-                    <div class="flex gap-2 flex-1 min-w-[150px]">
+                <form id="filter-form" class="flex flex-wrap gap-2 w-full md:w-auto">
+                    <div class="flex-1 min-w-[150px]">
                         <input
                             type="text"
+                            id="search-input"
                             name="search"
                             placeholder="Search medicines..."
                             value="{{ request('search') }}"
-                            class="flex-1 px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+                            class="w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                         />
-                        <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
-                            <i class="fas fa-search"></i>
-                        </button>
                     </div>
                     
-                    <select name="category" onchange="this.form.submit()" class="px-3 py-2 border rounded-md text-sm">
+                    <select id="category-filter" name="category" class="px-3 py-2 border rounded-md text-sm">
                         <option value="">All categories</option>
                         @foreach($categories as $cat)
                             <option value="{{ $cat->MedicineCategoryId }}" {{ request('category') == $cat->MedicineCategoryId ? 'selected' : '' }}>
@@ -44,7 +42,7 @@
                         @endforeach
                     </select>
 
-                    <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md text-sm">
+                    <select id="status-filter" name="status" class="px-3 py-2 border rounded-md text-sm">
                         <option value="">Status</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
@@ -58,7 +56,7 @@
         </div>
 
         {{-- TABLE --}}
-        <div class="bg-white shadow rounded-lg">
+        <div id="medicines-container" class="bg-white shadow rounded-lg">
             <div class="px-6 py-4 border-b">
                 <h2 class="font-semibold text-gray-800">Medicine List</h2>
             </div>
@@ -310,6 +308,99 @@
             const imageInput=document.getElementById('field-image');
             const imagePreview=document.getElementById('image-preview');
 
+            // AJAX SEARCH & FILTERS
+            const filterForm=document.getElementById('filter-form');
+            const searchInput=document.getElementById('search-input');
+            const categoryFilter=document.getElementById('category-filter');
+            const statusFilter=document.getElementById('status-filter');
+            const medicinesContainer=document.getElementById('medicines-container');
+
+            const performSearch=()=>{
+                const formData=new FormData(filterForm);
+                const params=new URLSearchParams(formData);
+
+                fetch(`{{ route('admin.medicines.index') }}?${params.toString()}`,{
+                    headers:{
+                        'X-Requested-With':'XMLHttpRequest',
+                        'Accept':'text/html'
+                    }
+                })
+                .then(response=>response.text())
+                .then(html=>{
+                    const parser=new DOMParser();
+                    const newDoc=parser.parseFromString(html,'text/html');
+                    const newContainer=newDoc.getElementById('medicines-container');
+                    if(newContainer){
+                        medicinesContainer.innerHTML=newContainer.innerHTML;
+                        reattachEventListeners();
+                    }
+                })
+                .catch(error=>console.error('Error:',error));
+            };
+
+            // Debounce for search input
+            let searchTimeout;
+            searchInput.addEventListener('input',()=>{
+                clearTimeout(searchTimeout);
+                searchTimeout=setTimeout(performSearch,500);
+            });
+
+            // Immediate search for dropdowns
+            categoryFilter.addEventListener('change',performSearch);
+            statusFilter.addEventListener('change',performSearch);
+
+            const reattachEventListeners=()=>{
+                document.querySelectorAll('.edit-btn').forEach(btn=>{
+                    btn.addEventListener('click',function(){
+                        modalTitle.innerText='Edit Medicine';
+                        methodField.value='PUT';
+                        idField.value=this.dataset.id;
+
+                        nameField.value=this.dataset.name;
+                        brandField.value=this.dataset.brand;
+                        genericField.value=this.dataset.generic;
+                        descField.value=this.dataset.description;
+                        priceField.value=this.dataset.price;
+                        mrpField.value=this.dataset.mrp;
+                        prescriptionField.checked=this.dataset.prescription==='1';
+                        manufacturerField.value=this.dataset.manufacturer;
+                        expiryField.value=this.dataset.expiry;
+                        dosageField.value=this.dataset.dosage;
+                        strengthField.value=this.dataset.strength;
+                        packagingField.value=this.dataset.packaging;
+                        categoryField.value=this.dataset.category;
+                        isActiveField.checked=this.dataset.isactive==='1';
+
+                        if(this.dataset.image){
+                            imagePreview.src=this.dataset.image;
+                            imagePreview.classList.remove('hidden');
+                        }
+
+                        form.action = `{{ url('admin/medicines') }}/${this.dataset.id}`;
+                        openModal();
+                    });
+                });
+
+                document.querySelectorAll('.delete-form').forEach(frm=>{
+                    frm.addEventListener('submit',function(e){
+                        e.preventDefault();
+                        let form=this;
+
+                        Swal.fire({
+                            title:'Are you sure?',
+                            text:'This will permanently delete the medicine.',
+                            icon:'warning',
+                            showCancelButton:true,
+                            confirmButtonColor:'#e3342f',
+                            cancelButtonColor:'#6c757d',
+                            confirmButtonText:'Yes, delete'
+                        }).then(r=>{
+                            if(r.isConfirmed) form.submit();
+                        });
+                    });
+                });
+            };
+
             const openModal=()=>{
                 modal.classList.remove('hidden'); 
                 modal.classList.add('flex'); 
@@ -324,56 +415,16 @@
                 form.action="{{ route('admin.medicines.store') }}";
             };
 
-            // openCreate.addEventListener('click',()=>{
-            //     modalTitle.innerText="New Medicine";
-            //     isActiveField.checked=true;
-            //     openModal();
-            // });
-
             openCreate.addEventListener('click', () => {
                 modalTitle.innerText = "New Medicine";
                 isActiveField.checked = true;
-                methodField.value = 'POST';                 // ensure _method is POST
+                methodField.value = 'POST';                 
                 idField.value = '';
-                form.action = "{{ route('admin.medicines.store') }}"; // explicitly set store route
+                form.action = "{{ route('admin.medicines.store') }}";
                 openModal();
             });
 
-
             closeModalBtns.forEach(btn=>btn.addEventListener('click',closeModal));
-
-            // EDIT
-            document.querySelectorAll('.edit-btn').forEach(btn=>{
-                btn.addEventListener('click',function(){
-                    modalTitle.innerText='Edit Medicine';
-                    methodField.value='PUT';
-                    idField.value=this.dataset.id;
-
-                    nameField.value=this.dataset.name;
-                    brandField.value=this.dataset.brand;
-                    genericField.value=this.dataset.generic;
-                    descField.value=this.dataset.description;
-                    priceField.value=this.dataset.price;
-                    mrpField.value=this.dataset.mrp;
-                    prescriptionField.checked=this.dataset.prescription==='1';
-                    manufacturerField.value=this.dataset.manufacturer;
-                    expiryField.value=this.dataset.expiry;
-                    dosageField.value=this.dataset.dosage;
-                    strengthField.value=this.dataset.strength;
-                    packagingField.value=this.dataset.packaging;
-                    categoryField.value=this.dataset.category;
-                    isActiveField.checked=this.dataset.isactive==='1';
-
-                    if(this.dataset.image){
-                        imagePreview.src=this.dataset.image;
-                        imagePreview.classList.remove('hidden');
-                    }
-
-                    // form.action=`/admin/medicines/${this.dataset.id}`;
-                    form.action = `{{ url('admin/medicines') }}/${this.dataset.id}`;
-                    openModal();
-                });
-            });
 
             // PREVIEW IMAGE
             imageInput.addEventListener('change',()=>{
@@ -383,48 +434,8 @@
                 }
             });
 
-            // DELETE CONFIRMATION
-            document.querySelectorAll('.delete-form').forEach(frm=>{
-                frm.addEventListener('submit',function(e){
-                    e.preventDefault();
-                    let form=this;
-
-                    Swal.fire({
-                        title:'Are you sure?',
-                        text:'This will permanently delete the medicine.',
-                        icon:'warning',
-                        showCancelButton:true,
-                        confirmButtonColor:'#e3342f',
-                        cancelButtonColor:'#6c757d',
-                        confirmButtonText:'Yes, delete'
-                    }).then(r=>{
-                        if(r.isConfirmed) form.submit();
-                    });
-                });
-            });
-
-            // TOGGLE ACTIVE
-            document.querySelectorAll('.toggle-active').forEach(btn=>{
-                btn.addEventListener('click',()=>{
-                    fetch(`/admin/medicines/${btn.dataset.id}/toggle-active`,{
-                        method:'POST',
-                        headers:{
-                            'X-CSRF-TOKEN':'{{ csrf_token() }}',
-                            'Accept':'application/json'
-                        }
-                    })
-                    .then(r=>r.json())
-                    .then(j=>{
-                        if(j.success){
-                            Swal.fire({
-                                toast:true,position:'top-end',
-                                icon:'success',title:'Status updated',
-                                showConfirmButton:false,timer:1000
-                            }).then(()=>location.reload());
-                        }
-                    });
-                });
-            });
+            // Initial attachment of event listeners
+            reattachEventListeners();
 
         });
     </script>

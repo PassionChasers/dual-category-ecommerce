@@ -15,17 +15,21 @@
             </div>
 
             <div class="flex flex-col md:flex-row md:items-center gap-2 w-full md:w-auto">
-                <form method="GET" action="{{ url('admin/medicine-categories') }}" class="flex flex-wrap gap-2 w-full md:w-auto">
+                <form id="filter-form" class="flex flex-wrap gap-2 w-full md:w-auto">
                     <input
                         type="text"
+                        id="search-input"
                         name="search"
                         placeholder="Search categories..."
                         value="{{ request('search') }}"
                         class="flex-1 min-w-[150px] px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                     />
-                    <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
-                        <i class="fas fa-search"></i>
-                    </button>
+
+                    <select id="status-filter" name="status" class="px-3 py-2 border rounded-md text-sm">
+                        <option value="">Status</option>
+                        <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                    </select>
                 </form>
 
                 <button id="open-create-modal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
@@ -34,7 +38,7 @@
             </div>
         </div>
 
-        <div class="bg-white shadow rounded-lg overflow-hidden">
+        <div id="categories-container" class="bg-white shadow rounded-lg overflow-hidden">
             <div class="px-6 py-4 border-b">
                 <h2 class="font-semibold text-gray-800">Category List</h2>
                 <!-- <p class="text-sm text-gray-500 mt-1">Showing results filtered by your search and filters.</p> -->
@@ -170,6 +174,88 @@
             const descField = document.getElementById('field-description');
             const isActiveField = document.getElementById('field-isactive');
 
+            // AJAX SEARCH
+            const filterForm = document.getElementById('filter-form');
+            const searchInput = document.getElementById('search-input');
+            const statusFilter = document.getElementById('status-filter');
+            const categoriesContainer = document.getElementById('categories-container');
+
+            const performSearch = () => {
+                const formData = new FormData(filterForm);
+                const params = new URLSearchParams(formData);
+
+                fetch(`{{ url('admin/medicine-categories') }}?${params.toString()}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'text/html'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    const parser = new DOMParser();
+                    const newDoc = parser.parseFromString(html, 'text/html');
+                    const newContainer = newDoc.getElementById('categories-container');
+                    if (newContainer) {
+                        categoriesContainer.innerHTML = newContainer.innerHTML;
+                        reattachEventListeners();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            };
+
+            // Debounce for search input
+            let searchTimeout;
+            searchInput.addEventListener('input', () => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(performSearch, 500);
+            });
+
+            // Immediate search for status filter
+            statusFilter.addEventListener('change', performSearch);
+
+            const reattachEventListeners = () => {
+                // Edit buttons
+                document.querySelectorAll('.edit-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const id = this.dataset.id;
+                        const name = this.dataset.name;
+                        const description = this.dataset.description;
+                        const isActive = this.dataset.isactive === '1';
+
+                        modalTitle.innerText = 'Edit Category';
+                        methodField.value = 'PUT';
+                        categoryIdField.value = id;
+                        nameField.value = name;
+                        descField.value = description;
+                        isActiveField.checked = isActive;
+
+                        form.action = `/admin/medicine-categories/${id}`;
+                        openModal();
+                    });
+                });
+
+                // Delete forms
+                document.querySelectorAll('.delete-form').forEach(formEl => {
+                    formEl.addEventListener('submit', function (e) {
+                        e.preventDefault();
+                        const f = this;
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "This will permanently delete the category.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#e3342f',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Yes, delete'
+                        }).then(result => {
+                            if (result.isConfirmed) {
+                                f.submit();
+                            }
+                        });
+                    });
+                });
+            };
+
             function openModal() {
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
@@ -199,46 +285,8 @@
             // Close buttons
             closeModalBtns.forEach(btn => btn && btn.addEventListener('click', closeModal));
 
-            // Edit buttons
-            document.querySelectorAll('.edit-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const id = this.dataset.id;
-                    const name = this.dataset.name;
-                    const description = this.dataset.description;
-                    const isActive = this.dataset.isactive === '1';
-
-                    modalTitle.innerText = 'Edit Category';
-                    methodField.value = 'PUT';
-                    categoryIdField.value = id;
-                    nameField.value = name;
-                    descField.value = description;
-                    isActiveField.checked = isActive;
-
-                    form.action = `/admin/medicine-categories/${id}`;
-                    openModal();
-                });
-            });
-
-            // Delete confirmation (permanent delete)
-            document.querySelectorAll('.delete-form').forEach(formEl => {
-                formEl.addEventListener('submit', function (e) {
-                    e.preventDefault();
-                    const f = this;
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "This will permanently delete the category.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#e3342f',
-                        cancelButtonColor: '#6c757d',
-                        confirmButtonText: 'Yes, delete'
-                    }).then(result => {
-                        if (result.isConfirmed) {
-                            f.submit();
-                        }
-                    });
-                });
-            });
+            // Initial attachment of event listeners
+            reattachEventListeners();
 
             // Toggle active (AJAX)
             document.querySelectorAll('.toggle-active').forEach(btn => {

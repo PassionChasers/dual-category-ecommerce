@@ -14,6 +14,7 @@ class MenuCategoryController extends Controller
     public function index(Request $request)
     {
         $search = $request->input('search', '');
+        $status = $request->input('status');
         
         $query = MenuCategory::orderBy('CreatedAt', 'desc');
         
@@ -23,6 +24,14 @@ class MenuCategoryController extends Controller
                   ->orWhereRaw('LOWER("Description") LIKE ?', ["%{$search}%"]);
             });
         }
+
+        // Only apply status filter if specifically set to 'active' or 'inactive'
+        if ($status === 'active') {
+            $query->where('IsActive', 1);
+        } elseif ($status === 'inactive') {
+            $query->where('IsActive', 0);
+        }
+        // If status is null, empty string, or anything else, show all
         
         $categories = $query->paginate(5)->withQueryString();
         return view('admin.products.food.food-categories', compact('categories', 'search'));

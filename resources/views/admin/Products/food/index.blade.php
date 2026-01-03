@@ -27,14 +27,24 @@
             <p class="text-gray-600">Manage all Restaurants</p>
         </div>
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
-            <form method="GET" class="flex flex-wrap w-full gap-2">
-                <input type="text" name="search" 
+            <form id="filter-form" class="flex flex-wrap gap-2 w-full md:w-auto">
+                <input type="text" id="search-input" name="search" 
                 value="{{ $search ?? '' }}"
-                placeholder="Search restaurants..."
+                placeholder="Search food items..."
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
-                <button type="submit" class="flex-shrink-0 px-3 py-2 bg-gray-100 text-sm rounded hover:bg-gray-200">
-                    <i class="fas fa-search"></i>
-                </button>
+                
+                <select id="category-filter" name="category" class="px-3 py-2 border rounded-md text-sm">
+                    <option value="">All Categories</option>
+                    @foreach($categories ?? [] as $category)
+                        <option value="{{ $category->MenuCategoryId }}" {{ request('category') == $category->MenuCategoryId ? 'selected' : '' }}>{{ $category->Name }}</option>
+                    @endforeach
+                </select>
+                
+                <select id="type-filter" name="type" class="px-3 py-2 border rounded-md text-sm">
+                    <option value="">All Types</option>
+                    <option value="1" {{ request('type') === '1' ? 'selected' : '' }}>Veg</option>
+                    <option value="0" {{ request('type') === '0' ? 'selected' : '' }}>Non-Veg</option>
+                </select>
             </form>
             <button id="new-user-button" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
                 <i class="fas fa-plus mr-1"></i> New Restaurant
@@ -43,7 +53,7 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
+    <div id="items-container" class="bg-white shadow rounded-lg overflow-hidden">
         <div class="px-6 py-4 border-b">
             <h2 class="font-semibold text-gray-800">Food Products List</h2>
         </div>
@@ -219,7 +229,7 @@
 @endsection
 
 @push('scripts')
-
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('customer-modal');
@@ -236,6 +246,110 @@
     const isVegInput = document.getElementById('customer-isveg');
     const isAvailableInput = document.getElementById('customer-isavailable');
     const imageInput = document.getElementById('customer-image');
+
+    // AJAX SEARCH & FILTERS
+    const filterForm = document.getElementById('filter-form');
+    const searchInput = document.getElementById('search-input');
+    const categoryFilter = document.getElementById('category-filter');
+    const typeFilter = document.getElementById('type-filter');
+    const itemsContainer = document.getElementById('items-container');
+
+    const performSearch = () => {
+        const formData = new FormData(filterForm);
+        const params = new URLSearchParams(formData);
+        const url = `{{ route('menu-items.index') }}?${params.toString()}`;
+        
+        console.log('Fetching:', url);
+
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Accept': 'text/html'
+            }
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.text();
+        })
+        .then(html => {
+            console.log('HTML received, length:', html.length);
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(html, 'text/html');
+            const newContainer = newDoc.getElementById('items-container');
+            console.log('Container found:', !!newContainer);
+            if (newContainer) {
+                itemsContainer.innerHTML = newContainer.innerHTML;
+                reattachEventListeners();
+                console.log('Updated table');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    };
+
+    // Debounce for search input
+    let searchTimeout;
+    searchInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(performSearch, 500);
+    });
+
+    // Immediate search for dropdowns
+    categoryFilter.addEventListener('change', performSearch);
+    typeFilter.addEventListener('change', performSearch);
+
+    const reattachEventListeners = () => {
+        // Edit buttons
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                modalTitle.innerText = 'Edit Item';
+                form.action = `/menu-items/${btn.dataset.id}`;
+                methodInput.value = 'PUT';
+                nameInput.value = btn.dataset.name;
+                descriptionInput.value = btn.dataset.description;
+                priceInput.value = btn.dataset.price;
+                categoryInput.value = btn.dataset.category;
+                isVegInput.checked = btn.dataset.isveg == 1 || btn.dataset.isveg === 'true';
+                isAvailableInput.checked = btn.dataset.isavailable == 1 || btn.dataset.isavailable === 'true';
+                imageInput.value = '';
+                modal.classList.remove('hidden');
+            });
+        });
+
+        // Delete forms
+        document.querySelectorAll('.delete-form').forEach(f => {
+            f.addEventListener('submit', function(e) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "This action cannot be undone!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) f.submit();
+                });
+            });
+        });
+
+        // Description clickable
+        document.querySelectorAll('.desc-clickable').forEach(el => {
+            el.addEventListener('click', () => {
+                const desc = el.dataset.desc || el.textContent;
+                const img = el.dataset.img || '';
+                const name = el.dataset.name || '';
+                let html = '';
+                if (img) html += `<img src="https://pcsdecom.azurewebsites.net${img}" alt="${name}" style="max-width:100%;display:block;margin-bottom:8px;border-radius:6px;">`;
+                html += `<div style="text-align:left">${desc}</div>`;
+                Swal.fire({
+                    title: name || 'Description',
+                    html: html,
+                    width: 600
+                });
+            });
+        });
+    };
 
 
     // Open modal for create
@@ -257,60 +371,10 @@
     cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
     closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
 
-    // Open modal for edit
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            modalTitle.innerText = 'Edit Item';
-            form.action = `/menu-items/${btn.dataset.id}`;
-            methodInput.value = 'PUT';
-            nameInput.value = btn.dataset.name;
-            descriptionInput.value = btn.dataset.description;
-            priceInput.value = btn.dataset.price;
-            categoryInput.value = btn.dataset.category;
-            isVegInput.checked = btn.dataset.isveg == 1 || btn.dataset.isveg === 'true';
-            isAvailableInput.checked = btn.dataset.isavailable == 1 || btn.dataset.isavailable === 'true';
-            imageInput.value = '';
-           
-            modal.classList.remove('hidden');
-        });
-    });
+    // Initial attachment of event listeners
+    reattachEventListeners();
 
-    // SweetAlert for delete confirmation
-    document.querySelectorAll('.delete-form').forEach(f => {
-        f.addEventListener('submit', function(e) {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "This action cannot be undone!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#e3342f',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: 'Yes, delete it!'
-            }).then((result) => {
-                if (result.isConfirmed) f.submit();
-            });
-        });
     });
-
-    // Show full description (and image) in modal on click
-    document.querySelectorAll('.desc-clickable').forEach(el => {
-        el.addEventListener('click', () => {
-            const desc = el.dataset.desc || el.textContent;
-            const img = el.dataset.img || '';
-            const name = el.dataset.name || '';
-            let html = '';
-            if (img) html += `<img src="${img}" alt="${name}" style="max-width:100%;display:block;margin-bottom:8px;border-radius:6px;">`;
-            html += `<div style="text-align:left">${desc}</div>`;
-            Swal.fire({
-                title: name || 'Description',
-                html: html,
-                width: 600
-            });
-        });
-    });
-});
-
 
 // Toast alerts
 @if(session('success'))
