@@ -318,7 +318,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 // use App\Http\Controllers\MedicalStoreController;
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    Route::get('/', [MedicalStoreController::class, 'allMedicalstores'])->name('medicalstores.list');
+    Route::get('medical-stores', [MedicalStoreController::class, 'allMedicalstores'])->name('medicalstores.list');
     Route::get('medical-stores', [MedicalStoreController::class, 'index'])->name('medicalstores.index');
     Route::post('medical-stores', [MedicalStoreController::class, 'store'])->name('medicalstores.store');
     Route::get('medical-stores/{id}', [MedicalStoreController::class, 'show'])->name('medicalstores.show');
@@ -332,12 +332,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 });
 
 // use App\Http\Controllers\RestaurantController;
-
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    Route::get('/admin/restaurants', [RestaurantController::class, 'allRestaurants'])->name('restaurants.list');
-    Route::put('admin/restaurants/{id}', [RestaurantController::class, 'update'])->name('restaurants.update');
-    Route::delete('admin/restaurants/{id}', [RestaurantController::class, 'destroy'])->name('restaurants.destroy');
-    Route::get('admin/restaurants/{id}', [RestaurantController::class, 'show'])->name('restaurants.show');
+    Route::get('/restaurants', [RestaurantController::class, 'allRestaurants'])->name('restaurants.list');
+    Route::put('/restaurants/{id}', [RestaurantController::class, 'update'])->name('restaurants.update');
+    Route::delete('/restaurants/{id}', [RestaurantController::class, 'destroy'])->name('restaurants.destroy');
+    Route::get('/restaurants/{id}', [RestaurantController::class, 'show'])->name('restaurants.show');
 });
 
 

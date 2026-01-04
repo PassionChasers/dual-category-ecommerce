@@ -108,6 +108,6 @@ class RestaurantController extends Controller
         ->with('user')
         ->paginate(10);
 
-        return view('admin.users.restaurants.index', compact('users'));
+        return view('admin.business.restaurant.index', compact('users'));
     }
 }
