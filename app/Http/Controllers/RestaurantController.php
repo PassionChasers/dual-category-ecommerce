@@ -102,8 +102,12 @@ class RestaurantController extends Controller
      */
     public function allRestaurants()
     {
-        $restaurants = Restaurant::with('user')->paginate(4);
+        $users = Restaurant::whereHas('user', function ($query) {
+            $query->where('Role', 'Restaurant');
+        })
+        ->with('user')
+        ->paginate(10);
 
-        return view('admin.users.restaurants.index', compact('restaurants'));
+        return view('admin.users.restaurants.index', compact('users'));
     }
 }

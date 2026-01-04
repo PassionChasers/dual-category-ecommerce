@@ -11,14 +11,13 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // public function index()
-    // {
-        
-    //     $users = User::whereIn('role', ['admin', 'sub_admin'])->paginate(8);
-    //     return view('admin.users.index', compact('users'));
-    // }
+    public function index()
+    {
 
-    public function index(Request $request)
+    }
+
+    
+    public function admin(Request $request)
     {
         $query = User::query()->where('Role', 'Admin');
 
@@ -48,6 +47,96 @@ class UserController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
+    public function customers(Request $request)
+    {
+        $query = User::query()->where('Role', 'Customer');
+
+        // Search by user name
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+            // $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        //Filter by online status
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus);
+        }
+
+        // Paginate results with query parameters
+        $users = $query->latest()->paginate(5)->appends($request->all());
+        // $allOrders = $medicineOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.users.searchedCustomers', compact('users'))->render();
+        }
+        //Normal load
+        return view('admin.users.customers.index', compact('users'));
+    }
+
+    public function medicalstores(Request $request)
+    {
+        $query = User::query()->where('Role', 'Supplier');
+
+        // Search by user name
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+            // $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        //Filter by online status
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus);
+        }
+
+        // Paginate results with query parameters
+        $users = $query->latest()->paginate(5)->appends($request->all());
+        // $allOrders = $medicineOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.users.searchedMedicalstore', compact('users'))->render();
+        }
+        //Normal load
+        return view('admin.users.medical_stores.index', compact('users'));
+    }
+
+    public function restaurants(Request $request)
+    {
+        $query = User::query()->where('Role', 'Restaurant');
+
+        // Search by user name
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+            // $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->where('name', 'like', '%' . $search . '%');
+        }
+
+        //Filter by online status
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus);
+        }
+
+        // Paginate results with query parameters
+        $users = $query->latest()->paginate(5)->appends($request->all());
+        // $allOrders = $medicineOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.users.searchedRestaurants', compact('users'))->render();
+        }
+        //Normal load
+        return view('admin.users.restaurants.index', compact('users'));
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -61,26 +150,44 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the input
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6',
-            'designation' => 'required|string',
-            'department' => 'required|string',
+        // Validation
+        $validated = $request->validate([
+            'name'               => 'required|string|max:255',
+            'email'              => 'required|email|unique:users,Email',
+            'password'           => 'required|min:6',
+            'phone'              => 'required|string|max:20',
+            'avatar_url'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'role'               => 'required|string|in:Supplier,Admin,Restaurant','Customer',
+            // 'is_active'          => 'required|boolean',
+            // 'is_email_verified'  => 'required|boolean',
+            // 'is_business_admin'  => 'required|boolean',
         ]);
 
-        // Create the user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'designation' => $request->designation,
-            'department' => $request->department,
-        ]);
+        // Avatar Upload
+        $imagePath = null;
+        if ($request->hasFile('avatar_url')) {
+            $imagePath = $request->file('avatar_url')
+                ->store('uploads/users', 'public');
+        }
 
-        // Optional: flash a success message
-        return redirect()->route('users.index')->with('success', 'User created successfully!');
+        // Create User
+        // User::create([
+        //     'Name'              => $validated['name'],
+        //     'Email'             => $validated['email'],
+        //     'Password'          => Hash::make($validated['password']),
+        //     'Phone'             => $validated['phone'] ?? null,
+        //     'AvatarUrl'         => $avatarPath,
+        //     'Role'              => $validated['role'],
+        //     'IsActive'          => $validated['is_active'],
+        //     'IsEmailVerified'   => $validated['is_email_verified'],
+        //     'IsBusinessAdmin'   => $validated['is_business_admin'],
+        //     'remember_token'    => Str::random(60),
+        //     'CreatedAt'         => now(),
+        // ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Created successfully.');
     }
 
     /**

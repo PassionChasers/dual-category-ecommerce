@@ -138,8 +138,12 @@ class MedicalStoreController extends Controller
      */
     public function allMedicalstores()
     {
-        $medicalstores = MedicalStore::with('user')->paginate(4);
+        $users = MedicalStore::whereHas('user', function ($query) {
+            $query->where('Role', 'Supplier');
+        })
+        ->with('user')
+        ->paginate(10);
 
-        return view('admin.users.medical_stores.index', compact('medicalstores'));
+        return view('admin.business.medicalstore.index', compact('users'));
     }
 }

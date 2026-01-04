@@ -1,48 +1,47 @@
 <div class="px-6 py-4 border-b">
-    <h3 class="text-lg font-medium text-gray-900">Customer List</h3>
+    <h3 class="text-lg font-medium text-gray-900">Customers List</h3>
 </div>
 <div class="overflow-x-auto">
     <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
         <thead class="bg-gray-100">
             <tr>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">#id</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">#</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Name</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Email</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Contact</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Address</th>
+                {{-- <th class="px-4 py-2 text-left font-semibold text-gray-700">Address</th> --}}
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">IsActive</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Actions</th>
             </tr>
         </thead>
         <tbody id="userTableBody" class="divide-y divide-gray-200">
-            @forelse($users as $user)
+            @forelse($users as $index=>$user)
             <tr>
                 <td class="px-4 py-2">
-                    {{$user->id}}
+                    {{$index + 1}}
                 </td>
                 <td class="px-4 py-2 font-semibold text-gray-800">
-                    {{ $user->name }}
+                    {{ $user->Name }}
                 </td>
                 <td class="px-4 py-2 text-gray-600">
-                    {{ $user->email }}
+                    {{ $user->Email }}
                 </td>
                 <td class="px-4 py-2 text-gray-600">
-                    {{ $user->contact_number?? '-' }}
+                    {{ $user->Phone?? '-' }}
                 </td>
+                {{-- <td class="px-4 py-2 text-gray-600">
+                    {{ $user->Address ?? '-' }}
+                </td> --}}
                 <td class="px-4 py-2 text-gray-600">
-                    {{ $user->address ?? '-' }}
-                </td>
-                <td class="px-4 py-2 text-gray-600">
-                    {{-- {{ $user->IsActive ?? '-' }} --}}
                     {{ $user->IsActive ? 'Active': 'Inactive' }}
                 </td>
                 <td class="px-4 py-2 flex space-x-2">
-                    <button class="edit-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $user->id }}"
-                        data-name="{{ $user->name }}" data-email="{{ $user->email }}" data-isactive="{{ $user->IsActive ? '1' : '0' }}"
-                        data-contact_number="{{ $user->contact_number }}" data-address="{{ $user->address }}">
+                    <button class="edit-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $user->UserId }}"
+                        data-name="{{ $user->Name }}" data-email="{{ $user->Email }}" data-isactive="{{ $user->IsActive ? '1' : '0' }}"
+                        data-contact_number="{{ $user->Phone }}">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <form method="POST" action="#" class="inline delete-form">
+                    <form method="POST" action="{{ route('users.destroy', $user->UserId) }}" class="inline delete-form">
                         @csrf @method('DELETE')
                         <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                         <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">

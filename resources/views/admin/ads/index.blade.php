@@ -37,6 +37,8 @@
                     <th class="px-4 py-3 text-left">Status</th>
                     <th class="px-4 py-3 text-left">Budget</th>
                     <th class="px-4 py-3 text-left">Stats</th>
+                    <th class="px-4 py-3 text-left">Start Date</th>
+                    <th class="px-4 py-3 text-left">End Date</th> 
                     <th class="px-4 py-3 text-center">Actions</th>
                 </tr>
             </thead>
@@ -81,6 +83,16 @@
                         <td class="px-4 py-2 text-xs text-gray-600">
                             👁 {{ $ad->TotalImpressions }} <br>
                             🖱 {{ $ad->TotalClicks }}
+                        </td>
+
+                        {{-- Start Date --}}
+                        <td class="px-4 py-2">
+                            {{ $ad->StartDate ? \Carbon\Carbon::parse($ad->StartDate)->format('d M, Y') : '—' }}
+                        </td>
+
+                        {{-- End Date --}}
+                        <td class="px-4 py-2">
+                            {{ $ad->EndDate ? \Carbon\Carbon::parse($ad->EndDate)->format('d M, Y') : '—' }}
                         </td>
 
                         {{-- Actions --}}
@@ -185,8 +197,7 @@
 </div> --}}
 
 {{-- Add / Edit Modal --}}
-<div id="editModal"
-     class="fixed inset-0 hidden bg-black bg-opacity-40 flex items-center justify-center z-50">
+<div id="editModal" class="fixed inset-0 hidden bg-black bg-opacity-40 flex items-center justify-center z-50">
 
     <div class="bg-white w-full max-w-lg rounded shadow p-6 relative">
 
@@ -234,7 +245,7 @@
 
             {{-- Image --}}
             <div class="mb-3">
-                <label class="text-sm font-medium">Change Image</label>
+                <label class="text-sm font-medium">Image</label>
                 <input type="file" name="ImageUrl"
                        class="w-full border rounded px-3 py-2">
             </div>
@@ -291,28 +302,8 @@
 
         document.getElementById('editModal').classList.remove('hidden');
     }
-    
-    
 
-    // function openEditModal(ad) {
-
-    //     document.getElementById('modalTitle').innerText = 'Edit Advertisement';
-    //     document.getElementById('submitBtn').innerText = 'Update Ad';
-
-    //     document.getElementById('editTitle').value = ad.Title ?? '';
-    //     document.getElementById('editAdvertiser').value = ad.AdvertiserName ?? '';
-    //     document.getElementById('editRedirect').value = ad.RedirectUrl ?? '';
-    //     document.getElementById('editDescription').value = ad.Description ?? '';
-
-    //     const form = document.getElementById('editForm');
-    //     form.action = `/admin/ads/${ad.AdId}`;
-
-    //     document.getElementById('formMethod').value = 'PUT';
-
-    //     document.getElementById('editModal').classList.remove('hidden');
-    // }
-
-
+    //open edit modal
     function openEditModal(ad) {
 
     document.getElementById('modalTitle').innerText = 'Edit Advertisement';

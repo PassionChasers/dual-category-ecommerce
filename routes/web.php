@@ -201,11 +201,15 @@ Route::middleware('auth')->group(function () {
 
     /*
     |----------------------------------------------------------------------
-    | Users
+    | Users (admin, customers, medicalstores, restaurants)
     |----------------------------------------------------------------------
     */
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/admin', [UserController::class, 'admin'])->name('admin.index');
+        Route::get('/customers', [UserController::class, 'customers'])->name('customers.index');
+        Route::get('/restaurants', [UserController::class, 'restaurants'])->name('restaurants.index');
+        Route::get('/medicalstores', [UserController::class, 'medicalstores'])->name('medicalstores.index');
         Route::post('/store', [UserController::class, 'store'])->name('store');
         Route::put('/update/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/destroy/{user}', [UserController::class, 'destroy'])->name('destroy');
@@ -216,12 +220,12 @@ Route::middleware('auth')->group(function () {
     | Customers
     |----------------------------------------------------------------------
     */
-    Route::prefix('customers')->name('customers.')->group(function () {
-        Route::get('/', [CustomerController::class, 'index'])->name('index');
-        Route::post('/store', [CustomerController::class, 'store'])->name('store');
-        Route::put('/update/{customer}', [CustomerController::class, 'update'])->name('update');
-        Route::delete('/destroy/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
-    });
+    // Route::prefix('customers')->name('customers.')->group(function () {
+    //     Route::get('/', [CustomerController::class, 'index'])->name('index');
+    //     Route::post('/store', [CustomerController::class, 'store'])->name('store');
+    //     Route::put('/update/{customer}', [CustomerController::class, 'update'])->name('update');
+    //     Route::delete('/destroy/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
+    // });
 
       /*
     |----------------------------------------------------------------------
@@ -229,7 +233,6 @@ Route::middleware('auth')->group(function () {
     |----------------------------------------------------------------------
     */
     Route::prefix('medicalStores')->name('medicalStores.')->group(function () {
-        
         Route::post('/store', [MedicalStoreController::class, 'store'])->name('store');
         Route::put('/update/{customer}', [MedicalStoreController::class, 'update'])->name('update');
         Route::delete('/destroy/{customer}', [MedicalStoreController::class, 'destroy'])->name('destroy');

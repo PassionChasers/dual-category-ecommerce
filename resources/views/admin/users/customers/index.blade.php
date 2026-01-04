@@ -1,5 +1,5 @@
 @extends('layouts.admin.app')
-@section('title', 'Admin | User Management')
+@section('title', 'Admin | Customer Management')
 
 @push('styles')
 @endpush
@@ -24,7 +24,7 @@
                 <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>Offline</option>
             </select>
 
-            <button id="new-user-button" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" disabled>
+            <button id="openAdminModal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                 <i class="fas fa-plus mr-1"></i> New Customer
             </button>
         </div>
@@ -36,15 +36,114 @@
     </div>
 </div>
 
+
+<!-- Add User Modal -->
+<div id="AdminModal"
+     class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+
+    <div class="bg-white w-full max-w-2xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
+        <!-- Header -->
+        <div class="flex justify-between items-center px-6 py-4 border-b">
+            <h3 class="text-lg font-semibold text-gray-800">Add New Customer</h3>
+            <button id="add-close-btn" class="text-gray-500 hover:text-red-600 text-xl">&times;</button>
+        </div>
+
+        <!-- Form -->
+        <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
+            @csrf
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+
+                <!-- Name -->
+                <div>
+                    <label class="block text-sm font-medium">Name</label>
+                    <input type="text" name="name" class="input border rounded p-1" required>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="block text-sm font-medium">Email</label>
+                    <input type="email" name="email" class="input border rounded p-1" required>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="block text-sm font-medium">Password</label>
+                    <input type="password" name="password" class="input border rounded p-1" required>
+                </div>
+
+                <!-- Phone -->
+                <div>
+                    <label class="block text-sm font-medium">Phone</label>
+                    <input type="text" name="phone" class="input border rounded p-1">
+                </div>
+
+                <!-- Avatar -->
+                <div>
+                    <label class="block text-sm font-medium">Avatar</label>
+                    <input type="file" name="avatar_url" class="input border rounded p-1">
+                </div>
+
+                <!-- Role -->
+                <div>
+                    <label class="block text-sm font-medium">Role</label>
+                    <input type="text" name="role" value="Admin" class="input border rounded p-1" readonly>
+                </div>
+
+                {{-- <!-- Is Active -->
+                <div>
+                    <label class="block text-sm font-medium">Is Active</label>
+                    <select name="is_active" class="input">
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div> --}}
+
+                <!-- Is Email Verified -->
+                {{-- <div>
+                    <label class="block text-sm font-medium">Email Verified</label>
+                    <select name="is_email_verified" class="input">
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
+                    </select>
+                </div> --}}
+
+                <!-- Is Business Admin -->
+                {{-- <div>
+                    <label class="block text-sm font-medium">Business Admin</label>
+                    <select name="is_business_admin" class="input" readonly>
+                        <option value="0" selected>No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div> --}}
+
+            </div>
+
+            <!-- Footer -->
+            <div class="flex justify-end gap-2 px-6 py-4 border-t">
+                <button type="button" id="add-cancel-btn"
+                        class="px-4 py-2 bg-gray-200 rounded">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="px-4 py-2 bg-indigo-600 text-white rounded">
+                    Save User
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 {{-- Modal --}}
-<div id="customer-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+<div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
     <div class="flex items-center justify-center min-h-screen px-4">
         <!-- Overlay -->
         <div class="fixed inset-0 bg-gray-500 opacity-75"></div>
 
         <!-- Modal content -->
         <div class="bg-white rounded-lg shadow-xl border border-gray-300 transform transition-all max-w-lg w-full p-6 relative">
-            <button type="button" id="close-modal-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+            <button type="button" id="edit-close-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
                 <i class="fas fa-times text-lg"></i>
             </button>
 
@@ -83,12 +182,12 @@
                         required>
                 </div>
 
-                <div>
+                {{-- <div>
                     <label class="block text-sm font-medium text-gray-700">Address</label>
                     <input type="text" name="address" id="customer_address"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         required>
-                </div>
+                </div> --}}
 
                 <div class="flex items-center gap-2">
                     <input type="checkbox" name="IsActive" id="IsActive" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
@@ -96,7 +195,7 @@
                 </div>
 
                 <div class="flex justify-end space-x-2">
-                    <button type="button" id="cancel-btn" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+                    <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
                     <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save</button>
                 </div>
             </form>
@@ -109,47 +208,57 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('customer-modal');
-    const newBtn = document.getElementById('new-user-button');
-    const cancelBtn = document.getElementById('cancel-btn');
-    const closeBtn = document.getElementById('close-modal-btn');
+
+     // ADD MODAL
+    const addModal = document.getElementById('AdminModal');
+    const openAddBtn = document.getElementById('openAdminModal');
+    const addCloseBtn = document.getElementById('add-close-btn');
+    const addCancelBtn = document.getElementById('add-cancel-btn');
+
+    openAddBtn?.addEventListener('click', () => {
+        addModal.classList.remove('hidden');
+        addModal.classList.add('flex');
+    });
+
+    [addCloseBtn, addCancelBtn].forEach(btn => {
+        btn?.addEventListener('click', () => {
+            addModal.classList.add('hidden');
+            addModal.classList.remove('flex');
+        });
+    });
+
+
+     // EDIT MODAL
+    const editModal = document.getElementById('edit-modal');
+    const editCloseBtn = document.getElementById('edit-close-btn');
+    const editCancelBtn = document.getElementById('edit-cancel-btn');
+
+    [editCloseBtn, editCancelBtn].forEach(btn => {
+        btn?.addEventListener('click', () => {
+            editModal.classList.add('hidden');
+        });
+    });
+
+    //for edit modal
+    const editmodal = document.getElementById('edit-modal');
     const form = document.getElementById('customer-form');
     const modalTitle = document.getElementById('modal-title');
     const methodInput = document.getElementById('form-method');
     const nameInput = document.getElementById('customer-name');
-    const addressInput = document.getElementById('customer_address');
     const IsActiveInput = document.getElementById('IsActive');
     const contactNumberInput = document.getElementById('customer_contact_number');
     const emailInput = document.getElementById('customer-email');
     const passwordInput = document.getElementById('customer-password');
 
-    // Open modal for create
-    // newBtn.addEventListener('click', () => {
-    //     modalTitle.innerText = 'New Customer';
-    //     form.action = "{{ route('customers.store') }}";
-    //     methodInput.value = 'POST';
-    //     nameInput.value = '';
-    //     addressInput.value = '';
-    //     IsActiveInput.checked = false;
-    //     contactNumberInput.value = '';
-    //     emailInput.value = '';
-    //     passwordInput.value = '';
-    //     modal.classList.remove('hidden');
-    // });
-
-    // Cancel and close
-    cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
-    closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
-
     // Event delegation for edit buttons (works after AJAX too)
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.edit-btn');
         if (btn) {
-            modalTitle.innerText = 'Edit User';
-            form.action = `/customers/update/${btn.dataset.id}`;
+            modalTitle.innerText = 'Edit Customer';
+            form.action = `/users/update/${btn.dataset.id}`;
             methodInput.value = 'PUT';
             nameInput.value = btn.dataset.name;
-            addressInput.value = btn.dataset.address;
+            // addressInput.value = btn.dataset.address;
             IsActiveInput.checked = btn.dataset.isactive === '1';
             contactNumberInput.value = btn.dataset.contact_number;
             emailInput.value = btn.dataset.email;
@@ -159,7 +268,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('current-search').value = document.getElementById('search').value;
             document.getElementById('current-onlineStatus').value = document.getElementById('onlineStatus').value;
 
-            modal.classList.remove('hidden');
+            editmodal.classList.remove('hidden');
         }
     });
 

@@ -1,12 +1,13 @@
 <div class="px-6 py-4 border-b">
-    <h3 class="text-lg font-medium text-gray-900">Admins List</h3>
+    <h3 class="text-lg font-medium text-gray-900">Medicalstores List</h3>
 </div>
 <div class="overflow-x-auto">
     <table id="taskTable" class="min-w-full divide-y divide-gray-200 text-sm">
         <thead class="bg-gray-100">
             <tr>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">#</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Name</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Medicalstore Name</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Owner Name</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Email</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Contact</th>
                 {{-- <th class="px-4 py-2 text-left font-semibold text-gray-700">Address</th> --}}
@@ -23,8 +24,11 @@
                 <td class="px-4 py-2 font-semibold text-gray-800">
                     {{ $user->Name }}
                 </td>
+                <td class="px-4 py-2 font-semibold text-gray-800">
+                    {{ $user->user->Name }}
+                </td>
                 <td class="px-4 py-2 text-gray-600">
-                    {{ $user->Email }}
+                    {{ $user->user->Email }}
                 </td>
                 <td class="px-4 py-2 text-gray-600">
                     {{ $user->Phone?? '-' }}
