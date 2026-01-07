@@ -13,9 +13,9 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-    @if ($setting && $setting->favicon)
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/' . $setting->favicon) }}">
-    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->favicon) }}">
+    @if ($setting && $setting->Favicon)
+    <link rel="icon" type="image/png" sizes="32x32" href="https://pcsdecom.azurewebsites.net{{  $setting->Favicon }}">
+    <link rel="icon" type="image/x-icon" href="https://pcsdecom.azurewebsites.net{{ $setting->Favicon }}">
     @else
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/passionchasers.png') }}">
     @endif

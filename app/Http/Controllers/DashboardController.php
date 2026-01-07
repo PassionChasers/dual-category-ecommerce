@@ -62,7 +62,7 @@ class DashboardController extends Controller
 
             $stats['totalUsers']  = (int) ($userStats->total ?? 0);
             $stats['activeUsers'] = (int) ($userStats->active ?? 0);
-
+// dd($stats['activeUsers']);
             // Quick counts for simple models
             $stats['totalCustomers']     = Customer::count();
             $stats['totalMedicalStores'] = MedicalStore::count();
@@ -72,13 +72,14 @@ class DashboardController extends Controller
             $orderStats = DB::table('Orders')
                 ->select(
                     DB::raw('COUNT(*) as total'),
-                    DB::raw('SUM(CASE WHEN "Status" = \'pending\' THEN 1 ELSE 0 END) as pending'),
-                    DB::raw('SUM(CASE WHEN "Status" IN (\'accepted\', \'preparing\', \'packed\') THEN 1 ELSE 0 END) as inprogress'),
-                    DB::raw('SUM(CASE WHEN "Status" IN (\'delivered\', \'completed\') THEN 1 ELSE 0 END) as completed'),
-                    DB::raw('SUM(CASE WHEN "Status" = \'cancelled\' THEN 1 ELSE 0 END) as cancelled')
+                    DB::raw('SUM(CASE WHEN "Status" = \'PendingReview\' THEN 1 ELSE 0 END) as pending'),
+                    // DB::raw('SUM(CASE WHEN "Status" IN (\'accepted\', \'preparing\', \'packed\') THEN 1 ELSE 0 END) as inprogress'),
+                    DB::raw('SUM(CASE WHEN "Status" IN (\'delivered\', \'Completed\') THEN 1 ELSE 0 END) as completed'),
+                    DB::raw('SUM(CASE WHEN "Status" = \'Cancelled\' THEN 1 ELSE 0 END) as cancelled')
                 )
                 ->first();
-
+                // dd($orderStats);
+                
             $stats['totalOrders']       = (int) ($orderStats->total ?? 0);
             $stats['pendingOrders']     = (int) ($orderStats->pending ?? 0);
             $stats['inProgressOrders']  = (int) ($orderStats->inprogress ?? 0);
@@ -86,41 +87,43 @@ class DashboardController extends Controller
             $stats['cancelledOrders']   = (int) ($orderStats->cancelled ?? 0);
 
             // OPTIMIZED: Single query for revenue stats
-            $invoiceStats = DB::table('Invoices')
-                ->where('PaymentStatus', 'paid')
-                ->select(
-                    DB::raw('SUM("TotalAmount") as total_revenue'),
-                    DB::raw('AVG("TotalAmount") as avg_value')
-                )
-                ->first();
+            // $invoiceStats = DB::table('Invoices')
+            //     ->where('PaymentStatus', 'paid')
+            //     ->select(
+            //         DB::raw('SUM("TotalAmount") as total_revenue'),
+            //         DB::raw('AVG("TotalAmount") as avg_value')
+            //     )
+            //     ->first();
 
-            $stats['totalRevenue'] = (float) ($invoiceStats->total_revenue ?? 0);
-            $stats['avgOrderValue'] = (float) ($invoiceStats->avg_value ?? 0);
+                // dd( $invoiceStats);
+
+            // $stats['totalRevenue'] = (float) ($invoiceStats->total_revenue ?? 0);
+            // $stats['avgOrderValue'] = (float) ($invoiceStats->avg_value ?? 0);
 
             // OPTIMIZED: Single query for reward coins
-            $coinStats = DB::table('RewardCoins')
+            $coinStats = DB::table('RewardTransactions')
                 ->select(
-                    DB::raw('SUM("Amount") as issued'),
-                    DB::raw('SUM(CASE WHEN "IsUsed" = true THEN "Amount" ELSE 0 END) as used')
+                    DB::raw('COUNT(*) as total')
                 )
                 ->first();
 
-            $stats['totalRewardCoinsIssued'] = (int) ($coinStats->issued ?? 0);
-            $stats['totalRewardCoinsUsed']   = (int) ($coinStats->used ?? 0);
+            $stats['totalRewardCoinsIssued'] = (int) ($coinStats->total ?? 0);
+            $stats['totalRewardCoinsUsed']   = 0;
 
             // Quick counts for ads and notifications
             $stats['activeAds']           = Ad::where('IsActive', true)->count();
-            $stats['unreadNotifications'] = Notification::where('IsRead', false)->count();
+            $stats['unreadNotifications'] = 0; // Notification table doesn't exist
 
             // --- Orders by module (medical vs food) ---
-            $ordersByModule = Order::select('OrderType', DB::raw('COUNT(*) as total'))
-                ->groupBy('OrderType')
-                ->get()
-                ->pluck('total', 'OrderType')
-                ->toArray();
+            // Count distinct orders that have Medicine items
+            $stats['medicalOrders'] = Order::whereHas('items', function ($q) {
+                $q->where('ItemType', 'Medicine');
+            })->distinct('OrderId')->count();
 
-            $stats['medicalOrders'] = (int) ($ordersByModule['medicine'] ?? 0);
-            $stats['foodOrders']    = (int) ($ordersByModule['food'] ?? 0);
+            // Count distinct orders that have MenuItem items
+            $stats['foodOrders'] = Order::whereHas('items', function ($q) {
+                $q->where('ItemType', 'MenuItem');
+            })->distinct('OrderId')->count();
 
             // --- Orders per day (last 7 days) ---
             $fromDate = Carbon::now()->subDays(6)->startOfDay();
@@ -167,29 +170,29 @@ class DashboardController extends Controller
             }
 
             // --- Module split (for doughnut chart) ---
-            $moduleSplitRaw = Order::select('OrderType', DB::raw('COUNT(*) as total'))
-                ->groupBy('OrderType')
+            $moduleSplitRaw = DB::table('OrderItems')
+                ->select('ItemType', DB::raw('COUNT(DISTINCT "OrderId") as total'))
+                ->groupBy('ItemType')
                 ->get();
 
             $moduleSplitChart = [
-                'labels' => $moduleSplitRaw->pluck('OrderType')
+                'labels' => $moduleSplitRaw->pluck('ItemType')
                     ->map(function ($m) {
-                        return ucfirst($m ?? 'Unknown');
+                        return $m === 'Medicine' ? 'Medical' : ($m === 'MenuItem' ? 'Food' : ucfirst($m ?? 'Unknown'));
                     })
                     ->toArray(),
                 'data'   => $moduleSplitRaw->pluck('total')->map(fn ($v) => (int) $v)->toArray(),
             ];
 
-            // --- Recent orders with invoice & customer ---
-            $recentOrders = Order::with(['customer', 'invoice'])
+            // --- Recent orders with customer ---
+            $recentOrders = Order::with('customer')
                 ->latest('CreatedAt')
                 ->limit(5)
                 ->get();
 
+
             // --- Latest notifications / system activity ---
-            $activityFeed = Notification::latest('CreatedAt')
-                ->limit(7)
-                ->get();
+            $activityFeed = collect(); // Notification table doesn't exist
         } catch (\Throwable $e) {
             // Log everything, but don't break the UI
             Log::error('Error loading admin dashboard', [
@@ -274,7 +277,7 @@ class DashboardController extends Controller
 
             // OPTIMIZED: Single query for revenue stats
             $invoiceStats = DB::table('Invoices')
-                ->where('PaymentStatus', 'paid')
+                ->where('Status', 'paid')
                 ->select(
                     DB::raw('SUM("TotalAmount") as total_revenue'),
                     DB::raw('AVG("TotalAmount") as avg_value')
@@ -285,29 +288,29 @@ class DashboardController extends Controller
             $stats['avgOrderValue'] = (float) ($invoiceStats->avg_value ?? 0);
 
             // OPTIMIZED: Single query for reward coins
-            $coinStats = DB::table('RewardCoins')
+            $coinStats = DB::table('RewardTransactions')
                 ->select(
-                    DB::raw('SUM("Amount") as issued'),
-                    DB::raw('SUM(CASE WHEN "IsUsed" = true THEN "Amount" ELSE 0 END) as used')
+                    DB::raw('COUNT(*) as total')
                 )
                 ->first();
 
-            $stats['totalRewardCoinsIssued'] = (int) ($coinStats->issued ?? 0);
-            $stats['totalRewardCoinsUsed']   = (int) ($coinStats->used ?? 0);
+            $stats['totalRewardCoinsIssued'] = (int) ($coinStats->total ?? 0);
+            $stats['totalRewardCoinsUsed']   = 0;
 
             // Quick counts for ads and notifications
             $stats['activeAds']           = Ad::where('IsActive', true)->count();
-            $stats['unreadNotifications'] = Notification::where('IsRead', false)->count();
+            $stats['unreadNotifications'] = 0; // Notification table doesn't exist
 
             // --- Orders by module (medical vs food) ---
-            $ordersByModule = Order::select('OrderType', DB::raw('COUNT(*) as total'))
-                ->groupBy('OrderType')
-                ->get()
-                ->pluck('total', 'OrderType')
-                ->toArray();
+            // Count distinct orders that have Medicine items
+            $stats['medicalOrders'] = Order::whereHas('items', function ($q) {
+                $q->where('ItemType', 'Medicine');
+            })->distinct('OrderId')->count();
 
-            $stats['medicalOrders'] = (int) ($ordersByModule['medicine'] ?? 0);
-            $stats['foodOrders']    = (int) ($ordersByModule['food'] ?? 0);
+            // Count distinct orders that have MenuItem items
+            $stats['foodOrders'] = Order::whereHas('items', function ($q) {
+                $q->where('ItemType', 'MenuItem');
+            })->distinct('OrderId')->count();
 
         } catch (\Exception $e) {
             Log::error('Error loading dashboard stats API', ['error' => $e->getMessage()]);

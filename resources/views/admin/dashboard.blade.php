@@ -5,7 +5,11 @@
     {{-- Extra dashboard-specific styles if needed --}}
 @endpush
 
+
 @section('contents')
+{{-- @php
+    dd($recentOrders);
+@endphp --}}
     <!-- Main content area -->
     <div class="flex-1 overflow-auto bg-gray-50">
         <div id="dashboard-content" class="content-page p-4 md:p-6">
@@ -508,6 +512,7 @@
                 }
             });
         }
+       
 
         // Revenue per day chart
         const revenueCtx = document.getElementById('revenuePerDayChart');
