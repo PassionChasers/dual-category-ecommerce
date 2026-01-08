@@ -203,32 +203,88 @@ class OrderController extends Controller
     public function allOrders(Request $request)
     {
         // $query = Order::query();
-        $query = Order::with(['items' => function ($q) use ($request) {
-            if ($request->filled('category')) {
-                $q->where('ItemType', $request->category);
-            }
-        }]);
+        // $query = Order::with(['items' => function ($q) use ($request) {
+        //     if ($request->filled('category')) {
+        //         $q->where('ItemType', $request->category);
+        //     }
+        // }]);
+
+        // $query = Order::with(['items' => function ($q) use ($request) {
+        //     if ($request->filled('category')) {
+        //         if ($request->category === 'Medicine') {
+        //             $q->whereNotNull('MedicineId'); // only medicine items
+        //         } elseif ($request->category === 'Food') {
+        //             $q->whereNotNull('MenuItemId'); // only food items
+        //         }
+        //     }
+        // }]);
+
+        $query = Order::with('items.medicine', 'items.food');
+
 
         // Search name
+        // if ($search = $request->get('search')) {
+
+        //     $search = strtolower(trim($request->search));
+
+        //     $query->where(function ($q) use ($search) {
+        //         $q->whereHas('items', function ($q2) use ($search) {
+        //             $q2->whereRaw('LOWER("ItemName") LIKE ?', ["%{$search}%"]);
+        //         });
+        //     }); 
+        // }
+
+        // Search by product name
         if ($search = $request->get('search')) {
+            $search = strtolower(trim($search));
 
-            $search = strtolower(trim($request->search));
+            $query->where(function ($q) use ($search, $request) {
 
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('items', function ($q2) use ($search) {
-                    $q2->whereRaw('LOWER("ItemName") LIKE ?', ["%{$search}%"]);
-                });
-            }); 
+                // If category is provided
+                if ($request->filled('category')) {
+                    if ($request->category === 'Medicine') {
+                        $q->whereHas('items.medicine', function ($q2) use ($search) {
+                            $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
+                        });
+                    } elseif ($request->category === 'Food') {
+                        $q->whereHas('items.food', function ($q2) use ($search) {
+                            $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
+                        });
+                    }
+                } 
+                // If category is NOT provided, search in BOTH
+                else {
+                    $q->whereHas('items.medicine', function ($q2) use ($search) {
+                        $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
+                    })
+                    ->orWhereHas('items.food', function ($q2) use ($search) {
+                        $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
+                    });
+                }
+
+            });
         }
 
         // Filter by category
-        if ($category = $request->get('category')) {
-            // $query->where('MedicineCategoryId', $category);
-            $query->where(function ($q) use ($category) {
-                $q->whereHas('items', function ($q2) use ($category) {
-                     $q2->where('ItemType', $category);
-                });
-            }); 
+        // if ($category = $request->get('category')) {
+        //     // $query->where('MedicineCategoryId', $category);
+        //     $query->where(function ($q) use ($category) {
+        //         $q->whereHas('items', function ($q2) use ($category) {
+        //              $q2->where('ItemType', $category);
+        //         });
+        //     }); 
+        // }
+
+        if ($request->filled('category')) {
+            if ($request->category === 'Medicine') {
+                $query->with(['items' => function ($q) {
+                    $q->whereNotNull('MedicineId');
+                }]);
+            } elseif ($request->category === 'Food') {
+                $query->with(['items' => function ($q) {
+                    $q->whereNotNull('MenuItemId');
+                }]);
+            }
         }
        
         // Filter by prescription required
@@ -280,24 +336,22 @@ class OrderController extends Controller
 
     public function foodOrders(Request $request)
     {
-        $query = Order::with(['items' => function ($q) use ($request) {
-            // if ($request->filled('category')) {
-                $q->where('ItemType', 'MenuItem');
-            // }
-        }]);
+        $query = Order::whereHas('items', function ($q) {
+                    $q->whereNotNull('MenuItemId');
+                })->with(['items' => function ($q) {
+                    $q->whereNotNull('MenuItemId')->with('food');
+                }]);
 
-        // Search Product Name
+
+        // Search by product name
         if ($search = $request->get('search')) {
+            $search = strtolower(trim($search));
 
-            $search = strtolower(trim($request->search));
-
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('items', function ($q2) use ($search) {
-                    // $q2->whereRaw('LOWER("ItemName") LIKE ?', ["%{$search}%"]);
-                    $q2->where('ItemType', 'MenuItem')
-                    ->whereRaw('LOWER("ItemName") LIKE ?', ["%{$search}%"]);
+            $query->where(function ($q) use ($search, $request) {
+                $q->whereHas('items.food', function ($q2) use ($search) {
+                    $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
                 });
-            }); 
+            });
         }
 
         // Filter by is Status
@@ -336,23 +390,22 @@ class OrderController extends Controller
 
     public function medicineOrders(Request $request)
     {
-        $query = Order::with(['items' => function ($q) use ($request) {
-            $q->where('ItemType', 'Medicine');
-        }]);
+        $query = Order::whereHas('items', function ($q) {
+                    $q->whereNotNull('MedicineId');
+                })->with(['items' => function ($q) {
+                    $q->whereNotNull('MedicineId')->with('medicine');
+                }]);
 
-        // Search name, brand, generic, description
+         // Search by product name
         if ($search = $request->get('search')) {
+            $search = strtolower(trim($search));
 
-            $search = strtolower(trim($request->search));
-
-            $query->where(function ($q) use ($search) {
-                $q->whereHas('items', function ($q2) use ($search) {
-                    // $q2->whereRaw('LOWER("ItemName") LIKE ?', ["%{$search}%"]);
-                    $q2->where('ItemType', 'Medicine')
-                    ->whereRaw('LOWER("ItemName") LIKE ?', ["%{$search}%"]);
+            $query->where(function ($q) use ($search, $request) {
+                $q->whereHas('items.medicine', function ($q2) use ($search) {
+                    $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
                 });
-            }); 
-        }
+            });
+        };
 
         // Filter by prescription required
         // if ($request->filled('prescription')) {

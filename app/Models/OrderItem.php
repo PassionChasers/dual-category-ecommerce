@@ -52,4 +52,12 @@ class OrderItem extends Model
     {
         return $this->belongsTo(Restaurant::class, 'BusinessId', 'RestaurantId'); //Second is foreign key in OrderItem, third is local key in Restaurants
     }
+
+    public function medicine() {
+        return $this->belongsTo(Medicine::class, 'MedicineId', 'MedicineId');
+    }
+
+    public function food() {
+        return $this->belongsTo(MenuItem::class, 'MenuItemId', 'MenuItemId');
+    }
 }

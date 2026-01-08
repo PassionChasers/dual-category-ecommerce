@@ -38,7 +38,12 @@
                     >
                         @foreach($order->items as $item)
                             <div class="text-sm">
-                                {{ $item->ItemName }} 
+                                {{-- {{ $item->ItemName }}  --}}
+                                @if($item->MedicineId)
+                                    {{$item->medicine->Name}}
+                                @elseif ($item->MenuItemId) 
+                                    {{$item->food->Name}}
+                                @endif
                             </div>
                         @endforeach
                     </div>
@@ -149,9 +154,9 @@
                         </a>
 
                         {{-- EDIT --}}
-                        <button id="editBtn"
+                        {{-- <button id="editBtn"
                         onclick='openEditModal(@json($order))'
-                        class="text-indigo-600 hover:text-indigo-800 edit-btn"><i class="fas fa-edit"></i></button>
+                        class="text-indigo-600 hover:text-indigo-800 edit-btn"><i class="fas fa-edit"></i></button> --}}
 
                         {{-- Cancel --}}
                         <form method="POST"
@@ -281,7 +286,7 @@
 
 
         // Update Order Status
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         document.querySelectorAll('.order-status').forEach(select => {
             select.addEventListener('change', function () {
                 const orderId = this.dataset.orderId;

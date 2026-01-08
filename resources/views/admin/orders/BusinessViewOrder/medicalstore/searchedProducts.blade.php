@@ -8,7 +8,7 @@
             <th class="px-4 py-2">SN</th>
             <th class="px-4 py-2">Product Name</th>
             <th class="px-4 py-2">Quantity</th>
-            <th class="px-4 py-2">Product Type</th>
+            {{-- <th class="px-4 py-2">Product Type</th> --}}
             <th class="px-4 py-2">Total Amount</th>
             <th class="px-4 py-2">Delivery Address</th>
             <th class="px-4 py-2">Customer Name</th>
@@ -66,7 +66,7 @@
                 </td>
 
                 {{-- Product Type --}}
-                <td class="px-4 py-2 font-semibold">
+                {{-- <td class="px-4 py-2 font-semibold">
                     <div
                         class="max-h-20 overflow-y-auto space-y-1
                             [&::-webkit-scrollbar]:hidden
@@ -79,7 +79,7 @@
                             </div>
                         @endforeach
                     </div>
-                </td>
+                </td> --}}
 
                 {{-- Total Amount --}}
                 <td class="px-4 py-2">

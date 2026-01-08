@@ -10,27 +10,39 @@ return new class extends Migration
     public function up(): void
     {
         // Users table
-        Schema::create('users', function (Blueprint $table) {
-            $table->uuid('id')->primary();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('designation')->nullable();
-            $table->string('department')->nullable();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->enum('role', ['customer', 'restaurant', 'medical_store', 'delivery', 'admin','sub_admin']);
-            $table->string('contact_number');
-            $table->text('address')->nullable();
-            $table->boolean('IsActive')->default('false');
-            $table->rememberToken();
-            $table->timestamps();
+         Schema::create('Users', function (Blueprint $table) {
+            $table->uuid('UserId')->primary()->default(DB::raw('gen_random_uuid()'));
+            $table->string('Role', 20);
+            $table->string('Name', 100);
+            $table->string('Email', 100);
+            $table->string('PasswordHash', 255);
+            $table->string('Phone', 15);
+            $table->text('AvatarUrl')->nullable();
+            $table->boolean('IsActive');
+            $table->boolean('IsEmailVerified');
+            $table->timestampTz('CreatedAt')->default(DB::raw('now()'));
+            $table->timestampTz('DeletedAt')->nullable();
+            $table->boolean('IsBusinessAdmin');
+            $table->string('remember_token', 100)->nullable();
+
+            // Indexes
+            $table->unique('Email', 'IX_Users_Email');
+            $table->unique('Phone', 'IX_Users_Phone');
         });
 
         // Password reset tokens table
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
+        Schema::create('PasswordResetCodes', function (Blueprint $table) {
+            $table->uuid('Id')->primary();
+            $table->string('Email', 100);
+            $table->string('Code', 500);
+            $table->timestampTz('Expires');
+            $table->timestampTz('Created');
+            $table->boolean('IsUsed');
+            $table->timestampTz('UsedAt')->nullable();
+
+            // Indexes
+            $table->index('Code', 'IX_PasswordResetCodes_Code');
+            $table->index('Email', 'IX_PasswordResetCodes_Email');
         });
 
         // Sessions table
@@ -47,8 +59,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('sessions');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('PasswordResetCodes');
+        Schema::dropIfExists('Users');
     }
 };
 

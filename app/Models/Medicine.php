@@ -67,4 +67,8 @@ class Medicine extends Model
     {
         return $this->belongsTo(\App\Models\MedicalStore::class, 'MedicalStoreId', 'MedicalStoreId');
     }
+
+    public function orderItems() {
+        return $this->hasMany(OrderItem::class, 'MedicineId', 'MedicineId');
+    }
 }

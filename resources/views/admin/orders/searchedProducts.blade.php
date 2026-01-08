@@ -38,7 +38,12 @@
                     >
                         @foreach($order->items as $item)
                             <div class="text-sm">
-                                {{ $item->ItemName }} 
+                                {{-- {{ $item->ItemName }}  --}}
+                                @if($item->MedicineId)
+                                    {{$item->medicine->Name}}
+                                @elseif ($item->MenuItemId) 
+                                    {{$item->food->Name}}
+                                @endif
                             </div>
                         @endforeach
                     </div>
@@ -144,9 +149,9 @@
 
 
                         {{-- EDIT --}}
-                        <button id="editBtn"
+                        {{-- <button id="editBtn"
                         onclick='openEditModal(@json($order))'
-                        class="text-indigo-600 hover:text-indigo-800 edit-btn"><i class="fas fa-edit"></i></button>
+                        class="text-indigo-600 hover:text-indigo-800 edit-btn"><i class="fas fa-edit"></i></button> --}}
 
                         {{-- Cancel --}}
                         <form method="POST"

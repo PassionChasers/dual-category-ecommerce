@@ -16,14 +16,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-        $this->call(UserSeeder::class);
-        $this->call(SettingsSeeder::class);
-        $this->call(MedicalStoreSeeder::class);
-        $this->call(RestaurantSeeder::class);
-        $this->call(MedicineCategorySeeder::class);
-        $this->call(MedicineSeeder::class);
-        $this->call(OrdersSeeder::class);
-        $this->call(OrderItemsSeeder::class);
+        // $this->call(UserSeeder::class);
+        // $this->call(SettingsSeeder::class);
+        // $this->call(MedicalStoreSeeder::class);
+        // $this->call(RestaurantSeeder::class);
+        // $this->call(MedicineCategorySeeder::class);
+        $this->call(MedicinesSeeder::class);
+        // $this->call(OrdersSeeder::class);
+        // $this->call(OrderItemsSeeder::class);
 
         // User::factory()->create([
         //     'name' => 'Test User',

@@ -40,4 +40,8 @@ class MenuItem extends Model
     {
         return $this->belongsTo(MenuCategory::class, 'MenuCategoryId', 'MenuCategoryId');
     }
+
+    public function orderItems() {
+        return $this->hasMany(OrderItem::class, 'MenuItemId', 'MenuItemId');
+    }
 }
