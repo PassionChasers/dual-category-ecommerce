@@ -13,7 +13,7 @@
             <th class="px-4 py-2">Delivery Address</th>
             <th class="px-4 py-2">Customer Name</th>
             {{-- <th class="px-4 py-2">Contact No.</th> --}}
-            <th class="px-4 py-2">Assign Store</th>
+            {{-- <th class="px-4 py-2">Assign Store</th> --}}
             <th class="px-4 py-2">Status</th>
             <th class="px-4 py-2">Date</th>
             <th class="px-4 py-2">Actions</th>
@@ -102,7 +102,7 @@
                 </td> --}}
 
                 {{-- Assign Stores --}}
-                <td class="px-4 py-2">
+                {{-- <td class="px-4 py-2">
                     <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
                         <option value="">Assign Store</option>
                         @foreach($allRestaurants as $restaurant)
@@ -112,12 +112,12 @@
                             </option>
                         @endforeach
                     </select>
-                </td>
+                </td> --}}
 
                 {{-- Status --}}
                 <td class="px-4 py-2">
                     @php
-                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
+                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Assignrd'];
                     @endphp
 
                     <select class="order-status border rounded px-2 py-1 text-sm" 
@@ -149,7 +149,7 @@
                         @endphp
 
                         <a href="{{ route('orders.showFoodDetail', ['id' => $order->OrderId, 'type' => $typeParam]) }}"
-                        class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded">
+                        class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-yellow-400 rounded">
                             {{-- <i class="fas fa-eye"></i> --}}view
                         </a>
 
@@ -166,8 +166,26 @@
                             @method('PATCH')
                             <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                             <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
-                            <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded ">
-                                {{-- <i class="fas fa-times"></i> --}}cancel
+                            <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded "
+                                @if(in_array($order->Status, ['Accepted', 'Rejected'])) disabled @endif
+                            >
+                                {{-- <i class="fas fa-times"></i> --}}Reject
+                            </button>
+                        </form>
+
+
+                        {{-- accept --}}
+                        <form method="POST"
+                            action="{{ route('orders.accept', $order->OrderId) }}"
+                            class="cancel-form">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
+                            <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+                            <button type="submit" class="text-green-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded "
+                                @if(in_array($order->Status, ['Accepted', 'Rejected'])) disabled @endif
+                            >
+                                {{-- <i class="fas fa-times"></i> --}}Accept
                             </button>
                         </form>
 
@@ -286,6 +304,7 @@
 
 
         // Update Order Status
+        // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         document.querySelectorAll('.order-status').forEach(select => {
             select.addEventListener('change', function () {
                 const orderId = this.dataset.orderId;

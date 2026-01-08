@@ -111,7 +111,7 @@
                 {{-- Status --}}
                 <td class="px-4 py-2">
                     @php
-                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled'];
+                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
                     @endphp
 
                     <select class="order-status border rounded px-2 py-1 text-sm" 
@@ -143,8 +143,8 @@
                         @endphp
 
                         <a href="{{ route('orders.showProductDetail', ['id' => $order->OrderId, 'type' => $typeParam]) }}"
-                        class="text-gray-600 hover:text-gray-900">
-                            <i class="fas fa-eye"></i>
+                        class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded">
+                            {{-- <i class="fas fa-eye"></i> --}}view
                         </a>
 
 
@@ -161,8 +161,8 @@
                             @method('PATCH')
                             <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                             <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
-                            <button type="submit" class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-times"></i>
+                            <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded ">
+                                {{-- <i class="fas fa-times"></i> --}}cancel
                             </button>
                         </form>
 

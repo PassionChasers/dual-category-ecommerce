@@ -505,21 +505,50 @@
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
 
-                        <a href="{{ route('orders.index') }}"
+                        {{-- <a href="{{ route('orders.index') }}"
                             class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('orders.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fa-solid fa-clipboard-list mr-2 text-pink-500"></i> All orders
-                        </a>
-                        <a href="{{ route('orders.medicine.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-prescription-bottle-medical mr-2 text-green-500"></i> Medicine Orders
-                        </a>
-                        <a href="{{ route('orders.food.index') }}"
+                        </a> --}}
+
+                        {{-- for main admin --}}
+                        @if(auth()->user()->Role === 'Admin')
+                        
+                            <a href="{{ route('orders.medicine.index') }}"
+                                class="flex items-center px-2 py-2 text-sm rounded-md
+                                    {{ request()->routeIs('orders.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <i class="fa-solid fa-prescription-bottle-medical mr-2 text-green-500"></i> Medicine Orders
+                            </a>
+
+                            <a href="{{ route('orders.food.index') }}"
+                                class="flex items-center px-2 py-2 text-sm rounded-md
+                                    {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <i class="fa-solid fa-utensils mr-2 text-yellow-500"></i> Food Orders
+                            </a>
+
+                        {{-- for medical store business admin --}}
+                        @elseif(auth()->user()->Role === 'Supplier')
+
+                            <a href="{{ route('orders.medicalstore-medicine.index') }}"
+                                class="flex items-center px-2 py-2 text-sm rounded-md
+                                    {{ request()->routeIs('orders.medicalstore-medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <i class="fa-solid fa-prescription-bottle-medical mr-2 text-green-500"></i> All Medicine Orders
+                            </a>
+
+                        {{-- for restaurant store business admin --}}
+                        @elseif(auth()->user()->Role === 'Restaurant')
+                            <a href="{{ route('orders.restaurant-food.index') }}"
+                                class="flex items-center px-2 py-2 text-sm rounded-md
+                                    {{ request()->routeIs('orders.restaurant-food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <i class="fa-solid fa-utensils mr-2 text-yellow-500"></i> Food Orders
+                            </a>
+                        @endif
+                          
+                        {{-- <a href="{{ route('orders.food.index') }}"
                             class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('orders.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fa-solid fa-utensils mr-2 text-yellow-500"></i> Food Orders
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
 

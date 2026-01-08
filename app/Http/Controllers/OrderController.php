@@ -169,7 +169,7 @@ class OrderController extends Controller
     }
 
 
-    // Cancel order
+    // Cancel order by admin
     public function cancel($id, Request $request)
     {
         $order = Order::findOrFail($id);
@@ -178,8 +178,49 @@ class OrderController extends Controller
         $order->Status = 'Cancelled';
         $order->save();
 
+        // Set BusinessId = NULL in OrderItems where OrderId matches
+        OrderItem::where('OrderId', $order->OrderId)
+        ->update(['BusinessId' => null]);
+
         return redirect()->back()
             ->with('success', 'Order has been cancelled successfully');
+    }
+
+
+    // reject order by business
+    public function reject($id, Request $request)
+    {
+        $order = Order::findOrFail($id);
+
+        // Only update the Status
+        $order->Status = 'Rejected';
+        $order->save();
+
+        // Set status = Rejected in OrderItems where OrderId matches
+        OrderItem::where('OrderId', $order->OrderId)
+        ->update(['Status' => 'Rejected']);
+
+        return redirect()->back()
+            ->with('success', 'Order has been rejected successfully');
+    }
+
+
+
+    // accept order by business
+    public function accept($id, Request $request)
+    {
+        $order = Order::findOrFail($id);
+
+        // Only update the Status
+        $order->Status = 'Accepted';
+        $order->save();
+
+        // Set status = Rejected in OrderItems where OrderId matches
+        OrderItem::where('OrderId', $order->OrderId)
+        ->update(['Status' => 'Preparing']);
+
+        return redirect()->back()
+            ->with('success', 'Order has been accepted successfully');
     }
 
 
@@ -384,6 +425,64 @@ class OrderController extends Controller
     }
 
 
+
+
+
+
+    public function RestaurantOrders(Request $request)
+    {
+        $RestaurantId = auth()->user()->restaurants->pluck('RestaurantId')->toArray();
+
+        $query = Order::whereHas('items', function ($q) use ($RestaurantId) {
+                    $q->whereIn('BusinessId', $RestaurantId);
+                })
+                ->with(['items' => function ($q) use ($RestaurantId) {
+                    $q->whereIn('BusinessId', $RestaurantId)
+                    ->with('food'); // Load food relation if needed
+                }]);
+
+
+        // Search by product name
+        if ($search = $request->get('search')) {
+            $search = strtolower(trim($search));
+
+            $query->where(function ($q) use ($search, $request) {
+                $q->whereHas('items.food', function ($q2) use ($search) {
+                    $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
+                });
+            });
+        }
+
+        // Filter by is Status
+        if ($request->filled('status')) {
+            $query->where('Status', $request->status);
+        }
+
+        // Sorting
+        $allowedSorts = ['CreatedAt', 'TotalAmount'];
+        $sortBy = in_array($request->get('sort_by'), $allowedSorts) ? $request->get('sort_by') : 'CreatedAt';
+        $sortOrder = $request->get('sort_order') === 'asc' ? 'asc' : 'desc';
+        $query->orderBy($sortBy, $sortOrder);
+
+        /* Pagination */
+        $perPage = in_array((int)$request->per_page, [5,10,25,50]) ? $request->per_page : 10;
+
+
+        $allOrders = $query->paginate($perPage)->appends($request->except('page'));
+
+        $itemTypes = OrderItem::select('ItemType')
+        ->distinct()
+        ->pluck('ItemType');
+
+        //fetch all active restaurants
+        $allRestaurants = Restaurant::where('IsActive', true)
+        ->orderBy('Priority', 'asc')
+        ->get();
+
+        return view('admin.orders.BusinessViewOrder.restaurant.index', compact('allOrders', 'itemTypes','allRestaurants'));
+    }
+
+
     //---------------------
     // Medicine Orders
     //---------------------
@@ -445,6 +544,68 @@ class OrderController extends Controller
 
 
 
+    // For medicalstores use only
+    public function medicalStoreOrders(Request $request)
+    {
+        $medicalStoreIds = auth()->user()->medicalstores->pluck('MedicalStoreId')->toArray();
+
+        $query = Order::whereHas('items', function ($q) use ($medicalStoreIds) {
+                    $q->whereIn('BusinessId', $medicalStoreIds);
+                })
+                ->with(['items' => function ($q) use ($medicalStoreIds) {
+                    $q->whereIn('BusinessId', $medicalStoreIds)
+                    ->with('medicine'); // Load medicine relation if needed
+                }]);
+
+         // Search by product name
+        if ($search = $request->get('search')) {
+            $search = strtolower(trim($search));
+
+            $query->where(function ($q) use ($search, $request) {
+                $q->whereHas('items.medicine', function ($q2) use ($search) {
+                    $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
+                });
+            });
+        };
+
+        // Filter by prescription required
+        // if ($request->filled('prescription')) {
+        //     if ($request->prescription === 'yes')
+        //         $query->where('PrescriptionRequired', true);
+        //     elseif ($request->prescription === 'no')
+        //         $query->where('PrescriptionRequired', false);
+        // }
+
+        // Filter by is Status
+        if ($request->filled('status')) {
+            $query->where('Status', $request->status);
+        }
+
+        // Sorting
+        $allowedSorts = ['CreatedAt', 'TotalAmount'];
+        $sortBy = in_array($request->get('sort_by'), $allowedSorts) ? $request->get('sort_by') : 'CreatedAt';
+        $sortOrder = $request->get('sort_order') === 'asc' ? 'asc' : 'desc';
+        $query->orderBy($sortBy, $sortOrder);
+
+        /* Pagination */
+        $perPage = in_array((int)$request->per_page, [5,10,25,50]) ? $request->per_page : 10;
+
+
+        $allOrders = $query->paginate($perPage)->appends($request->except('page'));
+
+        $itemTypes = \App\Models\OrderItem::select('ItemType')
+        ->distinct()
+        ->pluck('ItemType');
+
+        $allMedicalStores = MedicalStore::where('IsActive', true)
+        ->orderBy('Priority', 'asc')
+        ->get();
+
+        return view('admin.orders.BusinessViewOrder.medicalstore.index', compact('allOrders', 'itemTypes','allMedicalStores'));
+    }
+
+
+
     // Assign Medical Store to Medicine Order / Restaurant to Food Order
     public function assignStore(Request $request)
     {
@@ -466,12 +627,12 @@ class OrderController extends Controller
             }
 
             // Prevent assigning for Completed / Cancelled orders
-            // if (in_array($order->Status, ['Completed', 'Cancelled'])) {
-            //     return response()->json([
-            //         'success' => false,
-            //         'message' => 'Cannot assign store/restaurant to this order because it is Cancelled or Completed.'
-            //     ], 403);
-            // }
+            if (in_array($order->Status, ['Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Assigned'])) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot assign store/restaurant to this order because it is Cancelled or Completed.'
+                ], 403);
+            }
 
             // Determine which assignment to do
             if ($request->filled('medical_store_id')) {
@@ -492,6 +653,9 @@ class OrderController extends Controller
                     'message' => 'No store or restaurant ID provided'
                 ], 422);
             }
+
+            $order->Status = 'Assigned';
+            $order->save();
 
             return response()->json([
                 'success' => true,

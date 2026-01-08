@@ -62,7 +62,9 @@
                     <option value="Cancelled" {{ request('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
                     <option value="Pending" {{ request('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
                     <option value="Accepted" {{ request('status') === 'Accepted' ? 'selected' : '' }}>Accepted</option>
-                    <option value="Preparing" {{ request('status') === 'Preparimg' ? 'selected' : '' }}>Prepring</option>
+                    <option value="Preparing" {{ request('status') === 'Preparing' ? 'selected' : '' }}>Prepring</option>
+                    <option value="Assigned" {{ request('status') === 'Assigned' ? 'selected' : '' }}>Assigned</option>
+                    <option value="Rejected" {{ request('status') === 'Rejected' ? 'selected' : '' }}>Rejected</option>
                 </select>
 
                 <select name="sort_by" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">

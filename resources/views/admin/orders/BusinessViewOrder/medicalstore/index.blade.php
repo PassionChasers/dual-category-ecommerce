@@ -34,7 +34,7 @@
       
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
 
-            <form method="GET" action="{{ route('orders.medicine.index') }}" class="flex gap-2 items-center">
+            <form method="GET" action="{{ route('orders.medicalstore-medicine.index') }}" class="flex gap-2 items-center">
                 {{-- <div class="px-3 py-2 rounded-md hover:bg-gray-200"> --}}
                     <input type="text" name="search" placeholder="Search by product name..."
                     value="{{ request('search') }}"
@@ -51,7 +51,9 @@
                     <option value="Cancelled" {{ request('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
                     <option value="Pending" {{ request('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
                     <option value="Accepted" {{ request('status') === 'Accepted' ? 'selected' : '' }}>Accepted</option>
-                    <option value="Preparing" {{ request('status') === 'Preparimg' ? 'selected' : '' }}>Prepring</option>
+                    <option value="Preparing" {{ request('status') === 'Preparing' ? 'selected' : '' }}>Prepring</option>
+                    <option value="Assigned" {{ request('status') === 'Assigned' ? 'selected' : '' }}>Assigned</option>
+                    <option value="Rejected" {{ request('status') === 'Rejected' ? 'selected' : '' }}>Rejected</option>
                 </select>
 
                 <select name="sort_by" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
@@ -84,7 +86,7 @@
 
     <!-- Table -->
     <div class="bg-white shadow rounded-lg overflow-hidden" id="tableData">
-        @include('admin.orders.medicine-order.searchedProducts', ['allOrders' => $allOrders])
+        @include('admin.orders.BusinessViewOrder.medicalstore.searchedProducts', ['allOrders' => $allOrders])
     </div>
 
     <!-- Modal -->

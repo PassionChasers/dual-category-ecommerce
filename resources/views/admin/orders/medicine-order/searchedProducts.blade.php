@@ -117,7 +117,7 @@
                {{-- Status --}}
                 <td class="px-4 py-2">
                     @php
-                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled'];
+                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
                     @endphp
 
                     <select class="order-status border rounded px-2 py-1 text-sm" 

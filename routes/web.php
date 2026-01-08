@@ -133,8 +133,14 @@ Route::middleware('auth')->group(function () {
     // Food orders
     Route::get('/food-order-list', [OrderController::class, 'foodOrders'])->name('orders.food.index');
 
+     // Food orders for Restaurants business
+    Route::get('/restaurant-food-order-list', [OrderController::class, 'restaurantOrders'])->name('orders.restaurant-food.index');
+
     // Medicine orders
     Route::get('/medicine-order-list', [OrderController::class, 'medicineOrders'])->name('orders.medicine.index');
+
+    //Medicine orders for medicalstores business
+     Route::get('/medicalstore-medicine-order-list', [OrderController::class, 'medicalstoreOrders'])->name('orders.medicalstore-medicine.index');
 
     //All product order details Route
     Route::get('all-product-orders-details/{id}', [OrderController::class, 'showProductDetails'])->name('orders.showProductDetail');
@@ -154,8 +160,14 @@ Route::middleware('auth')->group(function () {
     //update order route
     Route::put('/orders/update', [OrderController::class, 'update'])->name('orders.update');
 
-    // Update order status to Cancelled
+    // Update order status to Cancelled when cancell by admin
     Route::patch('orders/cancel/{id}', [OrderController::class, 'cancel'])->name('orders.cancel');
+
+    // Update order status to Rejected when reject by business
+    Route::patch('orders/reject/{id}', [OrderController::class, 'reject'])->name('orders.reject');
+
+    // Update order status to Accepted when Accept by business
+    Route::patch('orders/accept/{id}', [OrderController::class, 'accept'])->name('orders.accept');
 
     //Assign Medical Store to Medicine Order
     Route::post('/orders/assign-store', [OrderController::class, 'assignStore'])->name('orders.assign-store');
@@ -318,7 +330,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 // use App\Http\Controllers\MedicalStoreController;
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    Route::get('medical-stores', [MedicalStoreController::class, 'allMedicalstores'])->name('medicalstores.list');
+    Route::get('allmedical-stores', [MedicalStoreController::class, 'allMedicalstores'])->name('medicalstores.list');
     Route::get('medical-stores', [MedicalStoreController::class, 'index'])->name('medicalstores.index');
     Route::post('medical-stores', [MedicalStoreController::class, 'store'])->name('medicalstores.store');
     Route::get('medical-stores/{id}', [MedicalStoreController::class, 'show'])->name('medicalstores.show');

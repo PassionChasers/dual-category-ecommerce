@@ -12,8 +12,8 @@
             <th class="px-4 py-2">Total Amount</th>
             <th class="px-4 py-2">Delivery Address</th>
             <th class="px-4 py-2">Customer Name</th>
-            {{-- <th class="px-4 py-2">Contact No.</th> --}}
-            <th class="px-4 py-2">Assign Store</th>
+            <th class="px-4 py-2">Prescription require</th>
+            {{-- <th class="px-4 py-2">Assign Store</th> --}}
             <th class="px-4 py-2">Status</th>
             <th class="px-4 py-2">Date</th>
             <th class="px-4 py-2">Actions</th>
@@ -96,13 +96,19 @@
                     {{ $order->customer->Name ?? 'N/A' }}
                 </td>
 
-                {{-- Contact --}}
-                {{-- <td class="px-4 py-2 text-gray-600">
-                    {{ $order->customer->user->Phone ?? 'N/A' }}
-                </td> --}}
+                {{-- prescriptions--}}
+                <td class="px-4 py-2 text-gray-600">
+                    <a href="#" class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded"> 
+                        {{ $order->RequiresPrescription ? ' Yes ' : ' No ' }}    
+                    </a> 
+                    || 
+                    <a href="#" class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded">
+                        view
+                    </a>
+                </td>
 
                 {{-- Assign Stores --}}
-                <td class="px-4 py-2">
+                {{-- <td class="px-4 py-2">
                     <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
                         <option value="">Assign Store</option>
                         @foreach($allMedicalStores as $store)
@@ -112,12 +118,12 @@
                             </option>
                         @endforeach
                     </select>
-                </td>
+                </td> --}}
 
                {{-- Status --}}
                 <td class="px-4 py-2">
                     @php
-                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled'];
+                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
                     @endphp
 
                     <select class="order-status border rounded px-2 py-1 text-sm" 
@@ -149,7 +155,7 @@
                         @endphp
 
                         <a href="{{ route('orders.showMedicineDetail', ['id' => $order->OrderId, 'type' => $typeParam]) }}"
-                        class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded">
+                        class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-yellow-400 rounded">
                             {{-- <i class="fas fa-eye"></i> --}} view
                         </a>
 
@@ -158,16 +164,33 @@
                         onclick='openEditModal(@json($order))'
                         class="text-indigo-600 hover:text-indigo-800 edit-btn"><i class="fas fa-edit"></i></button> --}}
 
-                        {{-- Cancel --}}
+                        {{-- Reject--}}
                         <form method="POST"
-                            action="{{ route('orders.cancel', $order->OrderId) }}"
+                            action="{{ route('orders.reject', $order->OrderId) }}"
                             class="cancel-form">
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                             <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
-                            <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded ">
-                                {{-- <i class="fas fa-times"></i> --}}cancel
+                            <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded "
+                                @if(in_array($order->Status, ['Accepted', 'Rejected'])) disabled @endif
+                            >
+                                {{-- <i class="fas fa-times"></i> --}}Reject
+                            </button>
+                        </form>
+
+                        {{-- accept --}}
+                        <form method="POST"
+                            action="{{ route('orders.accept', $order->OrderId) }}"
+                            class="cancel-form">
+                            @csrf
+                            @method('PATCH')
+                            <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
+                            <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+                            <button type="submit" class="text-green-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded "
+                                @if(in_array($order->Status, ['Accepted', 'Rejected'])) disabled @endif
+                            >
+                                {{-- <i class="fas fa-times"></i> --}}Accept
                             </button>
                         </form>
 
