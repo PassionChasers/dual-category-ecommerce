@@ -505,11 +505,11 @@
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
 
-                        <a href="{{ route('orders.index') }}"
+                        <!-- <a href="{{ route('orders.index') }}"
                             class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('orders.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fa-solid fa-clipboard-list mr-2 text-pink-500"></i> All orders
-                        </a>
+                        </a> -->
 
                         {{-- for main admin --}}
                         @if(auth()->user()->Role === 'Admin')
