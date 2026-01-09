@@ -103,7 +103,9 @@
 
                 {{-- Assign Stores --}}
                 <td class="px-4 py-2">
-                    <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
+                    <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     @if($order->Status)
+        disabled
+    @endif>
                         <option value="">Assign Store</option>
                         @foreach($allMedicalStores as $store)
                             <option value="{{ $store->MedicalStoreId }}"
