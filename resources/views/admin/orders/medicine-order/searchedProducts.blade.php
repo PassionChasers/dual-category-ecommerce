@@ -8,11 +8,12 @@
             <th class="px-4 py-2">SN</th>
             <th class="px-4 py-2">Product Name</th>
             <th class="px-4 py-2">Quantity</th>
-            <th class="px-4 py-2">Product Type</th>
+            {{-- <th class="px-4 py-2">Product Type</th> --}}
             <th class="px-4 py-2">Total Amount</th>
             <th class="px-4 py-2">Delivery Address</th>
             <th class="px-4 py-2">Customer Name</th>
             {{-- <th class="px-4 py-2">Contact No.</th> --}}
+            <th class="px-4 py-2">Prescription require</th>
             <th class="px-4 py-2">Assign Store</th>
             <th class="px-4 py-2">Status</th>
             <th class="px-4 py-2">Date</th>
@@ -66,7 +67,7 @@
                 </td>
 
                 {{-- Product Type --}}
-                <td class="px-4 py-2 font-semibold">
+                {{-- <td class="px-4 py-2 font-semibold">
                     <div
                         class="max-h-20 overflow-y-auto space-y-1
                             [&::-webkit-scrollbar]:hidden
@@ -79,7 +80,7 @@
                             </div>
                         @endforeach
                     </div>
-                </td>
+                </td> --}}
 
                 {{-- Total Amount --}}
                 <td class="px-4 py-2">
@@ -101,11 +102,29 @@
                     {{ $order->customer->user->Phone ?? 'N/A' }}
                 </td> --}}
 
+                {{-- prescriptions--}}
+                <td class="px-4 py-2 text-gray-600">
+                    {{-- || 
+                    <a href="#" class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded">
+                        view
+                    </a> --}}
+                    @if($order->RequiresPrescription)
+                        <a href="#" class="text-gray-600 py-1 px-2 bg-green-300 hover:bg-green-500 rounded"> 
+                            Yes   
+                        </a> 
+                    @else
+                        <a href="#" class="text-gray-600 py-1 px-2 bg-green-300 hover:bg-green-500 rounded"> 
+                            Not  
+                        </a>
+                    @endif
+                </td>
+
                 {{-- Assign Stores --}}
                 <td class="px-4 py-2">
-                    <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     @if($order->Status === 'Assigned')
-        disabled
-    @endif>
+                    <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     
+                        @if($order->Status === 'Completed' || $order->Status === 'Accepted' || $order->Status === 'Cancelled')
+                            disabled
+                        @endif>
                         <option value="">Assign Store</option>
                         @foreach($allMedicalStores as $store)
                             <option value="{{ $store->MedicalStoreId }}"
@@ -119,7 +138,7 @@
                {{-- Status --}}
                 <td class="px-4 py-2">
                     @php
-                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
+                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned','PendingReview'];
                     @endphp
 
                     <select class="order-status border rounded px-2 py-1 text-sm" 

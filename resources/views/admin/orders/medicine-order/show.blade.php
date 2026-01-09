@@ -58,9 +58,9 @@
                         <th class="px-4 py-2 border-b">Product Name</th>
                         <th class="px-4 py-2 border-b">Quantity</th>
                         <th class="px-4 py-2 border-b">Product Type</th>
-                        {{-- <th class="px-4 py-2 border-b">Store/Business</th> --}}
+                        <th class="px-4 py-2 border-b">RequirePrescriptions</th>
                         <th class="px-4 py-2 border-b">Unit Price</th>
-                        <th class="px-4 py-2 border-b">Tota(qty*unit)</th>
+                        <th class="px-4 py-2 border-b">Total(qty*unit)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,11 +71,12 @@
                             {{-- <img src="{{ asset('storage/products/' . $item->ItemImageUrl) }}" alt="{{ $item->ItemName }}" class="thumb-lg mx-auto" /> --}}
                             <img src="https://pcsdecom.azurewebsites.net{{$item->ItemImageUrl}}" alt="{{ $item->ItemName }}" class="w-12 h-12 object-cover rounded mx-auto">
                         </td>
-                        <td class="px-4 py-2 font-semibold">{{ $item->ItemName ?? 'N/A' }}</td>
+                        <td class="px-4 py-2 font-semibold">{{ $item->medicine->Name ?? 'N/A' }}</td>
                         <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>
                         <td class="px-4 py-2 font-semibold">{{ $item->ItemType ?? 'N/A' }}</td>
-                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPrice, 2) }}</td>
-                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPrice * (float)$item->Quantity, 2) }}</td>
+                        <td class="px-4 py-2 font-semibold">{{ $item->medicine->PrescriptionRequired ? 'Yes' : 'No'}}</td>
+                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder, 2) }}</td>
+                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder * (float)$item->Quantity, 2) }}</td>
                     </tr>
                     @endforeach
                     <tr class="text-center">

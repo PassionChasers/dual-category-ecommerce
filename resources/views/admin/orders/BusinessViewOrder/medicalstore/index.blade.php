@@ -1,5 +1,5 @@
 @extends('layouts.admin.app')
-@section('title', 'Admin | Medicine Order Management')
+@section('title', 'Business Admin | Medicine Order Management')
 
 @push('styles')
 <!-- add any page-specific styles here -->

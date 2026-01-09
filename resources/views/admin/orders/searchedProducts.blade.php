@@ -101,17 +101,67 @@
                     {{ $order->customer->user->Phone ?? 'N/A' }}
                 </td> --}}
 
-                {{-- Delivery Man --}}
-                <td class="px-4 py-2 text-gray-600">
-                    {{-- {{ $order-> ?? 'N/A' }} --}}
-                    lkgjhbh
+                {{-- Assign Stores --}}
+                <td class="px-4 py-2">
+                    @php
+                        // $itemTypes = [];
+                        $medicalStore = false;   // assume true
+                        $restaurant   = false;   // assume true
+
+                        foreach ($order->items as $item) {
+                            // store in array
+                            // $itemTypes[] = $item->ItemType;
+
+                            // check conditions
+                            if ($item->ItemType = 'Medicine') {
+                                $medicalStore = true;
+                            }
+                            elseif($item->ItemType = 'Food') {
+                                $restaurant = true;
+                            }
+                            else{
+                               $medicalStore = false;   // assume true
+                            $restaurant   = false; 
+                            }
+                        }
+                    @endphp
+
+                    {{-- MEDICAL STORE --}}
+                    @if($medicalStore)
+                        <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     @if($order->Status === 'Assigned')
+                                disabled
+                            @endif>
+                            <option value="">Assign Store</option>
+                            @foreach($allMedicalStores as $store)
+                                <option value="{{ $store->MedicalStoreId }}"
+                                    {{ $order->items->first() && $order->items->first()->BusinessId == $store->MedicalStoreId ? 'selected' : '' }}>
+                                    {{ $store->Name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
+
+                    @if($restaurant)
+                        <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     @if($order->Status === 'Assigned')
+                                disabled
+                            @endif>
+                            <option value="">Assign Store</option>
+                            @foreach($allRestaurants as $store)
+                                <option value="{{ $store->RestaurantId }}"
+                                    {{ $order->items->first() && $order->items->first()->BusinessId == $store->RestaurantId ? 'selected' : '' }}>
+                                    {{ $store->Name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    @endif
+
                 </td>
                
 
                 {{-- Status --}}
                 <td class="px-4 py-2">
                     @php
-                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
+                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned', 'PendingReview'];
                     @endphp
 
                     <select class="order-status border rounded px-2 py-1 text-sm" 

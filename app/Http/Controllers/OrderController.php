@@ -495,6 +495,14 @@ class OrderController extends Controller
                     $q->whereNotNull('MedicineId')->with('medicine');
                 }]);
 
+        // $query = Order::whereHas('items', function ($q) {
+        //             $q->where('ItemType', 'Medicine');
+        //         })->with(['items' => function ($q) {
+        //             $q->where('ItemType', 'Medicine')->with('medicine');
+        //         }]);
+
+        //  $query = Order::where('RequiresPrescription', true);
+
          // Search by product name
         if ($search = $request->get('search')) {
             $search = strtolower(trim($search));
