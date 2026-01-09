@@ -103,7 +103,7 @@
 
                 {{-- Assign Stores --}}
                 <td class="px-4 py-2">
-                    <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     @if($order->Status)
+                    <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     @if($order->Status === 'Assigned')
         disabled
     @endif>
                         <option value="">Assign Store</option>
