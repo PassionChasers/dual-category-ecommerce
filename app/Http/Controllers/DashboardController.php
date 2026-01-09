@@ -196,58 +196,51 @@ class DashboardController extends Controller
             $ordersMap = $ordersPerDayRaw->pluck('total', 'date')->toArray();
 
             $ordersPerDayChart = ['labels' => [], 'data' => []];
-            $period1 = new DatePeriod($fromDate, new DateInterval('P1D'), $toDate->copy()->addDay()->startOfDay());
-            foreach ($period1 as $date) {
+            $period = new DatePeriod($fromDate, new DateInterval('P1D'), $toDate->copy()->addDay()->startOfDay());
+            foreach ($period as $date) {
                 $key = $date->format('Y-m-d');
                 $ordersPerDayChart['labels'][] = $date->format('d M');
                 $ordersPerDayChart['data'][]   = (int) ($ordersMap[$key] ?? 0);
             }
 
             // --- Revenue per day (last 7 days) ---
-            try {
-                $revenuePerDayRaw = DB::table('Orders')
-                    ->select(
-                        DB::raw('DATE("CreatedAt") as date'),
-                        DB::raw('SUM("TotalAmount") as total')
-                    )
-                    ->whereIn('Status', ['delivered', 'Completed'])
-                    ->whereBetween('CreatedAt', [$fromDate, $toDate])
-                    ->groupBy('date')
-                    ->orderBy('date')
-                    ->get();
+            $revenuePerDayRaw = Order::select(
+                    DB::raw('DATE("CreatedAt") as date'),
+                    DB::raw('SUM("TotalAmount") as total')
+                )
+                ->whereIn('Status', ['delivered', 'Completed'])
+                ->whereBetween('CreatedAt', [$fromDate, $toDate])
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
 
-                $revenueMap = $revenuePerDayRaw->pluck('total', 'date')->toArray();
+            $revenueMap = $revenuePerDayRaw->pluck('total', 'date')->toArray();
 
-                $revenuePerDayChart = ['labels' => [], 'data' => []];
-                $period2 = new DatePeriod($fromDate, new DateInterval('P1D'), $toDate->copy()->addDay()->startOfDay());
-                foreach ($period2 as $date) {
-                    $key = $date->format('Y-m-d');
-                    $revenuePerDayChart['labels'][] = $date->format('d M');
-                    $revenuePerDayChart['data'][]   = (float) ($revenueMap[$key] ?? 0);
-                }
-            } catch (\Exception $e) {
-                Log::warning('Revenue per day chart not available', ['error' => $e->getMessage()]);
-                $revenuePerDayChart = ['labels' => [], 'data' => []];
+            $revenuePerDayChart = ['labels' => [], 'data' => []];
+            $period2 = new DatePeriod($fromDate, new DateInterval('P1D'), $toDate->copy()->addDay()->startOfDay());
+            foreach ($period2 as $date) {
+                $key = $date->format('Y-m-d');
+                $revenuePerDayChart['labels'][] = $date->format('d M');
+                $revenuePerDayChart['data'][]   = (float) ($revenueMap[$key] ?? 0);
             }
 
-            // --- Module split (for doughnut chart) - only Food & Medical ---
-            // Count distinct orders that have Medicine items (allow duplicates across stats)
-            $medicalCount = (int) DB::table('OrderItems')
-                ->where('ItemType', 'Medicine')
-                ->select('OrderId')
+            // --- Module split (for doughnut chart) ---
+            $medicalCount = DB::table('OrderItems')
+                ->whereRaw('lower("ItemType") = ?', ['medicine'])
                 ->distinct()
-                ->count();
+                ->count('OrderId');
 
-            // Count distinct orders that have Food/MenuItem items
-            $foodCount = (int) DB::table('OrderItems')
-                ->whereIn('ItemType', ['MenuItem', 'Food'])
-                ->select('OrderId')
+            $foodCount = DB::table('OrderItems')
+                ->where(function ($q) {
+                    $q->whereRaw('lower("ItemType") = ?', ['menuitem'])
+                      ->orWhereRaw('lower("ItemType") = ?', ['food']);
+                })
                 ->distinct()
-                ->count();
+                ->count('OrderId');
 
             $moduleSplitChart = [
                 'labels' => ['Medical', 'Food'],
-                'data'   => [(int) $medicalCount, (int) $foodCount],
+                'data'   => [$medicalCount, $foodCount],
             ];
 
             // --- Recent orders with customer ---
@@ -271,8 +264,7 @@ class DashboardController extends Controller
                 'trace'   => $e->getTraceAsString(),
             ]);
 
-            // Soft feedback for admin
-            session()->flash('error', 'Some dashboard data could not be loaded. Showing partial information.');
+            // Soft feedback for admin removed per UX request
         }
 
         return view('admin.dashboard', [

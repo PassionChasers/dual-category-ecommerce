@@ -22,11 +22,7 @@
                     </p>
                 </div>
                 
-                @if(session('error'))
-                    <div class="bg-red-50 text-red-700 text-sm px-4 py-2 rounded-lg border border-red-200">
-                        {{ session('error') }}
-                    </div>
-                @endif
+                {{-- Dashboard partial-error flash removed per request --}}
             </div>
 
             {{-- ================= TOP STATS CARDS ================= --}}
