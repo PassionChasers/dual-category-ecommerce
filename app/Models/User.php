@@ -20,9 +20,12 @@ class User extends Authenticatable
 
     protected $table = 'Users';
 
+  
+
     // Primary key (assumed)
     protected $primaryKey = 'UserId'; // change if different
 
+    
     const CREATED_AT = 'CreatedAt';
     const UPDATED_AT = 'UpdatedAt';
 
