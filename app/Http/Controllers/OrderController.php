@@ -489,11 +489,11 @@ class OrderController extends Controller
 
     public function medicineOrders(Request $request)
     {
-        $query = Order::whereHas('items', function ($q) {
-                    $q->whereNotNull('MedicineId');
-                })->with(['items' => function ($q) {
-                    $q->whereNotNull('MedicineId')->with('medicine');
-                }]);
+        // $query = Order::whereHas('items', function ($q) {
+        //             $q->whereNotNull('MedicineId');
+        //         })->with(['items' => function ($q) {
+        //             $q->whereNotNull('MedicineId')->with('medicine');
+        //         }]);
 
         // $query = Order::whereHas('items', function ($q) {
         //             $q->where('ItemType', 'Medicine');
@@ -502,6 +502,10 @@ class OrderController extends Controller
         //         }]);
 
         //  $query = Order::where('RequiresPrescription', true);
+
+        $query = Order::whereDoesntHave('items', function ($q) {
+                    $q->where('ItemType', 'Food');
+                });
 
          // Search by product name
         if ($search = $request->get('search')) {

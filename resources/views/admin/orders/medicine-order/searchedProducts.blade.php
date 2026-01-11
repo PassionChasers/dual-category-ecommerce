@@ -10,8 +10,8 @@
             <th class="px-4 py-2">Quantity</th>
             {{-- <th class="px-4 py-2">Product Type</th> --}}
             <th class="px-4 py-2">Total Amount</th>
-            <th class="px-4 py-2">Delivery Address</th>
-            <th class="px-4 py-2">Customer Name</th>
+            {{-- <th class="px-4 py-2">Delivery Address</th> --}}
+            {{-- <th class="px-4 py-2">Customer Name</th> --}}
             {{-- <th class="px-4 py-2">Contact No.</th> --}}
             <th class="px-4 py-2">Prescription require</th>
             <th class="px-4 py-2">Assign Store</th>
@@ -37,16 +37,24 @@
                             [-ms-overflow-style:none]
                             [scrollbar-width:none]"
                     >
-                        @foreach($order->items as $item)
-                            <div class="text-sm">
-                                {{-- {{ $item->ItemName }}  --}}
-                                @if($item->MedicineId)
-                                    {{$item->medicine->Name}}
-                                @elseif ($item->MenuItemId) 
-                                    {{$item->food->Name}}
-                                @endif
+                        @if($order->Status === 'PendingReview')
+                            <div>
+                                <a href="#" class="text-sm bg-green-200 text-gray-400 ">
+                                    <i>Prescription Review is Pending</i>
+                                </a>
                             </div>
-                        @endforeach
+                        @elseif ($order->Status != 'PendingReview') 
+                            @foreach($order->items as $item)
+                                <div class="text-sm">
+                                    {{-- {{ $item->ItemName }}  --}}
+                                    @if($item->MedicineId)
+                                        {{$item->medicine->Name}}
+                                    @elseif ($item->MenuItemId) 
+                                        {{$item->food->Name}}
+                                    @endif
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                 </td>
 
@@ -58,11 +66,17 @@
                             [-ms-overflow-style:none]
                             [scrollbar-width:none]"
                     >
-                        @foreach($order->items as $item)
-                            <div class="text-sm">
-                                {{ $item->Quantity }}  
+                        @if($order->Status === 'PendingReview')
+                            <div class="text-sm text-gray-500">
+                                xxx
                             </div>
-                        @endforeach
+                        @elseif ($order->Status != 'PendingReview')
+                            @foreach($order->items as $item)
+                                <div class="text-sm">
+                                    {{ $item->Quantity }}  
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                 </td>
 
@@ -88,14 +102,14 @@
                 </td>
 
                 {{-- Delivery Address --}}
-                <td class="px-4 py-2">
+                {{-- <td class="px-4 py-2">
                     {{ $order->DeliveryAddress ?? 'N/A' }}
-                </td>
+                </td> --}}
 
                 {{-- Customer Name --}}
-                <td class="px-4 py-2">
+                {{-- <td class="px-4 py-2">
                     {{ $order->customer->Name ?? 'N/A' }}
-                </td>
+                </td> --}}
 
                 {{-- Contact --}}
                 {{-- <td class="px-4 py-2 text-gray-600">
@@ -103,17 +117,13 @@
                 </td> --}}
 
                 {{-- prescriptions--}}
-                <td class="px-4 py-2 text-gray-600">
-                    {{-- || 
-                    <a href="#" class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded">
-                        view
-                    </a> --}}
-                    @if($order->RequiresPrescription)
-                        <a href="#" class="text-gray-600 py-1 px-2 bg-green-300 hover:bg-green-500 rounded"> 
-                            Yes   
+                <td class="px-4 py-2 text-gray-600 text-center">
+                    @if($order->RequiresPrescription || $order->PrescriptionImageUrl)
+                        <a href="#" class="text-gray-800 py-1 px-2 bg-green-100 hover:bg-green-400 rounded"> 
+                            Yes/Uploaded   
                         </a> 
                     @else
-                        <a href="#" class="text-gray-600 py-1 px-2 bg-green-300 hover:bg-green-500 rounded"> 
+                        <a href="#" class="text-gray-600 py-1 px-2 bg-red-100 rounded"> 
                             Not  
                         </a>
                     @endif
@@ -122,7 +132,7 @@
                 {{-- Assign Stores --}}
                 <td class="px-4 py-2">
                     <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     
-                        @if($order->Status === 'Completed' || $order->Status === 'Accepted' || $order->Status === 'Cancelled')
+                        @if($order->Status === 'Completed' || $order->Status === 'Accepted' || $order->Status === 'Cancelled' || $order->Status === 'Assigned')
                             disabled
                         @endif>
                         <option value="">Assign Store</option>
@@ -136,8 +146,8 @@
                 </td>
 
                {{-- Status --}}
-                <td class="px-4 py-2">
-                    @php
+                <td class="px-4 py-2 text-center">
+                    {{-- @php
                         $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned','PendingReview'];
                     @endphp
 
@@ -148,7 +158,9 @@
                                 {{ $status }}
                             </option>
                         @endforeach
-                    </select>
+                    </select> --}}
+
+                    {{$order->Status}}
                 </td>
 
                 {{-- Date --}}

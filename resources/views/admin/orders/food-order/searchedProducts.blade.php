@@ -10,8 +10,8 @@
             <th class="px-4 py-2">Quantity</th>
             {{-- <th class="px-4 py-2">Product Type</th> --}}
             <th class="px-4 py-2">Total Amount</th>
-            <th class="px-4 py-2">Delivery Address</th>
-            <th class="px-4 py-2">Customer Name</th>
+            {{-- <th class="px-4 py-2">Delivery Address</th> --}}
+            {{-- <th class="px-4 py-2">Customer Name</th> --}}
             {{-- <th class="px-4 py-2">Contact No.</th> --}}
             <th class="px-4 py-2">Assign Store</th>
             <th class="px-4 py-2">Status</th>
@@ -87,14 +87,14 @@
                 </td>
 
                 {{-- Delivery Address --}}
-                <td class="px-4 py-2">
+                {{-- <td class="px-4 py-2">
                     {{ $order->DeliveryAddress ?? 'N/A' }}
-                </td>
+                </td> --}}
 
                 {{-- Customer Name --}}
-                <td class="px-4 py-2">
+                {{-- <td class="px-4 py-2">
                     {{ $order->customer->Name ?? 'N/A' }}
-                </td>
+                </td> --}}
 
                 {{-- Contact --}}
                 {{-- <td class="px-4 py-2 text-gray-600">
@@ -104,7 +104,7 @@
                 {{-- Assign Stores --}}
                 <td class="px-4 py-2">
                     <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"
-                        @if($order->Status === 'Completed' || $order->Status === 'Accepted' || $order->Status === 'Cancelled')
+                        @if($order->Status === 'Completed' || $order->Status === 'Accepted' || $order->Status === 'Cancelled' || $order->Status === 'Assigned')
                             disabled
                         @endif>
                         <option value="">Assign Store</option>
@@ -119,7 +119,7 @@
 
                 {{-- Status --}}
                 <td class="px-4 py-2">
-                    @php
+                    {{-- @php
                         $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
                     @endphp
 
@@ -130,7 +130,8 @@
                                 {{ $status }}
                             </option>
                         @endforeach
-                    </select>
+                    </select> --}}
+                    {{$order->Status}}
                 </td>
 
                 {{-- Date --}}
