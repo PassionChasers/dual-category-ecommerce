@@ -17,12 +17,12 @@
 
     <!-- Settings Form -->
     <div class="bg-white shadow rounded-lg p-6">
-        <form method="POST" enctype="multipart/form-data"
-            action="{{ isset($setting) && $setting->id ? route('settings.update', $setting->id) : route('settings.store') }}}">
+        <form method="POST" action="{{ route('settings.update', $setting->getKey()) }}" enctype="multipart/form-data">
             @csrf
-            @if($setting)
             @method('PUT')
-            @endif
+
+
+
             <!-- General Settings -->
             <h3 class="text-lg font-semibold text-gray-700 mb-4">General Settings</h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

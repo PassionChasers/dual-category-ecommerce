@@ -14,16 +14,19 @@ class AuditLogController extends Controller
 
         $logs = AuditLog::with('user')
             ->when($search, function ($query) use ($search) {
-                $query->where('Action', 'like', "%$search%")
-                      ->orWhere('AuditableType', 'like', "%$search%")
-                      ->orWhere('IpAddress', 'like', "%$search%")
-                      ->orWhereHas('user', function ($q) use ($search) {
-                          $q->where('Name', 'like', "%$search%");
-                      });
+                $query->where(function ($q) use ($search) {
+                    $q->where('Action', 'like', "%$search%")
+                        ->orWhere('AuditableType', 'like', "%$search%")
+                        ->orWhere('IpAddress', 'like', "%$search%")
+                        ->orWhereHas('user', function ($u) use ($search) {
+                            $u->where('Name', 'like', "%$search%");
+                        });
+                });
             })
-            ->latest()
+            ->latest('CreatedAt')
             ->paginate(10)
             ->withQueryString();
+
 
         return view('admin.audit_logs.index', compact('logs', 'search'));
     }

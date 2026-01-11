@@ -153,7 +153,7 @@ class UserController extends Controller
         // Validation
         $validated = $request->validate([
             'name'               => 'required|string|max:255',
-            'email'              => 'required|email|unique:users,Email',
+            'email'              => 'required|email|unique:Users,Email',
             'password'           => 'required|min:6',
             'phone'              => 'required|string|max:20',
             'avatar_url'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
