@@ -12,8 +12,8 @@
             <th class="px-4 py-2">Total Amount</th>
             <th class="px-4 py-2">Delivery Address</th>
             <th class="px-4 py-2">Customer Name</th>
-            <th class="px-4 py-2">Prescription require</th>
-            {{-- <th class="px-4 py-2">Assign Store</th> --}}
+            {{-- <th class="px-4 py-2">Prescription require</th> --}}
+            <th class="px-4 py-2">Assign Delivery Man</th>
             <th class="px-4 py-2">Status</th>
             <th class="px-4 py-2">Date</th>
             <th class="px-4 py-2">Actions</th>
@@ -87,7 +87,7 @@
                 </td>
 
                 {{-- Delivery Address --}}
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center">
                     {{ $order->DeliveryAddress ?? 'N/A' }}
                 </td>
 
@@ -97,7 +97,7 @@
                 </td>
 
                 {{-- prescriptions--}}
-                <td class="px-4 py-2 text-gray-600">
+                {{-- <td class="px-4 py-2 text-gray-600">
                     <a href="#" class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded"> 
                         {{ $order->RequiresPrescription ? ' Yes ' : ' No ' }}    
                     </a> 
@@ -105,12 +105,12 @@
                     <a href="#" class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded">
                         view
                     </a>
-                </td>
+                </td> --}}
 
-                {{-- Assign Stores --}}
-                {{-- <td class="px-4 py-2">
+                {{-- Assign Delivery man --}}
+                <td class="px-4 py-2">
                     <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
-                        <option value="">Assign Store</option>
+                        <option value="">Assign Delivery Man</option>
                         @foreach($allMedicalStores as $store)
                             <option value="{{ $store->MedicalStoreId }}"
                                 {{ $order->items->first() && $order->items->first()->BusinessId == $store->MedicalStoreId ? 'selected' : '' }}>
@@ -118,22 +118,57 @@
                             </option>
                         @endforeach
                     </select>
-                </td> --}}
+                </td>
 
                {{-- Status --}}
                 <td class="px-4 py-2">
                     @php
                         $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
                     @endphp
-
-                    <select class="order-status border rounded px-2 py-1 text-sm" 
+                    @if($order->Status === 'Accepted')
+                        <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
+                            <option value="Accepted" {{ $order->Status === 'Accepted' ? 'selected' : '' }} disabled>
+                                Accepted
+                            </option>
+                            <option value="Preparing" {{ $order->Status === 'Preparing' ? 'selected' : '' }}>
+                                Preparing
+                            </option>
+                            <option value="Packed" {{ $order->Status === 'Packed' ? 'selected' : '' }}>
+                                Packed
+                            </option>
+                        </select>
+                    @elseif($order->Status === 'Preparing')
+                        <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
+                            <option value="Preparing" {{ $order->Status === 'Preparing' ? 'selected' : '' }} disabled>
+                                Preparing
+                            </option>
+                            <option value="Packed" {{ $order->Status === 'Packed' ? 'selected' : '' }}>
+                                Packed
+                            </option>
+                        </select>
+                    @elseif($order->Status === 'Packed')
+                        <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
+                            <option value="Packed" {{ $order->Status === 'Packed' ? 'selected' : '' }} disabled>
+                                Packed
+                            </option>
+                        </select>
+                    @elseif($order->Status === 'Rejected')
+                        {{$order->Status}}
+                    @elseif($order->Status === 'Assigned')
+                        {{$order->Status}}
+                    @elseif($order->Status === 'Completed')
+                        {{$order->Status}}
+                    @elseif($order->Status === 'Cancelled')
+                        {{$order->Status}}
+                    @endif
+                    {{-- <select class="order-status border rounded px-2 py-1 text-sm" 
                             data-order-id="{{ $order->OrderId }}">
                         @foreach($statuses as $status)
                             <option value="{{ $status }}" {{ $order->Status === $status ? 'selected' : '' }}>
                                 {{ $status }}
                             </option>
                         @endforeach
-                    </select>
+                    </select> --}}
                 </td>
 
                 {{-- Date --}}
@@ -173,7 +208,7 @@
                             <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                             <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
                             <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded "
-                                @if(in_array($order->Status, ['Accepted', 'Rejected'])) disabled @endif
+                                @if(in_array($order->Status, ['Accepted', 'Rejected', 'Packed', 'Completed', 'Cancelled', 'Preparing'])) disabled @endif
                             >
                                 {{-- <i class="fas fa-times"></i> --}}Reject
                             </button>
@@ -188,7 +223,7 @@
                             <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                             <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
                             <button type="submit" class="text-green-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded "
-                                @if(in_array($order->Status, ['Accepted', 'Rejected'])) disabled @endif
+                                @if(in_array($order->Status, ['Accepted', 'Rejected', 'Packed', 'Completed', 'Cancelled', 'Preparing'])) disabled @endif
                             >
                                 {{-- <i class="fas fa-times"></i> --}}Accept
                             </button>
