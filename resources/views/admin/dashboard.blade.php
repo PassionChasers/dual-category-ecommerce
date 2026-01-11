@@ -21,14 +21,8 @@
                         <span id="current-date" class="font-medium"></span>.
                     </p>
                 </div>
-                <button id="refresh-stats-btn" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium transition">
-                    <i class="fas fa-sync-alt mr-2"></i>Refresh Stats
-                </button>
-                @if(session('error'))
-                    <div class="bg-red-50 text-red-700 text-sm px-4 py-2 rounded-lg border border-red-200">
-                        {{ session('error') }}
-                    </div>
-                @endif
+                
+                {{-- Dashboard partial-error flash removed per request --}}
             </div>
 
             {{-- ================= TOP STATS CARDS ================= --}}
@@ -229,37 +223,103 @@
                             </span>
                         </div>
                     </div>
-                    <div class="flex-1 flex items-center justify-center text-sm text-gray-500 p-4">
-                        Overview of orders awaiting confirmation.
+                    <div class="divide-y divide-gray-200 flex-1 overflow-y-auto max-h-80">
+                        @forelse($pendingOrders as $order)
+                            <div class="px-4 py-3 hover:bg-gray-50 transition text-sm">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900">#{{ $order->OrderNumber }}</p>
+                                        <p class="text-xs text-gray-500">{{ $order->customer->Name ?? 'Unknown' }}</p>
+                                        @if($order->items && count($order->items) > 0)
+                                            <p class="text-xs text-gray-600 mt-1">
+                                                @foreach($order->items as $item)
+                                                    <span class="inline-block">
+                                                        @if($item->food)
+                                                            {{ $item->food->Name ?? 'Unknown' }}
+                                                        @elseif($item->medicine)
+                                                            {{ $item->medicine->Name ?? 'Unknown' }}
+                                                        @else
+                                                            {{ $item->ItemName ?? 'Unknown' }}
+                                                        @endif
+                                                    </span>
+                                                    @if(!$loop->last)<span class="mx-1">•</span>@endif
+                                                @endforeach
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium text-gray-900">Rs. {{ number_format($order->TotalAmount, 2) }}</p>
+                                        <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($order->CreatedAt)->format('d M, H:i') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="flex items-center justify-center py-6 text-gray-500 text-sm">
+                                No pending orders
+                            </div>
+                        @endforelse
                     </div>
                     <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
-                        <a href="#"
+                        <!-- <a href="#"
                            class="text-sm font-medium text-yellow-600 hover:text-yellow-500">
                             View all pending orders
-                        </a>
+                        </a> -->
                     </div>
                 </div>
 
-                <!-- In Progress Orders -->
+                <!-- Assigned Orders -->
                 <div class="bg-white shadow rounded-lg overflow-hidden flex flex-col h-full">
-                    <div class="px-4 py-4 border-b border-gray-200 bg-blue-50">
+                    <div class="px-4 py-4 border-b border-gray-200 bg-purple-50">
                         <div class="flex items-center justify-between">
-                            <h3 class="text-sm font-medium text-blue-800">
-                                <i class="fas fa-spinner mr-1"></i>In Progress
+                            <h3 class="text-sm font-medium text-purple-800">
+                                <i class="fas fa-tasks mr-1"></i>Assigned Orders
                             </h3>
-                            <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">
-                                {{ $stats['inProgressOrders'] ?? 0 }}
+                            <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                                {{ $stats['assignedOrders'] ?? 0 }}
                             </span>
                         </div>
                     </div>
-                    <div class="flex-1 flex items-center justify-center text-sm text-gray-500 p-4">
-                        Orders being prepared, packed, or on the way.
+                    <div class="divide-y divide-gray-200 flex-1 overflow-y-auto max-h-80">
+                        @forelse($assignedOrders as $order)
+                            <div class="px-4 py-3 hover:bg-gray-50 transition text-sm">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900">#{{ $order->OrderNumber }}</p>
+                                        <p class="text-xs text-gray-500">{{ $order->customer->Name ?? 'Unknown' }}</p>
+                                        @if($order->items && count($order->items) > 0)
+                                            <p class="text-xs text-gray-600 mt-1">
+                                                @foreach($order->items as $item)
+                                                    <span class="inline-block">
+                                                        @if($item->food)
+                                                            {{ $item->food->Name ?? 'Unknown' }}
+                                                        @elseif($item->medicine)
+                                                            {{ $item->medicine->Name ?? 'Unknown' }}
+                                                        @else
+                                                            {{ $item->ItemName ?? 'Unknown' }}
+                                                        @endif
+                                                    </span>
+                                                    @if(!$loop->last)<span class="mx-1">•</span>@endif
+                                                @endforeach
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium text-gray-900">Rs. {{ number_format($order->TotalAmount, 2) }}</p>
+                                        <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($order->CreatedAt)->format('d M, H:i') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="flex items-center justify-center py-6 text-gray-500 text-sm">
+                                No assigned orders
+                            </div>
+                        @endforelse
                     </div>
                     <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
-                        <a href="#"
-                           class="text-sm font-medium text-blue-600 hover:text-blue-500">
-                            View all in-progress orders
-                        </a>
+                        <!-- <a href="#"
+                           class="text-sm font-medium text-purple-600 hover:text-purple-500">
+                            View all assigned orders
+                        </a> -->
                     </div>
                 </div>
 
@@ -275,14 +335,47 @@
                             </span>
                         </div>
                     </div>
-                    <div class="flex-1 flex items-center justify-center text-sm text-gray-500 p-4">
-                        Orders successfully delivered to customers.
+                    <div class="divide-y divide-gray-200 flex-1 overflow-y-auto max-h-80">
+                        @forelse($completedOrders as $order)
+                            <div class="px-4 py-3 hover:bg-gray-50 transition text-sm">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex-1">
+                                        <p class="font-medium text-gray-900">#{{ $order->OrderNumber }}</p>
+                                        <p class="text-xs text-gray-500">{{ $order->customer->Name ?? 'Unknown' }}</p>
+                                        @if($order->items && count($order->items) > 0)
+                                            <p class="text-xs text-gray-600 mt-1">
+                                                @foreach($order->items as $item)
+                                                    <span class="inline-block">
+                                                        @if($item->food)
+                                                            {{ $item->food->Name ?? 'Unknown' }}
+                                                        @elseif($item->medicine)
+                                                            {{ $item->medicine->Name ?? 'Unknown' }}
+                                                        @else
+                                                            {{ $item->ItemName ?? 'Unknown' }}
+                                                        @endif
+                                                    </span>
+                                                    @if(!$loop->last)<span class="mx-1">•</span>@endif
+                                                @endforeach
+                                            </p>
+                                        @endif
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium text-gray-900">Rs. {{ number_format($order->TotalAmount, 2) }}</p>
+                                        <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($order->CreatedAt)->format('d M, H:i') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="flex items-center justify-center py-6 text-gray-500 text-sm">
+                                No completed orders
+                            </div>
+                        @endforelse
                     </div>
                     <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
-                        <a href="#"
+                        <!-- <a href="#"
                            class="text-sm font-medium text-green-600 hover:text-green-500">
                             View all completed orders
-                        </a>
+                        </a> -->
                     </div>
                 </div>
             </div>
@@ -300,44 +393,57 @@
                             @forelse($recentOrders as $order)
                                 <div class="px-4 py-4 sm:px-6">
                                     <div class="flex items-center justify-between">
-                                        <div class="flex items-center">
-                                            <span class="inline-flex items-center justify-center w-9 h-9 rounded-full bg-indigo-100 text-indigo-700 text-sm font-bold">
-                                                {{ strtoupper(substr($order->module_type ?? 'N/A', 0, 1)) }}
-                                            </span>
-                                            <div class="ml-3">
+                                        <div class="flex items-center flex-1">
+                                            <div class="flex-1">
                                                 <p class="text-sm font-medium text-gray-900">
-                                                    #{{ $order->order_id ?? $order->id }} &mdash;
-                                                    {{ ucfirst($order->module_type ?? 'N/A') }}
+                                                    Order #{{ $order->OrderNumber }}
                                                 </p>
                                                 <p class="text-xs text-gray-500">
-                                                    {{ optional($order->customer)->name ?? 'Guest Customer' }}
-                                                    · {{ optional($order->created_at)->format('d M Y, H:i') ?? 'N/A' }}
+                                                    {{ $order->customer->Name ?? 'Unknown Customer' }}
+                                                    · {{ $order->CreatedAt->format('d M Y, H:i') }}
                                                 </p>
+                                                @if($order->items && count($order->items) > 0)
+                                                    <p class="text-xs text-gray-600 mt-1">
+                                                        @foreach($order->items as $item)
+                                                            <span class="inline-block">
+                                                                @if($item->food)
+                                                                    {{ $item->food->Name ?? 'Unknown Item' }}
+                                                                @elseif($item->medicine)
+                                                                    {{ $item->medicine->Name ?? 'Unknown Item' }}
+                                                                @else
+                                                                    {{ $item->ItemName ?? 'Unknown Item' }}
+                                                                @endif
+                                                                (x{{ $item->Quantity }})
+                                                            </span>
+                                                            @if(!$loop->last)
+                                                                <span class="mx-1">•</span>
+                                                            @endif
+                                                        @endforeach
+                                                    </p>
+                                                @endif
                                             </div>
                                         </div>
-                                        <div class="flex items-center space-x-2">
+                                        <div class="flex items-center space-x-3">
                                             @php
-                                                $status = strtolower($order->status ?? 'unknown');
+                                                $status = strtolower($order->Status ?? 'unknown');
                                                 $statusMap = [
-                                                    'pending'   => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
-                                                    'accepted'  => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
-                                                    'preparing' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
-                                                    'dispatched'=> ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
-                                                    'delivered' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
-                                                    'completed' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
-                                                    'cancelled' => ['bg' => 'bg-red-100', 'text' => 'text-red-800'],
+                                                    'pending'       => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
+                                                    'pendingreview' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
+                                                    'accepted'      => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+                                                    'preparing'     => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+                                                    'packed'        => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+                                                    'dispatched'    => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+                                                    'delivered'     => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
+                                                    'completed'     => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
+                                                    'cancelled'     => ['bg' => 'bg-red-100', 'text' => 'text-red-800'],
                                                 ];
                                                 $colors = $statusMap[$status] ?? ['bg' => 'bg-gray-100', 'text' => 'text-gray-800'];
                                             @endphp
                                             <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded {{ $colors['bg'] }} {{ $colors['text'] }}">
-                                                {{ ucfirst($status) }}
+                                                {{ ucfirst(str_replace('pendingreview', 'Pending', $status)) }}
                                             </span>
-
-                                            @php
-                                                $amount = optional($order->invoice)->total_amount ?? 0;
-                                            @endphp
                                             <span class="px-2 py-1 rounded text-xs bg-indigo-50 text-indigo-700 font-medium">
-                                                Rs. {{ number_format($amount, 2) }}
+                                                Rs. {{ number_format($order->TotalAmount, 2) }}
                                             </span>
                                         </div>
                                     </div>
@@ -349,10 +455,10 @@
                             @endforelse
                         </div>
                         <div class="px-4 py-4 sm:px-6 bg-gray-50 text-sm text-right">
-                            <a href="#"
+                            <!-- <a href="#"
                                class="font-medium text-indigo-600 hover:text-indigo-500">
                                 View all orders
-                            </a>
+                            </a> -->
                         </div>
                     </div>
 
@@ -516,14 +622,14 @@
 
         // Revenue per day chart
         const revenueCtx = document.getElementById('revenuePerDayChart');
-        if (revenueCtx && revenuePerDay.labels && revenuePerDay.labels.length) {
+        if (revenueCtx) {
             new Chart(revenueCtx.getContext('2d'), {
                 type: 'line',
                 data: {
-                    labels: revenuePerDay.labels,
+                    labels: revenuePerDay.labels && revenuePerDay.labels.length ? revenuePerDay.labels : ['No data'],
                     datasets: [{
                         label: 'Revenue (Rs.)',
-                        data: revenuePerDay.data,
+                        data: revenuePerDay.data && revenuePerDay.data.length ? revenuePerDay.data : [0],
                         fill: false,
                         backgroundColor: '#22c55e',
                         borderColor: '#16a34a',
@@ -567,58 +673,6 @@
         }
     });
 
-    // Refresh stats button functionality
-    document.getElementById('refresh-stats-btn').addEventListener('click', function() {
-        const btn = this;
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Loading...';
-
-        fetch('{{ route("api.dashboard.stats") }}', {
-            headers: {'X-Requested-With': 'XMLHttpRequest'}
-        })
-        .then(response => response.json())
-        .then(result => {
-            if (result.success && result.data) {
-                const stats = result.data;
-                
-                // Update all stat cards
-                document.getElementById('stat-totalUsers').textContent = 
-                    new Intl.NumberFormat().format(stats.totalUsers);
-                document.getElementById('stat-activeUsers').textContent = 
-                    new Intl.NumberFormat().format(stats.activeUsers);
-                document.getElementById('stat-totalCustomers').textContent = 
-                    new Intl.NumberFormat().format(stats.totalCustomers);
-                document.getElementById('stat-medicalOrders').textContent = 
-                    new Intl.NumberFormat().format(stats.medicalOrders);
-                document.getElementById('stat-foodOrders').textContent = 
-                    new Intl.NumberFormat().format(stats.foodOrders);
-                document.getElementById('stat-totalRevenue').textContent = 
-                    'Rs. ' + new Intl.NumberFormat('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}).format(stats.totalRevenue);
-                document.getElementById('stat-avgOrderValue').textContent = 
-                    'Rs. ' + new Intl.NumberFormat('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}).format(stats.avgOrderValue);
-
-                // Show success message
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Stats Updated',
-                    text: 'Dashboard data has been refreshed successfully',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Failed to refresh stats. Please try again.'
-            });
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-sync-alt mr-2"></i>Refresh Stats';
-        });
-    });
+    // Refresh stats removed — no runtime handler
 </script>
 @endpush
