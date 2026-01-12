@@ -32,6 +32,7 @@ use App\Http\Controllers\MedicineOrderController;
 use App\Http\Controllers\MedicineCategoryController;
 use App\Http\Controllers\MedicalStoreController;
 use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\RewardTransactionController;
 
 
 
@@ -283,6 +284,16 @@ Route::middleware('auth')->group(function () {
     |----------------------------------------------------------------------
     */
     Route::get('/auditlog', [AuditLogController::class, 'index'])->name('auditlog.index');
+
+    /*
+    |----------------------------------------------------------------------
+    | Reward Transactions
+    |----------------------------------------------------------------------
+    */
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('reward-transactions', [RewardTransactionController::class, 'index'])->name('reward-transactions.index');
+        Route::get('reward-transactions/{rewardTransaction}', [RewardTransactionController::class, 'show'])->name('reward-transactions.show');
+    });
 });
 
 /*
