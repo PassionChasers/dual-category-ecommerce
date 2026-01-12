@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Restaurant;
 use App\Models\MedicalStore;
+use App\Models\Medicine;
 
 class OrderController extends Controller
 {
@@ -86,7 +87,12 @@ class OrderController extends Controller
 
         $order = $query->findOrFail($orderId);
 
-        return view('admin.orders.medicine-order.show', compact('order'));
+        $medicines = Medicine::where('IsActive', true)
+                    ->orderBy('Name')
+                    ->get();
+
+
+        return view('admin.orders.medicine-order.show', compact('order', 'medicines'));
         
     }
 
