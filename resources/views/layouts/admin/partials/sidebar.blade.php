@@ -335,6 +335,12 @@
                             {{ request()->routeIs('auditlog.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                         <i class="fas fa-history mr-2"></i> Audit Logs
                     </a>
+
+                    <a href="{{route('admin.reward-transactions.index')}}"
+                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 
+                            {{ request()->routeIs('admin.reward-transactions.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                        <i class="fas fa-coins mr-2"></i> Reward Transactions
+                    </a>
                 </div>
             </div>
         </div>
@@ -671,6 +677,12 @@
                         class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100
                         {{ request()->routeIs('auditlog.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                         <i class="fas fa-history mr-2"></i> Audit Logs
+                    </a>
+
+                    <a href="{{route('admin.reward-transactions.index')}}"
+                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100
+                        {{ request()->routeIs('admin.reward-transactions.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                        <i class="fas fa-coins mr-2"></i> Reward Transactions
                     </a>
                 </div>
             </div>

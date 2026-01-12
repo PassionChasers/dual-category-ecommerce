@@ -243,6 +243,17 @@ class DashboardController extends Controller
                 'data'   => [$medicalCount, $foodCount],
             ];
 
+            // --- Order Status Distribution Chart ---
+            $orderStatusChart = [
+                'labels' => ['Pending', 'Assigned', 'Completed', 'Cancelled'],
+                'data'   => [
+                    $stats['pendingOrders'],
+                    $stats['assignedOrders'],
+                    $stats['completedOrders'],
+                    $stats['cancelledOrders'],
+                ],
+            ];
+
             // --- Recent orders with customer ---
             try {
                 $recentOrders = Order::with('customer', 'items.food', 'items.medicine')
@@ -272,6 +283,7 @@ class DashboardController extends Controller
             'ordersPerDayChart'  => $ordersPerDayChart,
             'revenuePerDayChart' => $revenuePerDayChart,
             'moduleSplitChart'   => $moduleSplitChart,
+            'orderStatusChart'   => $orderStatusChart ?? ['labels' => [], 'data' => []],
             'recentOrders'       => $recentOrders ?? collect(),
             'pendingOrders'      => $pendingOrders ?? collect(),
             'assignedOrders'     => $assignedOrders ?? collect(),
