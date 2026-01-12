@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class OrderItem extends Model
 {
@@ -24,10 +25,12 @@ class OrderItem extends Model
         'OrderId',
         'ItemId',
         'ItemType',
+        'MedicineId',
+        'MenuItemId',
         'ItemName',
-        'ItemImageUrl',
+        // 'ItemImageUrl',
         'Quantity',
-        'UnitPrice',
+        'UnitPriceAtOrder',
         'BusinessId',
         'BusinessType',
         'ForwardedAt',
@@ -36,7 +39,20 @@ class OrderItem extends Model
         'AcceptedAt',
         'ReadyAt',
         'CompletedAt',
+        'BusinessNotes',
     ];
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->OrderItemId) {
+                $model->OrderItemId = (string) Str::uuid();
+            }
+        });
+    }
 
     public function order()
     {

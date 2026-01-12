@@ -12,7 +12,7 @@
             <th class="px-4 py-2">Total Amount</th>
             <th class="px-4 py-2">Delivery Address</th>
             <th class="px-4 py-2">Customer Name</th>
-            {{-- <th class="px-4 py-2">Prescription require</th> --}}
+            <th class="px-4 py-2">Prescription require</th>
             <th class="px-4 py-2">Assign Delivery Man</th>
             <th class="px-4 py-2">Status</th>
             <th class="px-4 py-2">Date</th>
@@ -97,15 +97,15 @@
                 </td>
 
                 {{-- prescriptions--}}
-                {{-- <td class="px-4 py-2 text-gray-600">
+                <td class="px-4 py-2 text-gray-600">
                     <a href="#" class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded"> 
                         {{ $order->RequiresPrescription ? ' Yes ' : ' No ' }}    
                     </a> 
-                    || 
+                    {{-- || 
                     <a href="#" class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded">
                         view
-                    </a>
-                </td> --}}
+                    </a> --}}
+                </td>
 
                 {{-- Assign Delivery man --}}
                 <td class="px-4 py-2">

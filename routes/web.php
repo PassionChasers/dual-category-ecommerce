@@ -175,6 +175,12 @@ Route::middleware('auth')->group(function () {
     
     // Update order status (general)
     Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+    
+    //Create and store order in orderitems table
+    Route::post('/order-items', [OrderController::class, 'store'])->name('order-items.store');
+
+    Route::post('/order-items/store-multiple', [OrderController::class, 'storeMultiple'])->name('order-items.storeMultiple');
+
 
 
 

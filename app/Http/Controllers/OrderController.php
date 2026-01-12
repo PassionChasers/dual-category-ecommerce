@@ -32,7 +32,76 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'OrderId'            => 'required|uuid|exists:Orders,OrderId',
+            'MedicineId'         => 'required|uuid|exists:Medicines,MedicineId',
+            'Quantity'           => 'required|integer|min:1',
+            'UnitPriceAtOrder'   => 'required|numeric|min:0',
+        ]);
+
+        OrderItem::create([
+            'OrderId'            => $request->OrderId,
+            'MedicineId'         => $request->MedicineId,
+            'MenuItemId'         => null,
+            'ItemType'           => 'Medicine',
+            'UnitPriceAtOrder'   => $request->UnitPriceAtOrder,
+            'Quantity'           => $request->Quantity,
+            'Status'             => 'Pending',
+            // 'BusinessNotes'      => $request->BusinessNotes,
+            'IsConsultationItem' => false,
+        ]);
+
+        return back()->with('success', 'Medicine added successfully.');
+    }
+
+
+    /**
+     * Store multiple medicines for an order
+     */
+    public function storeMultiple(Request $request)
+    {
+        // Validate the arrays
+        $request->validate([
+            'OrderId' => 'required|exists:Orders,OrderId',
+            'MedicineId.*' => 'required|exists:Medicines,MedicineId',
+            'Quantity.*' => 'required|numeric|min:1',
+            'UnitPriceAtOrder.*' => 'required|numeric|min:0',
+        ]);
+
+        $orderId = $request->OrderId;
+
+        $medicineIds = $request->MedicineId;
+        $quantities = $request->Quantity;
+        $unitPrices = $request->UnitPriceAtOrder;
+        $TotalAmount = 0;
+
+        foreach ($medicineIds as $index => $medicineId) {
+            // Skip if MedicineId is empty
+            if (!$medicineId) continue;
+
+            $TotalAmount = $TotalAmount + (($unitPrices[$index] ?? 0) * ($quantities[$index] ?? 1));
+
+            OrderItem::create([
+                'OrderId' => $orderId,
+                'MedicineId' => $medicineId,
+                'MenuItemId' => null,
+                'Quantity' => $quantities[$index] ?? 1,
+                'UnitPriceAtOrder' => $unitPrices[$index] ?? 0,
+                'ItemType' => 'Medicine',
+                'Status' => 'Pending',
+                'IsConsultationItem' => false,
+                'ItemId' => $medicineId,
+            ]);
+        }
+
+        $order = Order::findOrFail($orderId);
+
+        // Only update the Status and Total Amount
+        $order->Status = 'Pending';
+        $order->TotalAmount = $TotalAmount;
+        $order->save();
+
+        return redirect()->back()->with('success', 'Medicines added successfully!');
     }
 
     /**

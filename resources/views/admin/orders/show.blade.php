@@ -79,7 +79,7 @@
                     </tr>
                     @endforeach
                     <tr class="text-center">
-                        <td colspan="6" class="px-4 py-2 font-bold">Total Amount:</td>
+                        <td colspan="7" class="px-4 py-2 font-bold">Total Amount:</td>
                         <td class="px-4 py-2 font-bold">Rs.{{ number_format($order->TotalAmount, 2) ?? 'N/A' }}</td>
                     </tr>
                 </tbody>

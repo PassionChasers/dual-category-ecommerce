@@ -11,6 +11,9 @@
         .no-print, #addMedicineForm { display: none !important; }
     }
 </style>
+
+<!-- jQuery UI CSS for autocomplete -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
 @endpush
 
 @section('contents')
@@ -42,28 +45,9 @@
             <li>Delivery Address : {{ $order->DeliveryAddress ?? 'N/A' }}</li>
 
             @if($order->RequiresPrescription && $order->PrescriptionImageUrl)
-            {{-- <li class="mt-2">
-                <button type="button"
-                    onclick="togglePrescription()"
-                    class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                >
-                    View Prescription
-                </button>
-
-                <div id="prescriptionBox" class="hidden mt-3">
-                    <img src="https://pcsdecom.azurewebsites.net{{ $order->PrescriptionImageUrl }}" 
-                        alt="Prescription Image"
-                        class="w-64 h-auto border rounded shadow">
-                </div>
-            </li> --}}
-
                 <li class="mt-2">
-                    <a
-                        href="https://pcsdecom.azurewebsites.net{{ $order->PrescriptionImageUrl }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="inline-block px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-                    >
+                    <a href="https://pcsdecom.azurewebsites.net{{ $order->PrescriptionImageUrl }}" target="_blank" rel="noopener noreferrer"
+                       class="inline-block px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
                         View Prescription
                     </a>
                 </li>
@@ -71,150 +55,171 @@
         </ul>
     </div>
 
-    {{-- Order Items Table --}}
-    <div class="bg-white rounded-md">
+    {{-- Add Medicines Button --}}
+    @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->Status !== 'Completed' && $order->Status === 'PendingReview')
+    <div class="mb-4">
+        <button type="button" onclick="toggleAddMedicineForm()"
+            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+            + Add Medicines
+        </button>
+    </div>
+    @endif
+
+    {{-- Add Medicines Form --}}
+    @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->Status !== 'Completed' && $order->Status === 'PendingReview')
+    <div id="addMedicineForm" class="hidden mt-6 bg-white p-6 rounded-lg border shadow">
+        <h3 class="text-lg font-semibold mb-4">Add Medicines to Order</h3>
+
+        <form method="POST" action="{{ route('order-items.storeMultiple') }}">
+            @csrf
+            <input type="hidden" name="OrderId" value="{{ $order->OrderId }}">
+
+            {{-- Medicines Container --}}
+            <div id="medicinesContainer">
+                <div class="medicineRow flex gap-4 mb-4">
+                    <div class="flex-1">
+                        <label class="block text-sm font-medium mb-1">Medicine</label>
+                        <input type="text" name="MedicineName[]" class="medicineInput w-full border rounded px-3 py-2" placeholder="Type medicine name..." required>
+                        <input type="hidden" name="MedicineId[]" class="medicineId">
+                    </div>
+
+                    <div class="w-24">
+                        <label class="block text-sm font-medium mb-1">Qty</label>
+                        <input type="number" name="Quantity[]" value="1" min="1" required class="w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div class="w-32">
+                        <label class="block text-sm font-medium mb-1">Unit Price</label>
+                        <input type="number" name="UnitPriceAtOrder[]" step="0.01" required class="unitPrice w-full border rounded px-3 py-2">
+                    </div>
+
+                    <div class="flex items-end">
+                        <button type="button" class="removeRow px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700">Remove</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2 mb-4">
+                <button type="button" id="addMedicineRow" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                    + Add Another Medicine
+                </button>
+            </div>
+
+            <div class="flex gap-2">
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Save Medicines
+                </button>
+
+                <button type="button" onclick="toggleAddMedicineForm()"
+                    class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+    @endif
+
+    {{-- Ordered Items Table --}}
+    <div class="bg-white rounded-md mt-6">
         <h3 class="text-lg font-semibold mb-4">Ordered Items :</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-200 text-gray-700">
+                        <th class="px-4 py-2 border-b">#</th>
+                        <th class="px-4 py-2 border-b">Product Image</th>
+                        <th class="px-4 py-2 border-b">Product Name</th>
+                        <th class="px-4 py-2 border-b">Quantity</th>
+                        <th class="px-4 py-2 border-b">Product Type</th>
+                        <th class="px-4 py-2 border-b">Require Prescriptions</th>
+                        <th class="px-4 py-2 border-b">Unit Price</th>
+                        <th class="px-4 py-2 border-b">Total (qty*unit)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($order->items as $key => $item)
+                    <tr class="text-center border-b">
+                        <td>{{ $key + 1 }}</td>
+                        <td class="px-4 py-2">
+                            @if($item->medicine)
+                                <img src="https://pcsdecom.azurewebsites.net{{ $item->medicine->ImageUrl }}" 
+                                     alt="{{ $item->medicine->Name }}" class="w-12 h-12 object-cover rounded mx-auto">
+                            @endif
+                        </td>
+                        <td class="px-4 py-2 font-semibold">{{ $item->medicine->Name ?? 'N/A' }}</td>
+                        <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>
+                        <td class="px-4 py-2 font-semibold">{{ $item->ItemType ?? 'N/A' }}</td>
+                        <td class="px-4 py-2 font-semibold">{{ $item->medicine->PrescriptionRequired ? 'Yes' : 'No' }}</td>
+                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder, 2) }}</td>
+                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder * (float)$item->Quantity, 2) }}</td>
+                    </tr>
+                    @endforeach
+                    <tr class="text-center">
+                        <td colspan="7" class="px-4 py-2 font-bold">Total Amount:</td>
+                        <td class="px-4 py-2 font-bold">Rs.{{ number_format($order->TotalAmount, 2) ?? 'N/A' }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div class="overflow-x-auto">
-
-        {{-- Add Medicine Button --}}
-        @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->Status !== 'Completed')
-        <div class="mb-4">
-            <button type="button" onclick="toggleAddMedicineForm()"
-                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                + Add Medicine
-            </button>
-        </div>
-        @endif
-
-        {{-- Add Medicine Form --}}
-        @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->Status !== 'Completed')
-        <div id="addMedicineForm" class="hidden mt-6 bg-white p-6 rounded-lg border shadow">
-
-            <h3 class="text-lg font-semibold mb-4">Add Medicine to Order</h3>
-
-            <form method="POST" action="#">
-                @csrf
-
-                {{-- Required --}}
-                <input type="hidden" name="OrderId" value="{{ $order->OrderId }}">
-                <input type="hidden" name="ItemType" value="Medicine">
-                {{-- <input type="hidden" name="MenuItemId" value=""> --}}
-                {{-- <input type="hidden" name="IsConsultationItem" value="false"> --}}
-
-                {{-- Medicine --}}
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Medicine</label>
-                    <select name="MedicineId" id="medicineSelect" required class="w-full border rounded px-3 py-2">
-                        <option value="">-- Select Medicine --</option>
-                        @foreach($medicines as $medicine)
-                            <option value="{{ $medicine->MedicineId }}" data-price="{{ $medicine->Price ?? 0 }}">
-                                {{ $medicine->Name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-
-                {{-- Quantity --}}
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Quantity</label>
-                    <input type="number" name="Quantity" value="1" min="1" required class="w-20 border rounded px-3 py-2">
-                </div>
-
-                {{-- Unit Price --}}
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Unit Price</label>
-                    <input type="number" step="0.01" name="UnitPriceAtOrder" id="unitPrice" required class="w-full border rounded px-3 py-2">
-                </div>
-
-                {{-- Notes --}}
-                <div class="mb-4">
-                    <label class="block text-sm font-medium mb-1">Business Notes</label>
-                    <textarea name="BusinessNotes" class="w-full border rounded px-3 py-2" placeholder="Optional notes"></textarea>
-                </div>
-
-                <div class="flex gap-2">
-                    <button type="submit"
-                        onclick="this.disabled=true;this.form.submit();"
-                        class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        Save Medicine
-                    </button>
-
-                    <button type="button" onclick="toggleAddMedicineForm()"
-                        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
-                        Cancel
-                    </button>
-                </div>
-            </form>
-        </div>
-        @endif
-
-        {{-- Items Table --}}
-        <table class="min-w-full bg-white border border-gray-300">
-            <thead>
-                <tr class="bg-gray-200 text-gray-700">
-                    <th class="px-4 py-2 border-b">#</th>
-                    <th class="px-4 py-2 border-b">Product Image</th>
-                    <th class="px-4 py-2 border-b">Product Name</th>
-                    <th class="px-4 py-2 border-b">Quantity</th>
-                    <th class="px-4 py-2 border-b">Product Type</th>
-                    <th class="px-4 py-2 border-b">Require Prescriptions</th>
-                    <th class="px-4 py-2 border-b">Unit Price</th>
-                    <th class="px-4 py-2 border-b">Total (qty*unit)</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($order->items as $key => $item)
-                <tr class="text-center border-b">
-                    <td>{{ $key + 1 }}</td>
-                    <td class="px-4 py-2">
-                        @if($item->medicine)
-                            <img src="https://pcsdecom.azurewebsites.net{{ $item->medicine->ImageUrl }}" 
-                                alt="{{ $item->medicine->Name }}" 
-                                class="w-12 h-12 object-cover rounded mx-auto">
-                        @endif
-                    </td>
-                    <td class="px-4 py-2 font-semibold">{{ $item->medicine->Name ?? 'N/A' }}</td>
-                    <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>
-                    <td class="px-4 py-2 font-semibold">{{ $item->ItemType ?? 'N/A' }}</td>
-                    <td class="px-4 py-2 font-semibold">{{ $item->medicine->PrescriptionRequired ? 'Yes' : 'No' }}</td>
-                    <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder, 2) }}</td>
-                    <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder * (float)$item->Quantity, 2) }}</td>
-                </tr>
-                @endforeach
-                <tr class="text-center">
-                    <td colspan="6" class="px-4 py-2 font-bold">Total Amount:</td>
-                    <td class="px-4 py-2 font-bold">Rs.{{ number_format($order->TotalAmount, 2) ?? 'N/A' }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 </div>
 @endsection
 
 @push('scripts')
+<!-- jQuery and jQuery UI -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
 <script>
-    // Print button
-    document.getElementById('printBtn')?.addEventListener('click', () => {
-        window.print();
-    });
-
-    // Toggle prescription image
-    // function togglePrescription() {
-    //     const box = document.getElementById('prescriptionBox');
-    //     box.classList.toggle('hidden');
-    // }
-
     // Toggle Add Medicine Form
     function toggleAddMedicineForm() {
         document.getElementById('addMedicineForm').classList.toggle('hidden');
     }
 
-    // Auto-fill Unit Price from selected medicine
-    document.getElementById('medicineSelect')?.addEventListener('change', function () {
-        const price = this.selectedOptions[0].dataset.price;
-        if(price) document.getElementById('unitPrice').value = price;
+    // Print button
+    document.getElementById('printBtn')?.addEventListener('click', () => {
+        window.print();
+    });
+
+    $(document).ready(function() {
+
+        // Prepare medicines array
+        var medicines = [
+            @foreach($medicines as $medicine)
+            { id: '{{ $medicine->MedicineId }}', label: '{{ $medicine->Name }}', value: '{{ $medicine->Name }}', price: '{{ $medicine->Price }}' },
+            @endforeach
+        ];
+
+        // Initialize autocomplete on all medicine inputs
+        function initAutocomplete() {
+            $(".medicineInput").autocomplete({
+                source: medicines,
+                minLength: 1,
+                select: function(event, ui) {
+                    $(this).siblings(".medicineId").val(ui.item.id);
+                    $(this).closest(".medicineRow").find(".unitPrice").val(ui.item.price);
+                }
+            });
+        }
+
+        initAutocomplete(); // for first row
+
+        // Add new medicine row
+        $("#addMedicineRow").click(function() {
+            var newRow = $(".medicineRow:first").clone();
+            newRow.find("input").val(""); // clear inputs
+            $("#medicinesContainer").append(newRow);
+            initAutocomplete();
+        });
+
+        // Remove medicine row
+        $(document).on("click", ".removeRow", function() {
+            if($(".medicineRow").length > 1){
+                $(this).closest(".medicineRow").remove();
+            }
+        });
+
     });
 </script>
 @endpush
