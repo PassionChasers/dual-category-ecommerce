@@ -46,15 +46,15 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Share 'setting' with all views
-        // View::composer('*', function ($view) {
-        //     $setting = Setting::first();
-        //     $view->with('setting', $setting);
-        // });
-        $settings = Cache::rememberForever('settings', function () {
-            return Setting::first();
+        View::composer('*', function ($view) {
+            $setting = Setting::first();
+            $view->with('setting', $setting);
         });
+        // $settings = Cache::rememberForever('settings', function () {
+        //     return Setting::first();
+        // });
 
-        view()->share('setting', $settings);
+        // view()->share('setting', $settings);
 
 
     }
