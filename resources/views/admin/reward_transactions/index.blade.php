@@ -3,58 +3,49 @@
 
 @section('contents')
 <div class="flex-1 p-4 md:p-6 bg-gray-50">
-    <div class="mb-6 flex justify-between items-center flex-wrap">
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800 flex items-center">
                 <i class="fas fa-coins text-yellow-600 mr-2"></i> Reward Transactions
             </h2>
             <p class="text-gray-600">View all reward coin transactions and user details</p>
         </div>
-    </div>
 
-    <!-- Filters Section -->
-    <div class="bg-white rounded-lg shadow p-4 mb-6">
-        <form method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <!-- Search Input -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
-                <input type="text" name="search" value="{{ $search }}" placeholder="Name, email, description..."
-                    class="w-full border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
-            </div>
+        <!-- Filters Section -->
+        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+            <form method="GET" class="flex gap-2 items-center flex-wrap">
+                <!-- Search Input -->
+                <input type="text" name="search" value="{{ $search }}" placeholder="Search by name, email..."
+                    class="px-3 py-2 border rounded-md bg-white text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                
+                <!-- Search Button -->
+                <button type="submit" class="px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                    <i class="fas fa-search"></i>
+                </button>
 
-            <!-- Type Filter -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Transaction Type</label>
-                <select name="type" class="w-full border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <!-- Type Filter -->
+                <select name="type" onchange="this.form.submit()" class="px-3 py-2 border rounded-md text-sm cursor-pointer">
                     <option value="">All Types</option>
                     @foreach($types as $t)
                         <option value="{{ $t }}" {{ $type === $t ? 'selected' : '' }}>{{ $t }}</option>
                     @endforeach
                 </select>
-            </div>
 
-            <!-- Status Filter -->
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <select name="status" class="w-full border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                <!-- Status Filter -->
+                <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md text-sm cursor-pointer">
                     <option value="">All Status</option>
                     <option value="1" {{ $status === '1' ? 'selected' : '' }}>Pending</option>
                     <option value="2" {{ $status === '2' ? 'selected' : '' }}>Active</option>
                     <option value="3" {{ $status === '3' ? 'selected' : '' }}>Redeemed</option>
                     <option value="4" {{ $status === '4' ? 'selected' : '' }}>Expired</option>
                 </select>
-            </div>
 
-            <!-- Button Group -->
-            <div class="flex items-end gap-2">
-                <button type="submit" class="flex-1 px-4 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition">
-                    <i class="fas fa-search mr-2"></i> Filter
-                </button>
-                <a href="{{ route('admin.reward-transactions.index') }}" class="flex-1 px-4 py-2 bg-gray-300 text-gray-700 text-sm rounded hover:bg-gray-400 transition text-center">
-                    <i class="fas fa-redo mr-2"></i> Reset
+                <!-- Reset Button -->
+                <a href="{{ route('admin.reward-transactions.index') }}" class="px-3 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300 transition text-center">
+                    <i class="fas fa-redo"></i> Reset
                 </a>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 
     <!-- Table Section -->

@@ -25,6 +25,8 @@
                 {{-- Dashboard partial-error flash removed per request --}}
             </div>
 
+            <!-- Charts moved to footer area -->
+
             {{-- ================= TOP STATS CARDS ================= --}}
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
                 <!-- Total Users -->
@@ -381,6 +383,8 @@
             </div>
 
             {{-- ================= MAIN DASHBOARD CONTENT ================= --}}
+
+            
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Left Column - 2/3 width -->
                 <div class="lg:col-span-2 space-y-6">
@@ -462,32 +466,7 @@
                         </div>
                     </div>
 
-                    <!-- Charts Section -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <!-- Orders per Day -->
-                        <div class="bg-white p-4 shadow rounded-lg">
-                            <h3 class="text-sm font-medium text-gray-900 mb-4">Orders (Last 7 Days)</h3>
-                            <div class="h-64">
-                                <canvas id="ordersPerDayChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Revenue per Day -->
-                        <div class="bg-white p-4 shadow rounded-lg">
-                            <h3 class="text-sm font-medium text-gray-900 mb-4">Revenue (Last 7 Days)</h3>
-                            <div class="h-64">
-                                <canvas id="revenuePerDayChart"></canvas>
-                            </div>
-                        </div>
-
-                        <!-- Orders by Module -->
-                        <div class="bg-white p-4 shadow rounded-lg">
-                            <h3 class="text-sm font-medium text-gray-900 mb-4">Orders by Module</h3>
-                            <div class="h-64">
-                                <canvas id="moduleSplitChart"></canvas>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Charts removed from left column (moved to full-width row) -->
                 </div>
 
                 <!-- Right Column - 1/3 width -->
@@ -560,6 +539,36 @@
             </div>
         </div>
 
+            <!-- Charts: four equal cards in a single row, aligned with other sections -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+                <div class="bg-white p-4 sm:p-6 shadow rounded-lg flex flex-col">
+                    <h3 class="text-sm font-medium text-gray-900 mb-2">Orders (Last 7 Days)</h3>
+                    <div class="flex-1">
+                        <canvas id="ordersPerDayChart" class="w-full h-48"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-4 sm:p-6 shadow rounded-lg flex flex-col">
+                    <h3 class="text-sm font-medium text-gray-900 mb-2">Revenue (Last 7 Days)</h3>
+                    <div class="flex-1">
+                        <canvas id="revenuePerDayChart" class="w-full h-48"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-4 sm:p-6 shadow rounded-lg flex flex-col">
+                    <h3 class="text-sm font-medium text-gray-900 mb-2">Orders by Module</h3>
+                    <div class="flex-1">
+                        <canvas id="moduleSplitChart" class="w-full h-48"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white p-4 sm:p-6 shadow rounded-lg flex flex-col">
+                    <h3 class="text-sm font-medium text-gray-900 mb-2">Order Status</h3>
+                    <div class="flex-1">
+                        <canvas id="orderStatusChart" class="w-full h-48"></canvas>
+                    </div>
+                </div>
+                </div>
+            </div>
+
         <!-- Footer -->
         <div class="bg-gray-200 text-left p-4 w-full">
             <p class="text-sm text-gray-600">&copy; {{ date('Y') }} Passion Chasers. All rights reserved.</p>
@@ -585,6 +594,7 @@
         const ordersPerDay  = @json($ordersPerDayChart);
         const revenuePerDay = @json($revenuePerDayChart);
         const moduleSplit   = @json($moduleSplitChart);
+        const orderStatus   = @json($orderStatusChart ?? ['labels' => [], 'data' => []]);
 
         if (typeof Chart === 'undefined') {
             console.warn('Chart.js is not loaded; dashboard charts will not render.');
@@ -667,6 +677,35 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        // Order Status Distribution bar chart
+        const orderStatusCtx = document.getElementById('orderStatusChart');
+        if (orderStatusCtx && orderStatus.labels && orderStatus.labels.length) {
+            new Chart(orderStatusCtx.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: orderStatus.labels,
+                    datasets: [{
+                        label: 'Orders',
+                        data: orderStatus.data,
+                        backgroundColor: ['#fbbf24', '#3b82f6', '#22c55e', '#ef4444'],
+                        borderColor: ['#f59e0b', '#1e40af', '#16a34a', '#dc2626'],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    indexAxis: 'x',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true }
+                    },
+                    plugins: {
+                        legend: { display: false }
                     }
                 }
             });
