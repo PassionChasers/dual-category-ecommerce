@@ -69,13 +69,13 @@
                         <td>{{ $key + 1 }}</td>
                         <td class="px-4 py-2">
                             {{-- <img src="{{ asset('storage/products/' . $item->ItemImageUrl) }}" alt="{{ $item->ItemName }}" class="thumb-lg mx-auto" /> --}}
-                            <img src="https://pcsdecom.azurewebsites.net{{$item->ItemImageUrl}}" alt="{{ $item->ItemName }}" class="w-12 h-12 object-cover rounded mx-auto">
+                            <img src="https://pcsdecom.azurewebsites.net{{$item->food->ImageUrl}}" alt="{{ $item->ItemName }}" class="w-12 h-12 object-cover rounded mx-auto">
                         </td>
-                        <td class="px-4 py-2 font-semibold">{{ $item->ItemName ?? 'N/A' }}</td>
+                        <td class="px-4 py-2 font-semibold">{{ $item->food->Name ?? 'N/A' }}</td>
                         <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>
                         <td class="px-4 py-2 font-semibold">{{ $item->ItemType ?? 'N/A' }}</td>
-                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPrice, 2) }}</td>
-                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPrice * (float)$item->Quantity, 2) }}</td>
+                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder, 2) }}</td>
+                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder * (float)$item->Quantity, 2) }}</td>
                     </tr>
                     @endforeach
                     <tr class="text-center">

@@ -203,7 +203,7 @@
                             <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                             <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
                             <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded "
-                                @if(in_array($order->Status, ['Accepted', 'Rejected'])) disabled @endif
+                                @if(in_array($order->Status, ['Accepted', 'Rejected', 'Packed', 'Completed', 'Cancelled', 'Preparing'])) disabled @endif
                             >
                                 {{-- <i class="fas fa-times"></i> --}}Reject
                             </button>
@@ -219,7 +219,7 @@
                             <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                             <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
                             <button type="submit" class="text-green-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded "
-                                @if(in_array($order->Status, ['Accepted', 'Rejected'])) disabled @endif
+                                @if(in_array($order->Status, ['Accepted', 'Rejected', 'Packed', 'Completed', 'Cancelled', 'Preparing'])) disabled @endif
                             >
                                 {{-- <i class="fas fa-times"></i> --}}Accept
                             </button>

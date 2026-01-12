@@ -43,13 +43,46 @@
                 <li>
                     Delivery Address : {{ $order->DeliveryAddress ?? 'N/A' }}
                 </li>
+                @if($order->RequiresPrescription && $order->PrescriptionImageUrl)
+                    <li class="mt-2">
+                        <button
+                            type="button"
+                            onclick="togglePrescription()"
+                            class="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
+                        >
+                            View Prescription
+                        </button>
+
+                        {{-- Prescription Image (Hidden by default) --}}
+                        <div id="prescriptionBox" class="hidden mt-3">
+                            <img
+                                src="https://pcsdecom.azurewebsites.net{{$order->PrescriptionImageUrl}}"
+                                alt="Prescription Image"
+                                class="w-64 h-auto border rounded shadow"
+                            >
+                        </div>
+                    </li>
+                @endif
             </ul>
         </div>
+        
         {{-- Order Items Table --}}
         <div class="bg-white rounded-md">
             <h3 class="text-lg font-semibold mb-4">Ordered Items :</h3>
         </div>
+
         <div class="overflow-x-auto">
+            @if($order->RequiresPrescription && $order->PrescriptionImageUrl)
+                <div class="mb-4">
+                    <button
+                        {{-- onclick="toggleAddMedicineForm()" --}}
+                        class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    >
+                        + Add Medicine
+                    </button>
+                </div>
+            @endif
+
             <table class="min-w-full bg-white border border-gray-300">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700">
@@ -69,7 +102,7 @@
                         <td>{{ $key + 1 }}</td>
                         <td class="px-4 py-2">
                             {{-- <img src="{{ asset('storage/products/' . $item->ItemImageUrl) }}" alt="{{ $item->ItemName }}" class="thumb-lg mx-auto" /> --}}
-                            <img src="https://pcsdecom.azurewebsites.net{{$item->ItemImageUrl}}" alt="{{ $item->ItemName }}" class="w-12 h-12 object-cover rounded mx-auto">
+                            <img src="https://pcsdecom.azurewebsites.net{{$item->medicine->ImageUrl}}" alt="{{ $item->ItemName }}" class="w-12 h-12 object-cover rounded mx-auto">
                         </td>
                         <td class="px-4 py-2 font-semibold">{{ $item->medicine->Name ?? 'N/A' }}</td>
                         <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>
@@ -91,8 +124,22 @@
 
 @push('scripts')
     <script>
+
+        //for print button 
         document.getElementById('printBtn')?.addEventListener('click', () => {
             window.print();
         });
+
+        //for view prescription image 
+        function togglePrescription() {
+            const box = document.getElementById('prescriptionBox');
+            box.classList.toggle('hidden');
+        }
+
+        //Form for Add medicine 
+        //  function toggleAddMedicineForm() {
+        //     document.getElementById('addMedicineForm')
+        //         .classList.toggle('hidden');
+        // }
     </script>
 @endpush

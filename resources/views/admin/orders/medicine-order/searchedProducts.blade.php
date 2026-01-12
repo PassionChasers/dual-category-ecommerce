@@ -39,9 +39,15 @@
                     >
                         @if($order->Status === 'PendingReview')
                             <div>
-                                <a href="#" class="text-sm bg-green-200 text-gray-400 ">
-                                    <i>Prescription Review is Pending</i>
-                                </a>
+                                @if($order->RequiresPrescription || $order->PrescriptionImageUrl)
+                                    <a href="https://pcsdecom.azurewebsites.net{{$order->PrescriptionImageUrl}}" class="text-sm bg-green-200 text-gray-400 ">
+                                        <i>Prescription Review is Pending(Uploaded)</i>
+                                    </a>
+                                @elseif($order->RequiresPrescription && !$order->PrescriptionImageUrl)
+                                    <a href="#" class="text-sm bg-green-200 text-gray-400 ">
+                                        <i>Prescription Review is Pending(Not Uploaded)</i>
+                                    </a>
+                                @endif
                             </div>
                         @elseif ($order->Status != 'PendingReview') 
                             @foreach($order->items as $item)
@@ -119,10 +125,14 @@
                 {{-- prescriptions--}}
                 <td class="px-4 py-2 text-gray-600 text-center">
                     @if($order->RequiresPrescription || $order->PrescriptionImageUrl)
-                        <a href="#" class="text-gray-800 py-1 px-2 bg-green-100 hover:bg-green-400 rounded"> 
+                        <a href="https://pcsdecom.azurewebsites.net{{$order->PrescriptionImageUrl}}" class="text-gray-800 py-1 px-2 bg-green-100 hover:bg-green-400 rounded"> 
                             Yes/Uploaded   
                         </a> 
-                    @else
+                    @elseif($order->RequiresPrescription && !$order->PrescriptionImageUrl)
+                        <a href="#" class="text-gray-800 py-1 px-2 bg-green-100 hover:bg-red-400 rounded"> 
+                            Yes/Not Uploaded   
+                        </a> 
+                    @elseif(!$order->RequiresPrescription && !$order->PrescriptionImageUrl)
                         <a href="#" class="text-gray-600 py-1 px-2 bg-red-100 rounded"> 
                             Not  
                         </a>
