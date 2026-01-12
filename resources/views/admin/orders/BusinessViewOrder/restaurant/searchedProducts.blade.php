@@ -117,17 +117,53 @@
                 {{-- Status --}}
                 <td class="px-4 py-2">
                     @php
-                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Assignrd'];
+                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
                     @endphp
+                    @if($order->Status === 'Accepted')
+                        <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
+                            <option value="Accepted" {{ $order->Status === 'Accepted' ? 'selected' : '' }} disabled>
+                                Accepted
+                            </option>
+                            <option value="Preparing" {{ $order->Status === 'Preparing' ? 'selected' : '' }}>
+                                Preparing
+                            </option>
+                            <option value="Packed" {{ $order->Status === 'Packed' ? 'selected' : '' }}>
+                                Packed
+                            </option>
+                        </select>
+                    @elseif($order->Status === 'Preparing')
+                        <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
+                            <option value="Preparing" {{ $order->Status === 'Preparing' ? 'selected' : '' }} disabled>
+                                Preparing
+                            </option>
+                            <option value="Packed" {{ $order->Status === 'Packed' ? 'selected' : '' }}>
+                                Packed
+                            </option>
+                        </select>
+                    @elseif($order->Status === 'Packed')
+                        <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
+                            <option value="Packed" {{ $order->Status === 'Packed' ? 'selected' : '' }} disabled>
+                                Packed
+                            </option>
+                        </select>
+                    @elseif($order->Status === 'Rejected')
+                        {{$order->Status}}
+                    @elseif($order->Status === 'Assigned')
+                        {{$order->Status}}
+                    @elseif($order->Status === 'Completed')
+                        {{$order->Status}}
+                    @elseif($order->Status === 'Cancelled')
+                        {{$order->Status}}
+                    @endif
 
-                    <select class="order-status border rounded px-2 py-1 text-sm" 
+                    {{-- <select class="order-status border rounded px-2 py-1 text-sm" 
                             data-order-id="{{ $order->OrderId }}">
                         @foreach($statuses as $status)
                             <option value="{{ $status }}" {{ $order->Status === $status ? 'selected' : '' }}>
                                 {{ $status }}
                             </option>
                         @endforeach
-                    </select>
+                    </select> --}}
                 </td>
 
                 {{-- Date --}}
