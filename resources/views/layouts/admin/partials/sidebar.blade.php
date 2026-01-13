@@ -518,7 +518,7 @@
                         </a> -->
 
                         {{-- for main admin --}}
-                        @if(auth()->user()->Role === 'Admin')
+                        @if(auth()->user()->Role === 4)
                         
                             <a href="{{ route('orders.medicine.index') }}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
@@ -533,7 +533,7 @@
                             </a>
 
                         {{-- for medical store business admin --}}
-                        @elseif(auth()->user()->Role === 'Supplier')
+                        @elseif(auth()->user()->Role === 2)
 
                             <a href="{{ route('orders.medicalstore-medicine.index') }}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
@@ -542,7 +542,7 @@
                             </a>
 
                         {{-- for restaurant store business admin --}}
-                        @elseif(auth()->user()->Role === 'Restaurant')
+                        @elseif(auth()->user()->Role === 3)
                             <a href="{{ route('orders.restaurant-food.index') }}"
                                 class="flex items-center px-2 py-2 text-sm rounded-md
                                     {{ request()->routeIs('orders.restaurant-food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">

@@ -20,7 +20,7 @@
             <h2 class="text-2xl font-bold text-gray-800">#Order Number : {{ $order->OrderNumber }}</h2>
 
             <div class="mb-6 flex items-center gap-2 justify-between">
-                <a href="{{ route('orders.food.index') }}"
+                <a href="{{ route('orders.restaurant-food.index') }}"
                     class="inline-flex items-center gap-2 px-3 py-2 bg-gray-100 rounded hover:bg-gray-200 text-sm">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>

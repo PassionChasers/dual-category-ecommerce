@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Restaurant;
@@ -46,9 +49,6 @@ class OrderController extends Controller
             'ItemType'           => 'Medicine',
             'UnitPriceAtOrder'   => $request->UnitPriceAtOrder,
             'Quantity'           => $request->Quantity,
-            'Status'             => 'Pending',
-            // 'BusinessNotes'      => $request->BusinessNotes,
-            'IsConsultationItem' => false,
         ]);
 
         return back()->with('success', 'Medicine added successfully.');
@@ -88,16 +88,13 @@ class OrderController extends Controller
                 'Quantity' => $quantities[$index] ?? 1,
                 'UnitPriceAtOrder' => $unitPrices[$index] ?? 0,
                 'ItemType' => 'Medicine',
-                'Status' => 'Pending',
-                'IsConsultationItem' => false,
-                'ItemId' => $medicineId,
             ]);
         }
 
         $order = Order::findOrFail($orderId);
 
         // Only update the Status and Total Amount
-        $order->Status = 'Pending';
+        $order->Status = 1;
         $order->TotalAmount = $TotalAmount;
         $order->save();
 
@@ -133,6 +130,7 @@ class OrderController extends Controller
         return view('admin.orders.show', compact('order'));
     }
 
+    //Show Medicine order  details 
     public function showMedicineDetails(Request $request, $orderId)
     {
         $orderTypes = $request->query('type'); // MenuItem | Medicine | MenuItem,Medicine
@@ -160,12 +158,21 @@ class OrderController extends Controller
                     ->orderBy('Name')
                     ->get();
 
-
-        return view('admin.orders.medicine-order.show', compact('order', 'medicines'));
+        if (Auth::user()->Role == 4) {
+            return view('admin.orders.medicine-order.show', compact('order', 'medicines'));
+        }
+        else if(Auth::user()->Role == 2){
+            return view('admin.orders.BusinessViewOrder.medicalstore.show', compact('order', 'medicines'));
+        }
+        else{
+            abort(403, 'Unauthorized access');
+        }
+        
         
     }
 
 
+    //Show food order details
     public function showFoodDetails(Request $request, $orderId)
     {
         $orderTypes = $request->query('type'); // MenuItem | Medicine | MenuItem,Medicine
@@ -188,20 +195,19 @@ class OrderController extends Controller
         }
 
         $order = $query->findOrFail($orderId);
-    
-        return view('admin.orders.food-order.show', compact('order'));
+
+        if (Auth::user()->Role == 4) {
+            // return view('admin.orders.medicine-order.show', compact('order', 'medicines'));
+            return view('admin.orders.food-order.show', compact('order'));
+        }
+        else if(Auth::user()->Role == 3){
+            return view('admin.orders.BusinessViewOrder.restaurant.show', compact('order'));
+        }
+        else{
+            abort(403, 'Unauthorized access');
+        }
     }
 
-
-
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -250,12 +256,10 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
 
         // Only update the Status
-        $order->Status = 'Cancelled';
+        $order->Status = 9;
+        $order->CancelledAt = now();
+        $order->BusinessId = null;
         $order->save();
-
-        // Set BusinessId = NULL in OrderItems where OrderId matches
-        OrderItem::where('OrderId', $order->OrderId)
-        ->update(['BusinessId' => null]);
 
         return redirect()->back()
             ->with('success', 'Order has been cancelled successfully');
@@ -268,12 +272,8 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
 
         // Only update the Status
-        $order->Status = 'Rejected';
+        $order->Status = 5;
         $order->save();
-
-        // Set status = Rejected in OrderItems where OrderId matches
-        OrderItem::where('OrderId', $order->OrderId)
-        ->update(['Status' => 'Rejected']);
 
         return redirect()->back()
             ->with('success', 'Order has been rejected successfully');
@@ -287,12 +287,9 @@ class OrderController extends Controller
         $order = Order::findOrFail($id);
 
         // Only update the Status
-        $order->Status = 'Accepted';
+        $order->Status = 4;
+        $order->AcceptedAt = now();
         $order->save();
-
-        // Set status = Rejected in OrderItems where OrderId matches
-        OrderItem::where('OrderId', $order->OrderId)
-        ->update(['Status' => 'Preparing']);
 
         return redirect()->back()
             ->with('success', 'Order has been accepted successfully');
@@ -318,37 +315,7 @@ class OrderController extends Controller
     //----------------------
     public function allOrders(Request $request)
     {
-        // $query = Order::query();
-        // $query = Order::with(['items' => function ($q) use ($request) {
-        //     if ($request->filled('category')) {
-        //         $q->where('ItemType', $request->category);
-        //     }
-        // }]);
-
-        // $query = Order::with(['items' => function ($q) use ($request) {
-        //     if ($request->filled('category')) {
-        //         if ($request->category === 'Medicine') {
-        //             $q->whereNotNull('MedicineId'); // only medicine items
-        //         } elseif ($request->category === 'Food') {
-        //             $q->whereNotNull('MenuItemId'); // only food items
-        //         }
-        //     }
-        // }]);
-
         $query = Order::with('items.medicine', 'items.food');
-
-
-        // Search name
-        // if ($search = $request->get('search')) {
-
-        //     $search = strtolower(trim($request->search));
-
-        //     $query->where(function ($q) use ($search) {
-        //         $q->whereHas('items', function ($q2) use ($search) {
-        //             $q2->whereRaw('LOWER("ItemName") LIKE ?', ["%{$search}%"]);
-        //         });
-        //     }); 
-        // }
 
         // Search by product name
         if ($search = $request->get('search')) {
@@ -450,6 +417,7 @@ class OrderController extends Controller
     // Food orders
     //----------------------
 
+    //For admin view
     public function foodOrders(Request $request)
     {
         $query = Order::whereHas('items', function ($q) {
@@ -463,10 +431,8 @@ class OrderController extends Controller
         if ($search = $request->get('search')) {
             $search = strtolower(trim($search));
 
-            $query->where(function ($q) use ($search, $request) {
-                $q->whereHas('items.food', function ($q2) use ($search) {
-                    $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
-                });
+            $query->whereHas('items.food', function ($q) use ($search) {
+                $q->where('MenuItems.Name', 'ILIKE', "%{$search}%");
             });
         }
 
@@ -500,31 +466,20 @@ class OrderController extends Controller
     }
 
 
-
-
-
-
+    //For Business view 
     public function RestaurantOrders(Request $request)
     {
         $RestaurantId = auth()->user()->restaurants->pluck('RestaurantId')->toArray();
 
-        $query = Order::whereHas('items', function ($q) use ($RestaurantId) {
-                    $q->whereIn('BusinessId', $RestaurantId);
-                })
-                ->with(['items' => function ($q) use ($RestaurantId) {
-                    $q->whereIn('BusinessId', $RestaurantId)
-                    ->with('food'); // Load food relation if needed
-                }]);
-
+        $query = Order::where('BusinessId', $RestaurantId)
+                ->with(['items.food']); // load items + food if needed
 
         // Search by product name
         if ($search = $request->get('search')) {
             $search = strtolower(trim($search));
 
-            $query->where(function ($q) use ($search, $request) {
-                $q->whereHas('items.food', function ($q2) use ($search) {
-                    $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
-                });
+            $query->whereHas('items.food', function ($q) use ($search) {
+                $q->where('MenuItems.Name', 'ILIKE', "%{$search}%");
             });
         }
 
@@ -554,7 +509,12 @@ class OrderController extends Controller
         ->orderBy('Priority', 'asc')
         ->get();
 
-        return view('admin.orders.BusinessViewOrder.restaurant.index', compact('allOrders', 'itemTypes','allRestaurants'));
+        $allDeliveryMan = User::where('Role', 5)
+        ->where('IsActive', true)  
+        ->orderBy('Name')
+        ->get();
+
+        return view('admin.orders.BusinessViewOrder.restaurant.index', compact('allOrders', 'itemTypes','allRestaurants', 'allDeliveryMan'));
     }
 
 
@@ -564,17 +524,6 @@ class OrderController extends Controller
 
     public function medicineOrders(Request $request)
     {
-        // $query = Order::whereHas('items', function ($q) {
-        //             $q->whereNotNull('MedicineId');
-        //         })->with(['items' => function ($q) {
-        //             $q->whereNotNull('MedicineId')->with('medicine');
-        //         }]);
-
-        // $query = Order::whereHas('items', function ($q) {
-        //             $q->where('ItemType', 'Medicine');
-        //         })->with(['items' => function ($q) {
-        //             $q->where('ItemType', 'Medicine')->with('medicine');
-        //         }]);
 
         //  $query = Order::where('RequiresPrescription', true);
 
@@ -585,11 +534,8 @@ class OrderController extends Controller
          // Search by product name
         if ($search = $request->get('search')) {
             $search = strtolower(trim($search));
-
-            $query->where(function ($q) use ($search, $request) {
-                $q->whereHas('items.medicine', function ($q2) use ($search) {
-                    $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
-                });
+            $query->whereHas('items.medicine', function ($q) use ($search) {
+                $q->where('Medicines.Name', 'ILIKE', "%{$search}%");
             });
         };
 
@@ -634,24 +580,26 @@ class OrderController extends Controller
     // For medicalstores use only
     public function medicalStoreOrders(Request $request)
     {
-        $medicalStoreIds = auth()->user()->medicalstores->pluck('MedicalStoreId')->toArray();
+        $medicalStoreId = auth()->user()->medicalstores->pluck('MedicalStoreId')->toArray();
 
-        $query = Order::whereHas('items', function ($q) use ($medicalStoreIds) {
-                    $q->whereIn('BusinessId', $medicalStoreIds);
-                })
-                ->with(['items' => function ($q) use ($medicalStoreIds) {
-                    $q->whereIn('BusinessId', $medicalStoreIds)
-                    ->with('medicine'); // Load medicine relation if needed
-                }]);
+        // $query = Order::whereHas('items', function ($q) use ($medicalStoreIds) {
+        //             $q->whereIn('BusinessId', $medicalStoreIds);
+        //         })
+        //         ->with(['items' => function ($q) use ($medicalStoreIds) {
+        //             $q->whereIn('BusinessId', $medicalStoreIds)
+        //             ->with('medicine'); // Load medicine relation if needed
+        //         }]);
 
-         // Search by product name
+        $query = Order::where('BusinessId', $medicalStoreId)
+                ->with(['items.medicine']);
+
+
+        // Search by product name
         if ($search = $request->get('search')) {
             $search = strtolower(trim($search));
 
-            $query->where(function ($q) use ($search, $request) {
-                $q->whereHas('items.medicine', function ($q2) use ($search) {
-                    $q2->whereRaw('LOWER(Name) LIKE ?', ["%{$search}%"]);
-                });
+            $query->whereHas('items.medicine', function ($q) use ($search) {
+                $q->where('Medicines.Name', 'ILIKE', "%{$search}%");
             });
         };
 
@@ -688,7 +636,12 @@ class OrderController extends Controller
         ->orderBy('Priority', 'asc')
         ->get();
 
-        return view('admin.orders.BusinessViewOrder.medicalstore.index', compact('allOrders', 'itemTypes','allMedicalStores'));
+        $allDeliveryMan = User::where('Role', 5)
+        ->where('IsActive', true)  
+        ->orderBy('Name')
+        ->get();
+
+        return view('admin.orders.BusinessViewOrder.medicalstore.index', compact('allOrders', 'itemTypes','allMedicalStores', 'allDeliveryMan'));
     }
 
 
@@ -714,7 +667,7 @@ class OrderController extends Controller
             }
 
             // Prevent assigning for Completed / Cancelled orders
-            if (in_array($order->Status, ['Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Assigned'])) {
+            if (in_array($order->AdminStatus, [10, 9, 8, 7, 6, 4, 3])) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Cannot assign store/restaurant to this order because it is Cancelled or Completed.'
@@ -724,14 +677,20 @@ class OrderController extends Controller
             // Determine which assignment to do
             if ($request->filled('medical_store_id')) {
                 // Assign Medical Store
-                OrderItem::where('OrderId', $order->OrderId)
-                    ->update(['BusinessId' => $request->medical_store_id]);
+                Order::where('OrderId', $order->OrderId)
+                    ->update([
+                        'BusinessId' => $request->medical_store_id,
+                        'BusinessType' => 'MedicalStore',
+                        ]);
 
                 $message = 'Medical store assigned successfully';
             } elseif ($request->filled('restaurant_id')) {
                 // Assign Restaurant
-                OrderItem::where('OrderId', $order->OrderId)
-                    ->update(['BusinessId' => $request->restaurant_id]);
+                Order::where('OrderId', $order->OrderId)
+                    ->update([
+                        'BusinessId' => $request->restaurant_id,
+                        'BusinessType' => 'Restaurant',
+                        ]);
 
                 $message = 'Restaurant assigned successfully';
             } else {
@@ -741,7 +700,7 @@ class OrderController extends Controller
                 ], 422);
             }
 
-            $order->Status = 'Assigned';
+            $order->Status = 3;
             $order->save();
 
             return response()->json([
@@ -759,12 +718,20 @@ class OrderController extends Controller
     }
 
 
+
+    public function assignDeliveryMan(Request $request)
+    {
+
+
+    }
+
+
     public function updateStatus(Request $request)
     {
         try {
             $request->validate([
                 'order_id' => 'required|exists:Orders,OrderId',
-                'status'   => 'required|in:Pending,Accepted,Preparing,Packed,Completed,Cancelled',
+                'status'   => 'required|in:1,4,6,7,8,9,10',
             ]);
 
             $order = Order::find($request->order_id);

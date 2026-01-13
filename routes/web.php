@@ -172,6 +172,9 @@ Route::middleware('auth')->group(function () {
 
     //Assign Medical Store to Medicine Order
     Route::post('/orders/assign-store', [OrderController::class, 'assignStore'])->name('orders.assign-store');
+
+    //Assign deliveryman to order
+    Route::post('/orders/assign-deliveryman', [OrderController::class, 'assignDeliveryMan'])->name('orders.assign-deliveryman');
     
     // Update order status (general)
     Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');

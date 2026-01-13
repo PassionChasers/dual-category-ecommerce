@@ -19,27 +19,15 @@ class OrderItem extends Model
     // Timestamps enabled
     public $timestamps = true;
     const CREATED_AT = 'CreatedAt';
-    const UPDATED_AT = 'UpdatedAt';
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'OrderId',
-        'ItemId',
-        'ItemType',
         'MedicineId',
         'MenuItemId',
-        'ItemName',
-        // 'ItemImageUrl',
-        'Quantity',
+        'ItemType',
         'UnitPriceAtOrder',
-        'BusinessId',
-        'BusinessType',
-        'ForwardedAt',
-        'AssignedByAdmin',
-        'Status',
-        'AcceptedAt',
-        'ReadyAt',
-        'CompletedAt',
-        'BusinessNotes',
+        'Quantity',
     ];
 
 
@@ -59,15 +47,15 @@ class OrderItem extends Model
         return $this->belongsTo(Order::class, 'OrderId', 'OrderId'); //Second is foreign key in OrderItem, third is local key in Order
     }
 
-    public function medicalStore()
-    {
-        return $this->belongsTo(MedicalStore::class, 'BusinessId', 'MedicalStoreId'); //Second is foreign key in OrderItem, third is local key in MedicalStore
-    }
+    // public function medicalStore()
+    // {
+    //     return $this->belongsTo(MedicalStore::class, 'BusinessId', 'MedicalStoreId'); //Second is foreign key in OrderItem, third is local key in MedicalStore
+    // }
 
-    public function restaurant()
-    {
-        return $this->belongsTo(Restaurant::class, 'BusinessId', 'RestaurantId'); //Second is foreign key in OrderItem, third is local key in Restaurants
-    }
+    // public function restaurant()
+    // {
+    //     return $this->belongsTo(Restaurant::class, 'BusinessId', 'RestaurantId'); //Second is foreign key in OrderItem, third is local key in Restaurants
+    // }
 
     public function medicine() {
         return $this->belongsTo(Medicine::class, 'MedicineId', 'MedicineId');

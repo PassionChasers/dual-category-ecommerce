@@ -56,7 +56,7 @@
     </div>
 
     {{-- Add Medicines Button --}}
-    @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->Status !== 'Completed' && $order->Status === 'PendingReview')
+    @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->Status != 10 && $order->Status == 2)
     <div class="mb-4">
         <button type="button" onclick="toggleAddMedicineForm()"
             class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
@@ -66,7 +66,7 @@
     @endif
 
     {{-- Add Medicines Form --}}
-    @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->Status !== 'Completed' && $order->Status === 'PendingReview')
+    @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->Status != 10 && $order->Status == 2)
     <div id="addMedicineForm" class="hidden mt-6 bg-white p-6 rounded-lg border shadow">
         <h3 class="text-lg font-semibold mb-4">Add Medicines to Order</h3>
 
@@ -100,7 +100,7 @@
             </div>
 
             <div class="flex gap-2 mb-4">
-                <button type="button" id="addMedicineRow" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                <button type="button" id="addMedicineRow" class="px-2 py-1 bg-green-200 text-white rounded hover:bg-green-400">
                     + Add Another Medicine
                 </button>
             </div>
@@ -137,27 +137,40 @@
                     </tr>
                 </thead>
                 <tbody>
+
+                     @php 
+                        $TotalAmount = 0;
+                    @endphp
+
                     @foreach($order->items as $key => $item)
-                    <tr class="text-center border-b">
-                        <td>{{ $key + 1 }}</td>
-                        <td class="px-4 py-2">
-                            @if($item->medicine)
-                                <img src="https://pcsdecom.azurewebsites.net{{ $item->medicine->ImageUrl }}" 
-                                     alt="{{ $item->medicine->Name }}" class="w-12 h-12 object-cover rounded mx-auto">
-                            @endif
-                        </td>
-                        <td class="px-4 py-2 font-semibold">{{ $item->medicine->Name ?? 'N/A' }}</td>
-                        <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>
-                        <td class="px-4 py-2 font-semibold">{{ $item->ItemType ?? 'N/A' }}</td>
-                        <td class="px-4 py-2 font-semibold">{{ $item->medicine->PrescriptionRequired ? 'Yes' : 'No' }}</td>
-                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder, 2) }}</td>
-                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder * (float)$item->Quantity, 2) }}</td>
-                    </tr>
+
+                        @php
+                            $TotalAmount += (float)$item->UnitPriceAtOrder * (float)$item->Quantity;
+                        @endphp
+
+                        <tr class="text-center border-b">
+                            <td>{{ $key + 1 }}</td>
+                            <td class="px-4 py-2">
+                                @if($item->medicine)
+                                    <img src="https://pcsdecom.azurewebsites.net{{ $item->medicine->ImageUrl }}" 
+                                        alt="{{ $item->medicine->Name }}" class="w-12 h-12 object-cover rounded mx-auto">
+                                @endif
+                            </td>
+                            <td class="px-4 py-2 font-semibold">{{ $item->medicine->Name ?? 'N/A' }}</td>
+                            <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>
+                            <td class="px-4 py-2 font-semibold">{{ $item->ItemType ?? 'N/A' }}</td>
+                            <td class="px-4 py-2 font-semibold">{{ $item->medicine->PrescriptionRequired ? 'Yes' : 'No' }}</td>
+                            <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder, 2) }}</td>
+                            <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder * (float)$item->Quantity, 2) }}</td>
+                        </tr>
                     @endforeach
+
                     <tr class="text-center">
                         <td colspan="7" class="px-4 py-2 font-bold">Total Amount:</td>
-                        <td class="px-4 py-2 font-bold">Rs.{{ number_format($order->TotalAmount, 2) ?? 'N/A' }}</td>
+                        <td class="px-4 py-2 font-bold">Rs.{{ number_format($TotalAmount, 2) }}</td>
+                        {{-- <td class="px-4 py-2 font-bold">Rs.{{ number_format($order->TotalAmount, 2) ?? 'N/A' }}</td> --}}
                     </tr>
+
                 </tbody>
             </table>
         </div>

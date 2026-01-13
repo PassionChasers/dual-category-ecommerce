@@ -50,6 +50,7 @@
             <h3 class="text-lg font-semibold mb-4">Ordered Items :</h3>
         </div>
         <div class="overflow-x-auto">
+
             <table class="min-w-full bg-white border border-gray-300">
                 <thead>
                     <tr class="bg-gray-200 text-gray-700">
@@ -63,25 +64,38 @@
                         <th class="px-4 py-2 border-b">Tota(qty*unit)</th>
                     </tr>
                 </thead>
+
                 <tbody>
+                    @php 
+                        $TotalAmount = 0;
+                    @endphp
+
                     @foreach($order->items as $key => $item)
-                    <tr class="text-center border-b">
-                        <td>{{ $key + 1 }}</td>
-                        <td class="px-4 py-2">
-                            {{-- <img src="{{ asset('storage/products/' . $item->ItemImageUrl) }}" alt="{{ $item->ItemName }}" class="thumb-lg mx-auto" /> --}}
-                            <img src="https://pcsdecom.azurewebsites.net{{$item->food->ImageUrl}}" alt="{{ $item->ItemName }}" class="w-12 h-12 object-cover rounded mx-auto">
-                        </td>
-                        <td class="px-4 py-2 font-semibold">{{ $item->food->Name ?? 'N/A' }}</td>
-                        <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>
-                        <td class="px-4 py-2 font-semibold">{{ $item->ItemType ?? 'N/A' }}</td>
-                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder, 2) }}</td>
-                        <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder * (float)$item->Quantity, 2) }}</td>
-                    </tr>
+
+                        @php
+                            $TotalAmount += (float)$item->UnitPriceAtOrder * (float)$item->Quantity;
+                        @endphp
+
+                        <tr class="text-center border-b">
+                            <td>{{ $key + 1 }}</td>
+                            <td class="px-4 py-2">
+                                {{-- <img src="{{ asset('storage/products/' . $item->ItemImageUrl) }}" alt="{{ $item->ItemName }}" class="thumb-lg mx-auto" /> --}}
+                                <img src="https://pcsdecom.azurewebsites.net{{$item->food->ImageUrl}}" alt="{{ $item->ItemName }}" class="w-12 h-12 object-cover rounded mx-auto">
+                            </td>
+                            <td class="px-4 py-2 font-semibold">{{ $item->food->Name ?? 'N/A' }}</td>
+                            <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>
+                            <td class="px-4 py-2 font-semibold">{{ $item->ItemType ?? 'N/A' }}</td>
+                            <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder, 2) }}</td>
+                            <td class="px-4 py-2 font-semibold">Rs.{{ number_format((float)$item->UnitPriceAtOrder * (float)$item->Quantity, 2) }}</td>
+                        </tr>
                     @endforeach
+
                     <tr class="text-center">
                         <td colspan="6" class="px-4 py-2 font-bold">Total Amount:</td>
-                        <td class="px-4 py-2 font-bold">Rs.{{ number_format($order->TotalAmount, 2) ?? 'N/A' }}</td>
+                        <td class="px-4 py-2 font-bold">Rs.{{ number_format($TotalAmount, 2) }}</td>
+                        {{-- <td class="px-4 py-2 font-bold">Rs.{{ number_format($order->TotalAmount, 2) ?? 'N/A' }}</td> --}}
                     </tr>
+
                 </tbody>
             </table>
         </div>

@@ -19,22 +19,42 @@ class Order extends Model
     public $timestamps = true;
 
     const CREATED_AT = 'CreatedAt';
-    const UPDATED_AT = 'UpdatedAt';
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'CustomerId',
         'OrderNumber',
         'Status',
         'TotalAmount',
+        'BusinessId',
+        'BusinessType',
         'RequiresPrescription',
         'PrescriptionImageUrl',
+        'OrderDescription',
+        'AcceptedAt',
+        'PreparingAt',
+        'PackedAt',
+        'ShippingAt',
+        'BusinessNotes',
+        'CancellationReason',
         'DeliveryAddress',
-        'SpecialInstructions',
         'Latitude',
         'Longitude',
+        'SpecialInstructions',
+        'CreatedAt',
         'CompletedAt',
         'CancelledAt',
-        'ConfirmedAt',
+        'DeliveryManId',
+    ];
+
+    protected $casts = [
+        'CreatedAt'    => 'datetime',
+        'CancelledAt'  => 'datetime',
+        'CompletedAt'  => 'datetime',
+        'AcceptedAt'   => 'datetime',
+        'PreparingAt'  => 'datetime',
+        'PackedAt'     => 'datetime',
+        'ShippingAt'   => 'datetime',
     ];
 
     protected static function boot()
@@ -49,6 +69,9 @@ class Order extends Model
     }
 
 
+    public function deliveryMan() {
+        return $this->belongsTo(DeliveryMan::class, 'DeliveryManId', 'DeliveryManId');
+    }
 
     // Relationship with Customer
     public function customer() {

@@ -24,12 +24,12 @@
         @forelse($allOrders as $order)
             <tr>
                 {{-- Serial --}}
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center">
                     {{ ($allOrders->currentPage() - 1) * $allOrders->perPage() + $loop->iteration }}
                 </td>
 
                 {{-- Products --}}
-                <td class="px-4 py-2 font-semibold">
+                <td class="px-4 py-2 font-semibold text-center">
                     <div
                         class="max-h-20 overflow-y-auto space-y-1
                             [&::-webkit-scrollbar]:hidden
@@ -50,7 +50,7 @@
                 </td>
 
                 {{-- Quantity --}}
-                <td class="px-4 py-2 font-semibold">
+                <td class="px-4 py-2 font-semibold text-center">
                     <div
                         class="max-h-20 overflow-y-auto space-y-1
                             [&::-webkit-scrollbar]:hidden
@@ -82,7 +82,7 @@
                 </td> --}}
 
                 {{-- Total Amount --}}
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center">
                     {{ $order->TotalAmount ?? 'N/A' }}
                 </td>
 
@@ -102,15 +102,14 @@
                 </td> --}}
 
                 {{-- Assign Stores --}}
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center">
                     <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"
-                        @if($order->Status === 'Completed' || $order->Status === 'Accepted' || $order->Status === 'Cancelled' || $order->Status === 'Assigned')
+                        @if($order->Status == 10 || $order->Status == 9 || $order->Status == 8 || $order->Status == 7 || $order->Status == 6 || $order->Status == 4 || $order->Status == 3 || $order->Status == 2 )
                             disabled
                         @endif>
                         <option value="">Assign Store</option>
                         @foreach($allRestaurants as $restaurant)
-                            <option value="{{ $restaurant->RestaurantId }}"
-                                {{ $order->items->first() && $order->items->first()->BusinessId == $restaurant->RestaurantId ? 'selected' : '' }}>
+                            <option value="{{ $restaurant->RestaurantId }}" {{ $order->BusinessId == $restaurant->RestaurantId ? 'selected' : '' }}>
                                 {{ $restaurant->Name }}
                             </option>
                         @endforeach
@@ -118,29 +117,38 @@
                 </td>
 
                 {{-- Status --}}
-                <td class="px-4 py-2">
-                    {{-- @php
-                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
-                    @endphp
-
-                    <select class="order-status border rounded px-2 py-1 text-sm" 
-                            data-order-id="{{ $order->OrderId }}">
-                        @foreach($statuses as $status)
-                            <option value="{{ $status }}" {{ $order->Status === $status ? 'selected' : '' }}>
-                                {{ $status }}
-                            </option>
-                        @endforeach
-                    </select> --}}
-                    {{$order->Status}}
+                <td class="px-4 py-2 text-center">
+                    
+                    @if($order->Status == 1)
+                        Pending
+                    @elseif($order->Status == 2)
+                        Pending Review
+                    @elseif($order->Status == 3)
+                        Assigned
+                    @elseif($order->Status == 4)
+                        Accepted
+                    @elseif($order->Status == 5)
+                        Rejected
+                    @elseif($order->Status == 6)
+                        Preparing
+                    @elseif($order->Status == 7)
+                        Packed
+                    @elseif($order->Status == 8)
+                        Shipping
+                    @elseif($order->Status == 9)
+                        Cancelled
+                    @elseif($order->Status == 10)
+                        Completed
+                    @endif
                 </td>
 
                 {{-- Date --}}
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center">
                     {{ $order->CreatedAt->format('Y-m-d') }}
                 </td>
 
                 {{-- Actions --}}
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center">
                     <div class="flex items-center justify-center gap-3 h-full">
 
                         {{-- VIEW --}}
@@ -156,11 +164,6 @@
                         class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded">
                             {{-- <i class="fas fa-eye"></i> --}}view
                         </a>
-
-                        {{-- EDIT --}}
-                        {{-- <button id="editBtn"
-                        onclick='openEditModal(@json($order))'
-                        class="text-indigo-600 hover:text-indigo-800 edit-btn"><i class="fas fa-edit"></i></button> --}}
 
                         {{-- Cancel --}}
                         <form method="POST"
@@ -203,38 +206,38 @@
     document.addEventListener('DOMContentLoaded', function () {
         
         // Delete confirmation
-        document.querySelectorAll('.delete-form').forEach(form => {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
+        // document.querySelectorAll('.delete-form').forEach(form => {
+        //     form.addEventListener('submit', function (e) {
+        //         e.preventDefault();
 
-                const status = form.dataset.status;
-                const blockedStatuses = ['Accepted', 'Preparing', 'Packed', 'Completed'];
+        //         const status = form.dataset.status;
+        //         const blockedStatuses = ['Accepted', 'Preparing', 'Packed', 'Completed'];
 
-                if (blockedStatuses.includes(status)) {
-                    Swal.fire({
-                        title: 'Action Not Allowed!',
-                        text: 'This order cannot be deleted in its current status.',
-                        icon: 'warning',
-                        confirmButtonColor: '#6c757d'
-                    });
-                    return;
-                }
+        //         if (blockedStatuses.includes(status)) {
+        //             Swal.fire({
+        //                 title: 'Action Not Allowed!',
+        //                 text: 'This order cannot be deleted in its current status.',
+        //                 icon: 'warning',
+        //                 confirmButtonColor: '#6c757d'
+        //             });
+        //             return;
+        //         }
 
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'This action cannot be undone!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e3342f',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            });
-        });
+        //         Swal.fire({
+        //             title: 'Are you sure?',
+        //             text: 'This action cannot be undone!',
+        //             icon: 'warning',
+        //             showCancelButton: true,
+        //             confirmButtonColor: '#e3342f',
+        //             cancelButtonColor: '#6c757d',
+        //             confirmButtonText: 'Yes, delete it!'
+        //         }).then((result) => {
+        //             if (result.isConfirmed) {
+        //                 form.submit();
+        //             }
+        //         });
+        //     });
+        // });
         
         // Assign Store
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -290,47 +293,47 @@
 
 
         // Update Order Status
-        document.querySelectorAll('.order-status').forEach(select => {
-            select.addEventListener('change', function () {
-                const orderId = this.dataset.orderId;
-                const status = this.value;
+        // document.querySelectorAll('.order-status').forEach(select => {
+        //     select.addEventListener('change', function () {
+        //         const orderId = this.dataset.orderId;
+        //         const status = this.value;
 
-                fetch("{{ route('orders.update-status') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": csrfToken
-                    },
-                    body: JSON.stringify({
-                        order_id: orderId,
-                        status: status
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'success',
-                            title: data.message,
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: data.message || 'Failed to update status'
-                        });
-                    }
-                })
-                .catch(() => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Something went wrong'
-                    });
-                });
-            });
-        });
+        //         fetch("{{ route('orders.update-status') }}", {
+        //             method: "POST",
+        //             headers: {
+        //                 "Content-Type": "application/json",
+        //                 "X-CSRF-TOKEN": csrfToken
+        //             },
+        //             body: JSON.stringify({
+        //                 order_id: orderId,
+        //                 status: status
+        //             })
+        //         })
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             if (data.success) {
+        //                 Swal.fire({
+        //                     toast: true,
+        //                     position: 'top-end',
+        //                     icon: 'success',
+        //                     title: data.message,
+        //                     showConfirmButton: false,
+        //                     timer: 1500
+        //                 });
+        //             } else {
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: data.message || 'Failed to update status'
+        //                 });
+        //             }
+        //         })
+        //         .catch(() => {
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Something went wrong'
+        //             });
+        //         });
+        //     });
+        // });
     });
 </script>

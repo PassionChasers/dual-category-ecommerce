@@ -13,7 +13,7 @@
             <th class="px-4 py-2">Delivery Address</th>
             <th class="px-4 py-2">Customer Name</th>
             {{-- <th class="px-4 py-2">Contact No.</th> --}}
-            {{-- <th class="px-4 py-2">Assign Store</th> --}}
+            <th class="px-4 py-2">Assign Delivery Man</th>
             <th class="px-4 py-2">Status</th>
             <th class="px-4 py-2">Date</th>
             <th class="px-4 py-2">Actions</th>
@@ -101,69 +101,82 @@
                     {{ $order->customer->user->Phone ?? 'N/A' }}
                 </td> --}}
 
-                {{-- Assign Stores --}}
-                {{-- <td class="px-4 py-2">
-                    <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
-                        <option value="">Assign Store</option>
-                        @foreach($allRestaurants as $restaurant)
-                            <option value="{{ $restaurant->RestaurantId }}"
-                                {{ $order->items->first() && $order->items->first()->BusinessId == $restaurant->RestaurantId ? 'selected' : '' }}>
-                                {{ $restaurant->Name }}
+                {{-- Assign delivery man --}}
+                <td class="px-4 py-2">
+                    <select class="assign-deliveryman border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"
+                        @if($order->Status != 7)
+                            disabled
+                        @endif
+                    >
+                        <option value="">Assign Delivery Man</option>
+                        @foreach($allDeliveryMan as $deliveryMan)
+                            <option value="{{ $deliveryMan->deliveryMan->DeliveryManId }}"
+                                {{ $order->DeliveryManId == $deliveryMan->deliveryMan->DeliveryManId ? 'selected' : '' }}
+                            >
+                                {{ $deliveryMan->Name }}
                             </option>
                         @endforeach
                     </select>
-                </td> --}}
+                </td>
 
                 {{-- Status --}}
                 <td class="px-4 py-2">
+                    
                     @php
-                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned'];
+                        $statuses = [10, 9, 8, 7, 6, 5, 4, 3, 1];
                     @endphp
-                    @if($order->Status === 'Accepted')
+                    @if($order->Status == 4)
                         <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
-                            <option value="Accepted" {{ $order->Status === 'Accepted' ? 'selected' : '' }} disabled>
+                            <option value="4" {{ $order->Status == 4 ? 'selected' : '' }} disabled>
                                 Accepted
                             </option>
-                            <option value="Preparing" {{ $order->Status === 'Preparing' ? 'selected' : '' }}>
+                            <option value="6" {{ $order->Status == 6 ? 'selected' : '' }}>
                                 Preparing
                             </option>
-                            <option value="Packed" {{ $order->Status === 'Packed' ? 'selected' : '' }}>
+                            <option value="7" {{ $order->Status == 7 ? 'selected' : '' }}>
                                 Packed
                             </option>
+                            <option value="8" {{ $order->Status == 8 ? 'selected' : '' }}>
+                                Shipping
+                            </option>
                         </select>
-                    @elseif($order->Status === 'Preparing')
+                    @elseif($order->Status == 6)
                         <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
-                            <option value="Preparing" {{ $order->Status === 'Preparing' ? 'selected' : '' }} disabled>
+                            <option value="6" {{ $order->Status == 6 ? 'selected' : '' }} disabled>
                                 Preparing
                             </option>
-                            <option value="Packed" {{ $order->Status === 'Packed' ? 'selected' : '' }}>
+                            <option value="7" {{ $order->Status == 7 ? 'selected' : '' }}>
                                 Packed
                             </option>
+                            <option value="8" {{ $order->Status == 8 ? 'selected' : '' }}>
+                                Shipping
+                            </option>
                         </select>
-                    @elseif($order->Status === 'Packed')
+                    @elseif($order->Status == 7)
                         <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
-                            <option value="Packed" {{ $order->Status === 'Packed' ? 'selected' : '' }} disabled>
+                            <option value="7" {{ $order->Status == 7 ? 'selected' : '' }} disabled>
                                 Packed
                             </option>
+                            <option value="8" {{ $order->Status == 8 ? 'selected' : '' }}>
+                                Shipping
+                            </option>
                         </select>
-                    @elseif($order->Status === 'Rejected')
-                        {{$order->Status}}
-                    @elseif($order->Status === 'Assigned')
-                        {{$order->Status}}
-                    @elseif($order->Status === 'Completed')
-                        {{$order->Status}}
-                    @elseif($order->Status === 'Cancelled')
-                        {{$order->Status}}
+                    @elseif($order->Status == 8)
+                        <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
+                            <option value="8" {{ $order->Status == 8 ? 'selected' : '' }} disabled>
+                                Shipping
+                            </option>
+                        </select>
+                    @elseif($order->Status == 5)
+                        <p class="bg-red-200 py-2 text-center rounded">Rejected</p>
+                    @elseif($order->Status == 3)
+                        <p class="bg-green-200 py-2 text-center rounded">Assigned</p>
+                    @elseif($order->Status == 10)
+                        Completed
+                    @elseif($order->Status == 9)
+                        Cancelled
                     @endif
-
-                    {{-- <select class="order-status border rounded px-2 py-1 text-sm" 
-                            data-order-id="{{ $order->OrderId }}">
-                        @foreach($statuses as $status)
-                            <option value="{{ $status }}" {{ $order->Status === $status ? 'selected' : '' }}>
-                                {{ $status }}
-                            </option>
-                        @endforeach
-                    </select> --}}
+                    
                 </td>
 
                 {{-- Date --}}
@@ -194,16 +207,16 @@
                         onclick='openEditModal(@json($order))'
                         class="text-indigo-600 hover:text-indigo-800 edit-btn"><i class="fas fa-edit"></i></button> --}}
 
-                        {{-- Cancel --}}
+                        {{-- Reject --}}
                         <form method="POST"
-                            action="{{ route('orders.cancel', $order->OrderId) }}"
+                            action="{{ route('orders.reject', $order->OrderId) }}"
                             class="cancel-form">
                             @csrf
                             @method('PATCH')
                             <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                             <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
                             <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded "
-                                @if(in_array($order->Status, ['Accepted', 'Rejected', 'Packed', 'Completed', 'Cancelled', 'Preparing'])) disabled @endif
+                                @if(in_array($order->Status, [10, 9, 8, 7, 6, 5, 4])) disabled @endif
                             >
                                 {{-- <i class="fas fa-times"></i> --}}Reject
                             </button>
@@ -219,7 +232,7 @@
                             <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                             <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
                             <button type="submit" class="text-green-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded "
-                                @if(in_array($order->Status, ['Accepted', 'Rejected', 'Packed', 'Completed', 'Cancelled', 'Preparing'])) disabled @endif
+                                @if(in_array($order->Status, [10, 9, 8, 7, 6, 5, 4])) disabled @endif
                             >
                                 {{-- <i class="fas fa-times"></i> --}}Accept
                             </button>
@@ -251,41 +264,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        
-        // Delete confirmation
-        document.querySelectorAll('.delete-form').forEach(form => {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                const status = form.dataset.status;
-                const blockedStatuses = ['Accepted', 'Preparing', 'Packed', 'Completed'];
-
-                if (blockedStatuses.includes(status)) {
-                    Swal.fire({
-                        title: 'Action Not Allowed!',
-                        text: 'This order cannot be deleted in its current status.',
-                        icon: 'warning',
-                        confirmButtonColor: '#6c757d'
-                    });
-                    return;
-                }
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'This action cannot be undone!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e3342f',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, delete it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();
-                    }
-                });
-            });
-        });
-        
+              
         // Assign Store
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
