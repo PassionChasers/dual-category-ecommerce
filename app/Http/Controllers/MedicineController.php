@@ -157,6 +157,8 @@ class MedicineController extends Controller
 
         return response()->json(['success' => true, 'IsActive' => $medicine->IsActive]);
     }
+
+    
     public function show($id)
     {
         $medicine = Medicine::with('category')->findOrFail($id);

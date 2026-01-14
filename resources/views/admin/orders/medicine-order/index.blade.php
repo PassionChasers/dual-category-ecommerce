@@ -134,12 +134,12 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    // let interval = null;
-    // let inactivityTimeout = null;
-    // const INACTIVITY_DELAY = 20000; // 20 seconds inactivity
+    let interval = null;
+    let inactivityTimeout = null;
+    const INACTIVITY_DELAY = 20000; // 20 seconds inactivity
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
-    // function bindOrderEvents() {
+    function bindOrderEvents() {
         // Cancel forms
         document.querySelectorAll('.cancel-form').forEach(form => {
             form.addEventListener('submit', function (e) {
@@ -242,67 +242,70 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // Pause auto-refresh when interacting
-        // const interactiveElements = document.querySelectorAll('.assign-store, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
-        // interactiveElements.forEach(el => {
-        //     el.addEventListener('focus', pauseRefreshOnActivity);
-        //     el.addEventListener('input', pauseRefreshOnActivity);
-        //     el.addEventListener('change', pauseRefreshOnActivity);
-        //     el.addEventListener('click', pauseRefreshOnActivity);
-        //     el.addEventListener('blur', startInactivityTimer);
-        // });
-    // }
+        const interactiveElements = document.querySelectorAll('.assign-store, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
+        interactiveElements.forEach(el => {
+            el.addEventListener('focus', pauseRefreshOnActivity);
+            el.addEventListener('input', pauseRefreshOnActivity);
+            el.addEventListener('change', pauseRefreshOnActivity);
+            el.addEventListener('click', pauseRefreshOnActivity);
+            el.addEventListener('blur', startInactivityTimer);
+        });
+    }
 
-    // function loadOrders() {
-    //     const params = new URLSearchParams(window.location.search);
+    function loadOrders() {
+        const params = new URLSearchParams(window.location.search);
 
-    //     fetch("{{ route('orders.medicine.index') }}?" + params.toString(), {
-    //         headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    //     })
-    //     .then(res => res.text())
-    //     .then(html => {
-    //         const parser = new DOMParser();
-    //         const doc = parser.parseFromString(html, 'text/html');
-    //         const newTbody = doc.querySelector('#orderTableBody');
-    //         if (newTbody) {
-    //             document.querySelector('#orderTableBody').innerHTML = newTbody.innerHTML;
-    //             bindOrderEvents(); // rebind events
-    //         }
-    //     })
-    //     .catch(err => console.error('Table refresh failed:', err));
-    // }
+        fetch("{{ route('orders.medicine.index') }}?" + params.toString(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.text())
+        .then(html => {
+            // const parser = new DOMParser();
+            // const doc = parser.parseFromString(html, 'text/html');
+            // const newTbody = doc.querySelector('#orderTableBody');
+            // if (newTbody) {
+            //     document.querySelector('#orderTableBody').innerHTML = newTbody.innerHTML;
+            //     bindOrderEvents(); // rebind events
+            // }
 
-    // function startAutoRefresh() {
-    //     if (!interval) interval = setInterval(loadOrders, 10000);
-    // }
+            document.getElementById('orderTableBody').innerHTML = html;
+            bindOrderEvents(); // re-bind events for new DOM elements
+        })
+        // .catch(err => console.error('Table refresh failed:', err));
+    }
 
-    // function stopAutoRefresh() {
-    //     if (interval) { clearInterval(interval); interval = null; }
-    // }
+    function startAutoRefresh() {
+        if (!interval) interval = setInterval(loadOrders, 20000);
+    }
 
-    // function pauseRefreshOnActivity() {
-    //     stopAutoRefresh();
-    //     clearTimeout(inactivityTimeout);
-    //     inactivityTimeout = setTimeout(() => {
-    //         loadOrders();
-    //         startAutoRefresh();
-    //     }, INACTIVITY_DELAY);
-    // }
+    function stopAutoRefresh() {
+        if (interval) { clearInterval(interval); interval = null; }
+    }
 
-    // function startInactivityTimer() {
-    //     clearTimeout(inactivityTimeout);
-    //     inactivityTimeout = setTimeout(() => {
-    //         loadOrders();
-    //         startAutoRefresh();
-    //     }, INACTIVITY_DELAY);
-    // }
+    function pauseRefreshOnActivity() {
+        stopAutoRefresh();
+        clearTimeout(inactivityTimeout);
+        inactivityTimeout = setTimeout(() => {
+            loadOrders();
+            startAutoRefresh();
+        }, INACTIVITY_DELAY);
+    }
 
-    // document.addEventListener('visibilitychange', () => {
-    //     if (document.hidden) stopAutoRefresh();
-    //     else startInactivityTimer();
-    // });
+    function startInactivityTimer() {
+        clearTimeout(inactivityTimeout);
+        inactivityTimeout = setTimeout(() => {
+            loadOrders();
+            startAutoRefresh();
+        }, INACTIVITY_DELAY);
+    }
 
-    // bindOrderEvents();
-    // startAutoRefresh();
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stopAutoRefresh();
+        else startInactivityTimer();
+    });
+
+    bindOrderEvents();
+    startAutoRefresh();
 
 });
 </script>

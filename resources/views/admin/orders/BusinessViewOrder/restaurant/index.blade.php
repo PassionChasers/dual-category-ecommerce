@@ -217,7 +217,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function startAutoRefresh() {
-        if (!interval) interval = setInterval(loadOrders, 10000);
+        if (!interval) interval = setInterval(loadOrders, 20000);
     }
 
     function stopAutoRefresh() {
