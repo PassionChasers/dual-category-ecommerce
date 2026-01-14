@@ -103,7 +103,7 @@
 
                 {{-- Assign delivery man --}}
                 <td class="px-4 py-2">
-                    <select class="assign-deliveryman border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"
+                    {{-- <select class="assign-deliveryman border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"
                         @if($order->Status != 7)
                             disabled
                         @endif
@@ -116,18 +116,54 @@
                                 {{ $deliveryMan->Name }}
                             </option>
                         @endforeach
-                    </select>
+                    </select> --}}
+
+                    {{-- <form action="{{ route('orders.assign-deliveryman') }}" method="POST" class="deliveryman-form">
+                        @csrf
+                        <input type="hidden" name="order_id" value="{{ $order->OrderId }}">
+                        
+                        <select name="delivery_man_id" class="assign-deliveryman border rounded px-2 py-1 text-sm"
+                            @if($order->Status != 7) disabled @endif
+                        >
+                            <option value="">Assign Delivery Man</option>
+                            @foreach($allDeliveryMan as $deliveryMan)
+                                <option value="{{ $deliveryMan->DeliveryManId }}"
+                                    {{ $order->DeliveryManId == $deliveryMan->DeliveryManId ? 'selected' : '' }}
+                                >
+                                    {{ $deliveryMan->user->Name ?? 'N/A' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form> --}}
+
+                    <form method="POST" action="{{ route('orders.assign-deliveryman') }}" class="assign-delivery-form">
+                        @csrf
+                        <input type="hidden" name="order_id" value="{{ $order->OrderId }}">
+                        <select name="delivery_man_id" class="assign-deliveryman border rounded px-2 py-1 text-sm" 
+                            @if($order->Status != 7) disabled @endif
+                        >
+                            <option value="">Assign Delivery Man</option>
+                            @foreach($allDeliveryMan as $deliveryMan)
+                                <option value="{{ $deliveryMan->DeliveryManId }}"
+                                    {{ $order->DeliveryManId == $deliveryMan->DeliveryManId ? 'selected' : '' }}
+                                >
+                                    {{ $deliveryMan->user->Name ?? 'N/A' }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+
                 </td>
 
                 {{-- Status --}}
                 <td class="px-4 py-2">
                     
-                    @php
+                    {{-- @php
                         $statuses = [10, 9, 8, 7, 6, 5, 4, 3, 1];
-                    @endphp
+                    @endphp --}}
                     @if($order->Status == 4)
                         <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
-                            <option value="4" {{ $order->Status == 4 ? 'selected' : '' }} disabled>
+                            <option value="4" {{ $order->Status == 4 ? 'selected' : '' }} hidden>
                                 Accepted
                             </option>
                             <option value="6" {{ $order->Status == 6 ? 'selected' : '' }}>
@@ -142,7 +178,7 @@
                         </select>
                     @elseif($order->Status == 6)
                         <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
-                            <option value="6" {{ $order->Status == 6 ? 'selected' : '' }} disabled>
+                            <option value="6" {{ $order->Status == 6 ? 'selected' : '' }} hidden>
                                 Preparing
                             </option>
                             <option value="7" {{ $order->Status == 7 ? 'selected' : '' }}>
@@ -154,7 +190,7 @@
                         </select>
                     @elseif($order->Status == 7)
                         <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
-                            <option value="7" {{ $order->Status == 7 ? 'selected' : '' }} disabled>
+                            <option value="7" {{ $order->Status == 7 ? 'selected' : '' }} hidden>
                                 Packed
                             </option>
                             <option value="8" {{ $order->Status == 8 ? 'selected' : '' }}>
@@ -163,7 +199,7 @@
                         </select>
                     @elseif($order->Status == 8)
                         <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
-                            <option value="8" {{ $order->Status == 8 ? 'selected' : '' }} disabled>
+                            <option value="8" {{ $order->Status == 8 ? 'selected' : '' }} hidden>
                                 Shipping
                             </option>
                         </select>
@@ -201,11 +237,6 @@
                         class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-yellow-400 rounded">
                             {{-- <i class="fas fa-eye"></i> --}}view
                         </a>
-
-                        {{-- EDIT --}}
-                        {{-- <button id="editBtn"
-                        onclick='openEditModal(@json($order))'
-                        class="text-indigo-600 hover:text-indigo-800 edit-btn"><i class="fas fa-edit"></i></button> --}}
 
                         {{-- Reject --}}
                         <form method="POST"
@@ -264,62 +295,54 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-              
-        // Assign Store
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        
+        //For Delivery Man
+    //    document.querySelectorAll('.assign-deliveryman').forEach(select => {
+    //         select.addEventListener('change', function () {
+    //             const form = this.closest('form');
+    //             const deliveryManName = this.options[this.selectedIndex].text;
 
-        document.querySelectorAll('.assign-store').forEach(select => {
-            select.addEventListener('change', function () {
+    //             if (this.value === "") return; // Skip if empty
 
-                const restaurantId = this.value;
-                const orderId = this.dataset.orderId;
+    //             const confirmed = confirm(`Are you sure you want to assign "${deliveryManName}" as the delivery man?`);
 
-                if (!restaurantId || !orderId) return;
+    //             if (confirmed) {
+    //                 form.submit();
+    //             } else {
+    //                 this.value = ""; // reset selection if cancelled
+    //             }
+    //         });
+    //     });
 
-                fetch("{{ route('orders.assign-store') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": csrfToken
-                    },
-                    body: JSON.stringify({
-                        order_id: orderId,
-                        restaurant_id: restaurantId
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data); // Debug: see what server returns
-                    if (data.success) {
-                        Swal.fire({
-                            toast: true,
-                            icon: 'success',
-                            title: data.message,
-                            timer: 1500,
-                            position: 'top-end',
-                            showConfirmButton: false
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: data.message || 'Failed to assign store'
-                        });
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
+            document.querySelectorAll('.assign-deliveryman').forEach(select => {
+                select.addEventListener('change', function () {
+                    const form = this.closest('.assign-delivery-form');
+                    const selectedName = this.options[this.selectedIndex].text;
+
+                    if (!this.value) return;
+
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Something went wrong'
+                        title: 'Assign Delivery Man?',
+                        text: `Are you sure you want to assign "${selectedName}" to this order?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, assign!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit(); // Submit the form
+                        } else {
+                            this.value = ''; // Reset selection if canceled
+                        }
                     });
                 });
-
             });
-        });
 
 
         // Update Order Status
-        // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
         document.querySelectorAll('.order-status').forEach(select => {
             select.addEventListener('change', function () {
                 const orderId = this.dataset.orderId;

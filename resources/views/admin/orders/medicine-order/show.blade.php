@@ -44,6 +44,12 @@
             <li>Contact : {{ $order->customer->user->Phone ?? 'N/A' }}</li>
             <li>Delivery Address : {{ $order->DeliveryAddress ?? 'N/A' }}</li>
 
+            @if($order->OrderDescription)
+                <li class="mt-2">
+                    <h3><b>Order Description :</b></h3> {{$order->OrderDescription}}
+                </li>
+            @endif
+            
             @if($order->RequiresPrescription && $order->PrescriptionImageUrl)
                 <li class="mt-2">
                     <a href="https://pcsdecom.azurewebsites.net{{ $order->PrescriptionImageUrl }}" target="_blank" rel="noopener noreferrer"
@@ -52,6 +58,7 @@
                     </a>
                 </li>
             @endif
+
         </ul>
     </div>
 

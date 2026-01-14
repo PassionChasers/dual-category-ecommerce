@@ -56,6 +56,12 @@
                     </a>
                 </li>
             @endif
+
+            @if($order->OrderDescription)
+                <li class="mt-2">
+                    Order Description : {{$order->OrderDescription}}
+                </li>
+            @endif
         </ul>
     </div>
 

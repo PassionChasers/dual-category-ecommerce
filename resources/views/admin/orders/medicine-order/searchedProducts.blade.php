@@ -157,41 +157,29 @@
 
                {{-- Status --}}
                 <td class="px-4 py-2 text-center">
-                    {{-- @php
-                        $statuses = ['Pending', 'Accepted', 'Preparing', 'Packed', 'Completed', 'Cancelled', 'Rejected', 'Assigned','PendingReview'];
-                    @endphp
-
-                    <select class="order-status border rounded px-2 py-1 text-sm" 
-                            data-order-id="{{ $order->OrderId }}">
-                        @foreach($statuses as $status)
-                            <option value="{{ $status }}" {{ $order->Status === $status ? 'selected' : '' }}>
-                                {{ $status }}
-                            </option>
-                        @endforeach
-                    </select> --}}
-
-                    {{-- {{$order->Status}} --}}
-                    @if($order->Status == 1)
-                        Pending
-                    @elseif($order->Status == 2)
-                        Pending Review
-                    @elseif($order->Status == 3)
-                        Assigned
-                    @elseif($order->Status == 4)
-                        Accepted
-                    @elseif($order->Status == 5)
-                        Rejected
-                    @elseif($order->Status == 6)
-                        Preparing
-                    @elseif($order->Status == 7)
-                        Packed
-                    @elseif($order->Status == 8)
-                        Shipping
-                    @elseif($order->Status == 9)
-                        Cancelled
-                    @elseif($order->Status == 10)
-                        Completed
-                    @endif
+                    <span class="order-status-text" data-order-id="{{ $order->OrderId }}">
+                        @if($order->Status == 1)
+                            Pending
+                        @elseif($order->Status == 2)
+                            Pending Review
+                        @elseif($order->Status == 3)
+                            Assigned
+                        @elseif($order->Status == 4)
+                            Accepted
+                        @elseif($order->Status == 5)
+                            Rejected
+                        @elseif($order->Status == 6)
+                            Preparing
+                        @elseif($order->Status == 7)
+                            Packed
+                        @elseif($order->Status == 8)
+                            Shipping
+                        @elseif($order->Status == 9)
+                            Cancelled
+                        @elseif($order->Status == 10)
+                            Completed
+                        @endif
+                    </span>
                 </td>
 
                 {{-- Date --}}
@@ -294,52 +282,142 @@
         // Assign Store
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+        // document.querySelectorAll('.assign-store').forEach(select => {
+        //     select.addEventListener('change', function () {
+
+        //         const medicalStoreId = this.value;
+        //         const orderId = this.dataset.orderId;
+        //         const selectedName = this.options[this.selectedIndex].text;
+
+        //         if (!medicalStoreId || !orderId) return;
+
+        //         let newStatus = medicalStoreId ? 3 : 1; // 3 = Assigned, 1 = Pending
+
+        //         fetch("{{ route('orders.assign-store') }}", {
+        //             method: "POST",
+        //             headers: {
+        //                 "Content-Type": "application/json",
+        //                 "X-CSRF-TOKEN": csrfToken
+        //             },
+        //             body: JSON.stringify({
+        //                 order_id: orderId,
+        //                 medical_store_id: medicalStoreId
+        //             })
+        //         })
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             console.log(data); // Debug: see what server returns
+        //             if (data.success) {
+
+        //                 // ✅ Update STATUS text in UI (separate column)
+        //                 const statusText = document.querySelector(
+        //                     `.order-status-text[data-order-id="${orderId}"]`
+        //                 );
+
+        //                 if (statusText) {
+        //                     statusText.textContent = newStatus === 3 ? 'Assigned' : 'Pending';
+        //                 }
+
+        //                 Swal.fire({
+        //                     toast: true,
+        //                     icon: 'success',
+        //                     title: data.message,
+        //                     timer: 1500,
+        //                     position: 'top-end',
+        //                     showConfirmButton: false
+        //                 });
+        //             } else {
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: data.message || 'Failed to assign store'
+        //                 });
+        //             }
+        //         })
+        //         .catch(err => {
+        //             console.error(err);
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Something went wrong'
+        //             });
+        //         });
+
+        //     });
+        // });
+
         document.querySelectorAll('.assign-store').forEach(select => {
             select.addEventListener('change', function () {
 
                 const medicalStoreId = this.value;
                 const orderId = this.dataset.orderId;
+                const selectedName = this.options[this.selectedIndex].text;
 
                 if (!medicalStoreId || !orderId) return;
 
-                fetch("{{ route('orders.assign-store') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": csrfToken
-                    },
-                    body: JSON.stringify({
-                        order_id: orderId,
-                        medical_store_id: medicalStoreId
+                Swal.fire({
+                    title: 'Assign Store?',
+                    text: `Are you sure you want to assign "${selectedName}" to this order?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, assign!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+
+                    if (!result.isConfirmed) {
+                        // reset dropdown if cancelled
+                        this.value = '';
+                        return;
+                    }
+
+                    fetch("{{ route('orders.assign-store') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": csrfToken
+                        },
+                        body: JSON.stringify({
+                            order_id: orderId,
+                            medical_store_id: medicalStoreId
+                        })
                     })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data); // Debug: see what server returns
-                    if (data.success) {
-                        Swal.fire({
-                            toast: true,
-                            icon: 'success',
-                            title: data.message,
-                            timer: 1500,
-                            position: 'top-end',
-                            showConfirmButton: false
-                        });
-                    } else {
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+
+                            // update status text
+                            const statusText = document.querySelector(
+                                `.order-status-text[data-order-id="${orderId}"]`
+                            );
+
+                            if (statusText) {
+                                statusText.textContent = 'Assigned';
+                            }
+
+                            Swal.fire({
+                                toast: true,
+                                icon: 'success',
+                                title: data.message,
+                                timer: 1500,
+                                position: 'top-end',
+                                showConfirmButton: false
+                            });
+
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: data.message || 'Failed to assign store'
+                            });
+                        }
+                    })
+                    .catch(() => {
                         Swal.fire({
                             icon: 'error',
-                            title: data.message || 'Failed to assign store'
+                            title: 'Something went wrong'
                         });
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Something went wrong'
                     });
-                });
 
+                });
             });
         });
 
