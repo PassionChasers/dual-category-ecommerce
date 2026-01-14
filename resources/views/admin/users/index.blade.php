@@ -54,82 +54,67 @@
         <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
+            <!-- Error Display -->
+            @if ($errors->any())
+                <div class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
+                    <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
+                    <ul class="text-red-700 text-sm space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>• {{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
 
                 <!-- Name -->
                 <div>
-                    <label class="block text-sm font-medium">Name</label>
-                    <input type="text" name="name" class="input border rounded p-1" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Name <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
 
                 <!-- Email -->
                 <div>
-                    <label class="block text-sm font-medium">Email</label>
-                    <input type="email" name="email" class="input border rounded p-1" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+                    <input type="email" name="email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
 
                 <!-- Password -->
                 <div>
-                    <label class="block text-sm font-medium">Password</label>
-                    <input type="password" name="password" class="input border rounded p-1" required>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password <span class="text-red-500">*</span></label>
+                    <input type="password" name="password" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
                 </div>
 
                 <!-- Phone -->
                 <div>
-                    <label class="block text-sm font-medium">Phone</label>
-                    <input type="text" name="phone" class="input border rounded p-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                    <input type="text" name="phone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
                 </div>
 
                 <!-- Avatar -->
                 <div>
-                    <label class="block text-sm font-medium">Avatar</label>
-                    <input type="file" name="avatar_url" class="input border rounded p-1">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
+                    <input type="file" name="avatar_url" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" accept="image/*">
                 </div>
 
                 <!-- Role -->
                 <div>
-                    <label class="block text-sm font-medium">Role</label>
-                    <input type="text" name="role" value="Admin" class="input border rounded p-1" readonly>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Role <span class="text-red-500">*</span></label>
+                    <input type="text" name="role" value="Admin" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100" readonly>
                 </div>
-
-                {{-- <!-- Is Active -->
-                <div>
-                    <label class="block text-sm font-medium">Is Active</label>
-                    <select name="is_active" class="input">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                </div> --}}
-
-                <!-- Is Email Verified -->
-                {{-- <div>
-                    <label class="block text-sm font-medium">Email Verified</label>
-                    <select name="is_email_verified" class="input">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                </div> --}}
-
-                <!-- Is Business Admin -->
-                {{-- <div>
-                    <label class="block text-sm font-medium">Business Admin</label>
-                    <select name="is_business_admin" class="input" readonly>
-                        <option value="0" selected>No</option>
-                        <option value="1">Yes</option>
-                    </select>
-                </div> --}}
 
             </div>
 
             <!-- Footer -->
             <div class="flex justify-end gap-2 px-6 py-4 border-t">
                 <button type="button" id="add-cancel-btn"
-                        class="px-4 py-2 bg-gray-200 rounded">
+                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
                     Cancel
                 </button>
                 <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded">
-                    Save User
+                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
+                    Create User
                 </button>
             </div>
         </form>

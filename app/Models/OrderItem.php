@@ -21,6 +21,15 @@ class OrderItem extends Model
     const CREATED_AT = 'CreatedAt';
     const UPDATED_AT = null;
 
+    protected $casts = [
+        'ForwardedAt' => 'datetime',
+        'AcceptedAt' => 'datetime',
+        'ReadyAt' => 'datetime',
+        'CompletedAt' => 'datetime',
+        'RejectedAt' => 'datetime',
+        'IsConsultationItem' => 'boolean',
+    ];
+
     protected $fillable = [
         'OrderId',
         'MedicineId',
@@ -28,6 +37,21 @@ class OrderItem extends Model
         'ItemType',
         'UnitPriceAtOrder',
         'Quantity',
+        'BusinessId',
+        'BusinessType',
+        'ForwardedAt',
+        'AssignedByAdmin',
+        'Status',
+        'AcceptedAt',
+        'ReadyAt',
+        'CompletedAt',
+        'RejectedAt',
+        'RejectionReason',
+        'BusinessNotes',
+        'IsConsultationItem',
+        'ConsultationNotes',
+        'ForwardCount',
+        'ItemId',
     ];
 
 

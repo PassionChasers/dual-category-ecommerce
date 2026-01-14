@@ -128,7 +128,7 @@
 
                     {{-- MEDICAL STORE --}}
                     @if($medicalStore)
-                        <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     @if($order->Status === 'Assigned')
+                        <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     @if($order->Status == 3)
                                 disabled
                             @endif>
                             <option value="">Assign Store</option>
@@ -142,7 +142,7 @@
                     @endif
 
                     @if($restaurant)
-                        <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     @if($order->Status === 'Assigned')
+                        <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     @if($order->Status == 3)
                                 disabled
                             @endif>
                             <option value="">Assign Store</option>

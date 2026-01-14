@@ -58,13 +58,13 @@
 
                 <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="">All Status</option>
-                    <option value="Completed" {{ request('status') === 'Completed' ? 'selected' : '' }}>Completed</option>
-                    <option value="Cancelled" {{ request('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
-                    <option value="Pending" {{ request('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="Accepted" {{ request('status') === 'Accepted' ? 'selected' : '' }}>Accepted</option>
-                    <option value="Preparing" {{ request('status') === 'Preparing' ? 'selected' : '' }}>Prepring</option>
-                    <option value="Assigned" {{ request('status') === 'Assigned' ? 'selected' : '' }}>Assigned</option>
-                    <option value="Rejected" {{ request('status') === 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                    <option value="10" {{ request('status') === '10' ? 'selected' : '' }}>Completed</option>
+                    <option value="9" {{ request('status') === '9' ? 'selected' : '' }}>Cancelled</option>
+                    <option value="1" {{ request('status') === '1' ? 'selected' : '' }}>Pending</option>
+                    <option value="4" {{ request('status') === '4' ? 'selected' : '' }}>Accepted</option>
+                    <option value="6" {{ request('status') === '6' ? 'selected' : '' }}>Preparing</option>
+                    <option value="3" {{ request('status') === '3' ? 'selected' : '' }}>Assigned</option>
+                    <option value="5" {{ request('status') === '5' ? 'selected' : '' }}>Rejected</option>
                 </select>
 
                 <select name="sort_by" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
