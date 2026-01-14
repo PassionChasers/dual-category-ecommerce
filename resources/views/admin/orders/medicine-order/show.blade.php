@@ -44,7 +44,7 @@
             <li>Contact : {{ $order->customer->user->Phone ?? 'N/A' }}</li>
             <li>Delivery Address : {{ $order->DeliveryAddress ?? 'N/A' }}</li>
 
-            @if($order->OrderDescription)
+            @if($order->RequiresPrescription && $order->OrderDescription)
                 <li class="mt-2">
                     <h3><b>Order Description :</b></h3> {{$order->OrderDescription}}
                 </li>
@@ -54,8 +54,14 @@
                 <li class="mt-2">
                     <a href="https://pcsdecom.azurewebsites.net{{ $order->PrescriptionImageUrl }}" target="_blank" rel="noopener noreferrer"
                        class="inline-block px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
-                        View Prescription
+                        View Prescription Image
                     </a>
+                </li>
+            @elseif($order->RequiresPrescription && !$order->PrescriptionImageUrl)
+                <li class="mt-2">
+                    <p class="inline-block px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+                        Prescription Image Not Uploaded
+                    </p>
                 </li>
             @endif
 
@@ -63,7 +69,7 @@
     </div>
 
     {{-- Add Medicines Button --}}
-    @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->Status != 10 && $order->Status == 2)
+    @if($order->RequiresPrescription && ($order->PrescriptionImageUrl || $order->OrderDescription) && ($order->Status != 10 && $order->Status == 2))
     <div class="mb-4">
         <button type="button" onclick="toggleAddMedicineForm()"
             class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
@@ -73,7 +79,7 @@
     @endif
 
     {{-- Add Medicines Form --}}
-    @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->Status != 10 && $order->Status == 2)
+    @if($order->RequiresPrescription && ($order->PrescriptionImageUrl || $order->OrderDescription) && $order->Status != 10 && $order->Status == 2)
     <div id="addMedicineForm" class="hidden mt-6 bg-white p-6 rounded-lg border shadow">
         <h3 class="text-lg font-semibold mb-4">Add Medicines to Order</h3>
 

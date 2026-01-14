@@ -130,143 +130,119 @@
 @endsection
 
 @push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            //For DeliveryMan 
+            // document.querySelectorAll('.assign-deliveryman').forEach(select => {
+            //     select.addEventListener('change', function () {
+            //         const form = this.closest('form');
+            //         const deliveryManName = this.options[this.selectedIndex].text;
 
-    let interval = null;           // Regular AJAX interval
-    let inactivityTimeout = null;  // Timer to resume after inactivity
-    const INACTIVITY_DELAY = 20000; // 15 seconds
+            //         if (this.value === "") return; // Skip if empty
 
-    function bindOrderEvents() {
+            //         const confirmed = confirm(`Are you sure you want to assign "${deliveryManName}" as the delivery man?`);
 
-        // Pause AJAX while interacting with selects or inputs
-        const interactiveElements = document.querySelectorAll('.assign-deliveryman, .order-status, input[name="search"]');
+            //         if (confirmed) {
+            //             form.submit();
+            //         } else {
+            //             this.value = ""; // reset selection if cancelled
+            //         }
+            //     });
+            // });
 
-        interactiveElements.forEach(el => {
+            document.querySelectorAll('.assign-deliveryman').forEach(select => {
+                select.addEventListener('change', function () {
+                    const form = this.closest('.assign-delivery-form');
+                    const selectedName = this.options[this.selectedIndex].text;
 
-            // Any activity stops AJAX and resets the inactivity timer
-            el.addEventListener('focus', pauseRefreshOnActivity);
-            el.addEventListener('input', pauseRefreshOnActivity); // typing in input
-            el.addEventListener('change', pauseRefreshOnActivity);
-            el.addEventListener('click', pauseRefreshOnActivity);
+                    if (!this.value) return;
 
-            // When user leaves element, start inactivity timer
-            el.addEventListener('blur', startInactivityTimer);
-        });
-
-        // Deliveryman assignment confirmation
-        document.querySelectorAll('.assign-deliveryman').forEach(select => {
-            select.addEventListener('change', function () {
-                const form = this.closest('.assign-delivery-form');
-                const selectedName = this.options[this.selectedIndex].text;
-
-                if (!this.value) return;
-
-                Swal.fire({
-                    title: 'Assign Delivery Man?',
-                    text: `Are you sure you want to assign "${selectedName}" to this order?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, assign!',
-                    cancelButtonText: 'Cancel'
-                }).then(result => {
-                    if (result.isConfirmed) form.submit();
-                    else this.value = '';
-                });
-            });
-        });
-
-        // Order status update via AJAX
-        const csrf = document.querySelector('meta[name="csrf-token"]').content;
-        document.querySelectorAll('.order-status').forEach(select => {
-            select.addEventListener('change', function () {
-                fetch("{{ route('orders.update-status') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": csrf
-                    },
-                    body: JSON.stringify({
-                        order_id: this.dataset.orderId,
-                        status: this.value
-                    })
-                })
-                .then(r => r.json())
-                .then(res => {
                     Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: res.success ? 'success' : 'error',
-                        title: res.message,
-                        showConfirmButton: false,
-                        timer: 1500
+                        title: 'Assign Delivery Man?',
+                        text: `Are you sure you want to assign "${selectedName}" to this order?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, assign!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            form.submit(); // Submit the form
+                        } else {
+                            this.value = ''; // Reset selection if canceled
+                        }
                     });
                 });
             });
+
+            // Update Order Status
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            document.querySelectorAll('.order-status').forEach(select => {
+                select.addEventListener('change', function () {
+                    const orderId = this.dataset.orderId;
+                    const status = this.value;
+
+                    fetch("{{ route('orders.update-status') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": csrfToken
+                        },
+                        body: JSON.stringify({
+                            order_id: orderId,
+                            status: status
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: data.message || 'Failed to assign deliveryman'
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Something went wrong'
+                        });
+                    });
+                });
+            });
+
+            ///AJJAX CALL IN X SECONDS TO AUTO LOAD DATA OF TABLE BODY
+            function loadOrders() {
+                const params = new URLSearchParams(window.location.search);
+
+                fetch("{{ route('orders.medicalstore-medicine.index') }}?" + params.toString(), {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('orderTableBody').innerHTML = html;
+                })
+                .catch(error => console.error(error));
+            }
+
+            // Auto refresh every 5 seconds
+            setInterval(loadOrders, 5000);
         });
-
-    }
-
-    function loadOrders() {
-        const params = new URLSearchParams(window.location.search);
-
-        fetch("{{ route('orders.medicalstore-medicine.index') }}?" + params.toString(), {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(r => r.text())
-        .then(html => {
-            document.getElementById('orderTableBody').innerHTML = html;
-            bindOrderEvents(); // re-bind events for new DOM elements
-        });
-    }
-
-    function startAutoRefresh() {
-        if (!interval) interval = setInterval(loadOrders, 10000);
-    }
-
-    function stopAutoRefresh() {
-        if (interval) {
-            clearInterval(interval);
-            interval = null;
-        }
-    }
-
-    // Called on activity (typing, focus, click)
-    function pauseRefreshOnActivity() {
-        stopAutoRefresh();
-        clearTimeout(inactivityTimeout);
-        inactivityTimeout = setTimeout(() => {
-            loadOrders();      // One refresh after inactivity
-            startAutoRefresh(); // Resume 5s interval
-        }, INACTIVITY_DELAY);
-    }
-
-    // Called when user leaves input/select
-    function startInactivityTimer() {
-        clearTimeout(inactivityTimeout);
-        inactivityTimeout = setTimeout(() => {
-            loadOrders();
-            startAutoRefresh();
-        }, INACTIVITY_DELAY);
-    }
-
-    // Pause AJAX if tab is hidden
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) stopAutoRefresh();
-        else startInactivityTimer();
-    });
-
-    // Initial binding and auto-refresh start
-    bindOrderEvents();
-    startAutoRefresh();
-
-});
-</script>
-
+    </script>
 @endpush
-
 
 
     

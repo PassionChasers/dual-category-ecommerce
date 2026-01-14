@@ -83,16 +83,227 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden" id="tableData">
-        @include('admin.orders.medicine-order.searchedProducts', ['allOrders' => $allOrders])
+    <div class="bg-white shadow rounded-lg overflow-hidden">
+
+        <div class="px-6 py-4 border-b">
+            <h2 class="font-semibold text-gray-800">Orders List</h2>
+        </div>
+
+        <div class="overflow-x-auto" id="tableData">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2">SN</th>
+                        <th class="px-4 py-2">Product Name</th>
+                        <th class="px-4 py-2">Quantity</th>
+                        {{-- <th class="px-4 py-2">Product Type</th> --}}
+                        <th class="px-4 py-2">Total Amount</th>
+                        {{-- <th class="px-4 py-2">Delivery Address</th> --}}
+                        {{-- <th class="px-4 py-2">Customer Name</th> --}}
+                        {{-- <th class="px-4 py-2">Contact No.</th> --}}
+                        <th class="px-4 py-2">Prescription require</th>
+                        <th class="px-4 py-2">Assign Store</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody class="divide-y divide-gray-200" id="orderTableBody">
+                    @include('admin.orders.medicine-order.searchedProducts', ['allOrders' => $allOrders])                
+                </tbody>
+            </table> 
+        </div>
+
+        {{-- PAGINATION --}}
+        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
+            <div class="text-sm text-gray-600">
+                Showing <strong>{{ $allOrders->firstItem() ?? 0 }}</strong> to <strong>{{ $allOrders->lastItem() ?? 0 }}</strong> of <strong>{{ $allOrders->total() }}</strong> results
+            </div>
+            <div class="mt-3 md:mt-0" id="pageLink">
+                {{ $allOrders->links() }}
+            </div>
+        </div>
     </div>
 </div>
 
 @endsection
 
 @push('scripts')
-    
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // let interval = null;
+    // let inactivityTimeout = null;
+    // const INACTIVITY_DELAY = 20000; // 20 seconds inactivity
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+    // function bindOrderEvents() {
+        // Cancel forms
+        document.querySelectorAll('.cancel-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                const status = parseInt(form.dataset.status);
+                const blockedStatuses = [3, 4, 6, 7, 8, 10];
+
+                if (blockedStatuses.includes(status)) {
+                    Swal.fire({
+                        title: 'Action Not Allowed!',
+                        text: 'This order cannot be canceled in its current status.',
+                        icon: 'warning',
+                        confirmButtonColor: '#6c757d'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This action cannot be undone!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, cancel it!'
+                }).then((result) => {
+                    if (result.isConfirmed) form.submit();
+                });
+            });
+        });
+
+        // Assign Store
+        document.querySelectorAll('.assign-store').forEach(select => {
+            select.addEventListener('change', function () {
+                const medicalStoreId = this.value;
+                const orderId = this.dataset.orderId;
+                const selectedName = this.options[this.selectedIndex].text;
+
+                if (!medicalStoreId || !orderId) return;
+
+                Swal.fire({
+                    title: 'Assign Store?',
+                    text: `Are you sure you want to assign "${selectedName}" to this order?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, assign!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+
+                    if (!result.isConfirmed) {
+                        this.value = '';
+                        return;
+                    }
+
+                    fetch("{{ route('orders.assign-store') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": csrfToken
+                        },
+                        body: JSON.stringify({
+                            order_id: orderId,
+                            medical_store_id: medicalStoreId
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            const statusText = document.querySelector(
+                                `.order-status-text[data-order-id="${orderId}"]`
+                            );
+                            if (statusText) statusText.textContent = 'Assigned';
+
+                            Swal.fire({
+                                toast: true,
+                                icon: 'success',
+                                title: data.message,
+                                timer: 1500,
+                                position: 'top-end',
+                                showConfirmButton: false
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: data.message || 'Failed to assign store'
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Something went wrong'
+                        });
+                    });
+
+                });
+            });
+        });
+
+        // Pause auto-refresh when interacting
+        // const interactiveElements = document.querySelectorAll('.assign-store, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
+        // interactiveElements.forEach(el => {
+        //     el.addEventListener('focus', pauseRefreshOnActivity);
+        //     el.addEventListener('input', pauseRefreshOnActivity);
+        //     el.addEventListener('change', pauseRefreshOnActivity);
+        //     el.addEventListener('click', pauseRefreshOnActivity);
+        //     el.addEventListener('blur', startInactivityTimer);
+        // });
+    // }
+
+    // function loadOrders() {
+    //     const params = new URLSearchParams(window.location.search);
+
+    //     fetch("{{ route('orders.medicine.index') }}?" + params.toString(), {
+    //         headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    //     })
+    //     .then(res => res.text())
+    //     .then(html => {
+    //         const parser = new DOMParser();
+    //         const doc = parser.parseFromString(html, 'text/html');
+    //         const newTbody = doc.querySelector('#orderTableBody');
+    //         if (newTbody) {
+    //             document.querySelector('#orderTableBody').innerHTML = newTbody.innerHTML;
+    //             bindOrderEvents(); // rebind events
+    //         }
+    //     })
+    //     .catch(err => console.error('Table refresh failed:', err));
+    // }
+
+    // function startAutoRefresh() {
+    //     if (!interval) interval = setInterval(loadOrders, 10000);
+    // }
+
+    // function stopAutoRefresh() {
+    //     if (interval) { clearInterval(interval); interval = null; }
+    // }
+
+    // function pauseRefreshOnActivity() {
+    //     stopAutoRefresh();
+    //     clearTimeout(inactivityTimeout);
+    //     inactivityTimeout = setTimeout(() => {
+    //         loadOrders();
+    //         startAutoRefresh();
+    //     }, INACTIVITY_DELAY);
+    // }
+
+    // function startInactivityTimer() {
+    //     clearTimeout(inactivityTimeout);
+    //     inactivityTimeout = setTimeout(() => {
+    //         loadOrders();
+    //         startAutoRefresh();
+    //     }, INACTIVITY_DELAY);
+    // }
+
+    // document.addEventListener('visibilitychange', () => {
+    //     if (document.hidden) stopAutoRefresh();
+    //     else startInactivityTimer();
+    // });
+
+    // bindOrderEvents();
+    // startAutoRefresh();
+
+});
+</script>
 @endpush
-
-
-    

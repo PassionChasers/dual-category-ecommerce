@@ -187,6 +187,11 @@ Route::middleware('auth')->group(function () {
 
 
 
+    //Ajax fetch data 
+    Route::get('/medical-orders/ajax', [OrderController::class, 'medicalStoreOrdersAjax'])
+    ->name('medical.orders.ajax');
+
+
     /*
     |----------------------------------------------------------------------
     | Settings & Institutions

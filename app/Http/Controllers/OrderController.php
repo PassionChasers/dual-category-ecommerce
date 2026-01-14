@@ -475,7 +475,17 @@ class OrderController extends Controller
         })
         ->get();
 
-        return view('admin.orders.BusinessViewOrder.restaurant.index', compact('allOrders', 'itemTypes','allRestaurants', 'allDeliveryMan'));
+        //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
+        if ($request->ajax()) {
+            return view(
+                'admin.orders.BusinessViewOrder.restaurant.searchedProducts',
+                compact('allOrders','itemTypes','allRestaurants', 'allDeliveryMan')
+            );
+        }
+        else{
+            return view('admin.orders.BusinessViewOrder.restaurant.index', 
+            compact('allOrders', 'itemTypes','allRestaurants', 'allDeliveryMan'));
+        }
     }
 
 
@@ -530,7 +540,18 @@ class OrderController extends Controller
         ->orderBy('Priority', 'asc')
         ->get();
 
-        return view('admin.orders.medicine-order.index', compact('allOrders', 'itemTypes','allMedicalStores'));
+        //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
+        if ($request->ajax()) {
+            return view(
+                'admin.orders.medicine-order.searchedProducts',
+                compact('allOrders', 'itemTypes','allMedicalStores')
+            );
+        }
+        else{
+            return view('admin.orders.medicine-order.index', 
+            compact('allOrders', 'itemTypes','allMedicalStores'));
+        }
+        
     }
 
 
@@ -591,7 +612,18 @@ class OrderController extends Controller
         })
         ->get();
 
-        return view('admin.orders.BusinessViewOrder.medicalstore.index', compact('allOrders', 'itemTypes','allMedicalStores', 'allDeliveryMan'));
+        //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
+        if ($request->ajax()) {
+            return view(
+                'admin.orders.BusinessViewOrder.medicalstore.searchedProducts',
+                compact('allOrders','itemTypes','allMedicalStores', 'allDeliveryMan')
+            );
+        }
+        else{
+            return view('admin.orders.BusinessViewOrder.medicalstore.index', 
+            compact('allOrders', 'itemTypes','allMedicalStores', 'allDeliveryMan'));
+        }
+
     }
 
 
@@ -752,5 +784,9 @@ class OrderController extends Controller
     }
 
 
+    /////////////////////////
+    ///AJAX FETCH 
+    /////////////////////
+    
 
 }
