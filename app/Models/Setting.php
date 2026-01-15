@@ -10,6 +10,9 @@ class Setting extends Model
     // protected $guarded = [];
     protected $table = 'Settings';
     protected $primaryKey = 'Id';
+        // ✅ IMPORTANT FIX
+    const CREATED_AT = 'CreatedAt';
+    const UPDATED_AT = 'UpdatedAt';
     // OR if you want to be strict, use fillable instead of guarded:
 
     public $incrementing = true;   // IMPORTANT
@@ -56,5 +59,6 @@ class Setting extends Model
         'LinkedInUrl',
         'InstagramUrl',
         'MaintenanceMode',
+
     ];
 }
