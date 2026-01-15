@@ -32,6 +32,7 @@ use App\Http\Controllers\MedicineOrderController;
 use App\Http\Controllers\MedicineCategoryController;
 use App\Http\Controllers\MedicalStoreController;
 use App\Http\Controllers\RestaurantController;
+use App\Http\Controllers\RewardTransactionController;
 
 
 
@@ -129,52 +130,42 @@ Route::middleware('auth')->group(function () {
     */
     // All product orders
     Route::get('/product-order-list', [OrderController::class, 'allOrders'])->name('orders.index');
+    // Update order status (general)
+    Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
+
 
     // Food orders
     Route::get('/food-order-list', [OrderController::class, 'foodOrders'])->name('orders.food.index');
-
      // Food orders for Restaurants business
     Route::get('/restaurant-food-order-list', [OrderController::class, 'restaurantOrders'])->name('orders.restaurant-food.index');
 
     // Medicine orders
     Route::get('/medicine-order-list', [OrderController::class, 'medicineOrders'])->name('orders.medicine.index');
-
     //Medicine orders for medicalstores business
      Route::get('/medicalstore-medicine-order-list', [OrderController::class, 'medicalstoreOrders'])->name('orders.medicalstore-medicine.index');
 
-    //All product order details Route
-    Route::get('all-product-orders-details/{id}', [OrderController::class, 'showProductDetails'])->name('orders.showProductDetail');
-
     //Food order Details route
     Route::get('food-orders-details/{id}', [OrderController::class, 'showFoodDetails'])->name('orders.showFoodDetail');
-
     //Medicine order details route
     Route::get('medicine-orders-details/{id}', [OrderController::class, 'showMedicineDetails'])->name('orders.showMedicineDetail');
-    
-    //Delete order route
-    Route::delete('delete-product-orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
-
-    //search order route
-    Route::get('orders/search', [OrderController::class, 'search'])->name('orders.search');
-
-    //update order route
-    Route::put('/orders/update', [OrderController::class, 'update'])->name('orders.update');
 
     // Update order status to Cancelled when cancell by admin
     Route::patch('orders/cancel/{id}', [OrderController::class, 'cancel'])->name('orders.cancel');
-
     // Update order status to Rejected when reject by business
     Route::patch('orders/reject/{id}', [OrderController::class, 'reject'])->name('orders.reject');
-
     // Update order status to Accepted when Accept by business
     Route::patch('orders/accept/{id}', [OrderController::class, 'accept'])->name('orders.accept');
 
     //Assign Medical Store to Medicine Order
     Route::post('/orders/assign-store', [OrderController::class, 'assignStore'])->name('orders.assign-store');
+    //Assign deliveryman to order
+    Route::post('/orders/assign-deliveryman', [OrderController::class, 'assignDeliveryMan'])->name('orders.assign-deliveryman');
     
-    // Update order status (general)
-    Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
-
+    //update order route
+    Route::put('/orders/update', [OrderController::class, 'update'])->name('orders.update');
+    //Create and store order in orderitems table
+    Route::post('/order-items', [OrderController::class, 'store'])->name('order-items.store');
+    Route::post('/order-items/store-multiple', [OrderController::class, 'storeMultiple'])->name('order-items.storeMultiple');
 
 
     /*
@@ -283,6 +274,16 @@ Route::middleware('auth')->group(function () {
     |----------------------------------------------------------------------
     */
     Route::get('/auditlog', [AuditLogController::class, 'index'])->name('auditlog.index');
+
+    /*
+    |----------------------------------------------------------------------
+    | Reward Transactions
+    |----------------------------------------------------------------------
+    */
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Route::get('reward-transactions', [RewardTransactionController::class, 'index'])->name('reward-transactions.index');
+        Route::get('reward-transactions/{rewardTransaction}', [RewardTransactionController::class, 'show'])->name('reward-transactions.show');
+    });
 });
 
 /*

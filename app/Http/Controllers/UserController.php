@@ -19,7 +19,7 @@ class UserController extends Controller
     
     public function admin(Request $request)
     {
-        $query = User::query()->where('Role', 'Admin');
+        $query = User::query()->where('Role', 4);
 
         // Search by user name
         if ($request->filled('search')) {
@@ -49,7 +49,7 @@ class UserController extends Controller
 
     public function customers(Request $request)
     {
-        $query = User::query()->where('Role', 'Customer');
+        $query = User::query()->where('Role', 1);
 
         // Search by user name
         if ($request->filled('search')) {
@@ -79,7 +79,7 @@ class UserController extends Controller
 
     public function medicalstores(Request $request)
     {
-        $query = User::query()->where('Role', 'Supplier');
+        $query = User::query()->where('Role', 2);
 
         // Search by user name
         if ($request->filled('search')) {
@@ -109,7 +109,7 @@ class UserController extends Controller
 
     public function restaurants(Request $request)
     {
-        $query = User::query()->where('Role', 'Restaurant');
+        $query = User::query()->where('Role', 3);
 
         // Search by user name
         if ($request->filled('search')) {
@@ -154,40 +154,42 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'               => 'required|string|max:255',
             'email'              => 'required|email|unique:Users,Email',
-            'password'           => 'required|min:6',
-            'phone'              => 'required|string|max:20',
+            'password'           => 'required|min:8',
+            'phone'              => 'nullable|string|max:20',
             'avatar_url'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-            'role'               => 'required|string|in:Supplier,Admin,Restaurant','Customer',
-            // 'is_active'          => 'required|boolean',
-            // 'is_email_verified'  => 'required|boolean',
-            // 'is_business_admin'  => 'required|boolean',
+            'role'               => 'required|string|in:Admin,Customer,Supplier,Restaurant',
         ]);
+
+        // Map role string to numeric value
+        $roleMap = [
+            'Customer' => 1,
+            'Supplier' => 2,
+            'Restaurant' => 3,
+            'Admin' => 4,
+        ];
 
         // Avatar Upload
         $imagePath = null;
         if ($request->hasFile('avatar_url')) {
-            $imagePath = $request->file('avatar_url')
-                ->store('uploads/users', 'public');
+            $imagePath = $request->file('avatar_url')->store('uploads/users', 'public');
         }
 
         // Create User
-        // User::create([
-        //     'Name'              => $validated['name'],
-        //     'Email'             => $validated['email'],
-        //     'Password'          => Hash::make($validated['password']),
-        //     'Phone'             => $validated['phone'] ?? null,
-        //     'AvatarUrl'         => $avatarPath,
-        //     'Role'              => $validated['role'],
-        //     'IsActive'          => $validated['is_active'],
-        //     'IsEmailVerified'   => $validated['is_email_verified'],
-        //     'IsBusinessAdmin'   => $validated['is_business_admin'],
-        //     'remember_token'    => Str::random(60),
-        //     'CreatedAt'         => now(),
-        // ]);
+        User::create([
+            'Name'              => $validated['name'],
+            'Email'             => $validated['email'],
+            'PasswordHash'      => Hash::make($validated['password']),
+            'Phone'             => $validated['phone'] ?? null,
+            'AvatarUrl'         => $imagePath,
+            'Role'              => $roleMap[$validated['role']],
+            'IsActive'          => true,
+            'IsEmailVerified'   => false,
+            'IsBusinessAdmin'   => false,
+        ]);
 
         return redirect()
             ->back()
-            ->with('success', 'Created successfully.');
+            ->with('success', $validated['role'] . ' created successfully.');
     }
 
     /**

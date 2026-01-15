@@ -20,26 +20,28 @@ class User extends Authenticatable
 
     protected $table = 'Users';
 
-  
+    public $timestamps = true;
 
     // Primary key (assumed)
     protected $primaryKey = 'UserId'; // change if different
-
     
     const CREATED_AT = 'CreatedAt';
-    const UPDATED_AT = 'UpdatedAt';
+    const UPDATED_AT = null;
 
     // PostgreSQL case-sensitive columns
     protected $fillable = [
+        'Role',
         'Name',
         'Email',
         'PasswordHash',
         'Phone',
         'AvatarUrl',
-    ];
-
-    // Laravel should not expect created_at / updated_at
-    public $timestamps = false;
+        'IsActive',
+        'IsEmailVerified',
+        'DeletedAt',
+        'IsBusinessAdmin',
+        'remember_token',
+    ];   
 
        /**
      * Tell Laravel which column stores the password
@@ -69,6 +71,11 @@ class User extends Authenticatable
     public function customer()
     {
         return $this->hasOne(Customer::class, 'UserId', 'UserId');
+    }
+
+    public function deliveryMan()
+    {
+        return $this->hasOne(DeliveryMan::class, 'UserId', 'UserId');
     }
 
     public function restaurants()

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class OrderItem extends Model
 {
@@ -18,16 +19,24 @@ class OrderItem extends Model
     // Timestamps enabled
     public $timestamps = true;
     const CREATED_AT = 'CreatedAt';
-    const UPDATED_AT = 'UpdatedAt';
+    const UPDATED_AT = null;
+
+    protected $casts = [
+        'ForwardedAt' => 'datetime',
+        'AcceptedAt' => 'datetime',
+        'ReadyAt' => 'datetime',
+        'CompletedAt' => 'datetime',
+        'RejectedAt' => 'datetime',
+        'IsConsultationItem' => 'boolean',
+    ];
 
     protected $fillable = [
         'OrderId',
-        'ItemId',
+        'MedicineId',
+        'MenuItemId',
         'ItemType',
-        'ItemName',
-        'ItemImageUrl',
+        'UnitPriceAtOrder',
         'Quantity',
-        'UnitPrice',
         'BusinessId',
         'BusinessType',
         'ForwardedAt',
@@ -36,22 +45,41 @@ class OrderItem extends Model
         'AcceptedAt',
         'ReadyAt',
         'CompletedAt',
+        'RejectedAt',
+        'RejectionReason',
+        'BusinessNotes',
+        'IsConsultationItem',
+        'ConsultationNotes',
+        'ForwardCount',
+        'ItemId',
     ];
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (!$model->OrderItemId) {
+                $model->OrderItemId = (string) Str::uuid();
+            }
+        });
+    }
 
     public function order()
     {
         return $this->belongsTo(Order::class, 'OrderId', 'OrderId'); //Second is foreign key in OrderItem, third is local key in Order
     }
 
-    public function medicalStore()
-    {
-        return $this->belongsTo(MedicalStore::class, 'BusinessId', 'MedicalStoreId'); //Second is foreign key in OrderItem, third is local key in MedicalStore
-    }
+    // public function medicalStore()
+    // {
+    //     return $this->belongsTo(MedicalStore::class, 'BusinessId', 'MedicalStoreId'); //Second is foreign key in OrderItem, third is local key in MedicalStore
+    // }
 
-    public function restaurant()
-    {
-        return $this->belongsTo(Restaurant::class, 'BusinessId', 'RestaurantId'); //Second is foreign key in OrderItem, third is local key in Restaurants
-    }
+    // public function restaurant()
+    // {
+    //     return $this->belongsTo(Restaurant::class, 'BusinessId', 'RestaurantId'); //Second is foreign key in OrderItem, third is local key in Restaurants
+    // }
 
     public function medicine() {
         return $this->belongsTo(Medicine::class, 'MedicineId', 'MedicineId');

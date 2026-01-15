@@ -8,10 +8,13 @@ use App\Models\Customer;
 use App\Models\MedicalStore;
 use App\Models\Restaurant;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Invoice;
 use App\Models\RewardCoin;
 use App\Models\Ad;
 use App\Models\Notification;
+use App\Enums\AdminOrderStatus;
+use App\Enums\CustomerOrderStatus;
 use Carbon\Carbon;
 use DateInterval;
 use DatePeriod;
@@ -75,10 +78,10 @@ class DashboardController extends Controller
             $orderStats = DB::table('Orders')
                 ->select(
                     DB::raw('COUNT(*) as total'),
-                    DB::raw('SUM(CASE WHEN "Status" = \'Pending\' OR "Status" = \'PendingReview\' THEN 1 ELSE 0 END) as pending'),
-                    DB::raw('COUNT(DISTINCT CASE WHEN EXISTS(SELECT 1 FROM "OrderItems" WHERE "OrderItems"."OrderId" = "Orders"."OrderId" AND "OrderItems"."BusinessId" IS NOT NULL) THEN "Orders"."OrderId" END) as assigned'),
-                    DB::raw('SUM(CASE WHEN "Status" IN (\'delivered\', \'Completed\') THEN 1 ELSE 0 END) as completed'),
-                    DB::raw('SUM(CASE WHEN "Status" = \'Cancelled\' THEN 1 ELSE 0 END) as cancelled')
+                    DB::raw('SUM(CASE WHEN "Status" IN (' . AdminOrderStatus::Pending->value . ', ' . AdminOrderStatus::PendingReview->value . ') THEN 1 ELSE 0 END) as pending'),
+                    DB::raw('SUM(CASE WHEN "Status" = ' . AdminOrderStatus::Assigned->value . ' THEN 1 ELSE 0 END) as assigned'),
+                    DB::raw('SUM(CASE WHEN "Status" = ' . AdminOrderStatus::Completed->value . ' THEN 1 ELSE 0 END) as completed'),
+                    DB::raw('SUM(CASE WHEN "Status" = ' . AdminOrderStatus::Cancelled->value . ' THEN 1 ELSE 0 END) as cancelled')
                 )
                 ->first();
                 // dd($orderStats);
@@ -105,7 +108,7 @@ class DashboardController extends Controller
 
             // Calculate total revenue from completed orders
             $revenueStats = DB::table('Orders')
-                ->where('Status', 'Completed')
+                ->where('Status', AdminOrderStatus::Completed->value)
                 ->select(
                     DB::raw('SUM("TotalAmount") as total_revenue'),
                     DB::raw('AVG("TotalAmount") as avg_value')
@@ -131,23 +134,25 @@ class DashboardController extends Controller
 
             // --- Orders by module (medical vs food) ---
             // Count distinct orders that have Medicine items
-            $stats['medicalOrders'] = (int) DB::table('OrderItems')
-                ->where('ItemType', 'Medicine')
-                ->select('OrderId')
-                ->distinct()
-                ->count();
+            // $stats['medicalOrders'] = (int) DB::table('OrderItems')
+            //     ->where('ItemType', 'Medicine')
+            //     ->select('OrderId')
+            //     ->distinct()
+            //     ->count();
+
+            $stats['medicalOrders'] = Order::whereHas('items', function ($q) {
+                        $q->where('ItemType', 'Medicine');
+                    })->count();
 
             // Count distinct orders that have food items
-            $stats['foodOrders'] = (int) DB::table('OrderItems')
-                ->where('ItemType', 'Food')
-                ->select('OrderId')
-                ->distinct()
-                ->count();
+            $stats['foodOrders'] = Order::whereHas('items', function ($q) {
+                        $q->where('ItemType', 'Food');
+                    })->count();
 
             // --- Orders by status (latest 5 of each) ---
             try {
                 $pendingOrders = Order::with('customer', 'items.food', 'items.medicine')
-                    ->whereIn('Status', ['Pending', 'PendingReview'])
+                    ->whereIn('Status', [AdminOrderStatus::Pending->value, AdminOrderStatus::PendingReview->value])
                     ->orderBy('CreatedAt', 'desc')
                     ->limit(5)
                     ->get();
@@ -171,7 +176,7 @@ class DashboardController extends Controller
 
             try {
                 $completedOrders = Order::with('customer', 'items.food', 'items.medicine')
-                    ->whereIn('Status', ['delivered', 'Completed'])
+                    ->whereIn('Status', [AdminOrderStatus::Completed->value])
                     ->orderBy('CreatedAt', 'desc')
                     ->limit(5)
                     ->get();
@@ -208,7 +213,7 @@ class DashboardController extends Controller
                     DB::raw('DATE("CreatedAt") as date'),
                     DB::raw('SUM("TotalAmount") as total')
                 )
-                ->whereIn('Status', ['delivered', 'Completed'])
+                ->where('Status', AdminOrderStatus::Completed->value)
                 ->whereBetween('CreatedAt', [$fromDate, $toDate])
                 ->groupBy('date')
                 ->orderBy('date')
@@ -227,20 +232,33 @@ class DashboardController extends Controller
             // --- Module split (for doughnut chart) ---
             $medicalCount = DB::table('OrderItems')
                 ->whereRaw('lower("ItemType") = ?', ['medicine'])
+                ->select('OrderId')
                 ->distinct()
-                ->count('OrderId');
+                ->count();
 
             $foodCount = DB::table('OrderItems')
                 ->where(function ($q) {
                     $q->whereRaw('lower("ItemType") = ?', ['menuitem'])
                       ->orWhereRaw('lower("ItemType") = ?', ['food']);
                 })
+                ->select('OrderId')
                 ->distinct()
-                ->count('OrderId');
+                ->count();
 
             $moduleSplitChart = [
                 'labels' => ['Medical', 'Food'],
                 'data'   => [$medicalCount, $foodCount],
+            ];
+
+            // --- Order Status Distribution Chart ---
+            $orderStatusChart = [
+                'labels' => ['Pending', 'Assigned', 'Completed', 'Cancelled'],
+                'data'   => [
+                    $stats['pendingOrders'],
+                    $stats['assignedOrders'],
+                    $stats['completedOrders'],
+                    $stats['cancelledOrders'],
+                ],
             ];
 
             // --- Recent orders with customer ---
@@ -272,6 +290,7 @@ class DashboardController extends Controller
             'ordersPerDayChart'  => $ordersPerDayChart,
             'revenuePerDayChart' => $revenuePerDayChart,
             'moduleSplitChart'   => $moduleSplitChart,
+            'orderStatusChart'   => $orderStatusChart ?? ['labels' => [], 'data' => []],
             'recentOrders'       => $recentOrders ?? collect(),
             'pendingOrders'      => $pendingOrders ?? collect(),
             'assignedOrders'     => $assignedOrders ?? collect(),
@@ -328,10 +347,10 @@ class DashboardController extends Controller
             $orderStats = DB::table('Orders')
                 ->select(
                     DB::raw('COUNT(*) as total'),
-                    DB::raw('SUM(CASE WHEN "Status" = \'PendingReview\' THEN 1 ELSE 0 END) as pending'),
-                    DB::raw('SUM(CASE WHEN "Status" IN (\'accepted\', \'preparing\', \'packed\') THEN 1 ELSE 0 END) as inprogress'),
-                    DB::raw('SUM(CASE WHEN "Status" IN (\'delivered\', \'Completed\') THEN 1 ELSE 0 END) as completed'),
-                    DB::raw('SUM(CASE WHEN "Status" = \'Cancelled\' THEN 1 ELSE 0 END) as cancelled')
+                    DB::raw('SUM(CASE WHEN "Status" = ' . AdminOrderStatus::PendingReview->value . ' THEN 1 ELSE 0 END) as pending'),
+                    DB::raw('SUM(CASE WHEN "Status" IN (' . AdminOrderStatus::Accepted->value . ', ' . AdminOrderStatus::Preparing->value . ', ' . AdminOrderStatus::Packed->value . ') THEN 1 ELSE 0 END) as inprogress'),
+                    DB::raw('SUM(CASE WHEN "Status" = ' . AdminOrderStatus::Completed->value . ' THEN 1 ELSE 0 END) as completed'),
+                    DB::raw('SUM(CASE WHEN "Status" = ' . AdminOrderStatus::Cancelled->value . ' THEN 1 ELSE 0 END) as cancelled')
                 )
                 ->first();
 
@@ -343,7 +362,7 @@ class DashboardController extends Controller
 
             // Calculate total revenue from completed orders
             $revenueStats = DB::table('Orders')
-                ->where('Status', 'Completed')
+                ->where('Status', AdminOrderStatus::Completed->value)
                 ->select(
                     DB::raw('SUM("TotalAmount") as total_revenue'),
                     DB::raw('AVG("TotalAmount") as avg_value')

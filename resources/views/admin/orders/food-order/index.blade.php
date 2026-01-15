@@ -47,13 +47,16 @@
 
                 <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="">All Status</option>
-                    <option value="Completed" {{ request('status') === 'Completed' ? 'selected' : '' }}>Completed</option>
-                    <option value="Cancelled" {{ request('status') === 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
-                    <option value="Pending" {{ request('status') === 'Pending' ? 'selected' : '' }}>Pending</option>
-                    <option value="Accepted" {{ request('status') === 'Accepted' ? 'selected' : '' }}>Accepted</option>
-                    <option value="Preparing" {{ request('status') === 'Preparing' ? 'selected' : '' }}>Prepring</option>
-                    <option value="Assigned" {{ request('status') === 'Assigned' ? 'selected' : '' }}>Assigned</option>
-                    <option value="Rejected" {{ request('status') === 'Rejected' ? 'selected' : '' }}>Rejected</option>
+                    <option value="1" {{ request('status') == 1 ? 'selected' : '' }}>Pending</option>
+                    <option value="2" {{ request('status') == 2 ? 'selected' : '' }}>Pending Review</option>
+                    <option value="3" {{ request('status') == 3 ? 'selected' : '' }}>Assigned</option>
+                    <option value="4" {{ request('status') == 4 ? 'selected' : '' }}>Accepted</option>
+                    <option value="5" {{ request('status') == 5 ? 'selected' : '' }}>Rejected</option>
+                    <option value="6" {{ request('status') == 6 ? 'selected' : '' }}>Preparing</option>
+                    <option value="7" {{ request('status') == 7 ? 'selected' : '' }}>Packed</option>
+                    <option value="8" {{ request('status') == 8 ? 'selected' : '' }}>Shipping</option>
+                    <option value="9" {{ request('status') == 9 ? 'selected' : '' }}>Cancelled</option>
+                    <option value="10" {{ request('status') == 10 ? 'selected' : '' }}>Completed</option>
                 </select>
 
                 <select name="sort_by" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
@@ -69,176 +72,244 @@
             </form>
 
             <div class="flex gap-2 mt-2 md:mt-0">
-                <!-- New Task Button -->
-                {{-- <button id="new-task-button"
-                    class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 whitespace-nowrap">
-                    <i class="fas fa-plus mr-1"></i> New Item
-                </button> --}}
-
                 <!-- Export Button -->
                 <a href="#"
                     class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700">
                     <i class="fas fa-file-excel mr-1"></i> Export
                 </a>
             </div>
+            
         </div>
     </div>
 
     <!-- Table -->
     <div class="bg-white shadow rounded-lg overflow-hidden" id="tableData">
-        @include('admin.orders.food-order.searchedProducts', ['allOrders' => $allOrders])
-    </div>
 
-    <!-- Modal -->
-    <div id="editModal"
-        class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-
-        <div class="bg-white p-6 rounded shadow-lg w-full max-w-3xl">
-            <h2 class="text-xl font-semibold mb-4">Edit Order</h2>
-
-            <form id="editOrderForm" method="POST" action="{{ route('orders.update') }}">
-                @csrf
-                @method('PUT')
-
-                <input type="hidden" name="order_id" id="order_id">
-
-                <!-- Order Items -->
-                <div class="mb-4">
-                    <h3 class="font-semibold mb-2">Order Items</h3>
-
-                    <table class="w-full text-sm border">
-                        <thead class="bg-gray-100">
-                            <tr>
-                                <th class="p-2 text-left">Item</th>
-                                <th class="p-2">Qty</th>
-                                <th class="p-2">Type</th>
-                                <th class="p-2">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="orderItemsContainer">
-                            <!-- Items injected via JS -->
-                        </tbody>
-                    </table>
-
-                    <button type="button"
-                            onclick="addEmptyItem()"
-                            class="mt-2 px-3 py-1 bg-green-600 text-white rounded">
-                        + Add Item
-                    </button>
-                </div>
-
-                <!-- Footer -->
-                <div class="flex justify-end gap-2">
-                    <button type="button"
-                            onclick="closeModal()"
-                            class="px-4 py-2 bg-gray-300 rounded">
-                        Cancel
-                    </button>
-
-                    <button type="submit"
-                            class="px-4 py-2 bg-indigo-600 text-white rounded">
-                        Save Changes
-                    </button>
-                </div>
-            </form>
+        <div class="px-6 py-4 border-b">
+            <h2 class="font-semibold text-gray-800">Orders List</h2>
         </div>
+
+        <div class="overflow-x-auto" id="tableData">
+            <table class="min-w-full divide-y divide-gray-200 text-sm">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-2">SN</th>
+                        <th class="px-4 py-2">Product Name</th>
+                        <th class="px-4 py-2">Quantity</th>
+                        {{-- <th class="px-4 py-2">Product Type</th> --}}
+                        <th class="px-4 py-2">Total Amount</th>
+                        {{-- <th class="px-4 py-2">Delivery Address</th> --}}
+                        {{-- <th class="px-4 py-2">Customer Name</th> --}}
+                        {{-- <th class="px-4 py-2">Contact No.</th> --}}
+                        <th class="px-4 py-2">Assign Store</th>
+                        <th class="px-4 py-2">Status</th>
+                        <th class="px-4 py-2">Date</th>
+                        <th class="px-4 py-2">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200" id="orderTableBody">
+                    @include('admin.orders.food-order.searchedProducts', ['allOrders' => $allOrders])              
+                </tbody>
+            </table> 
+
+        </div>
+
+        {{-- PAGINATION --}}
+        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
+            <div class="text-sm text-gray-600">
+                Showing <strong>{{ $allOrders->firstItem() ?? 0 }}</strong> to <strong>{{ $allOrders->lastItem() ?? 0 }}</strong> of <strong>{{ $allOrders->total() }}</strong> results
+            </div>
+            <div class="mt-3 md:mt-0" id="pageLink">
+                {{ $allOrders->links() }}
+            </div>
+        </div>
+
     </div>
+
 </div>
 
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-                function openEditModal(order) {
-            document.getElementById('editModal').classList.remove('hidden');
-            document.getElementById('order_id').value = order.OrderId;
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
 
-            const container = document.getElementById('orderItemsContainer');
-            container.innerHTML = '';
+        let interval = null;
+        let inactivityTimeout = null;
+        const INACTIVITY_DELAY = 20000; // 20 seconds inactivity
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+           
+        function bindOrderEvents() {
+            // Cancel forms
+            document.querySelectorAll('.cancel-form').forEach(form => {
+                form.addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const status = parseInt(form.dataset.status);
+                    const blockedStatuses = [3, 4, 6, 7, 8, 10];
 
-            order.items.forEach((item, index) => {
-                container.insertAdjacentHTML('beforeend', itemRow(item, index));
+                    if (blockedStatuses.includes(status)) {
+                        Swal.fire({
+                            title: 'Action Not Allowed!',
+                            text: 'This order cannot be canceled in its current status.',
+                            icon: 'warning',
+                            confirmButtonColor: '#6c757d'
+                        });
+                        return;
+                    }
+
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'This action cannot be undone!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e3342f',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, cancel it!'
+                    }).then((result) => {
+                        if (result.isConfirmed) form.submit();
+                    });
+                });
+            });
+
+            // Assign Store
+            // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            document.querySelectorAll('.assign-store').forEach(select => {
+                select.addEventListener('change', function () {
+
+                    const medicalStoreId = this.value;
+                    const orderId = this.dataset.orderId;
+                    const selectedName = this.options[this.selectedIndex].text;
+
+                    if (!medicalStoreId || !orderId) return;
+
+                    Swal.fire({
+                        title: 'Assign Store?',
+                        text: `Are you sure you want to assign "${selectedName}" to this order?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, assign!',
+                        cancelButtonText: 'Cancel'
+                    }).then((result) => {
+
+                        if (!result.isConfirmed) {
+                            // reset dropdown if cancelled
+                            this.value = '';
+                            return;
+                        }
+
+                        fetch("{{ route('orders.assign-store') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": csrfToken
+                            },
+                            body: JSON.stringify({
+                                order_id: orderId,
+                                medical_store_id: medicalStoreId
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+
+                                // update status text
+                                const statusText = document.querySelector(
+                                    `.order-status-text[data-order-id="${orderId}"]`
+                                );
+
+                                if (statusText) {
+                                    statusText.textContent = 'Assigned';
+                                }
+
+                                Swal.fire({
+                                    toast: true,
+                                    icon: 'success',
+                                    title: data.message,
+                                    timer: 1500,
+                                    position: 'top-end',
+                                    showConfirmButton: false
+                                });
+
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: data.message || 'Failed to assign store'
+                                });
+                            }
+                        })
+                        .catch(() => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Something went wrong'
+                            });
+                        });
+
+                    });
+                });
+            });
+
+             // Pause auto-refresh when interacting
+            const interactiveElements = document.querySelectorAll('.assign-store, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
+            interactiveElements.forEach(el => {
+                el.addEventListener('focus', pauseRefreshOnActivity);
+                el.addEventListener('input', pauseRefreshOnActivity);
+                el.addEventListener('change', pauseRefreshOnActivity);
+                el.addEventListener('click', pauseRefreshOnActivity);
+                el.addEventListener('blur', startInactivityTimer);
             });
         }
 
-        function itemRow(item = {}, index) {
+        function loadOrders() {
+            const params = new URLSearchParams(window.location.search);
 
-            const isExisting = !!item.OrderItemId;
-
-            return `
-                <tr class="border-t">
-
-                    <!-- OrderItemId -->
-                    <input type="hidden"
-                        name="items[${index}][order_item_id]"
-                        value="${item.OrderItemId ?? ''}">
-
-                    <!-- Item Name -->
-                    <td class="p-2">
-                        <input type="text"
-                            name="items[${index}][name]"
-                            value="${item.ItemName ?? ''}"
-                            class="w-full border px-2 py-1 ${isExisting ? 'bg-gray-100' : ''}"
-                            ${isExisting ? 'readonly' : ''}>
-                    </td>
-
-                    <!-- Quantity (ALWAYS EDITABLE) -->
-                    <td class="p-2 text-center">
-                        <div class="flex justify-center items-center gap-1">
-                            <button type="button" onclick="changeQty(this,-1)">−</button>
-
-                            <input type="number"
-                                name="items[${index}][qty]"
-                                value="${item.Quantity ?? 1}"
-                                min="1"
-                                class="w-14 text-center border">
-
-                            <button type="button" onclick="changeQty(this,1)">+</button>
-                        </div>
-                    </td>
-
-                    <!-- Item Type -->
-                    <td class="p-2">
-                        <select name="items[${index}][type]"
-                                class="border px-2 py-1 w-full ${isExisting ? 'bg-gray-100' : ''}"
-                                ${isExisting ? 'disabled' : ''}>
-                            <option value="MenuItem" ${item.ItemType==='MenuItem'?'selected':''}>MenuItem</option>
-                            <option value="Medicine" ${item.ItemType==='Medicine'?'selected':''}>Medicine</option>
-                        </select>
-
-                        <!-- Disabled select won't submit → add hidden input -->
-                        ${isExisting ? `
-                            <input type="hidden"
-                                name="items[${index}][type]"
-                                value="${item.ItemType}">
-                        ` : ''}
-                    </td>
-
-                    <td class="p-2 text-center text-gray-400">
-                        ${isExisting ? 'Existing' : 'New'}
-                    </td>
-                </tr>
-            `;
+            fetch("{{ route('orders.food.index') }}?" + params.toString(), {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(res => res.text())
+            .then(html => {
+                document.getElementById('orderTableBody').innerHTML = html;
+                bindOrderEvents(); // re-bind events for new DOM elements
+            })
+            // .catch(err => console.error('Table refresh failed:', err));
         }
 
-        function addEmptyItem() {
-            const container = document.getElementById('orderItemsContainer');
-            const index = container.children.length;
-            container.insertAdjacentHTML('beforeend', itemRow({}, index));
+        function startAutoRefresh() {
+            if (!interval) interval = setInterval(loadOrders, 20000);
         }
 
-        function changeQty(btn, delta) {
-            const input = btn.parentElement.querySelector('input[type="number"]');
-            let value = parseInt(input.value) || 1;
-            value = Math.max(1, value + delta);
-            input.value = value;
+        function stopAutoRefresh() {
+            if (interval) { clearInterval(interval); interval = null; }
         }
 
-        function closeModal() {
-            document.getElementById('editModal').classList.add('hidden');
+        function pauseRefreshOnActivity() {
+            stopAutoRefresh();
+            clearTimeout(inactivityTimeout);
+            inactivityTimeout = setTimeout(() => {
+                loadOrders();
+                startAutoRefresh();
+            }, INACTIVITY_DELAY);
         }
-    </script>
+
+        function startInactivityTimer() {
+            clearTimeout(inactivityTimeout);
+            inactivityTimeout = setTimeout(() => {
+                loadOrders();
+                startAutoRefresh();
+            }, INACTIVITY_DELAY);
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) stopAutoRefresh();
+            else startInactivityTimer();
+        });
+
+        bindOrderEvents();
+        startAutoRefresh();
+    });
+</script>
 @endpush
 
 
