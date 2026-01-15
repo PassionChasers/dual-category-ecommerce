@@ -242,52 +242,129 @@
         // Assign Store
         const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+        // document.querySelectorAll('.assign-store').forEach(select => {
+        //     select.addEventListener('change', function () {
+
+        //         const restaurantId = this.value;
+        //         const orderId = this.dataset.orderId;
+
+        //         if (!restaurantId || !orderId) return;
+
+        //         fetch("{{ route('orders.assign-store') }}", {
+        //             method: "POST",
+        //             headers: {
+        //                 "Content-Type": "application/json",
+        //                 "X-CSRF-TOKEN": csrfToken
+        //             },
+        //             body: JSON.stringify({
+        //                 order_id: orderId,
+        //                 restaurant_id: restaurantId
+        //             })
+        //         })
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             console.log(data); // Debug: see what server returns
+        //             if (data.success) {
+        //                 Swal.fire({
+        //                     toast: true,
+        //                     icon: 'success',
+        //                     title: data.message,
+        //                     timer: 1500,
+        //                     position: 'top-end',
+        //                     showConfirmButton: false
+        //                 });
+        //             } else {
+        //                 Swal.fire({
+        //                     icon: 'error',
+        //                     title: data.message || 'Failed to assign store'
+        //                 });
+        //             }
+        //         })
+        //         .catch(err => {
+        //             console.error(err);
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Something went wrong'
+        //             });
+        //         });
+
+        //     });
+        // });
+
         document.querySelectorAll('.assign-store').forEach(select => {
             select.addEventListener('change', function () {
 
-                const restaurantId = this.value;
+                const medicalStoreId = this.value;
                 const orderId = this.dataset.orderId;
+                const selectedName = this.options[this.selectedIndex].text;
 
-                if (!restaurantId || !orderId) return;
+                if (!medicalStoreId || !orderId) return;
 
-                fetch("{{ route('orders.assign-store') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": csrfToken
-                    },
-                    body: JSON.stringify({
-                        order_id: orderId,
-                        restaurant_id: restaurantId
+                Swal.fire({
+                    title: 'Assign Store?',
+                    text: `Are you sure you want to assign "${selectedName}" to this order?`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, assign!',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+
+                    if (!result.isConfirmed) {
+                        // reset dropdown if cancelled
+                        this.value = '';
+                        return;
+                    }
+
+                    fetch("{{ route('orders.assign-store') }}", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRF-TOKEN": csrfToken
+                        },
+                        body: JSON.stringify({
+                            order_id: orderId,
+                            medical_store_id: medicalStoreId
+                        })
                     })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log(data); // Debug: see what server returns
-                    if (data.success) {
-                        Swal.fire({
-                            toast: true,
-                            icon: 'success',
-                            title: data.message,
-                            timer: 1500,
-                            position: 'top-end',
-                            showConfirmButton: false
-                        });
-                    } else {
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+
+                            // update status text
+                            const statusText = document.querySelector(
+                                `.order-status-text[data-order-id="${orderId}"]`
+                            );
+
+                            if (statusText) {
+                                statusText.textContent = 'Assigned';
+                            }
+
+                            Swal.fire({
+                                toast: true,
+                                icon: 'success',
+                                title: data.message,
+                                timer: 1500,
+                                position: 'top-end',
+                                showConfirmButton: false
+                            });
+
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: data.message || 'Failed to assign store'
+                            });
+                        }
+                    })
+                    .catch(() => {
                         Swal.fire({
                             icon: 'error',
-                            title: data.message || 'Failed to assign store'
+                            title: 'Something went wrong'
                         });
-                    }
-                })
-                .catch(err => {
-                    console.error(err);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Something went wrong'
                     });
-                });
 
+                });
             });
         });
 

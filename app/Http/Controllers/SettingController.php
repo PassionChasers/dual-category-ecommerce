@@ -4,14 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Setting;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\File; // Added for file copy
-use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\File;
 
 class SettingController extends Controller
 {
     /**
-     * Display the settings form.
+     * Show settings page
      */
     public function index()
     {
@@ -20,154 +18,14 @@ class SettingController extends Controller
     }
 
     /**
-     * Store settings if not exists (only 1 record allowed).
+     * Update settings (single row only)
      */
-    // public function store(Request $request)
-    // {
-    //     $validated = $request->validate([
-    //         'AppName' => 'nullable|string|max:255',
-    //         'AppLogo' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
-    //         'Favicon' => 'nullable|image|mimes:png,jpg,ico|max:1024',
-    //         'MetaTitle' => 'nullable|string|max:255',
-    //         'MetaDescription' => 'nullable|string',
-
-    //         'ContactEmail' => 'nullable|email|max:255',
-    //         'ContactPhone' => 'nullable|string|max:20',
-    //         'ContactAddress' => 'nullable|string|max:255',
-
-    //         'SmsApiUrl' => 'nullable|string|max:255',
-    //         'SmsApiKey' => 'nullable|string|max:255',
-    //         'SmsSenderId' => 'nullable|string|max:100',
-
-    //         'MailMailer' => 'nullable|string|max:50',
-    //         'MailHost' => 'nullable|string|max:255',
-    //         'MailPort' => 'nullable|integer',
-    //         'MailUsername' => 'nullable|string|max:255',
-    //         'MailPassword' => 'nullable|string|max:255',
-    //         'MailEncryption' => 'nullable|string|max:50',
-    //         'MailFromAddress' => 'nullable|email|max:255',
-    //         'MailFromName' => 'nullable|string|max:255',
-
-    //         'FacebookUrl' => 'nullable|url',
-    //         'TwitterUrl' => 'nullable|url',
-    //         'LinkedinUrl' => 'nullable|url',
-    //         'InstagramUrl' => 'nullable|url',
-
-    //         'MaintenanceMode' => 'nullable|boolean',
-    //         ,
-
-
-
-    //     ]);
-
-    //     // Handle logo uploads
-    //     if ($request->hasFile('applogo')) {
-    //         $path = $request->file('app_logo')->store('settings', 'public');
-    //         $validated['app_logo'] = $path;
-
-    //         // Option 3: Copy to public/storage for servers without symlink
-    //         $source = storage_path('app/public/' . $path);
-    //         $destination = public_path('storage/' . $path);
-    //         if (!File::exists(dirname($destination))) {
-    //             File::makeDirectory(dirname($destination), 0755, true);
-    //         }
-    //         File::copy($source, $destination);
-    //     }
-
-    //     if ($request->hasFile('favicon')) {
-    //         $path = $request->file('favicon')->store('settings', 'public');
-    //         $validated['favicon'] = $path;
-
-    //         // Copy to public/storage
-    //         $source = storage_path('app/public/' . $path);
-    //         $destination = public_path('storage/' . $path);
-    //         if (!File::exists(dirname($destination))) {
-    //             File::makeDirectory(dirname($destination), 0755, true);
-    //         }
-    //         File::copy($source, $destination);
-    //     }
-
-    //     Setting::create($validated);
-
-    //     return redirect()->route('settings.general')->with('success', 'Settings saved successfully.');
-    // }
-
-    /**
-     * Update the settings (since only one row allowed).
-     */
-    // public function update(Request $request, Setting $setting)
-    // {
-    //     $validated = $request->validate([
-    //          'AppName' => 'nullable|string|max:255',
-    //         'AppLogo' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
-    //         'Favicon' => 'nullable|image|mimes:png,jpg,ico|max:1024',
-    //         'MetaTitle' => 'nullable|string|max:255',
-    //         'MetaDescription' => 'nullable|string',
-
-    //         'ContactEmail' => 'nullable|email|max:255',
-    //         'ContactPhone' => 'nullable|string|max:20',
-    //         'ContactAddress' => 'nullable|string|max:255',
-
-    //         'SmsApiUrl' => 'nullable|string|max:255',
-    //         'SmsApiKey' => 'nullable|string|max:255',
-    //         'SmsSenderId' => 'nullable|string|max:100',
-
-    //         'MailMailer' => 'nullable|string|max:50',
-    //         'MailHost' => 'nullable|string|max:255',
-    //         'MailPort' => 'nullable|integer',
-    //         'MailUsername' => 'nullable|string|max:255',
-    //         'MailPassword' => 'nullable|string|max:255',
-    //         'MailEncryption' => 'nullable|string|max:50',
-    //         'MailFromAddress' => 'nullable|email|max:255',
-    //         'MailFromName' => 'nullable|string|max:255',
-
-    //         'FacebookUrl' => 'nullable|url',
-    //         'TwitterUrl' => 'nullable|url',
-    //         'LinkedinUrl' => 'nullable|url',
-    //         'InstagramUrl' => 'nullable|url',
-
-    //         'MaintenanceMode' => 'nullable|boolean',
-    //     ]);
-
-    //     if ($request->hasFile('app_logo')) {
-    //         $path = $request->file('app_logo')->store('settings', 'public');
-    //         $validated['app_logo'] = $path;
-
-    //         // Copy to public/storage
-    //         $source = storage_path('app/public/' . $path);
-    //         $destination = public_path('storage/' . $path);
-    //         if (!File::exists(dirname($destination))) {
-    //             File::makeDirectory(dirname($destination), 0755, true);
-    //         }
-    //         File::copy($source, $destination);
-    //     }
-
-    //     if ($request->hasFile('favicon')) {
-    //         $path = $request->file('favicon')->store('settings', 'public');
-    //         $validated['favicon'] = $path;
-
-    //         // Copy to public/storage
-    //         $source = storage_path('app/public/' . $path);
-    //         $destination = public_path('storage/' . $path);
-    //         if (!File::exists(dirname($destination))) {
-    //             File::makeDirectory(dirname($destination), 0755, true);
-    //         }
-    //         File::copy($source, $destination);
-    //     }
-
-    //     $setting->update($validated);
-
-    //     return redirect()->route('settings.general')->with('success', 'Settings updated successfully.');
-    // }
-
-    public function update(Request $request)
+    public function update(Request $request, Setting $setting)
     {
-        // 1️⃣ Validate using snake_case (matches API)
-        $validated = $request->validate([
+        $request->validate([
             'app_name' => 'nullable|string|max:255',
             'app_logo' => 'nullable|image|mimes:png,jpg,jpeg,svg|max:2048',
-            'favicon' => 'nullable|image|mimes:png,jpg,jpeg,ico|max:1024',
-
+            'favicon'  => 'nullable|image|mimes:png,jpg,ico|max:1024',
             'meta_title' => 'nullable|string|max:255',
             'meta_description' => 'nullable|string',
 
@@ -180,47 +38,46 @@ class SettingController extends Controller
             'linkedin_url' => 'nullable|url',
             'instagram_url' => 'nullable|url',
 
-            'maintenance_mode' => 'nullable',
+            'maintenance_mode' => 'nullable|boolean',
         ]);
 
-        // 2️⃣ API endpoint
-        $apiUrl = 'https://pcsdecom.azurewebsites.net/api/admin/settings';
+        /** =========================
+         *  MAP INPUT → DB COLUMNS
+         *  ========================= */
+        $data = [
+            'AppName'          => $request->app_name,
+            'MetaTitle'        => $request->meta_title,
+            'MetaDescription' => $request->meta_description,
+            'ContactEmail'     => $request->contact_email,
+            'ContactPhone'     => $request->contact_phone,
+            'ContactAddress'   => $request->contact_address,
+            'FacebookUrl'      => $request->facebook_url,
+            'TwitterUrl'       => $request->twitter_url,
+            'LinkedInUrl'      => $request->linkedin_url,
+            'InstagramUrl'     => $request->instagram_url,
+            'MaintenanceMode'  => $request->boolean('maintenance_mode'),
+        ];
 
-        $http = Http::asMultipart();
-
-        // 3️⃣ Attach files (snake_case)
+        /** =========================
+         *  FILE UPLOADS
+         *  ========================= */
         if ($request->hasFile('app_logo')) {
-            $http->attach(
-                'app_logo',
-                file_get_contents($request->file('app_logo')->getRealPath()),
-                $request->file('app_logo')->getClientOriginalName()
-            );
+            $path = $request->file('app_logo')->store('settings', 'public');
+            $data['AppLogo'] = 'storage/' . $path;
         }
 
         if ($request->hasFile('favicon')) {
-            $http->attach(
-                'favicon',
-                file_get_contents($request->file('favicon')->getRealPath()),
-                $request->file('favicon')->getClientOriginalName()
-            );
+            $path = $request->file('favicon')->store('settings', 'public');
+            $data['Favicon'] = 'storage/' . $path;
         }
 
-        // 4️⃣ Normalize checkbox
-        $validated['maintenance_mode'] = $request->boolean('maintenance_mode');
+        /** =========================
+         *  UPDATE
+         *  ========================= */
+        $setting->update(array_filter($data));
 
-        // 5️⃣ Send request
-        $response = $http->put(
-            $apiUrl,
-            collect($validated)->except(['app_logo', 'favicon'])->toArray()
-        );
-
-        // 6️⃣ Debug if API fails (IMPORTANT)
-        if (!$response->successful()) {
-            // TEMPORARY — remove after fixing
-            dd($response->status(), $response->body());
-        }
-
-        return back()->with('success', 'Settings updated successfully.');
+        return redirect()
+            ->route('settings.general')
+            ->with('success', 'Settings updated successfully.');
     }
-
 }

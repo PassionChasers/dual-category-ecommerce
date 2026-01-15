@@ -37,8 +37,8 @@
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
                     @if(!empty($setting->AppLogo))
                     {{-- <img src="{{$setting->AppLogo }}" class="h-10 mt-2"> --}}
-                    <img src="https://pcsdecom.azurewebsites.net{{ $setting->AppLogo }}"
-                        title="https://pcsdecom.azurewebsites.net{{ $setting->AppLogo }}" class="thumb">
+                    <img src="{{ asset($setting->AppLogo) }}"
+                        title="{{ $setting->AppLogo }}" class="thumb">
 
                     @endif
                 </div>
@@ -48,8 +48,8 @@
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
                     @if(!empty($setting->Favicon))
                     {{-- <img src="{{ asset('storage/'.$setting->favicon) }}" class="h-6 mt-2"> --}}
-                    <img src="https://pcsdecom.azurewebsites.net{{ $setting->Favicon }}"
-                        title="https://pcsdecom.azurewebsites.net{{ $setting->Favicon }}" class="thumb">
+                    <img src="{{ asset($setting->Favicon) }}"
+                        title="{{ $setting->Favicon }}" class="thumb">
 
                     @endif
                 </div>

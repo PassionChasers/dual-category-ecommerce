@@ -11,28 +11,13 @@ use App\Models\OrderItem;
 use App\Models\Restaurant;
 use App\Models\MedicalStore;
 use App\Models\Medicine;
+use App\Models\DeliveryMan;
 
 class OrderController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
-    }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    //Store a newly created resource in storage.
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -55,9 +40,8 @@ class OrderController extends Controller
     }
 
 
-    /**
-     * Store multiple medicines for an order
-     */
+    //Store multiple medicines for an order
+
     public function storeMultiple(Request $request)
     {
         // Validate the arrays
@@ -240,12 +224,10 @@ class OrderController extends Controller
                 ]);
             }
         }
-
         // Restore original Status (important!)
         $order->update([
             'Status' => $originalStatus,
         ]);
-
         return back()->with('success', 'Order updated successfully');
     }
 
@@ -254,13 +236,11 @@ class OrderController extends Controller
     public function cancel($id, Request $request)
     {
         $order = Order::findOrFail($id);
-
         // Only update the Status
         $order->Status = 9;
         $order->CancelledAt = now();
         $order->BusinessId = null;
         $order->save();
-
         return redirect()->back()
             ->with('success', 'Order has been cancelled successfully');
     }
@@ -270,11 +250,9 @@ class OrderController extends Controller
     public function reject($id, Request $request)
     {
         $order = Order::findOrFail($id);
-
         // Only update the Status
         $order->Status = 5;
         $order->save();
-
         return redirect()->back()
             ->with('success', 'Order has been rejected successfully');
     }
@@ -348,16 +326,6 @@ class OrderController extends Controller
             });
         }
 
-        // Filter by category
-        // if ($category = $request->get('category')) {
-        //     // $query->where('MedicineCategoryId', $category);
-        //     $query->where(function ($q) use ($category) {
-        //         $q->whereHas('items', function ($q2) use ($category) {
-        //              $q2->where('ItemType', $category);
-        //         });
-        //     }); 
-        // }
-
         if ($request->filled('category')) {
             if ($request->category === 'Medicine') {
                 $query->with(['items' => function ($q) {
@@ -369,14 +337,6 @@ class OrderController extends Controller
                 }]);
             }
         }
-       
-        // Filter by prescription required
-        // if ($request->filled('prescription')) {
-        //     if ($request->prescription === 'yes')
-        //         $query->where('PrescriptionRequired', true);
-        //     elseif ($request->prescription === 'no')
-        //         $query->where('PrescriptionRequired', false);
-        // }
 
         // Filter by is Status
         if ($request->filled('status')) {
@@ -509,9 +469,10 @@ class OrderController extends Controller
         ->orderBy('Priority', 'asc')
         ->get();
 
-        $allDeliveryMan = User::where('Role', 5)
-        ->where('IsActive', true)  
-        ->orderBy('Name')
+        $allDeliveryMan = Deliveryman::with('user')
+        ->whereHas('user', function ($q) {
+            $q->where('Role', 5);
+        })
         ->get();
 
         return view('admin.orders.BusinessViewOrder.restaurant.index', compact('allOrders', 'itemTypes','allRestaurants', 'allDeliveryMan'));
@@ -524,9 +485,6 @@ class OrderController extends Controller
 
     public function medicineOrders(Request $request)
     {
-
-        //  $query = Order::where('RequiresPrescription', true);
-
         $query = Order::whereDoesntHave('items', function ($q) {
                     $q->where('ItemType', 'Food');
                 });
@@ -582,17 +540,8 @@ class OrderController extends Controller
     {
         $medicalStoreId = auth()->user()->medicalstores->pluck('MedicalStoreId')->toArray();
 
-        // $query = Order::whereHas('items', function ($q) use ($medicalStoreIds) {
-        //             $q->whereIn('BusinessId', $medicalStoreIds);
-        //         })
-        //         ->with(['items' => function ($q) use ($medicalStoreIds) {
-        //             $q->whereIn('BusinessId', $medicalStoreIds)
-        //             ->with('medicine'); // Load medicine relation if needed
-        //         }]);
-
         $query = Order::where('BusinessId', $medicalStoreId)
                 ->with(['items.medicine']);
-
 
         // Search by product name
         if ($search = $request->get('search')) {
@@ -636,63 +585,50 @@ class OrderController extends Controller
         ->orderBy('Priority', 'asc')
         ->get();
 
-        $allDeliveryMan = User::where('Role', 5)
-        ->where('IsActive', true)  
-        ->orderBy('Name')
+        $allDeliveryMan = Deliveryman::with('user')
+        ->whereHas('user', function ($q) {
+            $q->where('Role', 5);
+        })
         ->get();
 
         return view('admin.orders.BusinessViewOrder.medicalstore.index', compact('allOrders', 'itemTypes','allMedicalStores', 'allDeliveryMan'));
     }
 
 
-
-    // Assign Medical Store to Medicine Order / Restaurant to Food Order
+    // // Assign Medical Store to Medicine Order / Restaurant to Food Order
     public function assignStore(Request $request)
     {
+        $request->validate([
+            'order_id'         => 'required|exists:Orders,OrderId',
+            'medical_store_id' => 'nullable|exists:MedicalStores,MedicalStoreId',
+            'restaurant_id'    => 'nullable|exists:Restaurants,RestaurantId',
+        ]);
+
+        $order = Order::findOrFail($request->order_id);
+
+        // Block invalid statuses
+        if (in_array($order->Status, [3, 4, 6, 7, 8, 9, 10])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Order cannot be assigned in its current status'
+            ], 403);
+        }
+
+        \DB::beginTransaction();
+
         try {
-            // Validate request
-            $request->validate([
-                'order_id' => 'required|exists:Orders,OrderId',
-                'medical_store_id' => 'nullable|exists:MedicalStores,MedicalStoreId',
-                'restaurant_id'    => 'nullable|exists:Restaurants,RestaurantId',
-            ]);
-
-            $order = Order::find($request->order_id);
-
-            if (!$order) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Order not found'
-                ], 404);
-            }
-
-            // Prevent assigning for Completed / Cancelled orders
-            if (in_array($order->AdminStatus, [10, 9, 8, 7, 6, 4, 3])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Cannot assign store/restaurant to this order because it is Cancelled or Completed.'
-                ], 403);
-            }
-
-            // Determine which assignment to do
             if ($request->filled('medical_store_id')) {
-                // Assign Medical Store
-                Order::where('OrderId', $order->OrderId)
-                    ->update([
-                        'BusinessId' => $request->medical_store_id,
-                        'BusinessType' => 'MedicalStore',
-                        ]);
 
+                $order->BusinessId   = $request->medical_store_id;
+                $order->BusinessType = 'MedicalStore';
                 $message = 'Medical store assigned successfully';
-            } elseif ($request->filled('restaurant_id')) {
-                // Assign Restaurant
-                Order::where('OrderId', $order->OrderId)
-                    ->update([
-                        'BusinessId' => $request->restaurant_id,
-                        'BusinessType' => 'Restaurant',
-                        ]);
 
+            } elseif ($request->filled('restaurant_id')) {
+
+                $order->BusinessId   = $request->restaurant_id;
+                $order->BusinessType = 'Restaurant';
                 $message = 'Restaurant assigned successfully';
+
             } else {
                 return response()->json([
                     'success' => false,
@@ -700,29 +636,83 @@ class OrderController extends Controller
                 ], 422);
             }
 
+            // Assigned
             $order->Status = 3;
             $order->save();
 
+            \DB::commit();
+
             return response()->json([
                 'success' => true,
+                'status'  => 3,
                 'message' => $message
-            ], 200);
+            ]);
 
         } catch (\Throwable $e) {
-            \Log::error('Assign store/restaurant error: '.$e->getMessage());
+            \DB::rollBack();
+            \Log::error('Assign store error: ' . $e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Server error: '.$e->getMessage()
+                'message' => 'Server error'
             ], 500);
         }
     }
 
 
+    // public function assignDeliveryMan(Request $request)
+    // {
+    //     $request->validate([
+    //         'order_id'         => 'required|exists:Orders,OrderId',
+    //         'delivery_man_id' => 'required|exists:DeliveryMen,DeliveryManId',
+    //     ]);
+
+    //     // Find the order
+    //     $order = Order::findOrFail($request->order_id);
+
+    //     // Only allow assigning if order is Packed (status 7)
+    //     if ($order->Status != 7) {
+    //         return redirect()->back()->with('error', 'Order cannot be assigned to delivery man unless it is Packed.');
+    //     }
+
+    //     try {
+    //         // Assign delivery man
+    //         $order->DeliveryManId = $request->delivery_man_id;
+    //         $order->Status        = 8; // Shipping
+    //         $order->ShippingAt = now();
+    //         $order->save();
+
+    //         return redirect()->back()->with('success', 'Delivery man assigned successfully.');
+    //     } catch (\Throwable $e) {
+    //         \Log::error('Assign Deliveryman error: '.$e->getMessage());
+    //         return redirect()->back()->with('error', 'Server error. Please try again.');
+    //     }
+    // }
+
 
     public function assignDeliveryMan(Request $request)
     {
+        $request->validate([
+            'order_id'        => 'required|exists:Orders,OrderId',
+            'delivery_man_id' => 'required|exists:DeliveryMen,DeliveryManId',
+        ]);
 
+        $order = Order::findOrFail($request->order_id);
 
+        if ($order->Status != 7) {
+            return redirect()->back()->with('error', 'Order cannot be assigned unless it is Packed.');
+        }
+
+        try {
+            $order->DeliveryManId = $request->delivery_man_id;
+            $order->Status        = 8; // Shipping
+            $order->save();
+
+            return redirect()->back()->with('success', 'Delivery man assigned successfully.');
+        } catch (\Throwable $e) {
+            \Log::error('Assign Deliveryman error: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Server error. Please try again.');
+        }
     }
 
 
