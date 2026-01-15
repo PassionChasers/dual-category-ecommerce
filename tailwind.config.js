@@ -1,19 +1,22 @@
 /** @type {import('tailwindcss').Config} */
-
-export default Config ({
-
-  darkMode: 'class', // use <html class="dark">
+export default {
+  darkMode: 'class',
 
   content: [
-    // "./resources/**/*.blade.php",
-    // "./resources/**/*.js",
     './resources/views/**/*.blade.php',
     './resources/js/**/*.js',
-    "./resources/**/*.vue",
+    './resources/**/*.vue',
   ],
 
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        primary: '#E56F07',
+        'primary-dark': '#cc6306',
+        btn_blue: '#077DE5',
+        btn_yellow: '#E5DE07',
+      },
+    },
   },
 
   plugins: [
@@ -21,5 +24,4 @@ export default Config ({
     require('@tailwindcss/typography'),
     require('@tailwindcss/aspect-ratio'),
   ],
-});
-
+}
