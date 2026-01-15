@@ -4,10 +4,14 @@
 @push('styles')
     {{-- Extra dashboard-specific styles if needed --}}
 @endpush
+@push('charts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+@endpush
 
 
 @section('contents')
-{{-- @php
+    {{-- @php
     dd($recentOrders);
 @endphp --}}
     <!-- Main content area -->
@@ -21,7 +25,7 @@
                         <span id="current-date" class="font-medium"></span>.
                     </p>
                 </div>
-                
+
                 {{-- Dashboard partial-error flash removed per request --}}
             </div>
 
@@ -47,7 +51,8 @@
                                         </dd>
                                     </dl>
                                     <p class="text-xs text-gray-500 mt-1">
-                                        Active: <span id="stat-activeUsers">{{ number_format($stats['activeUsers'] ?? 0) }}</span>
+                                        Active: <span
+                                            id="stat-activeUsers">{{ number_format($stats['activeUsers'] ?? 0) }}</span>
                                     </p>
                                 </div>
                             </div>
@@ -232,11 +237,11 @@
                                     <div class="flex-1">
                                         <p class="font-medium text-gray-900">#{{ $order->OrderNumber }}</p>
                                         <p class="text-xs text-gray-500">{{ $order->customer->Name ?? 'Unknown' }}</p>
-                                        @if($order->items && count($order->items) > 0)
+                                        @if ($order->items && count($order->items) > 0)
                                             <p class="text-xs text-gray-600 mt-1">
-                                                @foreach($order->items as $item)
+                                                @foreach ($order->items as $item)
                                                     <span class="inline-block">
-                                                        @if($item->food)
+                                                        @if ($item->food)
                                                             {{ $item->food->Name ?? 'Unknown' }}
                                                         @elseif($item->medicine)
                                                             {{ $item->medicine->Name ?? 'Unknown' }}
@@ -244,14 +249,18 @@
                                                             {{ $item->ItemName ?? 'Unknown' }}
                                                         @endif
                                                     </span>
-                                                    @if(!$loop->last)<span class="mx-1">•</span>@endif
+                                                    @if (!$loop->last)
+                                                        <span class="mx-1">•</span>
+                                                    @endif
                                                 @endforeach
                                             </p>
                                         @endif
                                     </div>
                                     <div class="text-right">
-                                        <p class="font-medium text-gray-900">Rs. {{ number_format($order->TotalAmount, 2) }}</p>
-                                        <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($order->CreatedAt)->format('d M, H:i') }}</p>
+                                        <p class="font-medium text-gray-900">Rs.
+                                            {{ number_format($order->TotalAmount, 2) }}</p>
+                                        <p class="text-xs text-gray-500">
+                                            {{ \Carbon\Carbon::parse($order->CreatedAt)->format('d M, H:i') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -263,9 +272,9 @@
                     </div>
                     <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
                         <!-- <a href="#"
-                           class="text-sm font-medium text-yellow-600 hover:text-yellow-500">
-                            View all pending orders
-                        </a> -->
+                               class="text-sm font-medium text-yellow-600 hover:text-yellow-500">
+                                View all pending orders
+                            </a> -->
                     </div>
                 </div>
 
@@ -288,11 +297,11 @@
                                     <div class="flex-1">
                                         <p class="font-medium text-gray-900">#{{ $order->OrderNumber }}</p>
                                         <p class="text-xs text-gray-500">{{ $order->customer->Name ?? 'Unknown' }}</p>
-                                        @if($order->items && count($order->items) > 0)
+                                        @if ($order->items && count($order->items) > 0)
                                             <p class="text-xs text-gray-600 mt-1">
-                                                @foreach($order->items as $item)
+                                                @foreach ($order->items as $item)
                                                     <span class="inline-block">
-                                                        @if($item->food)
+                                                        @if ($item->food)
                                                             {{ $item->food->Name ?? 'Unknown' }}
                                                         @elseif($item->medicine)
                                                             {{ $item->medicine->Name ?? 'Unknown' }}
@@ -300,14 +309,18 @@
                                                             {{ $item->ItemName ?? 'Unknown' }}
                                                         @endif
                                                     </span>
-                                                    @if(!$loop->last)<span class="mx-1">•</span>@endif
+                                                    @if (!$loop->last)
+                                                        <span class="mx-1">•</span>
+                                                    @endif
                                                 @endforeach
                                             </p>
                                         @endif
                                     </div>
                                     <div class="text-right">
-                                        <p class="font-medium text-gray-900">Rs. {{ number_format($order->TotalAmount, 2) }}</p>
-                                        <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($order->CreatedAt)->format('d M, H:i') }}</p>
+                                        <p class="font-medium text-gray-900">Rs.
+                                            {{ number_format($order->TotalAmount, 2) }}</p>
+                                        <p class="text-xs text-gray-500">
+                                            {{ \Carbon\Carbon::parse($order->CreatedAt)->format('d M, H:i') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -319,9 +332,9 @@
                     </div>
                     <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
                         <!-- <a href="#"
-                           class="text-sm font-medium text-purple-600 hover:text-purple-500">
-                            View all assigned orders
-                        </a> -->
+                               class="text-sm font-medium text-purple-600 hover:text-purple-500">
+                                View all assigned orders
+                            </a> -->
                     </div>
                 </div>
 
@@ -344,11 +357,11 @@
                                     <div class="flex-1">
                                         <p class="font-medium text-gray-900">#{{ $order->OrderNumber }}</p>
                                         <p class="text-xs text-gray-500">{{ $order->customer->Name ?? 'Unknown' }}</p>
-                                        @if($order->items && count($order->items) > 0)
+                                        @if ($order->items && count($order->items) > 0)
                                             <p class="text-xs text-gray-600 mt-1">
-                                                @foreach($order->items as $item)
+                                                @foreach ($order->items as $item)
                                                     <span class="inline-block">
-                                                        @if($item->food)
+                                                        @if ($item->food)
                                                             {{ $item->food->Name ?? 'Unknown' }}
                                                         @elseif($item->medicine)
                                                             {{ $item->medicine->Name ?? 'Unknown' }}
@@ -356,14 +369,18 @@
                                                             {{ $item->ItemName ?? 'Unknown' }}
                                                         @endif
                                                     </span>
-                                                    @if(!$loop->last)<span class="mx-1">•</span>@endif
+                                                    @if (!$loop->last)
+                                                        <span class="mx-1">•</span>
+                                                    @endif
                                                 @endforeach
                                             </p>
                                         @endif
                                     </div>
                                     <div class="text-right">
-                                        <p class="font-medium text-gray-900">Rs. {{ number_format($order->TotalAmount, 2) }}</p>
-                                        <p class="text-xs text-gray-500">{{ \Carbon\Carbon::parse($order->CreatedAt)->format('d M, H:i') }}</p>
+                                        <p class="font-medium text-gray-900">Rs.
+                                            {{ number_format($order->TotalAmount, 2) }}</p>
+                                        <p class="text-xs text-gray-500">
+                                            {{ \Carbon\Carbon::parse($order->CreatedAt)->format('d M, H:i') }}</p>
                                     </div>
                                 </div>
                             </div>
@@ -375,16 +392,16 @@
                     </div>
                     <div class="px-4 py-3 bg-gray-50 text-center border-t border-gray-200 mt-auto">
                         <!-- <a href="#"
-                           class="text-sm font-medium text-green-600 hover:text-green-500">
-                            View all completed orders
-                        </a> -->
+                               class="text-sm font-medium text-green-600 hover:text-green-500">
+                                View all completed orders
+                            </a> -->
                     </div>
                 </div>
             </div>
 
             {{-- ================= MAIN DASHBOARD CONTENT ================= --}}
 
-            
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Left Column - 2/3 width -->
                 <div class="lg:col-span-2 space-y-6">
@@ -406,11 +423,11 @@
                                                     {{ $order->customer->Name ?? 'Unknown Customer' }}
                                                     · {{ $order->CreatedAt->format('d M Y, H:i') }}
                                                 </p>
-                                                @if($order->items && count($order->items) > 0)
+                                                @if ($order->items && count($order->items) > 0)
                                                     <p class="text-xs text-gray-600 mt-1">
-                                                        @foreach($order->items as $item)
+                                                        @foreach ($order->items as $item)
                                                             <span class="inline-block">
-                                                                @if($item->food)
+                                                                @if ($item->food)
                                                                     {{ $item->food->Name ?? 'Unknown Item' }}
                                                                 @elseif($item->medicine)
                                                                     {{ $item->medicine->Name ?? 'Unknown Item' }}
@@ -419,7 +436,7 @@
                                                                 @endif
                                                                 (x{{ $item->Quantity }})
                                                             </span>
-                                                            @if(!$loop->last)
+                                                            @if (!$loop->last)
                                                                 <span class="mx-1">•</span>
                                                             @endif
                                                         @endforeach
@@ -429,13 +446,40 @@
                                         </div>
                                         <div class="flex items-center space-x-3">
                                             @php
+<<<<<<< Updated upstream
                                                 $statusLabel = \App\Helpers\StatusHelper::getStatusLabel($order->Status);
                                                 $colors = \App\Helpers\StatusHelper::getStatusColors($order->Status);
                                             @endphp
                                             <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded {{ $colors['bg'] }} {{ $colors['text'] }}">
                                                 {{ $statusLabel }}
+=======
+                                                $status = strtolower($order->Status ?? 'unknown');
+                                                $statusMap = [
+                                                    'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
+                                                    'pendingreview' => [
+                                                        'bg' => 'bg-yellow-100',
+                                                        'text' => 'text-yellow-800',
+                                                    ],
+                                                    'accepted' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+                                                    'preparing' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+                                                    'packed' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+                                                    'dispatched' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
+                                                    'delivered' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
+                                                    'completed' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
+                                                    'cancelled' => ['bg' => 'bg-red-100', 'text' => 'text-red-800'],
+                                                ];
+                                                $colors = $statusMap[$status] ?? [
+                                                    'bg' => 'bg-gray-100',
+                                                    'text' => 'text-gray-800',
+                                                ];
+                                            @endphp
+                                            <span
+                                                class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded {{ $colors['bg'] }} {{ $colors['text'] }}">
+                                                {{ ucfirst(str_replace('pendingreview', 'Pending', $status)) }}
+>>>>>>> Stashed changes
                                             </span>
-                                            <span class="px-2 py-1 rounded text-xs bg-indigo-50 text-indigo-700 font-medium">
+                                            <span
+                                                class="px-2 py-1 rounded text-xs bg-indigo-50 text-indigo-700 font-medium">
                                                 Rs. {{ number_format($order->TotalAmount, 2) }}
                                             </span>
                                         </div>
@@ -449,9 +493,9 @@
                         </div>
                         <div class="px-4 py-4 sm:px-6 bg-gray-50 text-sm text-right">
                             <!-- <a href="#"
-                               class="font-medium text-indigo-600 hover:text-indigo-500">
-                                View all orders
-                            </a> -->
+                                   class="font-medium text-indigo-600 hover:text-indigo-500">
+                                    View all orders
+                                </a> -->
                         </div>
                     </div>
 
@@ -528,9 +572,9 @@
             </div>
         </div>
 
-            <!-- Charts: four equal cards in a single row, aligned with other sections -->
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+        <!-- Charts: four equal cards in a single row, aligned with other sections -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
                 <div class="bg-white p-4 sm:p-6 shadow rounded-lg flex flex-col">
                     <h3 class="text-sm font-medium text-gray-900 mb-2">Orders (Last 7 Days)</h3>
                     <div class="flex-1">
@@ -555,8 +599,8 @@
                         <canvas id="orderStatusChart" class="w-full h-48"></canvas>
                     </div>
                 </div>
-                </div>
             </div>
+        </div>
 
         <!-- Footer -->
         <div class="bg-gray-200 text-left p-4 w-full">
@@ -566,141 +610,161 @@
 @endsection
 
 @push('scripts')
-<script>
-    // Set current date nicely
-    document.addEventListener('DOMContentLoaded', function () {
-        const el = document.getElementById('current-date');
-        if (el) {
-            const now = new Date();
-            const options = { year: 'numeric', month: 'short', day: 'numeric' };
-            el.textContent = now.toLocaleDateString(undefined, options);
-        }
-    });
-</script>
+    <script>
+        // Set current date nicely
+        document.addEventListener('DOMContentLoaded', function() {
+            const el = document.getElementById('current-date');
+            if (el) {
+                const now = new Date();
+                const options = {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                };
+                el.textContent = now.toLocaleDateString(undefined, options);
+            }
+        });
+    </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const ordersPerDay  = @json($ordersPerDayChart);
-        const revenuePerDay = @json($revenuePerDayChart);
-        const moduleSplit   = @json($moduleSplitChart);
-        const orderStatus   = @json($orderStatusChart ?? ['labels' => [], 'data' => []]);
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ordersPerDay = @json($ordersPerDayChart);
+            const revenuePerDay = @json($revenuePerDayChart);
+            const moduleSplit = @json($moduleSplitChart);
+            const orderStatus = @json($orderStatusChart ?? ['labels' => [], 'data' => []]);
 
-        if (typeof Chart === 'undefined') {
-            console.warn('Chart.js is not loaded; dashboard charts will not render.');
-            return;
-        }
+            if (typeof Chart === 'undefined') {
+                console.warn('Chart.js is not loaded; dashboard charts will not render.');
+                return;
+            }
 
-        // Orders per day chart
-        const ordersCtx = document.getElementById('ordersPerDayChart');
-        if (ordersCtx && ordersPerDay.labels && ordersPerDay.labels.length) {
-            new Chart(ordersCtx.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: ordersPerDay.labels,
-                    datasets: [{
-                        label: 'Orders',
-                        data: ordersPerDay.data,
-                        backgroundColor: '#6366f1',
-                        borderColor: '#4f46e5',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true }
+            // Orders per day chart
+            const ordersCtx = document.getElementById('ordersPerDayChart');
+            if (ordersCtx && ordersPerDay.labels && ordersPerDay.labels.length) {
+                new Chart(ordersCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ordersPerDay.labels,
+                        datasets: [{
+                            label: 'Orders',
+                            data: ordersPerDay.data,
+                            backgroundColor: '#6366f1',
+                            borderColor: '#4f46e5',
+                            borderWidth: 1
+                        }]
                     },
-                    plugins: {
-                        legend: { display: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
                     }
-                }
-            });
-        }
-       
+                });
+            }
 
-        // Revenue per day chart
-        const revenueCtx = document.getElementById('revenuePerDayChart');
-        if (revenueCtx) {
-            new Chart(revenueCtx.getContext('2d'), {
-                type: 'line',
-                data: {
-                    labels: revenuePerDay.labels && revenuePerDay.labels.length ? revenuePerDay.labels : ['No data'],
-                    datasets: [{
-                        label: 'Revenue (Rs.)',
-                        data: revenuePerDay.data && revenuePerDay.data.length ? revenuePerDay.data : [0],
-                        fill: false,
-                        backgroundColor: '#22c55e',
-                        borderColor: '#16a34a',
-                        tension: 0.3
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true }
+
+            // Revenue per day chart
+            const revenueCtx = document.getElementById('revenuePerDayChart');
+            if (revenueCtx) {
+                new Chart(revenueCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: revenuePerDay.labels && revenuePerDay.labels.length ? revenuePerDay.labels :
+                            ['No data'],
+                        datasets: [{
+                            label: 'Revenue (Rs.)',
+                            data: revenuePerDay.data && revenuePerDay.data.length ? revenuePerDay
+                                .data : [0],
+                            fill: false,
+                            backgroundColor: '#22c55e',
+                            borderColor: '#16a34a',
+                            tension: 0.3
+                        }]
                     },
-                    plugins: {
-                        legend: { position: 'bottom' }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
 
-        // Module split doughnut
-        const moduleCtx = document.getElementById('moduleSplitChart');
-        if (moduleCtx && moduleSplit.labels && moduleSplit.labels.length) {
-            new Chart(moduleCtx.getContext('2d'), {
-                type: 'doughnut',
-                data: {
-                    labels: moduleSplit.labels,
-                    datasets: [{
-                        data: moduleSplit.data,
-                        backgroundColor: ['#22c55e', '#f97316', '#6b7280'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom' }
-                    }
-                }
-            });
-        }
-
-        // Order Status Distribution bar chart
-        const orderStatusCtx = document.getElementById('orderStatusChart');
-        if (orderStatusCtx && orderStatus.labels && orderStatus.labels.length) {
-            new Chart(orderStatusCtx.getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: orderStatus.labels,
-                    datasets: [{
-                        label: 'Orders',
-                        data: orderStatus.data,
-                        backgroundColor: ['#fbbf24', '#3b82f6', '#22c55e', '#ef4444'],
-                        borderColor: ['#f59e0b', '#1e40af', '#16a34a', '#dc2626'],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    indexAxis: 'x',
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: { beginAtZero: true }
+            // Module split doughnut
+            const moduleCtx = document.getElementById('moduleSplitChart');
+            if (moduleCtx && moduleSplit.labels && moduleSplit.labels.length) {
+                new Chart(moduleCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: moduleSplit.labels,
+                        datasets: [{
+                            data: moduleSplit.data,
+                            backgroundColor: ['#22c55e', '#f97316', '#6b7280'],
+                            borderWidth: 1
+                        }]
                     },
-                    plugins: {
-                        legend: { display: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
                     }
-                }
-            });
-        }
-    });
+                });
+            }
 
-    // Refresh stats removed — no runtime handler
-</script>
+            // Order Status Distribution bar chart
+            const orderStatusCtx = document.getElementById('orderStatusChart');
+            if (orderStatusCtx && orderStatus.labels && orderStatus.labels.length) {
+                new Chart(orderStatusCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: orderStatus.labels,
+                        datasets: [{
+                            label: 'Orders',
+                            data: orderStatus.data,
+                            backgroundColor: ['#fbbf24', '#3b82f6', '#22c55e', '#ef4444'],
+                            borderColor: ['#f59e0b', '#1e40af', '#16a34a', '#dc2626'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'x',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // Refresh stats removed — no runtime handler
+    </script>
 @endpush
