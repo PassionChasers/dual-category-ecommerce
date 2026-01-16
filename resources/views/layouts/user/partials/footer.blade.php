@@ -6,7 +6,7 @@
                 <div>
                     <div class="flex items-center mb-4">
                         <div
-                            class="w-10 h-10 rounded-lg gradient-bg flex items-center justify-center text-white font-bold mr-3">
+                            class="w-10 h-10 rounded-lg bg-linear-to-br from-orange-500 to-yellow-500  flex items-center justify-center text-white font-bold mr-3">
                             <i class="fas fa-shopping-bag"></i>
                         </div>
                         <h2 class="text-white text-xl font-bold">

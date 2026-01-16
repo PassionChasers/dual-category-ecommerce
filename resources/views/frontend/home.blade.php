@@ -58,7 +58,7 @@
     <section class="py-2 bg-white">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                <div class="p-4 rounded-lg hover:bg-gray-50 transition duration-300">
+                <div class="p-7 rounded-lg hover:bg-gray-50  transition duration-300">
                     <p class="text-3xl md:text-4xl font-bold text-primary-600">
                         {{-- {{$userCount}}+ --}}
                         1K+

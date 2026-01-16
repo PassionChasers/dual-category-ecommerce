@@ -446,37 +446,11 @@
                                         </div>
                                         <div class="flex items-center space-x-3">
                                             @php
-<<<<<<< Updated upstream
                                                 $statusLabel = \App\Helpers\StatusHelper::getStatusLabel($order->Status);
                                                 $colors = \App\Helpers\StatusHelper::getStatusColors($order->Status);
                                             @endphp
                                             <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded {{ $colors['bg'] }} {{ $colors['text'] }}">
                                                 {{ $statusLabel }}
-=======
-                                                $status = strtolower($order->Status ?? 'unknown');
-                                                $statusMap = [
-                                                    'pending' => ['bg' => 'bg-yellow-100', 'text' => 'text-yellow-800'],
-                                                    'pendingreview' => [
-                                                        'bg' => 'bg-yellow-100',
-                                                        'text' => 'text-yellow-800',
-                                                    ],
-                                                    'accepted' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
-                                                    'preparing' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
-                                                    'packed' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
-                                                    'dispatched' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800'],
-                                                    'delivered' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
-                                                    'completed' => ['bg' => 'bg-green-100', 'text' => 'text-green-800'],
-                                                    'cancelled' => ['bg' => 'bg-red-100', 'text' => 'text-red-800'],
-                                                ];
-                                                $colors = $statusMap[$status] ?? [
-                                                    'bg' => 'bg-gray-100',
-                                                    'text' => 'text-gray-800',
-                                                ];
-                                            @endphp
-                                            <span
-                                                class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded {{ $colors['bg'] }} {{ $colors['text'] }}">
-                                                {{ ucfirst(str_replace('pendingreview', 'Pending', $status)) }}
->>>>>>> Stashed changes
                                             </span>
                                             <span
                                                 class="px-2 py-1 rounded text-xs bg-indigo-50 text-indigo-700 font-medium">
