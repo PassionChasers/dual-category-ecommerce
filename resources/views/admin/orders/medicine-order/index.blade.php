@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (!medicalStoreId || !orderId) return;
 
-                pauseTableUpdate();///
+                pauseTableUpdate();
 
                 Swal.fire({
                     title: 'Assign Store?',
