@@ -47,8 +47,8 @@
 
                 <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="">All Status</option>
-                    <option value="1" {{ request('status') == 1 ? 'selected' : '' }}>Pending</option>
-                    <option value="2" {{ request('status') == 2 ? 'selected' : '' }}>Pending Review</option>
+                    {{-- <option value="1" {{ request('status') == 1 ? 'selected' : '' }}>Pending</option>
+                    <option value="2" {{ request('status') == 2 ? 'selected' : '' }}>Pending Review</option> --}}
                     <option value="3" {{ request('status') == 3 ? 'selected' : '' }}>Assigned</option>
                     <option value="4" {{ request('status') == 4 ? 'selected' : '' }}>Accepted</option>
                     <option value="5" {{ request('status') == 5 ? 'selected' : '' }}>Rejected</option>
@@ -134,21 +134,24 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     let interval = null;           // Regular AJAX interval
+    let tableLoaderPaused = false;
+    let refreshPending = false;
+
     let inactivityTimeout = null;  // Timer to resume after inactivity
-    const INACTIVITY_DELAY = 20000; // 15 seconds
+    const INACTIVITY_DELAY = 20000; // 20 seconds
 
     function bindOrderEvents() {
 
         // Pause AJAX while interacting with selects or inputs
-        const interactiveElements = document.querySelectorAll('.assign-deliveryman, .order-status, input[name="search"]');
+        const interactiveElements = document.querySelectorAll('.assign-deliveryman, .order-status, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
 
         interactiveElements.forEach(el => {
 
             // Any activity stops AJAX and resets the inactivity timer
-            el.addEventListener('focus', pauseRefreshOnActivity);
-            el.addEventListener('input', pauseRefreshOnActivity); // typing in input
-            el.addEventListener('change', pauseRefreshOnActivity);
-            el.addEventListener('click', pauseRefreshOnActivity);
+            el.addEventListener('focus', pauseTableUpdate);
+            el.addEventListener('input', pauseTableUpdate); // typing in input
+            el.addEventListener('change', pauseTableUpdate);
+            el.addEventListener('click', pauseTableUpdate);
 
             // When user leaves element, start inactivity timer
             el.addEventListener('blur', startInactivityTimer);
@@ -162,6 +165,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (!this.value) return;
 
+                pauseTableUpdate();
+
                 Swal.fire({
                     title: 'Assign Delivery Man?',
                     text: `Are you sure you want to assign "${selectedName}" to this order?`,
@@ -172,8 +177,15 @@ document.addEventListener('DOMContentLoaded', function () {
                     confirmButtonText: 'Yes, assign!',
                     cancelButtonText: 'Cancel'
                 }).then(result => {
-                    if (result.isConfirmed) form.submit();
-                    else this.value = '';
+                    if (result.isConfirmed){
+                        // resumeTableUpdate();
+                        form.submit();
+                    } 
+                    else {
+                        this.value = '';
+                        resumeTableUpdate();
+                    }
+                    
                 });
             });
         });
@@ -182,6 +194,9 @@ document.addEventListener('DOMContentLoaded', function () {
         const csrf = document.querySelector('meta[name="csrf-token"]').content;
         document.querySelectorAll('.order-status').forEach(select => {
             select.addEventListener('change', function () {
+
+                pauseTableUpdate();
+
                 fetch("{{ route('orders.update-status') }}", {
                     method: "POST",
                     headers: {
@@ -203,13 +218,27 @@ document.addEventListener('DOMContentLoaded', function () {
                         showConfirmButton: false,
                         timer: 1500
                     });
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Something went wrong'
+                    });
+                })
+                .finally(() => {
+                    resumeTableUpdate();
                 });
             });
         });
 
     }
 
-    function loadOrders() {
+    function loadOrders(force = false) {
+
+        if (tableLoaderPaused && !force) {
+            refreshPending = true; // remember to refresh later
+            return;
+        }
         const params = new URLSearchParams(window.location.search);
 
         fetch("{{ route('orders.medicalstore-medicine.index') }}?" + params.toString(), {
@@ -223,43 +252,62 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function startAutoRefresh() {
-        if (!interval) interval = setInterval(loadOrders, 20000);
-    }
-
-    function stopAutoRefresh() {
-        if (interval) {
-            clearInterval(interval);
-            interval = null;
+        if (!interval) {
+            interval = setInterval(() => loadOrders(), 10000);
         }
     }
 
-    // Called on activity (typing, focus, click)
-    function pauseRefreshOnActivity() {
-        stopAutoRefresh();
-        clearTimeout(inactivityTimeout);
-        inactivityTimeout = setTimeout(() => {
-            loadOrders();      // One refresh after inactivity
-            startAutoRefresh(); // Resume 5s interval
-        }, INACTIVITY_DELAY);
+    function pauseTableUpdate() {
+        tableLoaderPaused = true;
+        if (interval) { 
+            clearInterval(interval);
+            interval = null; 
+        }
     }
+
+
+    // Called on activity (typing, focus, click)
+    // function pauseRefreshOnActivity() {
+    //     stopAutoRefresh();
+    //     clearTimeout(inactivityTimeout);
+    //     inactivityTimeout = setTimeout(() => {
+    //         loadOrders();      // One refresh after inactivity
+    //         startAutoRefresh(); // Resume 5s interval
+    //     }, INACTIVITY_DELAY);
+    // }
 
     // Called when user leaves input/select
     function startInactivityTimer() {
         clearTimeout(inactivityTimeout);
         inactivityTimeout = setTimeout(() => {
-            loadOrders();
-            startAutoRefresh();
+            // loadOrders();
+            // startAutoRefresh();
+            resumeTableUpdate()
         }, INACTIVITY_DELAY);
+    }
+
+    // Resume + instant refresh
+    function resumeTableUpdate() {
+        tableLoaderPaused = false;
+
+        if (refreshPending) {
+            refreshPending = false;
+            loadOrders(true); // force refresh immediately
+        }
+        
+        startAutoRefresh();
+
     }
 
     // Pause AJAX if tab is hidden
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden) stopAutoRefresh();
-        else startInactivityTimer();
+        if (document.hidden) pauseTableUpdate();
+        else resumeTableUpdate();
     });
 
-    // Initial binding and auto-refresh start
+    //Initial Load
     bindOrderEvents();
+    loadOrders();
     startAutoRefresh();
 
 });

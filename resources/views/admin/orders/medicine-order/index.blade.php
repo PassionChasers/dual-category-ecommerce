@@ -135,6 +135,9 @@
 document.addEventListener('DOMContentLoaded', function () {
 
     let interval = null;
+    let tableLoaderPaused = false;/////
+    let refreshPending = false;////
+
     let inactivityTimeout = null;
     const INACTIVITY_DELAY = 20000; // 20 seconds inactivity
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
@@ -144,6 +147,9 @@ document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.cancel-form').forEach(form => {
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
+
+                pauseTableUpdate();//
+
                 const status = parseInt(form.dataset.status);
                 const blockedStatuses = [3, 4, 6, 7, 8, 10];
 
@@ -154,6 +160,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         icon: 'warning',
                         confirmButtonColor: '#6c757d'
                     });
+
+                    resumeTableUpdate();
                     return;
                 }
 
@@ -166,7 +174,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     cancelButtonColor: '#6c757d',
                     confirmButtonText: 'Yes, cancel it!'
                 }).then((result) => {
-                    if (result.isConfirmed) form.submit();
+                    if (result.isConfirmed) {
+                        form.submit();  // normal submit  auto  page refresh
+                    } else {
+                        resumeTableUpdate();
+                    }
+
                 });
             });
         });
@@ -179,6 +192,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const selectedName = this.options[this.selectedIndex].text;
 
                 if (!medicalStoreId || !orderId) return;
+
+                pauseTableUpdate();
 
                 Swal.fire({
                     title: 'Assign Store?',
@@ -193,6 +208,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     if (!result.isConfirmed) {
                         this.value = '';
+                        resumeTableUpdate();
                         return;
                     }
 
@@ -235,6 +251,9 @@ document.addEventListener('DOMContentLoaded', function () {
                             icon: 'error',
                             title: 'Something went wrong'
                         });
+                    })
+                    .finally(() => {
+                        resumeTableUpdate();
                     });
 
                 });
@@ -244,15 +263,21 @@ document.addEventListener('DOMContentLoaded', function () {
         // Pause auto-refresh when interacting
         const interactiveElements = document.querySelectorAll('.assign-store, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
         interactiveElements.forEach(el => {
-            el.addEventListener('focus', pauseRefreshOnActivity);
-            el.addEventListener('input', pauseRefreshOnActivity);
-            el.addEventListener('change', pauseRefreshOnActivity);
-            el.addEventListener('click', pauseRefreshOnActivity);
+            el.addEventListener('focus', pauseTableUpdate);
+            el.addEventListener('input', pauseTableUpdate);
+            el.addEventListener('change', pauseTableUpdate);
+            el.addEventListener('click', pauseTableUpdate);
             el.addEventListener('blur', startInactivityTimer);
         });
     }
 
-    function loadOrders() {
+    function loadOrders(force = false) {
+
+        if (tableLoaderPaused && !force) {
+            refreshPending = true; // remember to refresh later
+            return;
+        }
+
         const params = new URLSearchParams(window.location.search);
 
         fetch("{{ route('orders.medicine.index') }}?" + params.toString(), {
@@ -260,14 +285,6 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(res => res.text())
         .then(html => {
-            // const parser = new DOMParser();
-            // const doc = parser.parseFromString(html, 'text/html');
-            // const newTbody = doc.querySelector('#orderTableBody');
-            // if (newTbody) {
-            //     document.querySelector('#orderTableBody').innerHTML = newTbody.innerHTML;
-            //     bindOrderEvents(); // rebind events
-            // }
-
             document.getElementById('orderTableBody').innerHTML = html;
             bindOrderEvents(); // re-bind events for new DOM elements
         })
@@ -275,36 +292,59 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function startAutoRefresh() {
-        if (!interval) interval = setInterval(loadOrders, 20000);
+        if (!interval) {
+            interval = setInterval(() => loadOrders(), 10000);
+        }
     }
 
-    function stopAutoRefresh() {
-        if (interval) { clearInterval(interval); interval = null; }
+    function pauseTableUpdate() {
+        tableLoaderPaused = true;
+        if (interval) { 
+            clearInterval(interval);
+            interval = null; 
+        }
     }
 
-    function pauseRefreshOnActivity() {
-        stopAutoRefresh();
-        clearTimeout(inactivityTimeout);
-        inactivityTimeout = setTimeout(() => {
-            loadOrders();
-            startAutoRefresh();
-        }, INACTIVITY_DELAY);
-    }
+    // function pauseRefreshOnActivity() {
+    //     stopAutoRefresh();
+    //     clearTimeout(inactivityTimeout);
+    //     inactivityTimeout = setTimeout(() => {
+    //         loadOrders();
+    //         startAutoRefresh();
+    //     }, INACTIVITY_DELAY);
+    // }
 
     function startInactivityTimer() {
         clearTimeout(inactivityTimeout);
         inactivityTimeout = setTimeout(() => {
-            loadOrders();
-            startAutoRefresh();
+            // loadOrders();
+            // startAutoRefresh();
+            resumeTableUpdate()
         }, INACTIVITY_DELAY);
     }
 
+
+    // Resume + instant refresh
+    function resumeTableUpdate() {
+        tableLoaderPaused = false;
+
+        if (refreshPending) {
+            refreshPending = false;
+            loadOrders(true); // force refresh immediately
+        }
+        
+        startAutoRefresh();
+
+    }
+
     document.addEventListener('visibilitychange', () => {
-        if (document.hidden) stopAutoRefresh();
-        else startInactivityTimer();
+        if (document.hidden) pauseTableUpdate();
+        else resumeTableUpdate();
     });
 
+    //Initial Load
     bindOrderEvents();
+    loadOrders();
     startAutoRefresh();
 
 });
