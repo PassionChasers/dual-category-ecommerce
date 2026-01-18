@@ -44,7 +44,7 @@
             <li>Contact : {{ $order->customer->user->Phone ?? 'N/A' }}</li>
             <li>Delivery Address : {{ $order->DeliveryAddress ?? 'N/A' }}</li>
 
-            @if($order->RequiresPrescription && $order->OrderDescription)
+            @if($order->OrderDescription)
                 <li class="mt-2">
                     <h3><b>Order Description :</b></h3> {{$order->OrderDescription}}
                 </li>
@@ -69,67 +69,70 @@
     </div>
 
     {{-- Add Medicines Button --}}
-    @if($order->RequiresPrescription && ($order->PrescriptionImageUrl || $order->OrderDescription) && ($order->Status != 10 && $order->Status == 2))
-    <div class="mb-4">
-        <button type="button" onclick="toggleAddMedicineForm()"
-            class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-            + Add Medicines
-        </button>
-    </div>
-    @endif
-
-    {{-- Add Medicines Form --}}
-    @if($order->RequiresPrescription && ($order->PrescriptionImageUrl || $order->OrderDescription) && $order->Status != 10 && $order->Status == 2)
-    <div id="addMedicineForm" class="hidden mt-6 bg-white p-6 rounded-lg border shadow">
-        <h3 class="text-lg font-semibold mb-4">Add Medicines to Order</h3>
-
-        <form method="POST" action="{{ route('order-items.storeMultiple') }}">
-            @csrf
-            <input type="hidden" name="OrderId" value="{{ $order->OrderId }}">
-
-            {{-- Medicines Container --}}
-            <div id="medicinesContainer">
-                <div class="medicineRow flex gap-4 mb-4">
-                    <div class="flex-1">
-                        <label class="block text-sm font-medium mb-1">Medicine</label>
-                        <input type="text" name="MedicineName[]" class="medicineInput w-full border rounded px-3 py-2" placeholder="Type medicine name..." required>
-                        <input type="hidden" name="MedicineId[]" class="medicineId">
-                    </div>
-
-                    <div class="w-24">
-                        <label class="block text-sm font-medium mb-1">Qty</label>
-                        <input type="number" name="Quantity[]" value="1" min="1" required class="w-full border rounded px-3 py-2">
-                    </div>
-
-                    <div class="w-32">
-                        <label class="block text-sm font-medium mb-1">Unit Price</label>
-                        <input type="number" name="UnitPriceAtOrder[]" step="0.01" required class="unitPrice w-full border rounded px-3 py-2">
-                    </div>
-
-                    <div class="flex items-end">
-                        <button type="button" class="removeRow px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700">Remove</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-2 mb-4">
-                <button type="button" id="addMedicineRow" class="px-2 py-1 bg-green-200 text-white rounded hover:bg-green-400">
-                    + Add Another Medicine
-                </button>
-            </div>
-
-            <div class="flex gap-2">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                    Save Medicines
-                </button>
-
+    @if($order->Status == 2)
+        @if(($order->RequiresPrescription && $order->PrescriptionImageUrl) || ($order->OrderDescription))
+            <div class="mb-4">
                 <button type="button" onclick="toggleAddMedicineForm()"
-                    class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
-                    Cancel
+                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                    + Add Medicines
                 </button>
             </div>
-        </form>
-    </div>
+        @endif
+
+        {{-- Add Medicines Form --}}
+        
+        @if(($order->RequiresPrescription && $order->PrescriptionImageUrl) || ($order->OrderDescription))
+            <div id="addMedicineForm" class="hidden mt-6 bg-white p-6 rounded-lg border shadow">
+                <h3 class="text-lg font-semibold mb-4">Add Medicines to Order</h3>
+
+                <form method="POST" action="{{ route('order-items.storeMultiple') }}">
+                    @csrf
+                    <input type="hidden" name="OrderId" value="{{ $order->OrderId }}">
+
+                    {{-- Medicines Container --}}
+                    <div id="medicinesContainer">
+                        <div class="medicineRow flex gap-4 mb-4">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium mb-1">Medicine</label>
+                                <input type="text" name="MedicineName[]" class="medicineInput w-full border rounded px-3 py-2" placeholder="Type medicine name..." required>
+                                <input type="hidden" name="MedicineId[]" class="medicineId">
+                            </div>
+
+                            <div class="w-24">
+                                <label class="block text-sm font-medium mb-1">Qty</label>
+                                <input type="number" name="Quantity[]" value="1" min="1" required class="w-full border rounded px-3 py-2">
+                            </div>
+
+                            <div class="w-32">
+                                <label class="block text-sm font-medium mb-1">Unit Price</label>
+                                <input type="number" name="UnitPriceAtOrder[]" step="0.01" required class="unitPrice w-full border rounded px-3 py-2">
+                            </div>
+
+                            <div class="flex items-end">
+                                <button type="button" class="removeRow px-3 py-2 bg-red-600 text-white rounded hover:bg-red-700">Remove</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 mb-4">
+                        <button type="button" id="addMedicineRow" class="px-2 py-1 bg-green-200 text-white rounded hover:bg-green-400">
+                            + Add Another Medicine
+                        </button>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                            Save Medicines
+                        </button>
+
+                        <button type="button" onclick="toggleAddMedicineForm()"
+                            class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        @endif
     @endif
 
     {{-- Ordered Items Table --}}

@@ -43,6 +43,26 @@
                 <li>
                     Delivery Address : {{ $order->DeliveryAddress ?? 'N/A' }}
                 </li>
+                @if($order->OrderDescription)
+                    <li class="mt-2">
+                        <h3><b>Order Description :</b></h3> {{$order->OrderDescription}}
+                    </li>
+                @endif
+                
+                @if($order->RequiresPrescription && $order->PrescriptionImageUrl)
+                    <li class="mt-2">
+                        <a href="https://pcsdecom.azurewebsites.net{{ $order->PrescriptionImageUrl }}" target="_blank" rel="noopener noreferrer"
+                        class="inline-block px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+                            View Prescription Image
+                        </a>
+                    </li>
+                @elseif($order->RequiresPrescription && !$order->PrescriptionImageUrl)
+                    <li class="mt-2">
+                        <p class="inline-block px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
+                            Prescription Image Not Uploaded
+                        </p>
+                    </li>
+                @endif
             </ul>
         </div>
         {{-- Order Items Table --}}
