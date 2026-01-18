@@ -103,6 +103,91 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function bindOrderEvents() {
 
+        // reject forms
+        document.querySelectorAll('.reject-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                pauseTableUpdate();//
+
+                const status = parseInt(form.dataset.status);
+                // const blockedStatuses = [3, 4, 6, 7, 8, 10];
+                const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
+
+                if (blockedStatuses.includes(status)) {
+                    Swal.fire({
+                        title: 'Action Not Allowed!',
+                        text: 'This order cannot be rejected in its current status.',
+                        icon: 'warning',
+                        confirmButtonColor: '#6c757d'
+                    });
+
+                    resumeTableUpdate();
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This action cannot be undone!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, reject it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();  // normal submit  auto  page refresh
+                    } else {
+                        resumeTableUpdate();
+                    }
+
+                });
+            });
+        });
+
+
+        // accept forms
+        document.querySelectorAll('.accept-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                pauseTableUpdate();//
+
+                const status = parseInt(form.dataset.status);
+                // const blockedStatuses = [3, 4, 6, 7, 8, 10];
+                const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
+
+                if (blockedStatuses.includes(status)) {
+                    Swal.fire({
+                        title: 'Action Not Allowed!',
+                        text: 'This order cannot be accepted in its current status.',
+                        icon: 'warning',
+                        confirmButtonColor: '#6c757d'
+                    });
+
+                    resumeTableUpdate();
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This action cannot be undone!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, accept it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();  // normal submit  auto  page refresh
+                    } else {
+                        resumeTableUpdate();
+                    }
+
+                });
+            });
+        });
+
         // Pause AJAX while interacting with selects or inputs
         const interactiveElements = document.querySelectorAll('.assign-deliveryman, .order-status, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
 

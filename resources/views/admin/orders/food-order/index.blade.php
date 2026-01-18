@@ -102,7 +102,7 @@
 
         let inactivityTimeout = null;
         const INACTIVITY_DELAY = 20000; // 20 seconds inactivity
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        // const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
            
         function bindOrderEvents() {
             // Cancel forms
@@ -147,15 +147,15 @@
             });
 
             // Assign Store
-            // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             document.querySelectorAll('.assign-store').forEach(select => {
                 select.addEventListener('change', function () {
 
-                    const medicalStoreId = this.value;
+                    const restaurantId = this.value;
                     const orderId = this.dataset.orderId;
                     const selectedName = this.options[this.selectedIndex].text;
 
-                    if (!medicalStoreId || !orderId) return;
+                    if (!restaurantId|| !orderId) return;
                     pauseTableUpdate();///
 
                     Swal.fire({
@@ -184,7 +184,7 @@
                             },
                             body: JSON.stringify({
                                 order_id: orderId,
-                                medical_store_id: medicalStoreId
+                                restaurant_id: restaurantId
                             })
                         })
                         .then(res => res.json())

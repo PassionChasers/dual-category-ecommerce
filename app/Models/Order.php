@@ -97,6 +97,11 @@ class Order extends Model
         return $this->hasMany(OrderItem::class, 'OrderId', 'OrderId'); //First is related model(OrderItem), second is foreign key in OrderItem, third is local key in Order
     }
 
+    public function rejection()
+    {
+        return $this->hasMany(OrderRejection::class, 'OrderId', 'OrderId'); //First is related model(OrderItem), second is foreign key in OrderItem, third is local key in Order
+    }
+
 
     /****************
      * Bellow all are usable Query Scopes (MOST IMPORTANT) to reuse in Controller

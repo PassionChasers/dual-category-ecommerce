@@ -206,30 +206,28 @@
                             </a>
 
                             {{-- Reject--}}
-                            <form method="POST"
-                                action="{{ route('orders.reject', $order->OrderId) }}"
-                                class="cancel-form">
+                            <form method="POST" action="{{ route('orders.reject', $order->OrderId) }}"
+                                class="reject-form" data-status="{{ $order->Status }}">
                                 @csrf
                                 @method('PATCH')
-                                <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
-                                <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+                                {{-- BusinessId from user → medicalstores relation --}}
+                                <input type="hidden" name="BusinessId" value="{{ auth()->user()?->medicalstores?->first()?->MedicalStoreId }}">
+                                <input type="hidden" name="BusinessType" value="MedicalStore">  
                                 <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded "
-                                    @if(in_array($order->Status, [10, 9, 8, 7, 6, 5, 4])) disabled @endif
+                                    {{-- @if(in_array($order->Status, [10, 9, 8, 7, 6, 5, 4])) disabled @endif --}}
                                 >
                                     {{-- <i class="fas fa-times"></i> --}}Reject
                                 </button>
                             </form>
 
                             {{-- accept --}}
-                            <form method="POST"
-                                action="{{ route('orders.accept', $order->OrderId) }}"
-                                class="cancel-form">
+                            <form method="POST" action="{{ route('orders.accept', $order->OrderId) }}"
+                                class="accept-form" data-status="{{ $order->Status }}">
                                 @csrf
                                 @method('PATCH')
-                                <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
-                                <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+                                
                                 <button type="submit" class="text-green-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded "
-                                    @if(in_array($order->Status, [10, 9, 8, 7, 6, 5, 4])) disabled @endif
+                                    {{-- @if(in_array($order->Status, [10, 9, 8, 7, 6, 5, 4])) disabled @endif --}}
                                 >
                                     {{-- <i class="fas fa-times"></i> --}}Accept
                                 </button>

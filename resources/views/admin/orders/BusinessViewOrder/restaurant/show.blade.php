@@ -64,7 +64,16 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php 
+                        $TotalAmount = 0;
+                    @endphp
+
                     @foreach($order->items as $key => $item)
+
+                        @php
+                            $TotalAmount += (float)$item->UnitPriceAtOrder * (float)$item->Quantity;
+                        @endphp
+
                     <tr class="text-center border-b">
                         <td>{{ $key + 1 }}</td>
                         <td class="px-4 py-2">
@@ -80,7 +89,8 @@
                     @endforeach
                     <tr class="text-center">
                         <td colspan="6" class="px-4 py-2 font-bold">Total Amount:</td>
-                        <td class="px-4 py-2 font-bold">Rs.{{ number_format($order->TotalAmount, 2) ?? 'N/A' }}</td>
+                        <td class="px-4 py-2 font-bold">Rs.{{ number_format($TotalAmount, 2) }}</td>
+                        {{-- <td class="px-4 py-2 font-bold">Rs.{{ number_format($order->TotalAmount, 2) ?? 'N/A' }}</td> --}}
                     </tr>
                 </tbody>
             </table>

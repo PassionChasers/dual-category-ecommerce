@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
+use App\Models\OrderRejection;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
@@ -226,13 +228,27 @@ class OrderController extends Controller
 
 
     // reject order by business
-    public function reject($id)
+    public function reject(Request $request,$id)
     {
         $order = Order::findOrFail($id);
 
-        \DB::transaction(function () use ($order) {
+        $validated = $request->validate([
+            'BusinessId' => 'required|uuid|exists:MedicalStores,MedicalStoreId',
+            'BusinessType' => 'required|string|in:MedicalStore,Restaurant',
+            'RejectionReason' => 'nullable|string|max:1000',
+        ]);
+
+        \DB::transaction(function () use ($order, $validated) {
             $order->update([
                 'Status' => Order::STATUS_REJECTED,
+            ]);
+
+            // Create rejection record (Eloquent)
+            OrderRejection::create([
+                'OrderId'         => $order->OrderId,
+                'BusinessId'      => $validated['BusinessId'],
+                'BusinessType'    => $validated['BusinessType'],
+                'RejectionReason' => $validated['RejectionReason'] ?? null,
             ]);
 
             // Optional: trigger event or notification

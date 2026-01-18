@@ -8,7 +8,7 @@
             <th class="px-4 py-2">SN</th>
             <th class="px-4 py-2">Product Name</th>
             <th class="px-4 py-2">Quantity</th>
-            <th class="px-4 py-2">Product Type</th>
+            {{-- <th class="px-4 py-2">Product Type</th> --}}
             <th class="px-4 py-2">Total Amount</th>
             <th class="px-4 py-2">Delivery Address</th>
             <th class="px-4 py-2">Customer Name</th>
@@ -66,7 +66,7 @@
                 </td>
 
                 {{-- Product Type --}}
-                <td class="px-4 py-2 font-semibold">
+                {{-- <td class="px-4 py-2 font-semibold">
                     <div
                         class="max-h-20 overflow-y-auto space-y-1
                             [&::-webkit-scrollbar]:hidden
@@ -79,7 +79,7 @@
                             </div>
                         @endforeach
                     </div>
-                </td>
+                </td> --}}
 
                 {{-- Total Amount --}}
                 <td class="px-4 py-2">
@@ -194,13 +194,16 @@
                         {{-- Reject --}}
                         <form method="POST"
                             action="{{ route('orders.reject', $order->OrderId) }}"
-                            class="cancel-form">
+                            class="reject-form" data-status="{{ $order->Status }}">
                             @csrf
                             @method('PATCH')
-                            <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
-                            <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+                            {{-- <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
+                            <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}"> --}}
+
+                            <input type="hidden" name="BusinessId" value="{{ auth()->user()?->restaurants?->first()?->RestaurantId }}">
+                            <input type="hidden" name="BusinessType" value="Restaurant"> 
                             <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded "
-                                @if(in_array($order->Status, [10, 9, 8, 7, 6, 5, 4])) disabled @endif
+                                {{-- @if(in_array($order->Status, [10, 9, 8, 7, 6, 5, 4])) disabled @endif --}}
                             >
                                 {{-- <i class="fas fa-times"></i> --}}Reject
                             </button>
@@ -210,13 +213,14 @@
                         {{-- accept --}}
                         <form method="POST"
                             action="{{ route('orders.accept', $order->OrderId) }}"
-                            class="cancel-form">
+                            class="accept-form" data-status="{{ $order->Status }}">
                             @csrf
                             @method('PATCH')
-                            <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
-                            <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+                            {{-- <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
+                            <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}"> --}}
+
                             <button type="submit" class="text-green-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded "
-                                @if(in_array($order->Status, [10, 9, 8, 7, 6, 5, 4])) disabled @endif
+                                {{-- @if(in_array($order->Status, [10, 9, 8, 7, 6, 5, 4])) disabled @endif --}}
                             >
                                 {{-- <i class="fas fa-times"></i> --}}Accept
                             </button>
