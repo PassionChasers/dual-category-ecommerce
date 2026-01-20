@@ -31,8 +31,59 @@ class RestaurantController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'Name' => 'required|string|max:150',
+            'email' => 'required|email|exists:Users,Email',
+            'Address' => 'required|string',
+            'FLICNo' => 'required|string|max:20',
+            'GSTIN' => 'required|string|max:15',
+            'PAN' => 'required|string',
+            'CuisineType' => 'nullable|string|max:100',
+            'OpenTime' => 'required|date_format:H:i',
+            'CloseTime' => 'required|date_format:H:i',
+            'PrepTimeMin' => 'nullable|integer',
+            'DeliveryFee' => 'required|numeric',
+            'MinOrder' => 'required|numeric',
+            'Latitude' => 'nullable|numeric',
+            'Longitude' => 'nullable|numeric',
+        ]);
+
+        // Get UserId
+        $user = User::where('Email', $validated['email'])->firstOrFail();
+
+        // Prevent duplicate
+        if(Restaurant::where('UserId', $user->UserId)->exists()) {
+            return redirect()->back()->withErrors(['email' => 'This Email already has a Registered Restaurant.'])->withInput();
+        }
+
+        $lastPriority = Restaurant::max('Priority') ?? 0;
+
+        $restaurant = Restaurant::create([
+            // 'RestaurantId' => (string) Str::uuid(),
+            'UserId' => $user->UserId,
+            'Name' => $validated['Name'],
+            // 'Slug' => Str::slug($validated['Name']),
+            'Address' => $validated['Address'],
+            'FLICNo' => $validated['FLICNo'],
+            'GSTIN' => $validated['GSTIN'],
+            'PAN' => $validated['PAN'] ?? null,
+            'IsPureVeg' => $request->has('IsPureVeg') ? true : false,
+            'CuisineType' => $validated['CuisineType'] ?? 'Nepali',
+            'OpenTime' => $validated['OpenTime'],
+            'CloseTime' => $validated['CloseTime'],
+            'PrepTimeMin' => $validated['PrepTimeMin'] ?? 30,
+            'DeliveryFee' => $validated['DeliveryFee'] ?? 0,
+            'MinOrder' => $validated['MinOrder'] ?? 0,
+            'Latitude' => $validated['Latitude'],
+            'Longitude' => $validated['Longitude'],
+            'IsActive' => $request->has('IsActive') ? true : false,
+            'Priority' => $lastPriority + 1,
+            'CreatedAt' => now(),
+        ]);
+
+        return redirect()->route('admin.restaurants.list')->with('success', 'Restaurant added successfully!');
     }
+
 
     /**
      * Display the specified resource.

@@ -204,37 +204,37 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         // Deliveryman assignment confirmation
-        document.querySelectorAll('.assign-deliveryman').forEach(select => {
-            select.addEventListener('change', function () {
-                const form = this.closest('.assign-delivery-form');
-                const selectedName = this.options[this.selectedIndex].text;
+        // document.querySelectorAll('.assign-deliveryman').forEach(select => {
+        //     select.addEventListener('change', function () {
+        //         const form = this.closest('.assign-delivery-form');
+        //         const selectedName = this.options[this.selectedIndex].text;
 
-                if (!this.value) return;
+        //         if (!this.value) return;
 
-                pauseTableUpdate();
+        //         pauseTableUpdate();
 
-                Swal.fire({
-                    title: 'Assign Delivery Man?',
-                    text: `Are you sure you want to assign "${selectedName}" to this order?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, assign!',
-                    cancelButtonText: 'Cancel'
-                }).then(result => {
-                    if (result.isConfirmed){
-                        // resumeTableUpdate();
-                        form.submit();
-                    } 
-                    else {
-                        this.value = '';
-                        resumeTableUpdate();
-                    }
+        //         Swal.fire({
+        //             title: 'Assign Delivery Man?',
+        //             text: `Are you sure you want to assign "${selectedName}" to this order?`,
+        //             icon: 'question',
+        //             showCancelButton: true,
+        //             confirmButtonColor: '#3085d6',
+        //             cancelButtonColor: '#d33',
+        //             confirmButtonText: 'Yes, assign!',
+        //             cancelButtonText: 'Cancel'
+        //         }).then(result => {
+        //             if (result.isConfirmed){
+        //                 // resumeTableUpdate();
+        //                 form.submit();
+        //             } 
+        //             else {
+        //                 this.value = '';
+        //                 resumeTableUpdate();
+        //             }
                     
-                });
-            });
-        });
+        //         });
+        //     });
+        // });
 
         // Order status update via AJAX
         const csrf = document.querySelector('meta[name="csrf-token"]').content;
