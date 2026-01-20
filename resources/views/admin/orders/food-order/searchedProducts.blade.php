@@ -15,6 +15,7 @@
                 {{-- <th class="px-4 py-2">Customer Name</th> --}}
                 {{-- <th class="px-4 py-2">Contact No.</th> --}}
                 <th class="px-4 py-2">Assign Store</th>
+                <th class="px-4 py-2">Assign Delivery Man</th>
                 <th class="px-4 py-2">Status</th>
                 <th class="px-4 py-2">Date</th>
                 <th class="px-4 py-2">Actions</th>
@@ -99,6 +100,26 @@
                                 </option>
                             @endforeach
                         </select>
+                    </td>
+
+                    {{-- Assign delivery man --}}
+                    <td class="px-4 py-2">
+                        <form method="POST" action="{{ route('orders.assign-deliveryman') }}" class="assign-delivery-form">
+                            @csrf
+                            <input type="hidden" name="order_id" value="{{ $order->OrderId }}">
+                            <select name="delivery_man_id" class="assign-deliveryman border rounded px-2 py-1 text-sm" 
+                                @if($order->Status != 7) disabled @endif
+                            >
+                                <option value="">Assign Delivery Man</option>
+                                @foreach($allDeliveryMan as $deliveryMan)
+                                    <option value="{{ $deliveryMan->DeliveryManId }}"
+                                        {{ $order->DeliveryManId == $deliveryMan->DeliveryManId ? 'selected' : '' }}
+                                    >
+                                        {{ $deliveryMan->user->Name ?? 'N/A' }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </form>
                     </td>
 
                     {{-- Status --}}

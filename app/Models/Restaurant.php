@@ -17,8 +17,8 @@ class Restaurant extends Model
 
     // Timestamps enabled (uses created_at & updated_at)
     public $timestamps = true;
-    const CREATED_AT = 'created_at';
-    const UPDATED_AT = 'updated_at';
+    const CREATED_AT = 'CreatedAt';
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'UserId',
@@ -44,18 +44,31 @@ class Restaurant extends Model
         'FLICNo',
     ];
 
-    // Casts
+    // // Casts
+    // protected $casts = [
+    //     'IsActive' => 'boolean',
+    //     'IsFeatured' => 'boolean',
+    //     'OpenTime' => 'string',
+    //     'CloseTime' => 'string',
+    //     'RadiusKm' => 'decimal:2',
+    //     'DeliveryFee' => 'decimal:2',
+    //     'MinOrder' => 'decimal:2',
+    //     'Latitude' => 'decimal:7',
+    //     'Longitude' => 'decimal:7',
+    //     'Priority' => 'integer',
+    // ];
+
     protected $casts = [
-        'IsActive' => 'boolean',
-        'IsFeatured' => 'boolean',
-        'OpenTime' => 'string',
-        'CloseTime' => 'string',
-        'RadiusKm' => 'decimal:2',
-        'DeliveryFee' => 'decimal:2',
-        'MinOrder' => 'decimal:2',
-        'Latitude' => 'decimal:7',
-        'Longitude' => 'decimal:7',
-        'Priority' => 'integer',
+        'IsActive'     => 'boolean',
+        // 'IsFeatured'   => 'boolean',
+        'OpenTime'     => 'datetime:H:i',
+        'CloseTime'    => 'datetime:H:i',
+        'RadiusKm'     => 'decimal:2',
+        'DeliveryFee'  => 'decimal:2',
+        'MinOrder'     => 'decimal:2',
+        'Latitude'     => 'decimal:7',
+        'Longitude'    => 'decimal:7',
+        'Priority'     => 'integer',
     ];
 
     // Boot method for UUID generation and slug

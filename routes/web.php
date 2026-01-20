@@ -36,6 +36,8 @@ use App\Http\Controllers\RewardTransactionController;
 
 
 
+
+
 /*
 |--------------------------------------------------------------------------
 | Maintenance / Utility Routes
@@ -231,7 +233,7 @@ Route::middleware('auth')->group(function () {
     //     Route::delete('/destroy/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
     // });
 
-      /*
+    /*
     |----------------------------------------------------------------------
     | MedicalStores
     |----------------------------------------------------------------------
@@ -241,6 +243,21 @@ Route::middleware('auth')->group(function () {
         Route::put('/update/{customer}', [MedicalStoreController::class, 'update'])->name('update');
         Route::delete('/destroy/{customer}', [MedicalStoreController::class, 'destroy'])->name('destroy');
     });
+
+
+    /*
+    |----------------------------------------------------------------------
+    | Restaurants
+    |----------------------------------------------------------------------
+    */
+    Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+        Route::post('/restaurants', [RestaurantController::class, 'store'])->name('restaurants.store');
+        Route::get('/restaurants', [RestaurantController::class, 'allRestaurants'])->name('restaurants.list');
+        Route::put('/restaurants/{id}', [RestaurantController::class, 'update'])->name('restaurants.update');
+        Route::delete('/restaurants/{id}', [RestaurantController::class, 'destroy'])->name('restaurants.destroy');
+        Route::get('/restaurants/{id}', [RestaurantController::class, 'show'])->name('restaurants.show');
+    });
+
 
     /*
     |----------------------------------------------------------------------
@@ -343,14 +360,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 
 
     
-});
-
-// use App\Http\Controllers\RestaurantController;
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    Route::get('/restaurants', [RestaurantController::class, 'allRestaurants'])->name('restaurants.list');
-    Route::put('/restaurants/{id}', [RestaurantController::class, 'update'])->name('restaurants.update');
-    Route::delete('/restaurants/{id}', [RestaurantController::class, 'destroy'])->name('restaurants.destroy');
-    Route::get('/restaurants/{id}', [RestaurantController::class, 'show'])->name('restaurants.show');
 });
 
 

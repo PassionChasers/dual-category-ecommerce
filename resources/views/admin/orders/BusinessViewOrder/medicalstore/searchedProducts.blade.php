@@ -13,7 +13,7 @@
                 <th class="px-4 py-2">Delivery Address</th>
                 <th class="px-4 py-2">Customer Name</th>
                 <th class="px-4 py-2">Prescription require</th>
-                <th class="px-4 py-2">Assign Delivery Man</th>
+                {{-- <th class="px-4 py-2">Assign Delivery Man</th> --}}
                 <th class="px-4 py-2">Status</th>
                 <th class="px-4 py-2">Date</th>
                 <th class="px-4 py-2">Actions</th>
@@ -114,7 +114,7 @@
                     </td>
 
                     {{-- Assign Delivery man --}}
-                    <td class="px-4 py-2 text-center">
+                    {{-- <td class="px-4 py-2 text-center">
                         <form method="POST" action="{{ route('orders.assign-deliveryman') }}" class="assign-delivery-form">
                             @csrf
                             <input type="hidden" name="order_id" value="{{ $order->OrderId }}">
@@ -132,7 +132,7 @@
                             </select>
                         </form>
 
-                    </td>
+                    </td> --}}
 
                     {{-- Status --}}
                     <td class="px-4 py-2 text-center">

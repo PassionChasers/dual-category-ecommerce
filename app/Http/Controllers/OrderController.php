@@ -321,16 +321,22 @@ class OrderController extends Controller
                 ->get();
         });
 
+        $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
+            return DeliveryMan::with('user')
+                ->whereHas('user', fn ($q) => $q->where('Role', 5))
+                ->get();
+        });
+
         //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
         if ($request->ajax()) {
             return view(
                 'admin.orders.food-order.searchedProducts',
-                compact('allOrders', 'itemTypes','allRestaurants')
+                compact('allOrders', 'itemTypes','allRestaurants', 'allDeliveryMan')
             );
         }
      
         return view('admin.orders.food-order.index', 
-        compact('allOrders', 'itemTypes','allRestaurants'));
+        compact('allOrders', 'itemTypes','allRestaurants', 'allDeliveryMan'));
     }
 
 
@@ -408,16 +414,22 @@ class OrderController extends Controller
                 ->get();
         });
 
+        $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
+            return DeliveryMan::with('user')
+                ->whereHas('user', fn ($q) => $q->where('Role', 5))
+                ->get();
+        });
+
         //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
         if ($request->ajax()) {
             return view(
                 'admin.orders.medicine-order.searchedProducts',
-                compact('allOrders', 'itemTypes','allMedicalStores')
+                compact('allOrders', 'itemTypes','allMedicalStores', 'allDeliveryMan')
             );
         }
 
         return view('admin.orders.medicine-order.index', 
-        compact('allOrders', 'itemTypes','allMedicalStores'));
+        compact('allOrders', 'itemTypes','allMedicalStores', 'allDeliveryMan'));
         
     }
 

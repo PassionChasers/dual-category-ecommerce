@@ -48,32 +48,32 @@ class MedicalStoreController extends Controller
         ]);
     }
 
-    public function store(MedicalStoreRequest $request)
-    {
-        dd($request->all());
-        $data = $request->only([
-            'Name','Slug','LicenseNumber','GSTIN','PAN','IsActive','IsFeatured',
-            'OpenTime','CloseTime','RadiusKm','DeliveryFee','MinOrder',
-            'Latitude','Longitude','Priority'
-        ]);
+    // public function sssstore(MedicalStoreRequest $request)
+    // {
+    //     dd($request->all());
+    //     $data = $request->only([
+    //         'Name','Slug','LicenseNumber','GSTIN','PAN','IsActive','IsFeatured',
+    //         'OpenTime','CloseTime','RadiusKm','DeliveryFee','MinOrder',
+    //         'Latitude','Longitude','Priority'
+    //     ]);
 
-        $data['MedicalStoreId'] = (string) Str::uuid();
-        $data['IsActive'] = $request->has('IsActive') ? (bool)$request->get('IsActive') : true;
-        $data['IsFeatured'] = $request->has('IsFeatured') ? (bool)$request->get('IsFeatured') : false;
-        $data['CreatedAt'] = now();
+    //     $data['MedicalStoreId'] = (string) Str::uuid();
+    //     $data['IsActive'] = $request->has('IsActive') ? (bool)$request->get('IsActive') : true;
+    //     $data['IsFeatured'] = $request->has('IsFeatured') ? (bool)$request->get('IsFeatured') : false;
+    //     $data['CreatedAt'] = now();
 
-        // handle image
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = Str::slug($data['Name'] ?? 'store') . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('medicalstores', $filename, 'public');
-            $data['ImageUrl'] = $path;
-        }
+    //     // handle image
+    //     if ($request->hasFile('image')) {
+    //         $file = $request->file('image');
+    //         $filename = Str::slug($data['Name'] ?? 'store') . '-' . time() . '.' . $file->getClientOriginalExtension();
+    //         $path = $file->storeAs('medicalstores', $filename, 'public');
+    //         $data['ImageUrl'] = $path;
+    //     }
 
-        $store = MedicalStore::create($data);
+    //     $store = MedicalStore::create($data);
 
-        return redirect()->route('admin.medicalstores.index')->with('success', 'Medical store created.');
-    }
+    //     return redirect()->route('admin.medicalstores.index')->with('success', 'Medical store created.');
+    // }
 
     public function show($id)
     {
@@ -165,5 +165,69 @@ class MedicalStoreController extends Controller
         }
 
         return view('admin.business.medicalstore.index', compact('users'));
+    }
+
+
+    /**
+     * Store a new Medicalstore
+     */
+    public function store(Request $request)
+    {
+        // Validate the input
+        $validated = $request->validate([
+            'name' => 'required|string|max:150',
+            'email' => 'required|email|exists:Users,Email',
+            'LicenseNumber' => 'nullable|string|max:50',
+            'GSTIN' => 'nullable|string|max:15',
+            'PAN' => 'nullable|string|max:10',
+            'OpenTime' => 'required|date_format:H:i',
+            'CloseTime' => 'required|date_format:H:i',
+            'RadiusKm' => 'nullable|numeric',
+            'DeliveryFee' => 'required|numeric',
+            'MinOrder' => 'required|numeric',
+            'Address' => 'required|string',
+            'Latitude' => 'nullable|numeric',
+            'Longitude' => 'nullable|numeric',
+        ]);
+
+        // Get the UserId from the email
+        $user = User::where('Email', $validated['email'])->first();
+        if (!$user) {
+            return redirect()->back()->withErrors(['email' => 'User with this email does not exist'])->withInput();
+        }
+
+        // Check if the user already has a MedicalStore
+        if (MedicalStore::where('UserId', $user->UserId)->exists()) {
+            return redirect()->back()->withErrors([
+                'user_id' => 'This Email already has a registered MedicalStore.'
+            ])->withInput();
+        }
+
+        // Determine the next priority
+        $lastPriority = MedicalStore::max('Priority') ?? 0; // get max priority in table, 0 if none
+
+        // Create the MedicalStore
+        $medicalStore = MedicalStore::create([
+            // 'MedicalStoreId' => (string) Str::uuid(),
+            'UserId' => $user->UserId, // from Users table
+            'Name' => $validated['name'],
+            // 'Slug' => Str::slug($validated['name']),
+            'LicenseNumber' => $validated['LicenseNumber'],
+            'GSTIN' => $validated['GSTIN'],
+            'PAN' => $validated['PAN'],
+            'IsActive' => $request->has('IsActive') ? true : false,
+            'OpenTime' => $validated['OpenTime'],
+            'CloseTime' => $validated['CloseTime'],
+            'RadiusKm' => $validated['RadiusKm'],
+            'DeliveryFee' => $validated['DeliveryFee'],
+            'MinOrder' => $validated['MinOrder'],
+            'Priority' => $lastPriority + 1, // set last priority +1
+            'Address' => $validated['Address'],
+            'Latitude' => $validated['Latitude'],
+            'Longitude' => $validated['Longitude'],
+            'CreatedAt' => now(),
+        ]);
+
+        return redirect()->route('medicalStores.index')->with('success', 'Medicalstore added successfully!');
     }
 }
