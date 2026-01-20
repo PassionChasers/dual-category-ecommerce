@@ -7,7 +7,7 @@
 @endpush
 
 @section('contents')
-<div class="flex-1 p-4 md:p-6 bg-gray-50">
+<div class="flex-1 overflow-auto bg-gray-50 p-4 md:p-6">
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800">Restaurant Business Management</h2>
@@ -57,13 +57,13 @@
         </div>
 
         <!-- Form -->
-        <form action="{{ route('admin.restaurants.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="restaurantForm" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
 
                 <!-- Error Messages -->
-                @if($errors->any())
+                {{-- @if($errors->any())
                     <div class="md:col-span-2 p-4 bg-red-100 text-red-700 rounded">
                         <ul class="list-disc list-inside">
                             @foreach ($errors->all() as $error)
@@ -71,7 +71,7 @@
                             @endforeach
                         </ul>
                     </div>
-                @endif
+                @endif --}}
 
                 <!-- Name -->
                 <div>
@@ -82,6 +82,16 @@
                     <input type="text" name="Name" value="{{ old('Name') }}" class="input border rounded p-2 w-full" required>
                 </div>
 
+                {{-- Admin Name --}}
+                <div>
+                    <label class="block text-sm font-medium">
+                        Admin Name
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text" name="AdminName" value="{{ old('AdminName') }}" class="input border rounded p-2 w-full" required>
+                </div>
+                
+
                 <!-- Email (to link user) -->
                 <div>
                     <label class="block text-sm font-medium">
@@ -89,6 +99,24 @@
                         <span class="text-red-400">*</span>
                     </label>
                     <input type="email" name="email" value="{{ old('email') }}" class="input border rounded p-2 w-full" required>
+                </div>
+
+                {{-- Password --}}
+                <div>
+                    <label class="block text-sm font-medium">
+                        Password
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="password" name="Password" value="{{ old('Password') }}" class="input border rounded p-2 w-full" required>
+                </div>
+
+                {{-- Phone --}}
+                <div>
+                    <label class="block text-sm font-medium">
+                        Phone
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text" name="Phone" value="{{ old('Phone') }}" class="input border rounded p-2 w-full" required>
                 </div>
 
                 <!-- Address -->
@@ -126,11 +154,17 @@
                     <input type="text" name="PAN" value="{{ old('PAN') }}" class="input border rounded p-2 w-full" required>
                 </div>
 
-                <!-- CuisineType -->
-                {{-- <div>
-                    <label class="block text-sm font-medium">Cuisine Type</label>
-                    <input type="text" name="CuisineType" value="{{ old('CuisineType') }}" class="input border rounded p-2 w-full">
-                </div> --}}
+               <!-- CuisineType -->
+                <div>
+                    {{-- <label class="block text-sm font-medium">Cuisine Type</label> --}}
+                    {{-- <input type="text" name="cuisineType" value="{{ old('CuisineType') }}" class="input border rounded p-2 w-full"> --}}
+                    <select name="CuisineType" id="cuisineType">
+                        <option value=" ">...Select Cuisine Type... </option>
+                        <option value="Nepali">Nepali</option>
+                        <option value="Indian">Indian</option>
+                        <option value="Chinese">Chinese</option>
+                    </select>
+                </div>
 
                 <!-- OpenTime -->
                 <div>
@@ -215,10 +249,26 @@
                         class="px-4 py-2 bg-gray-200 rounded">
                     Cancel
                 </button>
-                <button type="submit"
+                {{-- <button type="submit"
                         class="px-4 py-2 bg-indigo-600 text-white rounded">
                     Save Restaurant
+                </button> --}}
+
+                <button
+                    type="submit"
+                    id="restaurantSubmitBtn"
+                    class="bg-green-600 text-white px-4 py-2 rounded flex items-center justify-center gap-2"
+                >
+                    <span id="btnText">Save Restaurant</span>
+                    <svg id="btnSpinner" class="w-5 h-5 animate-spin hidden"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                            stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
                 </button>
+
             </div>
         </form>
     </div>
@@ -310,23 +360,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-     // ADD MODAL
-    const addModal = document.getElementById('Add-Restaurant-Modal');
-    const openAddBtn = document.getElementById('open-register-form-modal');
-    const addCloseBtn = document.getElementById('add-close-btn');
-    const addCancelBtn = document.getElementById('add-cancel-btn');
-
-    openAddBtn?.addEventListener('click', () => {
-        addModal.classList.remove('hidden');
-        addModal.classList.add('flex');
-    });
-
-    [addCloseBtn, addCancelBtn].forEach(btn => {
-        btn?.addEventListener('click', () => {
-            addModal.classList.add('hidden');
-            addModal.classList.remove('flex');
-        });
-    });
+    
 
 
      // EDIT MODAL
@@ -438,4 +472,153 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 </script>
+
+<script>
+
+    // ADD MODAL
+    const addModal = document.getElementById('Add-Restaurant-Modal');
+    const openAddBtn = document.getElementById('open-register-form-modal');
+    const addCloseBtn = document.getElementById('add-close-btn');
+    const addCancelBtn = document.getElementById('add-cancel-btn');
+
+    openAddBtn?.addEventListener('click', () => {
+        addModal.classList.remove('hidden');
+        addModal.classList.add('flex');
+    });
+
+    [addCloseBtn, addCancelBtn].forEach(btn => {
+        btn?.addEventListener('click', () => {
+            addModal.classList.add('hidden');
+            addModal.classList.remove('flex');
+        });
+    });
+
+
+
+    document.getElementById('restaurantForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const btn = document.getElementById('restaurantSubmitBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('btnSpinner');
+
+        // Disable button & show loading
+        btn.disabled = true;
+        btn.classList.add('opacity-70', 'cursor-not-allowed');
+        btnText.textContent = 'Saving...';
+        spinner.classList.remove('hidden');
+
+        // const payload = {
+        const data = new URLSearchParams({
+            restaurantName: form.Name.value,
+            adminName: form.AdminName.value,
+            adminEmail: form.email.value,
+            adminPassword: form.Password.value, // API requires it
+            adminPhone: form.Phone.value,
+
+            restaurantAddress: form.Address.value,
+            flicNo: form.FLICNo.value,
+            gstin: form.GSTIN.value,
+            pan: form.PAN.value,
+
+            cuisineType: form.CuisineType.value,
+            isPureVeg: form.IsPureVeg.checked,
+            priority: 0,
+
+            openTime: form.OpenTime.value,
+            closeTime: form.CloseTime.value,
+            prepTimeMin: form.PrepTimeMin.value || 10,
+            deliveryFee: form.DeliveryFee.value,
+            minOrder: form.MinOrder.value,
+            latitude: form.Latitude.value,
+            longitude: form.Longitude.value,
+            _token: '{{ csrf_token() }}'
+        });
+        // };
+
+        fetch('{{ route("admin.restaurants.store") }}', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            },
+            body: data
+        })
+        .then(res => res.json())
+        .then(response => {
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Restaurant registered successfully',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                form.reset();
+                document.getElementById('Add-Restaurant-Modal').classList.add('hidden');
+                // closeStoreModal();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message || 'Something went wrong'
+                });
+            }
+        })
+        .catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Server Error',
+                text: 'Please try again later'
+            });
+        })
+        .finally(() => {
+            // Re-enable button
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+            btnText.textContent = 'Save Restaurant';
+            spinner.classList.add('hidden');
+        });
+
+
+
+        // .then(res => {
+        //     if (!res.ok) throw res;
+        //     return res.json();
+        // })
+        // .then(() => {
+        //     Swal.fire({
+        //         icon: 'success',
+        //         title: 'Success',
+        //         text: 'Restaurant registered successfully',
+        //         timer: 2000,
+        //         showConfirmButton: false
+        //     });
+
+        //     form.reset();
+        //     document.getElementById('Add-Restaurant-Modal').classList.add('hidden');
+        // })
+        // .catch(async err => {
+        //     let msg = 'Server error';
+        //     try {
+        //         const data = await err.json();
+        //         msg = data.message || msg;
+        //     } catch {}
+
+        //     Swal.fire({
+        //         icon: 'error',
+        //         title: 'Error',
+        //         text: msg
+        //     });
+        // })
+        // .finally(() => {
+        //     btn.disabled = false;
+        //     btn.innerText = 'Save Restaurant';
+        // });
+
+
+    });
+</script>
+
 @endpush
