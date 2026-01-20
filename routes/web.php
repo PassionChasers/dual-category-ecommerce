@@ -250,7 +250,7 @@ Route::middleware('auth')->group(function () {
     | Restaurants
     |----------------------------------------------------------------------
     */
-    Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/restaurants', [RestaurantController::class, 'store'])->name('restaurants.store');
         Route::get('/restaurants', [RestaurantController::class, 'allRestaurants'])->name('restaurants.list');
         Route::put('/restaurants/{id}', [RestaurantController::class, 'update'])->name('restaurants.update');

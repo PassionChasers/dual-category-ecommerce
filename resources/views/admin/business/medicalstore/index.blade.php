@@ -6,7 +6,7 @@
 
 @section('contents')
 
-    <div class="flex-1 p-4 md:p-6 bg-gray-50">
+    <div class="flex-1 overflow-auto bg-gray-50 p-4 md:p-6">
         <div class="mb-6 flex justify-between items-center flex-wrap">
             <div class="mb-2 md:mb-0">
                 <h2 class="text-2xl font-bold text-gray-800">Medicalstore Business Management</h2>
@@ -31,14 +31,16 @@
                     @endforeach
                 </select>
 
-                <button id="openAdminModal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                {{-- This button for normal modal --}}
+                {{-- <button id="openAdminModal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                     <i class="fas fa-plus mr-1"></i> New Medicalstore Business
-                </button>
-
-                {{-- <button onclick="openStoreModal()"
-                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                    + Register Medical Store
                 </button> --}}
+
+                {{-- This button for modal which work through api form submit --}}
+                <button onclick="openStoreModal()"
+                    class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    <i class="fas fa-plus mr-1"></i> Register Medical Store
+                </button>
             </div>
         </div>
 
@@ -49,8 +51,9 @@
     </div>
 
 
+    {{-- Normal modal  --}}
     <!-- Add Business Modal -->
-    <div id="Add-Business-Modal" class="fixed inset-0 bg-indigo-100 bg-opacity-50 hidden items-center justify-center z-50 p-4">
+    {{-- <div id="Add-Business-Modal" class="fixed inset-0 bg-indigo-100 bg-opacity-50 hidden items-center justify-center z-50 p-4">
 
         <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg overflow-hidden max-h-[90vh] flex flex-col">
 
@@ -218,54 +221,69 @@
             addModal.classList.add('flex');
         });
     </script>
-    @endif
+    @endif --}}
 
 
+    {{-- Register new store Modal which submit form in api  --}}
+    <div id="storeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white w-full max-w-2xl rounded-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Register Medical Store</h2>
 
-    {{-- <div id="storeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
-    <div class="bg-white w-full max-w-2xl rounded-lg p-6">
-        <h2 class="text-xl font-bold mb-4">Register Medical Store</h2>
+            <form id="storeForm" class="space-y-3">
+                @csrf
 
-        <form id="storeForm" class="space-y-3">
-            @csrf
+                <input type="text" name="storeName" placeholder="Store Name" class="w-full border p-2 rounded" required>
+                <input type="text" name="adminName" placeholder="Admin Name" class="w-full border p-2 rounded" required>
+                <input type="email" name="adminEmail" placeholder="Admin Email" class="w-full border p-2 rounded" required>
+                <input type="password" name="adminPassword" placeholder="Password" class="w-full border p-2 rounded" required>
+                <input type="text" name="adminPhone" placeholder="Phone" class="w-full border p-2 rounded" required>
 
-            <input type="text" name="storeName" placeholder="Store Name" class="w-full border p-2 rounded" required>
-            <input type="text" name="adminName" placeholder="Admin Name" class="w-full border p-2 rounded" required>
-            <input type="email" name="adminEmail" placeholder="Admin Email" class="w-full border p-2 rounded" required>
-            <input type="password" name="adminPassword" placeholder="Password" class="w-full border p-2 rounded" required>
-            <input type="text" name="adminPhone" placeholder="Phone" class="w-full border p-2 rounded" required>
+                <input type="text" name="storeAddress" placeholder="Store Address" class="w-full border p-2 rounded">
+                <input type="text" name="licenseNumber" placeholder="License Number" class="w-full border p-2 rounded">
+                <input type="text" name="gstin" placeholder="GSTIN">
+                <input type="text" name="pan" placeholder="PAN">
 
-            <input type="text" name="storeAddress" placeholder="Store Address" class="w-full border p-2 rounded">
-            <input type="text" name="licenseNumber" placeholder="License Number" class="w-full border p-2 rounded">
-            <input type="text" name="gstin" placeholder="GSTIN">
-            <input type="text" name="pan" placeholder="PAN">
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="time" name="openTime" class="border p-2 rounded">
+                    <input type="time" name="closeTime" class="border p-2 rounded">
+                </div>
 
-            <div class="grid grid-cols-2 gap-2">
-                <input type="time" name="openTime" class="border p-2 rounded">
-                <input type="time" name="closeTime" class="border p-2 rounded">
-            </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="number" name="deliveryFee" placeholder="Delivery Fee" class="border p-2 rounded">
+                    <input type="number" name="minOrder" placeholder="Minimum Order" class="border p-2 rounded">
+                </div>
 
-            <div class="grid grid-cols-2 gap-2">
-                <input type="number" name="deliveryFee" placeholder="Delivery Fee" class="border p-2 rounded">
-                <input type="number" name="minOrder" placeholder="Minimum Order" class="border p-2 rounded">
-            </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="number" step="any" name="latitude" placeholder="Latitude" class="border p-2 rounded">
+                    <input type="number" step="any" name="longitude" placeholder="Longitude" class="border p-2 rounded">
+                </div>
 
-            <div class="grid grid-cols-2 gap-2">
-                <input type="number" step="any" name="latitude" placeholder="Latitude" class="border p-2 rounded">
-                <input type="number" step="any" name="longitude" placeholder="Longitude" class="border p-2 rounded">
-            </div>
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeStoreModal()" class="px-4 py-2 border rounded">
+                        Cancel
+                    </button>
+                    {{-- <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">
+                        Save Store
+                    </button> --}}
 
-            <div class="flex justify-end gap-2 pt-3">
-                <button type="button" onclick="closeStoreModal()" class="px-4 py-2 border rounded">
-                    Cancel
-                </button>
-                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">
-                    Save Store
-                </button>
-            </div>
-        </form>
+                    <button
+                        type="submit"
+                        id="storeSubmitBtn"
+                        class="bg-green-600 text-white px-4 py-2 rounded flex items-center justify-center gap-2"
+                    >
+                        <span id="btnText">Save Store</span>
+                        <svg id="btnSpinner" class="w-5 h-5 animate-spin hidden"
+                            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10"
+                                stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-</div> --}}
 
 
 
@@ -344,198 +362,232 @@
 @endsection
 
 @push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            //For normal modal 
+            // ADD MODAL
+            // const addModal = document.getElementById('Add-Business-Modal');
+            // const openAddBtn = document.getElementById('openAdminModal');
+            // const addCloseBtn = document.getElementById('add-close-btn');
+            // const addCancelBtn = document.getElementById('add-cancel-btn');
 
-        // ADD MODAL
-        const addModal = document.getElementById('Add-Business-Modal');
-        const openAddBtn = document.getElementById('openAdminModal');
-        const addCloseBtn = document.getElementById('add-close-btn');
-        const addCancelBtn = document.getElementById('add-cancel-btn');
+            // openAddBtn?.addEventListener('click', () => {
+            //     addModal.classList.remove('hidden');
+            //     addModal.classList.add('flex');
+            // });
 
-        openAddBtn?.addEventListener('click', () => {
-            addModal.classList.remove('hidden');
-            addModal.classList.add('flex');
-        });
+            // [addCloseBtn, addCancelBtn].forEach(btn => {
+            //     btn?.addEventListener('click', () => {
+            //         addModal.classList.add('hidden');
+            //         addModal.classList.remove('flex');
+            //     });
+            // });
 
-        [addCloseBtn, addCancelBtn].forEach(btn => {
-            btn?.addEventListener('click', () => {
-                addModal.classList.add('hidden');
-                addModal.classList.remove('flex');
+
+
+            // EDIT MODAL
+            const editModal = document.getElementById('edit-modal');
+            const editCloseBtn = document.getElementById('edit-close-btn');
+            const editCancelBtn = document.getElementById('edit-cancel-btn');
+
+            [editCloseBtn, editCancelBtn].forEach(btn => {
+                btn?.addEventListener('click', () => {
+                    editModal.classList.add('hidden');
+                });
             });
-        });
 
+            //for edit modal
+            const editmodal = document.getElementById('edit-modal');
+            const form = document.getElementById('customer-form');
+            const modalTitle = document.getElementById('modal-title');
+            const methodInput = document.getElementById('form-method');
+            const nameInput = document.getElementById('customer-name');
+            const IsActiveInput = document.getElementById('IsActive');
+            const contactNumberInput = document.getElementById('customer_contact_number');
+            const emailInput = document.getElementById('customer-email');
+            const passwordInput = document.getElementById('customer-password');
 
+            // Event delegation for edit buttons (works after AJAX too)
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.edit-btn');
+                if (btn) {
+                    modalTitle.innerText = 'Edit Medicalstore';
+                    form.action = `/users/update/${btn.dataset.id}`;
+                    methodInput.value = 'PUT';
+                    nameInput.value = btn.dataset.name;
+                    // addressInput.value = btn.dataset.address;
+                    IsActiveInput.checked = btn.dataset.isactive === '1';
+                    contactNumberInput.value = btn.dataset.contact_number;
+                    emailInput.value = btn.dataset.email;
+                    passwordInput.value = '';
 
-        // EDIT MODAL
-        const editModal = document.getElementById('edit-modal');
-        const editCloseBtn = document.getElementById('edit-close-btn');
-        const editCancelBtn = document.getElementById('edit-cancel-btn');
+                    // Set hidden fields for current search/filter
+                    document.getElementById('current-search').value = document.getElementById('search').value;
+                    document.getElementById('current-onlineStatus').value = document.getElementById('onlineStatus').value;
 
-        [editCloseBtn, editCancelBtn].forEach(btn => {
-            btn?.addEventListener('click', () => {
-                editModal.classList.add('hidden');
-            });
-        });
-
-        //for edit modal
-        const editmodal = document.getElementById('edit-modal');
-        const form = document.getElementById('customer-form');
-        const modalTitle = document.getElementById('modal-title');
-        const methodInput = document.getElementById('form-method');
-        const nameInput = document.getElementById('customer-name');
-        const IsActiveInput = document.getElementById('IsActive');
-        const contactNumberInput = document.getElementById('customer_contact_number');
-        const emailInput = document.getElementById('customer-email');
-        const passwordInput = document.getElementById('customer-password');
-
-        // Event delegation for edit buttons (works after AJAX too)
-        document.addEventListener('click', function(e) {
-            const btn = e.target.closest('.edit-btn');
-            if (btn) {
-                modalTitle.innerText = 'Edit Medicalstore';
-                form.action = `/users/update/${btn.dataset.id}`;
-                methodInput.value = 'PUT';
-                nameInput.value = btn.dataset.name;
-                // addressInput.value = btn.dataset.address;
-                IsActiveInput.checked = btn.dataset.isactive === '1';
-                contactNumberInput.value = btn.dataset.contact_number;
-                emailInput.value = btn.dataset.email;
-                passwordInput.value = '';
-
-                // Set hidden fields for current search/filter
-                document.getElementById('current-search').value = document.getElementById('search').value;
-                document.getElementById('current-onlineStatus').value = document.getElementById('onlineStatus').value;
-
-                editmodal.classList.remove('hidden');
-            }
-        });
-
-
-        // Delete confirmation
-        document.addEventListener('click', function(e) {
-            const form = e.target.closest('.delete-form');
-            if (form) {
-                e.preventDefault();
-                const status = form.dataset.status;
-                if (['admin'].includes(status)) {
-                    Swal.fire({ title: 'Action Not Allowed!', text: 'This user cannot be deleted.', icon: 'warning', confirmButtonColor: '#6c757d' });
-                    return;
+                    editmodal.classList.remove('hidden');
                 }
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'This action cannot be undone!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e3342f',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, delete this User!'
-                }).then((result) => { if (result.isConfirmed) form.submit(); });
-            }
-        });
-
-        ///for ajjax filter
-        const searchInput = document.getElementById('search');
-        const statusSelect = document.getElementById('onlineStatus');
-        const perPageSelect = document.getElementById('per_page');
-
-        function fetchData(url = null) {
-            const search = searchInput.value;
-            const onlineStatus = statusSelect.value;
-            const perPage = perPageSelect.value;
-
-            let fetchUrl = url 
-                ? url 
-                : `?search=${encodeURIComponent(search)}&onlineStatus=${onlineStatus}&per_page=${perPage}`;
-
-            fetch(fetchUrl, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-            .then(res => res.text())
-            .then(html => {
-                document.getElementById('tableData').innerHTML = html;
             });
-        }
 
-        /*Live search */
-        searchInput.addEventListener('keyup', () => fetchData());
 
-        /*Status filter */
-        statusSelect.addEventListener('change', () => fetchData());
+            // Delete confirmation
+            document.addEventListener('click', function(e) {
+                const form = e.target.closest('.delete-form');
+                if (form) {
+                    e.preventDefault();
+                    const status = form.dataset.status;
+                    if (['admin'].includes(status)) {
+                        Swal.fire({ title: 'Action Not Allowed!', text: 'This user cannot be deleted.', icon: 'warning', confirmButtonColor: '#6c757d' });
+                        return;
+                    }
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: 'This action cannot be undone!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#e3342f',
+                        cancelButtonColor: '#6c757d',
+                        confirmButtonText: 'Yes, delete this User!'
+                    }).then((result) => { if (result.isConfirmed) form.submit(); });
+                }
+            });
 
-        /*pages filter */
-        perPageSelect.addEventListener('change', () => fetchData());
+            ///for ajjax filter
+            const searchInput = document.getElementById('search');
+            const statusSelect = document.getElementById('onlineStatus');
+            const perPageSelect = document.getElementById('per_page');
 
-        /*AJAX pagination */
-        document.addEventListener('click', function(e) {
-            const link = e.target.closest('.pagination a');
-            if (link) {
-                e.preventDefault();
-                fetchData(link.getAttribute('href'));
+            function fetchData(url = null) {
+                const search = searchInput.value;
+                const onlineStatus = statusSelect.value;
+                const perPage = perPageSelect.value;
+
+                let fetchUrl = url 
+                    ? url 
+                    : `?search=${encodeURIComponent(search)}&onlineStatus=${onlineStatus}&per_page=${perPage}`;
+
+                fetch(fetchUrl, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('tableData').innerHTML = html;
+                });
             }
+
+            /*Live search */
+            searchInput.addEventListener('keyup', () => fetchData());
+
+            /*Status filter */
+            statusSelect.addEventListener('change', () => fetchData());
+
+            /*pages filter */
+            perPageSelect.addEventListener('change', () => fetchData());
+
+            /*AJAX pagination */
+            document.addEventListener('click', function(e) {
+                const link = e.target.closest('.pagination a');
+                if (link) {
+                    e.preventDefault();
+                    fetchData(link.getAttribute('href'));
+                }
+            });
+
         });
 
-    });
+    </script>
 
-</script>
 
-{{-- <script>
-function openStoreModal() {
-    document.getElementById('storeModal').classList.remove('hidden');
-    document.getElementById('storeModal').classList.add('flex');
-}
-
-function closeStoreModal() {
-    document.getElementById('storeModal').classList.add('hidden');
-    document.getElementById('storeModal').classList.remove('flex');
-}
-
-// Submit form via API
-document.getElementById('storeForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-
-    const form = e.target;
-
-    const data = {
-        storeName: form.storeName.value,
-        adminName: form.adminName.value,
-        adminEmail: form.adminEmail.value,
-        adminPassword: form.adminPassword.value,
-        adminPhone: form.adminPhone.value,
-        storeAddress: form.storeAddress.value,
-        licenseNumber: form.licenseNumber.value,
-        gstin: form.gstin.value,
-        pan: form.pan.value,
-        openTime: form.openTime.value,
-        closeTime: form.closeTime.value,
-        deliveryFee: Number(form.deliveryFee.value),
-        minOrder: Number(form.minOrder.value),
-        location: {
-            latitude: Number(form.latitude.value),
-            longitude: Number(form.longitude.value)
+    {{-- Api form submit --}}
+    <script>
+        function openStoreModal() {
+            const modal = document.getElementById('storeModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
         }
-    };
 
-    fetch('/api/admin/register/medical-store', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer {{ auth()->user()->api_token ?? "" }}'
-        },
-        body: JSON.stringify(data)
-    })
-    .then(res => res.json())
-    .then(response => {
-        if (response.success) {
-            alert('Medical Store Registered Successfully');
-            closeStoreModal();
-            form.reset();
-        } else {
-            alert(response.message || 'Something went wrong');
+        function closeStoreModal() {
+            const modal = document.getElementById('storeModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
         }
-    })
-    .catch(() => alert('Server error'));
-});
-</script> --}}
+        document.getElementById('storeForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const form = e.target;
+            const btn = document.getElementById('storeSubmitBtn');
+            const btnText = document.getElementById('btnText');
+            const spinner = document.getElementById('btnSpinner');
+
+            // Disable button & show loading
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            btnText.textContent = 'Saving...';
+            spinner.classList.remove('hidden');
+
+            const data = new URLSearchParams({
+                storeName: form.storeName.value,
+                adminName: form.adminName.value,
+                adminEmail: form.adminEmail.value,
+                adminPassword: form.adminPassword.value,
+                adminPhone: form.adminPhone.value,
+                storeAddress: form.storeAddress.value,
+                licenseNumber: form.licenseNumber.value,
+                gstin: form.gstin.value,
+                pan: form.pan.value,
+                openTime: form.openTime.value,
+                closeTime: form.closeTime.value,
+                deliveryFee: form.deliveryFee.value,
+                minOrder: form.minOrder.value,
+                latitude: form.latitude.value,
+                longitude: form.longitude.value,
+                _token: '{{ csrf_token() }}'
+            });
+
+            fetch('{{ route("medicalStores.store") }}', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json'
+                },
+                body: data
+            })
+            .then(res => res.json())
+            .then(response => {
+                if (response.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Medical store registered successfully',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+
+                    form.reset();
+                    closeStoreModal();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: response.message || 'Something went wrong'
+                    });
+                }
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Server Error',
+                    text: 'Please try again later'
+                });
+            })
+            .finally(() => {
+                // Re-enable button
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                btnText.textContent = 'Save Store';
+                spinner.classList.add('hidden');
+            });
+        });
+    </script>
 
 @endpush
