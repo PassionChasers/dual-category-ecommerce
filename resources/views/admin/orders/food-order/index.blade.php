@@ -83,47 +83,8 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden" id="tableData">
-
-        <div class="px-6 py-4 border-b">
-            <h2 class="font-semibold text-gray-800">Orders List</h2>
-        </div>
-
-        <div class="overflow-x-auto" id="tableData">
-            <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-2">SN</th>
-                        <th class="px-4 py-2">Product Name</th>
-                        <th class="px-4 py-2">Quantity</th>
-                        {{-- <th class="px-4 py-2">Product Type</th> --}}
-                        <th class="px-4 py-2">Total Amount</th>
-                        {{-- <th class="px-4 py-2">Delivery Address</th> --}}
-                        {{-- <th class="px-4 py-2">Customer Name</th> --}}
-                        {{-- <th class="px-4 py-2">Contact No.</th> --}}
-                        <th class="px-4 py-2">Assign Store</th>
-                        <th class="px-4 py-2">Status</th>
-                        <th class="px-4 py-2">Date</th>
-                        <th class="px-4 py-2">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200" id="orderTableBody">
-                    @include('admin.orders.food-order.searchedProducts', ['allOrders' => $allOrders])              
-                </tbody>
-            </table> 
-
-        </div>
-
-        {{-- PAGINATION --}}
-        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
-            <div class="text-sm text-gray-600">
-                Showing <strong>{{ $allOrders->firstItem() ?? 0 }}</strong> to <strong>{{ $allOrders->lastItem() ?? 0 }}</strong> of <strong>{{ $allOrders->total() }}</strong> results
-            </div>
-            <div class="mt-3 md:mt-0" id="pageLink">
-                {{ $allOrders->links() }}
-            </div>
-        </div>
-
+    <div class="bg-white shadow rounded-lg overflow-hidden" id="orderTable">
+        @include('admin.orders.food-order.searchedProducts', ['allOrders' => $allOrders]) 
     </div>
 
 </div>
@@ -141,7 +102,7 @@
 
         let inactivityTimeout = null;
         const INACTIVITY_DELAY = 20000; // 20 seconds inactivity
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        // const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
            
         function bindOrderEvents() {
             // Cancel forms
@@ -186,15 +147,15 @@
             });
 
             // Assign Store
-            // const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             document.querySelectorAll('.assign-store').forEach(select => {
                 select.addEventListener('change', function () {
 
-                    const medicalStoreId = this.value;
+                    const restaurantId = this.value;
                     const orderId = this.dataset.orderId;
                     const selectedName = this.options[this.selectedIndex].text;
 
-                    if (!medicalStoreId || !orderId) return;
+                    if (!restaurantId|| !orderId) return;
                     pauseTableUpdate();///
 
                     Swal.fire({
@@ -223,7 +184,7 @@
                             },
                             body: JSON.stringify({
                                 order_id: orderId,
-                                medical_store_id: medicalStoreId
+                                restaurant_id: restaurantId
                             })
                         })
                         .then(res => res.json())
@@ -293,7 +254,7 @@
             })
             .then(res => res.text())
             .then(html => {
-                document.getElementById('orderTableBody').innerHTML = html;
+                document.getElementById('orderTable').innerHTML = html;
                 bindOrderEvents(); // re-bind events for new DOM elements
             })
             // .catch(err => console.error('Table refresh failed:', err));

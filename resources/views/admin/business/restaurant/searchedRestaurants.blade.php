@@ -7,10 +7,10 @@
             <tr>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">#</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Restaurant Name</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Owner Name</th>
+                {{-- <th class="px-4 py-2 text-left font-semibold text-gray-700">Owner Name</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Email</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Contact</th>
-                {{-- <th class="px-4 py-2 text-left font-semibold text-gray-700">Address</th> --}}
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Contact</th> --}}
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Address</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">IsActive</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Actions</th>
             </tr>
@@ -24,7 +24,7 @@
                 <td class="px-4 py-2 font-semibold text-gray-800">
                     {{ $user->Name }}
                 </td>
-                <td class="px-4 py-2 font-semibold text-gray-800">
+                {{-- <td class="px-4 py-2 font-semibold text-gray-800">
                     {{ $user->user->Name }}
                 </td>
                 <td class="px-4 py-2 text-gray-600">
@@ -32,10 +32,10 @@
                 </td>
                 <td class="px-4 py-2 text-gray-600">
                     {{ $user->user->Phone?? '-' }}
-                </td>
-                {{-- <td class="px-4 py-2 text-gray-600">
-                    {{ $user->Address ?? '-' }}
                 </td> --}}
+                <td class="px-4 py-2 text-gray-600">
+                    {{ $user->Address ?? '-' }}
+                </td>
                 <td class="px-4 py-2 text-gray-600">
                     {{ $user->IsActive ? 'Active': 'Inactive' }}
                 </td>

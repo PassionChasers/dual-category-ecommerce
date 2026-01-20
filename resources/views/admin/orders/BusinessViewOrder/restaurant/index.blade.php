@@ -81,45 +81,8 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-6 py-4 border-b">
-            <h2 class="font-semibold text-gray-800">Orders List</h2>
-        </div>
-        <div class="overflow-x-auto" id="tableData">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-2">SN</th>
-                    <th class="px-4 py-2">Product Name</th>
-                    <th class="px-4 py-2">Quantity</th>
-                    <th class="px-4 py-2">Product Type</th>
-                    <th class="px-4 py-2">Total Amount</th>
-                    <th class="px-4 py-2">Delivery Address</th>
-                    <th class="px-4 py-2">Customer Name</th>
-                    {{-- <th class="px-4 py-2">Contact No.</th> --}}
-                    <th class="px-4 py-2">Assign Delivery Man</th>
-                    <th class="px-4 py-2">Status</th>
-                    <th class="px-4 py-2">Date</th>
-                    <th class="px-4 py-2">Actions</th>
-                </tr>
-            </thead>
-
-            <tbody class="divide-y divide-gray-200" id="orderTableBody">
-                @include('admin.orders.BusinessViewOrder.restaurant.searchedProducts', ['allOrders' => $allOrders])         
-            </tbody>
-        </table> 
-        </div>
-
-        {{-- PAGINATION --}}
-        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
-            <div class="text-sm text-gray-600">
-                Showing <strong>{{ $allOrders->firstItem() ?? 0 }}</strong> to <strong>{{ $allOrders->lastItem() ?? 0 }}</strong> of <strong>{{ $allOrders->total() }}</strong> results
-            </div>
-            <div class="mt-3 md:mt-0" id="pageLink">
-                {{ $allOrders->links() }}
-            </div>
-        </div>
-
+    <div class="bg-white shadow rounded-lg overflow-hidden" id="orderTable">
+        @include('admin.orders.BusinessViewOrder.restaurant.searchedProducts', ['allOrders' => $allOrders])  
     </div>
 
 </div>
@@ -139,6 +102,91 @@ document.addEventListener('DOMContentLoaded', function () {
     const INACTIVITY_DELAY = 20000; // 20 seconds
 
     function bindOrderEvents() {
+
+        // reject forms
+        document.querySelectorAll('.reject-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                pauseTableUpdate();//
+
+                const status = parseInt(form.dataset.status);
+                // const blockedStatuses = [3, 4, 6, 7, 8, 10];
+                const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
+
+                if (blockedStatuses.includes(status)) {
+                    Swal.fire({
+                        title: 'Action Not Allowed!',
+                        text: 'This order cannot be rejected in its current status.',
+                        icon: 'warning',
+                        confirmButtonColor: '#6c757d'
+                    });
+
+                    resumeTableUpdate();
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This action cannot be undone!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, reject it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();  // normal submit  auto  page refresh
+                    } else {
+                        resumeTableUpdate();
+                    }
+
+                });
+            });
+        });
+
+
+        // accept forms
+        document.querySelectorAll('.accept-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                pauseTableUpdate();//
+
+                const status = parseInt(form.dataset.status);
+                // const blockedStatuses = [3, 4, 6, 7, 8, 10];
+                const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
+
+                if (blockedStatuses.includes(status)) {
+                    Swal.fire({
+                        title: 'Action Not Allowed!',
+                        text: 'This order cannot be accepted in its current status.',
+                        icon: 'warning',
+                        confirmButtonColor: '#6c757d'
+                    });
+
+                    resumeTableUpdate();
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This action cannot be undone!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, accept it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();  // normal submit  auto  page refresh
+                    } else {
+                        resumeTableUpdate();
+                    }
+
+                });
+            });
+        });
 
         // Pause AJAX while interacting with selects or inputs
         const interactiveElements = document.querySelectorAll('.assign-deliveryman, .order-status, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
@@ -243,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
         })
         .then(r => r.text())
         .then(html => {
-            document.getElementById('orderTableBody').innerHTML = html;
+            document.getElementById('orderTable').innerHTML = html;
             bindOrderEvents(); // re-bind events for new DOM elements
         });
     }

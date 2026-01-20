@@ -86,4 +86,9 @@ class Restaurant extends Model
     {
         return $this->hasMany(Food::class, 'RestaurantId', 'RestaurantId');
     }
+
+    public function rejectedOrder()
+    {
+        return $this->hasMany(OrderRejection::class, 'BusinessId', 'RestaurantId'); 
+    }
 }
