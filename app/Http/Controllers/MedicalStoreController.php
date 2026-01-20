@@ -112,17 +112,12 @@ class MedicalStoreController extends Controller
 
     public function destroy($id)
     {
-       
-        
-
         $store = MedicalStore::findOrFail($id);
         if ($store->ImageUrl && Storage::disk('public')->exists($store->ImageUrl)) {
             Storage::disk('public')->delete($store->ImageUrl);
         }
         $store->delete();
-
         return redirect()->route('admin.medicalstores.list')->with('success', 'Medical store deleted.');
-       
     }
 
     public function toggleActive($id)
@@ -136,13 +131,38 @@ class MedicalStoreController extends Controller
      /**
      * all medicine stores 
      */
-    public function allMedicalstores()
+    public function allMedicalstores(Request $request)
     {
-        $users = MedicalStore::whereHas('user', function ($query) {
-            $query->where('Role', 'Supplier');
-        })
-        ->with('user')
-        ->paginate(10);
+        $query = MedicalStore::whereHas('user', function ($q) {
+            $q->where('Role', 2);
+        })->with('user');
+
+        // search by name, license, gstin, pan
+        if ($search = $request->get('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'ilike', "%{$search}%")
+                    ->orWhere('LicenseNumber', 'ilike', "%{$search}%")
+                    ->orWhere('GSTIN', 'ilike', "%{$search}%")
+                    ->orWhere('PAN', 'ilike', "%{$search}%");
+            });
+        }
+
+        /* Online / Offline filter (from select box) */
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus === 'true');
+        }
+
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, [5,10,25,50]) ? $perPage : 10;
+
+        $users = $query->paginate($perPage)->appends($request->except('page'));
+
+        if ($request->ajax()) {
+            return view(
+                'admin.business.medicalstore.searchedMedicalstore',
+                compact('users')
+            );
+        }
 
         return view('admin.business.medicalstore.index', compact('users'));
     }

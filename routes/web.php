@@ -213,6 +213,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/customers', [UserController::class, 'customers'])->name('customers.index');
         Route::get('/restaurants', [UserController::class, 'restaurants'])->name('restaurants.index');
         Route::get('/medicalstores', [UserController::class, 'medicalstores'])->name('medicalstores.index');
+        Route::get('/delivery-man', [UserController::class, 'deliveryMan'])->name('delivery-man.index');
         Route::post('/store', [UserController::class, 'store'])->name('store');
         Route::put('/update/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/destroy/{user}', [UserController::class, 'destroy'])->name('destroy');

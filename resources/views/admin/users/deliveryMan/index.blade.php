@@ -1,7 +1,5 @@
-
-
 @extends('layouts.admin.app')
-@section('title', 'Admin | Restaurant Business Management')
+@section('title', 'Admin | Customer Management')
 
 @push('styles')
 @endpush
@@ -10,37 +8,31 @@
 <div class="flex-1 p-4 md:p-6 bg-gray-50">
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
-            <h2 class="text-2xl font-bold text-gray-800">Restaurant Business Management</h2>
-            <p class="text-gray-600">Manage all Restaurant Businesses</p>
+            <h2 class="text-2xl font-bold text-gray-800">Customer Management</h2>
+            <p class="text-gray-600">Manage all Customers</p>
         </div>
 
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
             <!-- Search Form -->
-                <input type="text" id="search" name="search" placeholder="Search by Name, PAN, GSTIN, FLICNo..." 
-                    value="{{ request('search') }}"
-                    class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <input type="text" id="search" name="search" placeholder="Search by Name or Email..." 
+                value="{{ request('search') }}"
+                class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
 
-                <select id="onlineStatus" name="onlineStatus" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
-                    <option value="">All Status</option>
-                    <option value="true" {{ request('onlineStatus')=='true' ? 'selected' : '' }}>Online</option>
-                    <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>Offline</option>
-                </select>
-
-                <select id="per_page" name="per_page" class="px-3 py-2 border rounded-md cursor-pointer">
-                    @foreach([5,10,25,50] as $p)
-                        <option value="{{ $p }}" {{ request('per_page',10)==$p ? 'selected':'' }}>{{ $p }}</option>
-                    @endforeach
-                </select>
+            <select id="onlineStatus" name="onlineStatus" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
+                <option value="">All Status</option>
+                <option value="true" {{ request('onlineStatus')=='true' ? 'selected' : '' }}>Online</option>
+                <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>Offline</option>
+            </select>
 
             <button id="openAdminModal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                <i class="fas fa-plus mr-1"></i> New Restaurant Business
+                <i class="fas fa-plus mr-1"></i> New Customer
             </button>
         </div>
     </div>
 
     <!-- Table -->
     <div id="tableData" class="bg-white shadow rounded-lg overflow-hidden">
-        @include('admin.business.restaurant.searchedRestaurants', ['users' => $users])
+        @include('admin.users.customers.searchedCustomers', ['users' => $users])
     </div>
 </div>
 
@@ -52,7 +44,7 @@
     <div class="bg-white w-full max-w-2xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
         <!-- Header -->
         <div class="flex justify-between items-center px-6 py-4 border-b">
-            <h3 class="text-lg font-semibold text-gray-800">Add New Restaurant</h3>
+            <h3 class="text-lg font-semibold text-gray-800">Add New Customer</h3>
             <button id="add-close-btn" class="text-gray-500 hover:text-red-600 text-xl">&times;</button>
         </div>
 
@@ -262,7 +254,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.addEventListener('click', function(e) {
         const btn = e.target.closest('.edit-btn');
         if (btn) {
-            modalTitle.innerText = 'Edit Restaurant';
+            modalTitle.innerText = 'Edit Customer';
             form.action = `/users/update/${btn.dataset.id}`;
             methodInput.value = 'PUT';
             nameInput.value = btn.dataset.name;
@@ -280,8 +272,43 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Delete confirmation
+    // AJAX search/filter/pagination
+    // Set input values from URL parameters
+    function setInputsFromUrl(url) {
+        const params = new URLSearchParams(url.split('?')[1] || '');
+        if (params.has('search')) document.getElementById('search').value = params.get('search');
+        if (params.has('onlineStatus')) document.getElementById('onlineStatus').value = params.get('onlineStatus');
+    }
+    
+    // Fetch and update table data
+    function fetchData(url = null) {
+        const search = document.getElementById('search').value;
+        const onlineStatus = document.getElementById('onlineStatus').value;
+        let fetchUrl = url ? url : `?search=${search}&onlineStatus=${onlineStatus}`;
+
+        if (url) setInputsFromUrl(url);
+
+        fetch(fetchUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(res => res.text())
+            .then(data => {
+                document.getElementById('tableData').innerHTML = data;
+                if (url) setInputsFromUrl(url);
+            });
+    }
+    
+    // Trigger fetch on search and filter change
+    document.getElementById('search').addEventListener('keyup', () => fetchData());
+    document.getElementById('onlineStatus').addEventListener('change', () => fetchData());
+
+    // AJAX pagination
     document.addEventListener('click', function(e) {
+        const pageLink = e.target.closest('.pagination a');
+        if (pageLink) {
+            e.preventDefault();
+            fetchData(pageLink.getAttribute('href'));
+        }
+
+        // Delete confirmation
         const form = e.target.closest('.delete-form');
         if (form) {
             e.preventDefault();
@@ -301,48 +328,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }).then((result) => { if (result.isConfirmed) form.submit(); });
         }
     });
-
-    ///for ajjax filter
-    const searchInput = document.getElementById('search');
-    const statusSelect = document.getElementById('onlineStatus');
-    const perPageSelect = document.getElementById('per_page');
-
-    function fetchData(url = null) {
-        const search = searchInput.value;
-        const onlineStatus = statusSelect.value;
-        const perPage = perPageSelect.value;
-
-        let fetchUrl = url 
-            ? url 
-            : `?search=${encodeURIComponent(search)}&onlineStatus=${onlineStatus}&per_page=${perPage}`;
-
-        fetch(fetchUrl, {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(res => res.text())
-        .then(html => {
-            document.getElementById('tableData').innerHTML = html;
-        });
-    }
-
-    /*Live search */
-    searchInput.addEventListener('keyup', () => fetchData());
-
-    /*Status filter */
-    statusSelect.addEventListener('change', () => fetchData());
-
-    /*pages filter */
-    perPageSelect.addEventListener('change', () => fetchData());
-
-    /*AJAX pagination */
-    document.addEventListener('click', function(e) {
-        const link = e.target.closest('.pagination a');
-        if (link) {
-            e.preventDefault();
-            fetchData(link.getAttribute('href'));
-        }
-    });
-
 });
 </script>
 @endpush

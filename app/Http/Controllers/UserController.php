@@ -27,7 +27,7 @@ class UserController extends Controller
             $search = $request->search;
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('Name', 'ilike', '%' . $search . '%');
         }
 
         //Filter by online status
@@ -57,7 +57,7 @@ class UserController extends Controller
             $search = $request->search;
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('Name', 'ilike', '%' . $search . '%');
         }
 
         //Filter by online status
@@ -71,7 +71,7 @@ class UserController extends Controller
 
         //AJAX response
         if($request->ajax()){
-            return view('admin.users.searchedCustomers', compact('users'))->render();
+            return view('admin.users.customers.searchedCustomers', compact('users'))->render();
         }
         //Normal load
         return view('admin.users.customers.index', compact('users'));
@@ -87,7 +87,7 @@ class UserController extends Controller
             $search = $request->search;
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('Name', 'ilike', '%' . $search . '%');
         }
 
         //Filter by online status
@@ -101,7 +101,7 @@ class UserController extends Controller
 
         //AJAX response
         if($request->ajax()){
-            return view('admin.users.searchedMedicalstore', compact('users'))->render();
+            return view('admin.users.medical_stores.searchedMedicalstore', compact('users'))->render();
         }
         //Normal load
         return view('admin.users.medical_stores.index', compact('users'));
@@ -117,7 +117,7 @@ class UserController extends Controller
             $search = $request->search;
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            $query->where('name', 'like', '%' . $search . '%');
+            $query->where('Name', 'ilike', '%' . $search . '%');
         }
 
         //Filter by online status
@@ -131,10 +131,40 @@ class UserController extends Controller
 
         //AJAX response
         if($request->ajax()){
-            return view('admin.users.searchedRestaurants', compact('users'))->render();
+            return view('admin.users.restaurants.searchedRestaurants', compact('users'))->render();
         }
         //Normal load
         return view('admin.users.restaurants.index', compact('users'));
+    }
+
+    public function deliveryMan(Request $request)
+    {
+        $query = User::query()->where('Role', 5);
+
+        // Search by user name
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+            // $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->where('Name', 'ilike', '%' . $search . '%');
+        }
+
+        //Filter by online status
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus);
+        }
+
+        // Paginate results with query parameters
+        $users = $query->latest()->paginate(5)->appends($request->all());
+        // $allOrders = $medicineOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.users.deliveryMan.searchedDeliveryMan', compact('users'))->render();
+        }
+        //Normal load
+        return view('admin.users.deliveryMan.index', compact('users'));
     }
 
     /**

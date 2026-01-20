@@ -97,16 +97,41 @@ class RestaurantController extends Controller
         return redirect()->route('admin.restaurants.list')->with('success', 'Restaurant deleted.');
     }
 
-         /**
+    /**
      * all restaurant 
      */
-    public function allRestaurants()
+    public function allRestaurants(Request $request)
     {
-        $users = Restaurant::whereHas('user', function ($query) {
-            $query->where('Role', 'Restaurant');
-        })
-        ->with('user')
-        ->paginate(10);
+        $query = Restaurant::whereHas('user', function ($q) {
+            $q->where('Role', 3);
+        })->with('user');
+
+        // search by name, license, gstin, pan
+        if ($search = $request->get('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'ilike', "%{$search}%")
+                    ->orWhere('FLICNo', 'ilike', "%{$search}%")
+                    ->orWhere('GSTIN', 'ilike', "%{$search}%")
+                    ->orWhere('PAN', 'ilike', "%{$search}%");
+            });
+        }
+
+        /* Online / Offline filter (from select box) */
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus === 'true');
+        }
+
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, [5,10,25,50]) ? $perPage : 10;
+
+        $users = $query->paginate($perPage)->appends($request->except('page'));
+
+        if ($request->ajax()) {
+            return view(
+                'admin.business.restaurant.searchedRestaurants',
+                compact('users')
+            );
+        }
 
         return view('admin.business.restaurant.index', compact('users'));
     }
