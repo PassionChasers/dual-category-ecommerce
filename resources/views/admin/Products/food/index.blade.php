@@ -207,11 +207,29 @@
                 </div>
 
                 <!-- Image -->
-                <div>
+                {{-- <div>
                     <label class="block text-sm font-medium text-gray-700">Image</label>
                     <input type="file" name="ImageUrl" id="customer-image" accept="image/*"
                         class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                     <p class="mt-1 text-xs text-gray-500">Leave blank to keep existing image</p>
+                </div> --}}
+
+                <!-- Image URL -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Image URL</label>
+                    <input 
+                        type="url" 
+                        name="ImageUrl" 
+                        id="customer-image-url" 
+                        placeholder="Enter image URL" 
+                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                    >
+                    <p class="mt-1 text-xs text-gray-500">Leave blank to keep existing image</p>
+                    <img 
+                        id="image-preview" 
+                        class="mt-2 w-28 h-28 rounded-md border border-gray-300 object-cover hidden"
+                        alt="Image Preview"
+                    />
                 </div>
 
                 <!-- Buttons -->
@@ -229,6 +247,24 @@
 @endsection
 
 @push('scripts')
+
+<!-- Preview Script -->
+{{-- <script>
+    const imageUrlInput = document.getElementById('customer-image-url');
+    const imagePreview = document.getElementById('image-preview');
+
+    imageUrlInput.addEventListener('input', () => {
+        const url = imageUrlInput.value.trim();
+        if(url) {
+            imagePreview.src = url;
+            imagePreview.classList.remove('hidden');
+        } else {
+            imagePreview.src = '';
+            imagePreview.classList.add('hidden');
+        }
+    });
+</script> --}}
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -354,6 +390,20 @@
 
     // Open modal for create
     newBtn.addEventListener('click', () => {
+        const imageUrlInput = document.getElementById('customer-image-url');
+        const imagePreview = document.getElementById('image-preview');
+
+        imageUrlInput.addEventListener('input', () => {
+            const url = imageUrlInput.value.trim(); // just for preview
+            if(url){
+                imagePreview.src = url;
+                imagePreview.classList.remove('hidden');
+            } else {
+                imagePreview.src = '';
+                imagePreview.classList.add('hidden');
+            }
+        });
+
         modalTitle.innerText = 'New Item';
         form.action = "{{ route('menu-items.store') }}";
         methodInput.value = 'POST';
@@ -363,7 +413,7 @@
         categoryInput.value = '';
         isVegInput.checked = false;
         isAvailableInput.checked = true;
-        imageInput.value = '';
+        // imageInput.value = '';
         modal.classList.remove('hidden');
     });
 
