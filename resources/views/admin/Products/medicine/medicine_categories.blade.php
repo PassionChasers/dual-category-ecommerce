@@ -3,7 +3,22 @@
 @section('title', 'Admin | Medicine Categories')
 
 @push('styles')
-    <!-- Extra styles if needed -->
+<style>
+    /* Custom class to handle the arrow */
+.custom-select {
+    appearance: none; /* Removes default arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    
+    /* Add your custom chevron as a background image */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+    padding-right: 2.5rem; /* Ensure text doesn't overlap the icon */
+}
+</style>
+    
 @endpush
 
 @section('contents')
@@ -25,7 +40,7 @@
                         class="flex-1 min-w-[150px] px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500"
                     />
 
-                    <select id="status-filter" name="status" class="px-3 py-2 border rounded-md text-sm">
+                    <select id="status-filter" name="status" class=" custom-select pl-2  border rounded-md text-sm">
                         <option value="">Status</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
@@ -119,11 +134,11 @@
 
     <!-- Modal: create / edit -->
     <div id="category-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4">
-        <div class="fixed inset-0 bg-black bg-opacity-40"></div>
+        <div id="model-overlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px]"></div>
         <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full z-10 overflow-hidden">
-            <div class="px-6 py-4 border-b flex items-center justify-between">
-                <h3 id="modal-title" class="text-lg font-medium text-gray-800">New Category</h3>
-                <button id="close-modal" class="text-gray-600 hover:text-gray-800"><i class="fas fa-times"></i></button>
+            <div class="px-6 py-4 bg-indigo-600 flex items-center justify-between">
+                <h3 id="modal-title" class="text-lg font-medium text-white">New Category</h3>
+                <button id="close-modal" class="text-white hover:text-red-500 text-xl"><i class="fas fa-times"></i></button>
             </div>
 
             <form id="category-form" method="POST" class="space-y-4 px-6 py-6">
@@ -133,14 +148,14 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Category Name</label>
-                    <input type="text" id="field-name" name="Name" required
-                        class="mt-1 block w-full border rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <input type="text" id="field-name" name="Name" placeholder="eg. Category 1" required
+                        class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2 ">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Description</label>
-                    <textarea id="field-description" name="Description" rows="4"
-                        class="mt-1 block w-full border rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    <textarea id="field-description" name="Description" rows="4" placeholder="Description of Category..."
+                        class="px-3 mt-1 block w-full border border-gray-400 rounded-md"></textarea>
                 </div>
 
                 <div class="flex items-center gap-3">
@@ -150,7 +165,7 @@
                     </label>
 
                     <div class="ml-auto flex gap-2">
-                        <button type="button" id="modal-cancel" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Cancel</button>
+                        <button type="button" id="modal-cancel" class="px-4 py-2 bg-gray-200 rounded hover:bg-red-500 hover:text-white">Cancel</button>
                         <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Save</button>
                     </div>
                 </div>
@@ -164,6 +179,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const modal = document.getElementById('category-modal');
+            const overlay = document.getElementById('model-overlay');
             const openCreate = document.getElementById('open-create-modal');
             const closeModalBtns = [document.getElementById('close-modal'), document.getElementById('modal-cancel')];
             const modalTitle = document.getElementById('modal-title');
@@ -284,6 +300,9 @@
 
             // Close buttons
             closeModalBtns.forEach(btn => btn && btn.addEventListener('click', closeModal));
+
+            // Close modal when clicking outside (overlay)
+            overlay.addEventListener('click', closeModal);
 
             // Initial attachment of event listeners
             reattachEventListeners();

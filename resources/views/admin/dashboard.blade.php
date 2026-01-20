@@ -19,7 +19,7 @@
         <div id="dashboard-content" class="content-page p-4 md:p-6">
             <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                 <div>
-                    <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+                    <!-- <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2> -->
                     <p class="text-gray-600">
                         Welcome back! Here’s an overview of your platform today,
                         <span id="current-date" class="font-medium"></span>.

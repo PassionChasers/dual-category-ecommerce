@@ -81,7 +81,7 @@
         <!-- Logo -->
         <div class="flex items-center justify-center py-5 px-4 bg-indigo-600">
             <a href="{{ route('admin.dashboard') }}">
-                <h1 class="text-white font-bold text-xl">{{ $setting->app_name}}</h1>
+                <h1 class="text-white font-bold text-xl">{{ $setting->AppName}}</h1>
             </a>
         </div>
 

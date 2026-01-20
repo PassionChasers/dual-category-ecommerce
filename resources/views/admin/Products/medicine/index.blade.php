@@ -163,12 +163,12 @@
     {{-- ======================================================================= --}}
 
     <div id="medicine-modal" class="fixed inset-0 z-50 hidden items-center justify-center px-4">
-        <div class="fixed inset-0 bg-black/40"></div>
+        <div id="model-overlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px]"></div>
 
         <div class="bg-white rounded-lg shadow-lg max-w-3xl w-full z-10">
-            <div class="px-6 py-4 border-b flex justify-between items-center">
-                <h3 id="modal-title" class="text-lg font-semibold text-gray-800">New Medicine</h3>
-                <button id="close-modal" class="text-gray-600 hover:text-gray-800">
+            <div class="px-6 py-4 bg-indigo-600 flex justify-between items-center rounded-t-lg">
+                <h3 id="modal-title" class="text-lg text-white font-semibold">New Medicine</h3>
+                <button id="close-modal" class="text-white hover:text-red-500 text-2xl  px-1">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -183,12 +183,12 @@
 
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium">Name</label>
-                        <input id="field-name" name="Name" type="text" required class="mt-1 block w-full border rounded-md px-3 py-2">
+                        <input id="field-name" name="Name" placeholder="Enter Medicine Name" type="text" required class="mt-1 block w-full  border border-gray-400 rounded-md px-3 py-2">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium">Category</label>
-                        <select id="field-category" name="MedicineCategoryId" class="mt-1 block w-full border rounded-md px-3 py-2">
+                        <select id="field-category" name="MedicineCategoryId" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2">
                             <option value="">Select category</option>
                             @foreach($categories as $cat)
                                 <option value="{{ $cat->MedicineCategoryId }}">{{ $cat->Name }}</option>
@@ -198,28 +198,28 @@
 
                     <div>
                         <label class="block text-sm font-medium">Brand / Generic</label>
-                        <input id="field-brand" name="BrandName" class="mt-1 block w-full border rounded-md px-3 py-2" placeholder="Brand">
-                        <input id="field-generic" name="GenericName" class="mt-1 block w-full border rounded-md px-3 py-2" placeholder="Generic">
+                        <input id="field-brand" name="BrandName" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2" placeholder="Brand">
+                        <input id="field-generic" name="GenericName" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2" placeholder="Generic">
                     </div>
 
                     <div class="md:col-span-2">
                         <label class="block text-sm font-medium">Description</label>
-                        <textarea id="field-description" name="Description" rows="3" class="mt-1 block w-full border rounded-md px-3 py-2"></textarea>
+                        <textarea id="field-description" name="Description" placeholder="Description of Medicine..." rows="3" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2"></textarea>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium">Price</label>
-                        <input id="field-price" name="Price" type="number" step="0.01" class="mt-1 block w-full border rounded-md px-3 py-2">
+                        <input id="field-price" name="Price" type="number" step="0.01" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium">MRP</label>
-                        <input id="field-mrp" name="MRP" type="number" step="0.01" class="mt-1 block w-full border rounded-md px-3 py-2">
+                        <input id="field-mrp" name="MRP" placeholder="Rs." type="number" step="0.01" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium">Expiry Date</label>
-                        <input id="field-expiry" name="ExpiryDate" type="date" class="mt-1 block w-full border rounded-md px-3 py-2">
+                        <input id="field-expiry" name="ExpiryDate" type="date" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2">
                     </div>
 
                     <div class="flex items-center gap-2">
@@ -229,29 +229,29 @@
 
                     <div>
                         <label class="block text-sm font-medium">Manufacturer</label>
-                        <input id="field-manufacturer" name="Manufacturer" class="mt-1 block w-full border rounded-md px-3 py-2">
+                        <input id="field-manufacturer" name="Manufacturer" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium">Dosage Form</label>
-                        <input id="field-dosage" name="DosageForm" class="mt-1 block w-full border rounded-md px-3 py-2">
+                        <input id="field-dosage" name="DosageForm" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium">Strength</label>
-                        <input id="field-strength" name="Strength" class="mt-1 block w-full border rounded-md px-3 py-2">
+                        <input id="field-strength" name="Strength" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium">Packaging</label>
-                        <input id="field-packaging" name="Packaging" class="mt-1 block w-full border rounded-md px-3 py-2">
+                        <input id="field-packaging" name="Packaging" class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2">
                     </div>
 
                     {{-- IMAGE --}}
                     <div class="md:col-span-1">
                         <label class="block text-sm font-medium">Image</label>
-                        <input id="field-image" name="image" type="file" accept="image/*" class="mt-1 block w-full">
-                        <img id="image-preview" class="mt-2 w-28 h-28 rounded-md object-cover hidden"/>
+                        <input id="field-image" name="image" type="file" accept="image/*" class="mt-1 block w-full border border-gray-400 px-3 py-2 rounded-md">
+                        <img id="image-preview" class="mt-2 w-28 h-28 rounded-md border border-gray-400 object-cover hidden"/>
                     </div>
 
                     {{-- ACTIVE --}}
@@ -263,7 +263,7 @@
                 </div>
 
                 <div class="flex justify-end gap-2">
-                    <button type="button" id="modal-cancel" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
+                    <button type="button" id="modal-cancel" class="px-4 py-2 hover:bg-red-500 bg-gray-200 rounded hover:text-white">
                         Cancel
                     </button>
 
@@ -283,6 +283,7 @@
         document.addEventListener('DOMContentLoaded',()=>{
 
             const modal=document.getElementById('medicine-modal');
+            const overlay= document.getElementById('model-overlay');
             const openCreate=document.getElementById('open-create-modal');
             const modalTitle=document.getElementById('modal-title');
             const closeModalBtns=[document.getElementById('close-modal'),document.getElementById('modal-cancel')];
@@ -414,6 +415,8 @@
                 imagePreview.classList.add('hidden');
                 form.action="{{ route('admin.medicines.store') }}";
             };
+            
+            overlay.addEventListener('click', closeModal)
 
             openCreate.addEventListener('click', () => {
                 modalTitle.innerText = "New Medicine";
