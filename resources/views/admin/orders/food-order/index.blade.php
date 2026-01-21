@@ -230,7 +230,40 @@
                 });
             });
 
-             // Pause auto-refresh when interacting
+            // Deliveryman assignment confirmation
+            document.querySelectorAll('.assign-deliveryman').forEach(select => {
+                select.addEventListener('change', function () {
+                    const form = this.closest('.assign-delivery-form');
+                    const selectedName = this.options[this.selectedIndex].text;
+
+                    if (!this.value) return;
+
+                    pauseTableUpdate();
+
+                    Swal.fire({
+                        title: 'Assign Delivery Man?',
+                        text: `Are you sure you want to assign "${selectedName}" to this order?`,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, assign!',
+                        cancelButtonText: 'Cancel'
+                    }).then(result => {
+                        if (result.isConfirmed){
+                            // resumeTableUpdate();
+                            form.submit();
+                        } 
+                        else {
+                            this.value = '';
+                            resumeTableUpdate();
+                        }
+                    });
+                });
+            });
+
+            
+            // Pause auto-refresh when interacting
             const interactiveElements = document.querySelectorAll('.assign-store, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
             interactiveElements.forEach(el => {
                 el.addEventListener('focus', pauseTableUpdate);

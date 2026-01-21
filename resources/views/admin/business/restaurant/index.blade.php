@@ -7,7 +7,7 @@
 @endpush
 
 @section('contents')
-<div class="flex-1 p-4 md:p-6 bg-gray-50">
+<div class="flex-1 overflow-auto bg-gray-50 p-4 md:p-6">
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800">Restaurant Business Management</h2>
@@ -32,7 +32,7 @@
                     @endforeach
                 </select>
 
-            <button id="openAdminModal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+            <button id="open-register-form-modal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                 <i class="fas fa-plus mr-1"></i> New Restaurant Business
             </button>
         </div>
@@ -45,11 +45,11 @@
 </div>
 
 
-<!-- Add User Modal -->
-<div id="AdminModal"
-     class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+<!-- Add Restaurant Modal -->
+<div id="Add-Restaurant-Modal" class="fixed inset-0 bg-indigo-100 bg-opacity-50 hidden items-center justify-center z-50">
 
-    <div class="bg-white w-full max-w-2xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
+    <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
+
         <!-- Header -->
         <div class="flex justify-between items-center px-6 py-4 border-b">
             <h3 class="text-lg font-semibold text-gray-800">Add New Restaurant</h3>
@@ -57,73 +57,189 @@
         </div>
 
         <!-- Form -->
-        <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="restaurantForm" method="POST" enctype="multipart/form-data">
             @csrf
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <!-- Error Messages -->
+                {{-- @if($errors->any())
+                    <div class="md:col-span-2 p-4 bg-red-100 text-red-700 rounded">
+                        <ul class="list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif --}}
 
                 <!-- Name -->
                 <div>
-                    <label class="block text-sm font-medium">Name</label>
-                    <input type="text" name="name" class="input border rounded p-1" required>
+                    <label class="block text-sm font-medium">
+                        Restaurant Name
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text" name="Name" value="{{ old('Name') }}" class="input border rounded p-2 w-full" required>
                 </div>
 
-                <!-- Email -->
+                {{-- Admin Name --}}
                 <div>
-                    <label class="block text-sm font-medium">Email</label>
-                    <input type="email" name="email" class="input border rounded p-1" required>
+                    <label class="block text-sm font-medium">
+                        Admin Name
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text" name="AdminName" value="{{ old('AdminName') }}" class="input border rounded p-2 w-full" required>
+                </div>
+                
+
+                <!-- Email (to link user) -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        Email
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="email" name="email" value="{{ old('email') }}" class="input border rounded p-2 w-full" required>
                 </div>
 
-                <!-- Password -->
+                {{-- Password --}}
                 <div>
-                    <label class="block text-sm font-medium">Password</label>
-                    <input type="password" name="password" class="input border rounded p-1" required>
+                    <label class="block text-sm font-medium">
+                        Password
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="password" name="Password" value="{{ old('Password') }}" class="input border rounded p-2 w-full" required>
                 </div>
 
-                <!-- Phone -->
+                {{-- Phone --}}
                 <div>
-                    <label class="block text-sm font-medium">Phone</label>
-                    <input type="text" name="phone" class="input border rounded p-1">
+                    <label class="block text-sm font-medium">
+                        Phone
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text" name="Phone" value="{{ old('Phone') }}" class="input border rounded p-2 w-full" required>
                 </div>
 
-                <!-- Avatar -->
+                <!-- Address -->
                 <div>
-                    <label class="block text-sm font-medium">Avatar</label>
-                    <input type="file" name="avatar_url" class="input border rounded p-1">
+                    <label class="block text-sm font-medium">
+                        Address
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text" name="Address" value="{{old('Address')}}" class="input border rounded p-2 w-full" required>
                 </div>
 
-                <!-- Role -->
+                <!-- FLICNo -->
                 <div>
-                    <label class="block text-sm font-medium">Role</label>
-                    <input type="text" name="role" value="Admin" class="input border rounded p-1" readonly>
+                    <label class="block text-sm font-medium">
+                        FLIC Number
+                        <span class="text-red-400">*</span></label>
+                    <input type="text" name="FLICNo" value="{{ old('FLICNo') }}" class="input border rounded p-2 w-full" required>
                 </div>
 
-                {{-- <!-- Is Active -->
+                <!-- GSTIN -->
                 <div>
-                    <label class="block text-sm font-medium">Is Active</label>
-                    <select name="is_active" class="input">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
+                    <label class="block text-sm font-medium">
+                        GSTIN
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text" name="GSTIN" value="{{ old('GSTIN') }}" class="input border rounded p-2 w-full" required>
+                </div>
+
+                <!-- PAN -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        PAN
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text" name="PAN" value="{{ old('PAN') }}" class="input border rounded p-2 w-full" required>
+                </div>
+
+               <!-- CuisineType -->
+                <div>
+                    {{-- <label class="block text-sm font-medium">Cuisine Type</label> --}}
+                    {{-- <input type="text" name="cuisineType" value="{{ old('CuisineType') }}" class="input border rounded p-2 w-full"> --}}
+                    <select name="CuisineType" id="cuisineType">
+                        <option value=" ">...Select Cuisine Type... </option>
+                        <option value="Nepali">Nepali</option>
+                        <option value="Indian">Indian</option>
+                        <option value="Chinese">Chinese</option>
                     </select>
-                </div> --}}
+                </div>
 
-                <!-- Is Email Verified -->
-                {{-- <div>
-                    <label class="block text-sm font-medium">Email Verified</label>
-                    <select name="is_email_verified" class="input">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                </div> --}}
+                <!-- OpenTime -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        Open Time
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="time" name="OpenTime" value="{{ old('OpenTime') }}" class="input border rounded p-2 w-full" required>
+                </div>
 
-                <!-- Is Business Admin -->
-                {{-- <div>
-                    <label class="block text-sm font-medium">Business Admin</label>
-                    <select name="is_business_admin" class="input" readonly>
-                        <option value="0" selected>No</option>
-                        <option value="1">Yes</option>
-                    </select>
-                </div> --}}
+                <!-- CloseTime -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        Close Time
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="time" name="CloseTime" value="{{ old('CloseTime') }}" class="input border rounded p-2 w-full" required>
+                </div>
+
+                <!-- PrepTimeMin -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        Preparation Time (Min)
+                        <span class="text-red-200">(optional)</span>
+                    </label>
+                    <input type="number" name="PrepTimeMin" value="{{ old('PrepTimeMin', 30) }}" class="input border rounded p-2 w-full">
+                </div>
+
+                <!-- DeliveryFee -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        Delivery Fee
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="number" step="0.01" name="DeliveryFee" value="{{ old('DeliveryFee', 0) }}" class="input border rounded p-2 w-full" required>
+                </div>
+
+                <!-- MinOrder -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        Minimum Order
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="number" step="0.01" name="MinOrder" value="{{ old('MinOrder', 0) }}" class="input border rounded p-2 w-full" required>
+                </div>
+
+                <!-- Latitude -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        Latitude
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="number" step="0.000001" name="Latitude" value="{{ old('Latitude') }}" class="input border rounded p-2 w-full" required>
+                </div>
+
+                <!-- Longitude -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        Longitude
+                        <span class="text-red-400">*</span>
+                    </label>
+                    <input type="number" step="0.000001" name="Longitude" value="{{ old('Longitude') }}" class="input border rounded p-2 w-full" required>
+                </div>
+
+                <!-- IsActive -->
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="IsActive" value="1" {{ old('IsActive', 1) ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <label class="text-sm font-medium">Active</label>
+                </div>
+
+                <!-- IsPureVeg -->
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="IsPureVeg" value="1" {{ old('IsPureVeg') ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <label class="text-sm font-medium">Pure Veg</label>
+                </div>
 
             </div>
 
@@ -133,14 +249,41 @@
                         class="px-4 py-2 bg-gray-200 rounded">
                     Cancel
                 </button>
-                <button type="submit"
+                {{-- <button type="submit"
                         class="px-4 py-2 bg-indigo-600 text-white rounded">
-                    Save User
+                    Save Restaurant
+                </button> --}}
+
+                <button
+                    type="submit"
+                    id="restaurantSubmitBtn"
+                    class="bg-green-600 text-white px-4 py-2 rounded flex items-center justify-center gap-2"
+                >
+                    <span id="btnText">Save Restaurant</span>
+                    <svg id="btnSpinner" class="w-5 h-5 animate-spin hidden"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                            stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                    </svg>
                 </button>
+
             </div>
         </form>
     </div>
 </div>
+
+@if ($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addModal = document.getElementById('Add-Restaurant-Modal');
+        addModal.classList.remove('hidden');
+        addModal.classList.add('flex');
+    });
+</script>
+@endif
+
 
 
 {{-- Modal --}}
@@ -217,23 +360,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-     // ADD MODAL
-    const addModal = document.getElementById('AdminModal');
-    const openAddBtn = document.getElementById('openAdminModal');
-    const addCloseBtn = document.getElementById('add-close-btn');
-    const addCancelBtn = document.getElementById('add-cancel-btn');
-
-    openAddBtn?.addEventListener('click', () => {
-        addModal.classList.remove('hidden');
-        addModal.classList.add('flex');
-    });
-
-    [addCloseBtn, addCancelBtn].forEach(btn => {
-        btn?.addEventListener('click', () => {
-            addModal.classList.add('hidden');
-            addModal.classList.remove('flex');
-        });
-    });
+    
 
 
      // EDIT MODAL
@@ -345,4 +472,153 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 </script>
+
+<script>
+
+    // ADD MODAL
+    const addModal = document.getElementById('Add-Restaurant-Modal');
+    const openAddBtn = document.getElementById('open-register-form-modal');
+    const addCloseBtn = document.getElementById('add-close-btn');
+    const addCancelBtn = document.getElementById('add-cancel-btn');
+
+    openAddBtn?.addEventListener('click', () => {
+        addModal.classList.remove('hidden');
+        addModal.classList.add('flex');
+    });
+
+    [addCloseBtn, addCancelBtn].forEach(btn => {
+        btn?.addEventListener('click', () => {
+            addModal.classList.add('hidden');
+            addModal.classList.remove('flex');
+        });
+    });
+
+
+
+    document.getElementById('restaurantForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const btn = document.getElementById('restaurantSubmitBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('btnSpinner');
+
+        // Disable button & show loading
+        btn.disabled = true;
+        btn.classList.add('opacity-70', 'cursor-not-allowed');
+        btnText.textContent = 'Saving...';
+        spinner.classList.remove('hidden');
+
+        // const payload = {
+        const data = new URLSearchParams({
+            restaurantName: form.Name.value,
+            adminName: form.AdminName.value,
+            adminEmail: form.email.value,
+            adminPassword: form.Password.value, // API requires it
+            adminPhone: form.Phone.value,
+
+            restaurantAddress: form.Address.value,
+            flicNo: form.FLICNo.value,
+            gstin: form.GSTIN.value,
+            pan: form.PAN.value,
+
+            cuisineType: form.CuisineType.value,
+            isPureVeg: form.IsPureVeg.checked,
+            priority: 0,
+
+            openTime: form.OpenTime.value,
+            closeTime: form.CloseTime.value,
+            prepTimeMin: form.PrepTimeMin.value || 10,
+            deliveryFee: form.DeliveryFee.value,
+            minOrder: form.MinOrder.value,
+            latitude: form.Latitude.value,
+            longitude: form.Longitude.value,
+            _token: '{{ csrf_token() }}'
+        });
+        // };
+
+        fetch('{{ route("admin.restaurants.store") }}', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
+            },
+            body: data
+        })
+        .then(res => res.json())
+        .then(response => {
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Restaurant registered successfully',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                form.reset();
+                document.getElementById('Add-Restaurant-Modal').classList.add('hidden');
+                // closeStoreModal();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message || 'Something went wrong'
+                });
+            }
+        })
+        .catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Server Error',
+                text: 'Please try again later'
+            });
+        })
+        .finally(() => {
+            // Re-enable button
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+            btnText.textContent = 'Save Restaurant';
+            spinner.classList.add('hidden');
+        });
+
+
+
+        // .then(res => {
+        //     if (!res.ok) throw res;
+        //     return res.json();
+        // })
+        // .then(() => {
+        //     Swal.fire({
+        //         icon: 'success',
+        //         title: 'Success',
+        //         text: 'Restaurant registered successfully',
+        //         timer: 2000,
+        //         showConfirmButton: false
+        //     });
+
+        //     form.reset();
+        //     document.getElementById('Add-Restaurant-Modal').classList.add('hidden');
+        // })
+        // .catch(async err => {
+        //     let msg = 'Server error';
+        //     try {
+        //         const data = await err.json();
+        //         msg = data.message || msg;
+        //     } catch {}
+
+        //     Swal.fire({
+        //         icon: 'error',
+        //         title: 'Error',
+        //         text: msg
+        //     });
+        // })
+        // .finally(() => {
+        //     btn.disabled = false;
+        //     btn.innerText = 'Save Restaurant';
+        // });
+
+
+    });
+</script>
+
 @endpush

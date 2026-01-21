@@ -3,7 +3,7 @@
 
         <!-- left Side -->
         <div>
-            <h1 class="text-4xl text-gray-800 font-bold">Admin Dashboard</h1>
+            <h1 class="text-4xl text-gray-800 font-bold hidden">Admin Dashboard</h1>
         </div>
         <!-- Right Side -->
         <div class="flex items-center space-x-4 relative">
@@ -16,7 +16,7 @@
     
             <!-- Notifications (Dummy Static Badge) -->
             <a href="#"
-                class=" p-1 text-gray-400 rounded-full hover:text-gray-500 relative">
+                class="hidden p-1 text-gray-400 rounded-full hover:text-gray-500 relative">
                 <i class="fas fa-bell text-gray-600 text-lg"></i>
     
                 <!-- Static dummy count -->

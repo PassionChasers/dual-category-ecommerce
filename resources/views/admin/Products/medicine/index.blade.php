@@ -248,10 +248,26 @@
                     </div>
 
                     {{-- IMAGE --}}
-                    <div class="md:col-span-1">
+                    {{-- <div class="md:col-span-1">
                         <label class="block text-sm font-medium">Image</label>
                         <input id="field-image" name="image" type="file" accept="image/*" class="mt-1 block w-full border border-gray-400 px-3 py-2 rounded-md">
                         <img id="image-preview" class="mt-2 w-28 h-28 rounded-md border border-gray-400 object-cover hidden"/>
+                    </div> --}}
+
+                    {{-- IMAGE URL --}}
+                    <div class="md:col-span-1">
+                        <label class="block text-sm font-medium">Image URL</label>
+                        <input 
+                            id="field-image-url" 
+                            name="image_url" 
+                            type="url" 
+                            placeholder="Enter image URL" 
+                            class="mt-1 block w-full border border-gray-400 px-3 py-2 rounded-md"
+                        >
+                        <img 
+                            id="image-preview" 
+                            class="mt-2 w-28 h-28 rounded-md border border-gray-400 object-cover hidden"
+                        />
                     </div>
 
                     {{-- ACTIVE --}}
@@ -279,6 +295,23 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    {{-- Preview Script --}}
+    <script>
+        const imageUrlInput = document.getElementById('field-image-url');
+        const imagePreview = document.getElementById('image-preview');
+
+        imageUrlInput.addEventListener('input', () => {
+            const url = imageUrlInput.value.trim();
+            if(url) {
+                imagePreview.src = url;
+                imagePreview.classList.remove('hidden');
+            } else {
+                imagePreview.src = '';
+                imagePreview.classList.add('hidden');
+            }
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded',()=>{
 

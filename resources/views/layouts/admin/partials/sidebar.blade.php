@@ -432,7 +432,7 @@
         <div class="flex items-center justify-center py-5 px-4 bg-indigo-600">
             <a href="{{ route('admin.dashboard') }}" class="flex items-center space-x-3">
                 <!-- Logo -->
-                <img src="https://pcsdecom.azurewebsites.net{{  $setting->AppLogo }}" alt="{{ $setting->AppName }} Logo"
+                <img src="{{  asset($setting->AppLogo) }}" alt="{{ $setting->AppName }} Logo"
                     class="w-8 h-8 object-cover rounded-md shadow-md border border-white/20">
                 <!-- App Name -->
                 <span class="text-white font-bold text-xl">

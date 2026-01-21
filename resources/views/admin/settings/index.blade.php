@@ -37,7 +37,7 @@
                             class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
                         @if (!empty($setting->AppLogo))
                             {{-- <img src="{{$settin    g->AppLogo }}" class="h-10 mt-2"> --}}
-                            <img src="{{ asset($setting->AppLogo) }}" title="{{ $setting->AppLogo }}" class="thumb">
+                            <img src="{{ asset($setting->AppLogo) }}" title="{{ $setting->AppLogo }}" class="thumb mt-2 w-[100px] h-auto object-contain rounded border">
                         @endif
                     </div>
                     <div>
@@ -46,7 +46,7 @@
                             class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2">
                         @if (!empty($setting->Favicon))
                             {{-- <img src="{{ asset('storage/'.$setting->favicon) }}" class="h-6 mt-2"> --}}
-                            <img src="{{ asset($setting->Favicon) }}" title="{{ $setting->Favicon }}" class="thumb">
+                            <img src="{{ asset($setting->Favicon) }}" title="{{ $setting->Favicon }}" class="thumb mt-2 w-[32px] h-[32px] object-contain rounded border">
                         @endif
                     </div>
                     <div>
@@ -172,7 +172,7 @@
 
 @push('scripts')
     {{-- SweetAlert2 CDN --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> -->
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
