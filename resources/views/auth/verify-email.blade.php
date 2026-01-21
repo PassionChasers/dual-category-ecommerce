@@ -1,62 +1,184 @@
 @extends('layouts.admin.app')
-@section('title', 'Verify Email | Passion Chasers')
 
-@push('styles')
+@section('title', 'Verify Email')
 
-@endpush
 @section('contents')
+<div class="flex items-center justify-center min-h-screen bg-gray-50">
+    <div class="bg-white p-6 rounded-lg shadow w-full max-w-md">
 
-<div class="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-    <div class="bg-white shadow-xl rounded-xl px-8 py-6 max-w-md w-full text-center border border-gray-200">
-  
-      <!-- Header Icon -->
-      <div class="flex justify-center mb-3">
-        <div class="w-16 h-16 bg-indigo-600 text-white flex items-center justify-center rounded-full shadow-md">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M16 12H8m8-4H8m8 8H8m13-9v10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h3l2-2h4l2 2h3a2 2 0 012 2z" />
-          </svg>
+        <h2 class="text-xl font-bold mb-4 text-center">Verify Email</h2>
+
+        @php
+            function maskEmail($email) {
+                [$name, $domain] = explode('@', $email);
+                return substr($name, 0, 2)
+                    . str_repeat('*', max(strlen($name) - 2, 0))
+                    . '@' . $domain;
+            }
+        @endphp
+
+        <p class="text-sm text-gray-600 mb-4 text-center">
+            We sent a verification code to
+            <strong>{{ maskEmail($email) }}</strong>
+        </p>
+
+        <form id="verifyEmailForm" class="space-y-4">
+            @csrf
+
+            <!-- Hidden Email -->
+            <input type="hidden" id="email" value="{{ $email }}">
+
+            <!-- OTP -->
+            <div>
+                <label class="block text-sm font-medium mb-1">OTP Code</label>
+                <input
+                    type="text"
+                    id="code"
+                    placeholder="Enter 6-digit OTP"
+                    inputmode="numeric"
+                    maxlength="6"
+                    pattern="[0-9]{6}"
+                    class="w-full border px-3 py-2 rounded focus:ring-indigo-500 focus:border-indigo-500"
+                    required
+                >
+            </div>
+
+            <button
+                id="verifyBtn"
+                type="submit"
+                class="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+            >
+                Verify Email
+            </button>
+        </form>
+
+        <!-- Resend -->
+        <div class="text-center mt-4">
+            <button
+                id="resendCodeBtn"
+                class="text-indigo-600 text-sm hover:underline disabled:text-gray-400"
+            >
+                Resend Code
+            </button>
+
+            <p id="resendTimer" class="text-xs text-gray-500 mt-1 hidden">
+                Resend available in <span id="seconds">30</span>s
+            </p>
         </div>
-      </div>
-  
-      <!-- Title & Description -->
-      <h1 class="text-2xl font-bold text-gray-800 mb-3">Verify Your Email</h1>
-      <p class="text-gray-600 text-sm leading-relaxed mb-4">
-        Before proceeding, please check your inbox for a verification link. You must verify your email to access your account.
-      </p>
-  
-      <!-- Messages -->
-      @if(session('status'))
-        <div class="mb-4 text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-md py-2">
-          {{ session('status') }}
-        </div>
-      @endif
-  
-      @if(session('resent'))
-        <div class="mb-4 text-sm font-medium text-green-600 bg-green-50 border border-green-200 rounded-md py-2">
-          A new verification link has been sent to your email address.
-        </div>
-      @endif
-  
-      <!-- Resend Email Button -->
-      <form method="POST" action="{{ route('verification.send') }}" class="mb-3">
-        @csrf
-        <button type="submit"
-          class="w-full py-2.5 bg-indigo-600 text-white font-medium rounded-lg shadow-sm hover:bg-indigo-700 transition-all">
-          Resend Verification Email
-        </button>
-      </form>
-  
-      <!-- Logout -->
-      <form action="{{ route('logout') }}">
-        @csrf
-        <button type="submit"
-          class="w-full py-2.5 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-all">
-          Logout
-        </button>
-      </form>
+
     </div>
 </div>
 @endsection
-@push('scripts')
-@endpush
+
+{{-- Admin JWT --}}
+<script>
+const ADMIN_JWT = @json(session('jwt_token'));
+</script>
+
+{{-- Verify Email --}}
+<script>
+document.getElementById('verifyEmailForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value;
+    const code  = document.getElementById('code').value;
+    const btn   = document.getElementById('verifyBtn');
+
+    btn.disabled = true;
+
+    fetch('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${ADMIN_JWT}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ email, code })
+    })
+    .then(async res => {
+        const data = await res.json();
+        if (!res.ok) throw data;
+        return data;
+    })
+    .then(() => {
+        Swal.fire({
+            icon: 'success',
+            title: 'Email Verified',
+            timer: 2000,
+            showConfirmButton: false
+        }).then(() => {
+            window.location.href = '/admin/dashboard';
+        });
+    })
+    .catch(err => {
+        btn.disabled = false;
+        Swal.fire(
+            'Error',
+            err?.message || 'Invalid or expired OTP',
+            'error'
+        );
+    });
+});
+</script>
+
+{{-- Resend OTP with 30s cooldown --}}
+<script>
+let resendCooldown = 30;
+let resendInterval;
+
+function startResendTimer() {
+    const btn = document.getElementById('resendCodeBtn');
+    const timer = document.getElementById('resendTimer');
+    const seconds = document.getElementById('seconds');
+
+    btn.disabled = true;
+    timer.classList.remove('hidden');
+
+    resendInterval = setInterval(() => {
+        resendCooldown--;
+        seconds.textContent = resendCooldown;
+
+        if (resendCooldown <= 0) {
+            clearInterval(resendInterval);
+            btn.disabled = false;
+            timer.classList.add('hidden');
+            resendCooldown = 30;
+            seconds.textContent = 30;
+        }
+    }, 1000);
+}
+
+document.getElementById('resendCodeBtn').addEventListener('click', function () {
+    const email = document.getElementById('email').value;
+
+    startResendTimer();
+
+    fetch('https://pcsdecom.azurewebsites.net/api/Auth/resend-verification', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${ADMIN_JWT}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({ email })
+    })
+    .then(async res => {
+        if (!res.ok) throw await res.json();
+        Swal.fire('Sent!', 'Verification code resent', 'success');
+    })
+    .catch(err => {
+        Swal.fire(
+            'Error',
+            err?.message || 'Unable to resend code',
+            'error'
+        );
+    });
+});
+</script>
+
+{{-- Auto-focus OTP --}}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('code').focus();
+});
+</script>

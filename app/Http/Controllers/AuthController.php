@@ -229,4 +229,18 @@ class AuthController extends Controller
             ->route('login')
             ->with('success', 'You have been logged out successfully.');
     }
+
+
+    public function verifyEmailForm(Request $request)
+    {
+        if (!session('jwt_token')) {
+            return redirect()->route('login');
+        }
+
+        return view('auth.verify-email', [
+            'email' => $request->email
+        ]);
+    }
+
+
 }

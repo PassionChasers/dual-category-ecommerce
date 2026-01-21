@@ -286,6 +286,55 @@
     </div>
 
 
+    <!-- OTP MODAL -->
+    <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-full max-w-sm p-6 relative">
+
+            <button onclick="closeOtpModal()" class="absolute top-2 right-3 text-gray-500 text-xl">&times;</button>
+
+            <h3 class="text-lg font-semibold mb-3 text-center">Verify Email</h3>
+
+            <p class="text-sm text-gray-600 text-center mb-3">
+                Verification code sent to<br>
+                <strong id="maskedEmail"></strong>
+            </p>
+
+            <input type="hidden" id="otpEmail">
+
+            <input
+                type="text"
+                id="otpCode"
+                maxlength="6"
+                class="w-full border px-3 py-2 rounded text-center tracking-widest text-lg"
+                placeholder="Enter OTP"
+            >
+
+            <button
+                onclick="verifyOtp()"
+                class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+            >
+                Verify
+            </button>
+
+            <!-- Resend -->
+            <div class="text-center mt-4">
+                <button
+                    id="resendOtpBtn"
+                    onclick="resendOtp()"
+                    class="text-sm text-indigo-600 hover:underline disabled:text-gray-400"
+                >
+                    Resend Code
+                </button>
+
+                <p id="otpTimer" class="text-xs text-gray-500 mt-1 hidden">
+                    Resend available in <span id="otpSeconds">30</span>s
+                </p>
+            </div>
+        </div>
+    </div>
+
+
+
 
 
     {{-- Edit Modal --}}
@@ -565,6 +614,18 @@
 
                     form.reset();
                     closeStoreModal();
+                    
+                    // closeStoreModal();
+
+                    // const email = form.adminEmail.value;
+
+                    // document.getElementById('otpEmail').value = email;
+                    // document.getElementById('maskedEmail').innerText = maskEmail(email);
+
+                    // openOtpModal();
+                    // startOtpTimer();
+
+
                 } else {
                     Swal.fire({
                         icon: 'error',
@@ -589,5 +650,183 @@
             });
         });
     </script>
+
+    {{-- OTP MODAL JS --}}
+    {{-- <script>
+    let otpCooldown = 30;
+    let otpInterval;
+
+    function maskEmail(email) {
+        const [name, domain] = email.split('@');
+        return name.substring(0, 2) + '*'.repeat(name.length - 2) + '@' + domain;
+    }
+
+    function openOtpModal() {
+        const modal = document.getElementById('otpModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        setTimeout(() => {
+            document.getElementById('otpCode').focus();
+        }, 300);
+    }
+
+    function closeOtpModal() {
+        document.getElementById('otpModal').classList.add('hidden');
+    }
+    </script> --}}
+
+
+    {{-- ajax api call for otp verification --}}
+    <script>
+    // function verifyOtp() {
+    //     const email = document.getElementById('otpEmail').value;
+    //     const code = document.getElementById('otpCode').value;
+
+    //     if (code.length !== 6) {
+    //         return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
+    //     }
+
+    //     fetch('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'Authorization': 'Bearer {{ session('jwt_token') }}'
+    //         },
+    //         body: JSON.stringify({ email, code })
+    //     })
+    //     .then(res => res.json())
+    //     .then(() => {
+    //         Swal.fire({
+    //             icon: 'success',
+    //             title: 'Email Verified',
+    //             timer: 2000,
+    //             showConfirmButton: false
+    //         }).then(() => {
+    //             location.reload(); // reload table
+    //         });
+    //     })
+    //     .catch(() => {
+    //         Swal.fire('Error', 'Invalid or expired OTP', 'error');
+    //     });
+    // }
+
+    // function verifyOtp() {
+    //     const email = document.getElementById('otpEmail').value;
+    //     const code = document.getElementById('otpCode').value;
+
+    //     if (code.length !== 6) {
+    //         return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
+    //     }
+
+    //     fetch('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({ email, code })
+    //     })
+    //     .then(res => res.json())
+    //     .then(res => {
+    //         if (!res.success) {
+    //             Swal.fire('Error', res.message || 'OTP expired or invalid', 'error');
+    //         } else {
+    //             Swal.fire({
+    //                 icon: 'success',
+    //                 title: 'Email Verified',
+    //                 timer: 2000,
+    //                 showConfirmButton: false
+    //             }).then(() => location.reload());
+    //         }
+    //     })
+    //     .catch(() => {
+    //         Swal.fire('Error', 'Verification failed', 'error');
+    //     });
+    // }
+    </script>
+
+
+{{-- RESEND OTP --}}
+    {{-- <script>
+        let otpInterval = null;
+        let otpCooldown = 30;
+
+        function startOtpTimer() {
+            const btn = document.getElementById('resendOtpBtn');
+            const timer = document.getElementById('otpTimer');
+            const seconds = document.getElementById('otpSeconds');
+
+            btn.disabled = true;
+            timer.classList.remove('hidden');
+            seconds.innerText = otpCooldown;
+
+            otpInterval = setInterval(() => {
+                otpCooldown--;
+                seconds.innerText = otpCooldown;
+
+                if (otpCooldown <= 0) {
+                    clearInterval(otpInterval);
+                    btn.disabled = false;
+                    timer.classList.add('hidden');
+                }
+            }, 1000);
+        }
+
+        function resetOtpTimer() {
+            clearInterval(otpInterval);
+            otpCooldown = 30;
+            startOtpTimer();
+        }
+
+
+        function resendOtp() {
+            startOtpTimer();
+
+            fetch('https://pcsdecom.azurewebsites.net/api/Auth/resend-verification', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer {{ session('jwt_token') }}'
+            },
+            body: JSON.stringify({
+                email: document.getElementById('otpEmail').value
+            })
+            })
+            .then(() => {
+                Swal.fire('Sent', 'OTP resent successfully', 'success');
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Unable to resend OTP', 'error');
+            });
+        }
+
+        function resendOtp() {
+            startOtpTimer();
+
+            fetch('https://pcsdecom.azurewebsites.net/api/Auth/resend-verification', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: document.getElementById('otpEmail').value
+                })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (!res.success) {
+                    Swal.fire('Error', res.message || 'Unable to resend OTP', 'error');
+                } else {
+                    Swal.fire('Sent', 'OTP resent successfully', 'success');
+                }
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Server error while resending OTP', 'error');
+            });
+        }
+    </script> --}}
+
+
+
 
 @endpush
