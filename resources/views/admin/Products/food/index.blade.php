@@ -138,17 +138,18 @@
 <div id="customer-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
     <div class="flex items-center justify-center min-h-screen px-4">
         <!-- Overlay -->
-        <div class="fixed inset-0 bg-gray-500 opacity-75"></div>
+        <div class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px] "></div>
 
         <!-- Modal content with border -->
-        <div class="bg-white rounded-lg shadow-xl border border-gray-300 transform transition-all max-w-lg w-full p-6 relative">
-            <!-- Close Button -->
-            <button type="button" id="close-modal-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-lg"></i>
-            </button>
-
-            <!-- Modal Title -->
-            <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title"></h3>
+        <div class="bg-white rounded-lg shadow-xl  transform transition-all max-w-lg w-full pb-6 relative">
+            <div class="bg-indigo-600 py-4 px-2">
+                <!-- Close Button -->
+                <button type="button" id="close-modal-btn" class="absolute top-3 right-3 text-red-500 hover:text-red-600 text-2xl">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+                <!-- Modal Title -->
+                <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title">new items</h3>
+            </div>
 
             <!-- Form -->
             <form id="customer-form" method="POST" class="space-y-4" enctype="multipart/form-data">
