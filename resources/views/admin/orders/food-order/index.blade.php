@@ -32,18 +32,23 @@
         </div><br>
 
       
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between  gap-2">
 
-            <form method="GET" action="{{ route('orders.food.index') }}" class="flex gap-2 items-center">
-                {{-- <div class="px-3 py-2 rounded-md hover:bg-gray-200"> --}}
-                    <input type="text" name="search" placeholder="Search by product name..."
-                    value="{{ request('search') }}"
-                    class="px-3 py-2 border rounded-md bg-white focus:ring-indigo-500 focus:border-indigo-500" 
-                    />
-                    <button type="submit" class="px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
-                        <i class="fas fa-search"></i>
-                    </button>
-                {{-- </div><br> --}}
+            <form method="GET" action="{{ route('orders.food.index') }}" class="flex gap-2 flex-wrap items-center ">
+                <div class=" group border b rounded-lg focus-within:border-2 ">
+
+                    {{-- <div class="px-3 py-2 rounded-md hover:bg-gray-200"> --}}
+                        <input type="text" name="search" placeholder="Search by product name..."
+                        value="{{ request('search') }}"
+                        class=" px-2 focus-within:outline-none" 
+                        />
+                        <button type="submit" class="px-3 py-2 bg-gray-200 rounded-r-lg ">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    {{-- </div><br> --}}
+            
+                </div>
+                
 
                 <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="">All Status</option>
