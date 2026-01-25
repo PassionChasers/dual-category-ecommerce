@@ -240,7 +240,7 @@
                             @endphp
 
                             <a href="{{ route('orders.showMedicineDetail', ['id' => $order->OrderId, 'type' => $typeParam]) }}"
-                            class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-indigo-600 hover:text-white rounded">
+                            class="text-gray-600 py-1 px-2  hover:bg-indigo-600 hover:text-white rounded">
                                 {{-- <i class="fas fa-eye"></i> --}} view
                             </a>
 
@@ -252,7 +252,7 @@
                                 @method('PATCH')
                                 <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                                 <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
-                                <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 hover:text-white rounded-lg ">
+                                <button type="submit" class="text-red-500 py-1 px-2 hover:bg-red-500 hover:text-white rounded-lg ">
                                     {{-- <i class="fas fa-times"></i> --}}cancel
                                 </button>
                             </form>
