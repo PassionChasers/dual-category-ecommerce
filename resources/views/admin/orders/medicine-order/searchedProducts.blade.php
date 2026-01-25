@@ -10,15 +10,15 @@
                 <th class="px-4 py-2">Product Name</th>
                 <th class="px-4 py-2">Quantity</th>
                 {{-- <th class="px-4 py-2">Product Type</th> --}}
-                <th class="px-4 py-2">Total Amount</th>
+                <!-- <th class="px-4 py-2">Total Amount</th> -->
                 {{-- <th class="px-4 py-2">Delivery Address</th> --}}
                 {{-- <th class="px-4 py-2">Customer Name</th> --}}
                 {{-- <th class="px-4 py-2">Contact No.</th> --}}
-                <th class="px-4 py-2">Prescription require</th>
+                <!-- <th class="px-4 py-2">Prescription require</th> -->
                 <th class="px-4 py-2">Assign Store</th>
                 <th class="px-4 py-2">Assign Delivery Man</th>
                 <th class="px-4 py-2">Status</th>
-                <th class="px-4 py-2">Date</th>
+                <!-- <th class="px-4 py-2">Date</th> -->
                 <th class="px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -117,9 +117,9 @@
                     </td> --}}
 
                     {{-- Total Amount --}}
-                    <td class="px-4 py-2 text-center">
+                    <!-- <td class="px-4 py-2 text-center">
                         {{ $order->TotalAmount ?? 'N/A' }}
-                    </td>
+                    </td> -->
 
                     {{-- Delivery Address --}}
                     {{-- <td class="px-4 py-2">
@@ -137,7 +137,7 @@
                     </td> --}}
 
                     {{-- prescriptions--}}
-                    <td class="px-4 py-2 text-gray-600 text-center">
+                    <!-- <td class="px-4 py-2 text-gray-600 text-center">
                         @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->OrderDescription)
                             <a href="https://pcsdecom.azurewebsites.net{{$order->PrescriptionImageUrl}}" class="text-gray-800 py-1 px-2 bg-green-100 hover:bg-green-400 rounded"> 
                                 Yes/Uploaded   
@@ -155,7 +155,7 @@
                                 Not  
                             </a>
                         @endif
-                    </td>
+                    </td> -->
 
                     {{-- Assign Stores --}}
                     <td class="px-4 py-2 text-center">
@@ -222,9 +222,9 @@
                     </td>
 
                     {{-- Date --}}
-                    <td class="px-4 py-2 text-center">
+                    <!-- <td class="px-4 py-2 text-center">
                         {{ $order->CreatedAt->format('Y-m-d') }}
-                    </td>
+                    </td> -->
 
                     {{-- Actions --}}
                     <td class="px-4 py-2 text-center">
@@ -240,7 +240,7 @@
                             @endphp
 
                             <a href="{{ route('orders.showMedicineDetail', ['id' => $order->OrderId, 'type' => $typeParam]) }}"
-                            class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-green-400 rounded">
+                            class="text-gray-600 py-1 px-2 hover:text-gray-900 hover:bg-indigo-600 hover:text-white rounded">
                                 {{-- <i class="fas fa-eye"></i> --}} view
                             </a>
 
@@ -252,7 +252,7 @@
                                 @method('PATCH')
                                 <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                                 <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
-                                <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 rounded ">
+                                <button type="submit" class="text-red-600 py-1 px-2 hover:text-gray-900 hover:bg-red-400 hover:text-white rounded-lg ">
                                     {{-- <i class="fas fa-times"></i> --}}cancel
                                 </button>
                             </form>

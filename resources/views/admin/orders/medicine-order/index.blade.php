@@ -40,9 +40,9 @@
                     value="{{ request('search') }}"
                     class="px-3 py-2 border rounded-md bg-white focus:ring-indigo-500 focus:border-indigo-500" 
                     />
-                    <button type="submit" class="px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
+                    <!-- <button type="submit" class="px-3 py-2 rounded-md hover:bg-gray-100 cursor-pointer transition">
                         <i class="fas fa-search"></i>
-                    </button>
+                    </button> -->
                 {{-- </div><br> --}}
 
                 <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
