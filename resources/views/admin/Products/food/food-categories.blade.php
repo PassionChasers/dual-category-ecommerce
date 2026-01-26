@@ -96,33 +96,46 @@
     </div>
 
     <!-- Modal -->
-    <div id="category-modal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md">
-            <button id="close-category-modal" class="float-right text-gray-500">&times;</button>
-            <h3 id="category-modal-title" class="text-lg font-medium mb-4">New Category</h3>
-            <form id="category-form" method="POST" action="" class="space-y-4">
-                @csrf
-                <input type="hidden" name="_method" id="category-form-method" value="POST">
-
-                <div>
-                    <label class="block text-sm font-medium">Name</label>
-                    <input type="text" name="Name" id="category-name" class="mt-1 block w-full border rounded px-3 py-2" required>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium">Description</label>
-                    <textarea name="Description" id="category-description" class="mt-1 block w-full border rounded px-3 py-2" rows="3"></textarea>
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" name="IsActive" id="category-active" value="1" checked>
-                    <label for="category-active" class="text-sm">Active</label>
-                </div>
-
-                <div class="flex justify-end gap-2">
-                    <button type="button" id="category-cancel" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Save</button>
-                </div>
-            </form>
-        </div>
+    <div id="category-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+        <!-- modal wrpper -->
+        <div class="fixed inset-0 flex items-center justify-center px-4">
+            
+            <!-- overlay -->
+            <div id="modalOverlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px]"></div>
+            
+             <!-- modal content  -->
+             <div id="modalContent" class="bg-white rounded-lg w-full max-w-md relative">
+                 
+                 <div class="bg-indigo-600 px-6 py-4 rounded-t-lg flex justify-between">
+                     <h3 id="category-modal-title" class="text-lg text-white font-medium ">New Category</h3>
+                     <button id="close-category-modal" class=" text-gray-200 hover:text-red-500 text-3xl">&times;</button>
+                 </div>
+                 <div class="px-6 mt-2 pb-4">
+                     <form id="category-form" method="POST" action="" class="space-y-4">
+                         @csrf
+                         <input type="hidden" name="_method" id="category-form-method" value="POST">
+         
+                         <div>
+                             <label class="block text-sm font-medium">Name</label>
+                             <input type="text" name="Name" id="category-name" placeholder="Enter Category" class="mt-1 block w-full border border-gray-400 rounded px-3 py-2" required>
+                         </div>
+                         <div>
+                             <label class="block text-sm font-medium">Description</label>
+                             <textarea name="Description" id="category-description" placeholder="Category Description..." class="mt-1 block w-full border border-gray-400 rounded px-3 py-2" rows="3"></textarea>
+                         </div>
+                         <div class="flex items-center gap-2">
+                             <input type="checkbox" name="IsActive" id="category-active" value="1" checked>
+                             <label for="category-active" class="text-sm">Active</label>
+                         </div>
+         
+                         <div class="flex justify-end gap-2">
+                             <button type="button" id="category-cancel" class="px-4 py-2 bg-gray-200 hover:bg-red-500 hover:text-white rounded">Cancel</button>
+                             <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded">Save</button>
+                         </div>
+                     </form>
+                 </div>
+             </div>
+         </div>
     </div>
 </div>
 
@@ -133,6 +146,7 @@
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('category-modal');
+    const overlay= document.getElementById('modalOverlay');
     const newBtn = document.getElementById('new-category-button');
     const closeBtn = document.getElementById('close-category-modal');
     const cancelBtn = document.getElementById('category-cancel');
@@ -184,6 +198,17 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(error => console.error('Error:', error));
     };
 
+    function openModal(){
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    }
+
+    function closeModal(){
+        modal.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+
+    }
+
     // Debounce for search input
     let searchTimeout;
     searchInput.addEventListener('input', () => {
@@ -203,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nameInput.value = btn.dataset.name;
                 descInput.value = btn.dataset.description;
                 activeInput.checked = btn.dataset.isactive == 1 || btn.dataset.isactive === 'true';
-                modal.classList.remove('hidden');
+                openModal();
             });
         });
 
@@ -237,11 +262,11 @@ document.addEventListener('DOMContentLoaded', () => {
         nameInput.value = '';
         descInput.value = '';
         activeInput.checked = true;
-        modal.classList.remove('hidden');
+        openModal();
     });
-
-    closeBtn.addEventListener('click', () => modal.classList.add('hidden'));
-    cancelBtn.addEventListener('click', () => modal.classList.add('hidden'));
+    overlay.addEventListener('click', closeModal)
+    closeBtn.addEventListener('click', closeModal);
+    cancelBtn.addEventListener('click', closeModal);
 
     // Initial attachment of event listeners
     reattachEventListeners();
