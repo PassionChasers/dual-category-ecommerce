@@ -244,6 +244,13 @@ Route::middleware('auth')->group(function () {
         Route::delete('/destroy/{customer}', [MedicalStoreController::class, 'destroy'])->name('destroy');
     });
 
+    // Route::get('/admin/verify-email', [AuthController::class, 'verifyEmailForm'])
+    // // ->middleware(['auth:admin'])
+    // ->name('admin.verify.email');
+
+   Route::post('/medicalstore/verify-otp', [MedicalStoreController::class, 'verifyOtp'])
+    ->name('medicalStores.verifyOtp');
+
 
     /*
     |----------------------------------------------------------------------

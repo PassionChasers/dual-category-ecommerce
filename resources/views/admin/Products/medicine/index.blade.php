@@ -71,7 +71,7 @@
                         <th class="px-4 py-3 text-left">Category</th>
                         <th class="px-4 py-3 text-left">Price</th>
                         <th class="px-4 py-3 text-left">Prescription</th>
-                        <th class="px-4 py-3 text-left">Expiry</th>
+                        {{-- <th class="px-4 py-3 text-left">Expiry</th> --}}
                         <th class="px-4 py-3 text-left">Status</th>
                         <th class="px-4 py-3 text-right">Actions</th>
                     </tr>
@@ -82,9 +82,19 @@
                         <tr>
                             <td class="px-4 py-3">{{ $medicines->firstItem() + $i }}</td>
 
-                            <td class="px-4 py-3">
+                            {{-- <td class="px-4 py-3">
                                 @if($m->ImageUrl)
                                     <img src="https://pcsdecom.azurewebsites.net{{$m->ImageUrl}}" class="thumb">
+                                    <img src="{{$m->ImageUrl}}" class="thumb">
+                                @else
+                                    <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
+                                @endif
+                            </td> --}}
+                            <td class="px-4 py-3">
+                                @if($m->ImageUrl)
+                                    <a href="{{ $m->ImageUrl }}" target="_blank">
+                                        <img src="{{ $m->ImageUrl }}" class="thumb cursor-pointer">
+                                    </a>
                                 @else
                                     <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
                                 @endif
@@ -99,7 +109,7 @@
                             <td class="px-4 py-3">৳ {{ number_format($m->Price,2) }}</td>
 
                             <td class="px-4 py-3">{{ $m->PrescriptionRequired ? 'Yes' : 'No' }}</td>
-                            <td class="px-4 py-3">{{ $m->ExpiryDate ?: '-' }}</td>
+                            {{-- <td class="px-4 py-3">{{ $m->ExpiryDate ?: '-' }}</td> --}}
 
                             <td class="px-4 py-3">
                                 <span class="px-2 py-1 rounded text-xs {{ $m->IsActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -259,7 +269,7 @@
                         <label class="block text-sm font-medium">Image URL</label>
                         <input 
                             id="field-image-url" 
-                            name="image_url" 
+                            name="ImageUrl" 
                             type="url" 
                             placeholder="Enter image URL" 
                             class="mt-1 block w-full border border-gray-400 px-3 py-2 rounded-md"
@@ -294,7 +304,6 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     {{-- Preview Script --}}
     <script>

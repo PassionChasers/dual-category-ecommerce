@@ -6,7 +6,11 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>403 — Unauthorized</title>
   <!-- ✅ Tailwind CSS via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  {{-- <script src="https://cdn.tailwindcss.com"></script> --}}
+
+  <!-- Tailwind CSS -->
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  
 </head>
 <body class="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-gray-50 p-4 font-sans">
   <div class="max-w-2xl w-full bg-white rounded-2xl shadow-2xl p-8 text-center animate-fadeIn">

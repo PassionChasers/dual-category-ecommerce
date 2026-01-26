@@ -397,6 +397,25 @@
             btnText.textContent = 'Saving...';
             spinner.classList.remove('hidden');
 
+            // const data = new URLSearchParams({
+            //     storeName: form.storeName.value,
+            //     adminName: form.adminName.value,
+            //     adminEmail: form.adminEmail.value,
+            //     adminPassword: form.adminPassword.value,
+            //     adminPhone: form.adminPhone.value,
+            //     storeAddress: form.storeAddress.value,
+            //     licenseNumber: form.licenseNumber.value,
+            //     gstin: form.gstin.value,
+            //     pan: form.pan.value,
+            //     openTime: form.openTime.value,
+            //     closeTime: form.closeTime.value,
+            //     deliveryFee: form.deliveryFee.value,
+            //     minOrder: form.minOrder.value,
+            //     latitude: form.latitude.value,
+            //     longitude: form.longitude.value,
+            //     _token: '{{ csrf_token() }}'
+            // });
+
             const data = {
                 storeName: form.storeName.value,
                 adminName: form.adminName.value,
@@ -442,6 +461,10 @@
                     closeStoreModal();
 
                     const email = form.adminEmail.value;
+
+                    // document.getElementById('otpEmail').value = email;
+                    // document.getElementById('maskedEmail').innerText = maskEmail(email);
+
                     openOtpModal(email);
                     // openOtpModal(email);
                     // startOtpTimer();
@@ -531,25 +554,117 @@
         // }
     </script>
 
-    <script>
-        @if ($errors->has('otp'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: '{{ $errors->first('otp') }}',
-            });
-        @endif
+    {{-- OTP MODAL JS --}}
+    {{-- <script>
+    // let otpCooldown = 30;
+    // let otpInterval;
 
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: '{{ session('success') }}',
-            });
-        @endif
+    function maskEmail(email) {
+        const [name, domain] = email.split('@');
+        return name.substring(0, 2) + '*'.repeat(name.length - 2) + '@' + domain;
+    }
+
+    // function openOtpModal() {
+    //     const modal = document.getElementById('otpModal');
+    //     modal.classList.remove('hidden');
+    //     modal.classList.add('flex');
+
+    //     setTimeout(() => {
+    //         document.getElementById('otpCode').focus();
+    //     }, 300);
+    // }
+
+    function openOtpModal(email) {
+        const modal = document.getElementById('otpModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        document.getElementById('otpEmail').value = email;
+        document.getElementById('maskedEmail').innerText = maskEmail(email);
+
+        setTimeout(() => {
+            document.getElementById('otpCode').focus();
+        }, 300);
+    }
+
+    function closeOtpModal() {
+        document.getElementById('otpModal').classList.add('hidden');
+    }
+
+
+    function verifyOtp() {
+        const email = document.getElementById('otpEmail').value;
+        const code = document.getElementById('otpCode').value;
+
+        if (code.length !== 6) {
+            return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
+        }
+
+        fetch('{{ route("medicalStores.verifyOtp") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ email, otp: code })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (!res.success) {
+                Swal.fire('Error', res.message || 'OTP invalid or expired', 'error');
+            } else {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Email Verified',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    closeOtpModal();
+                    location.reload();
+                });
+            }
+        })
+        .catch(() => Swal.fire('Error', 'Verification failed', 'error'));
+    }
+    </script> --}}
+
+
+    {{-- ajax api call for otp verification --}}
+    <script>
+        // function verifyOtp() {
+        //     const email = document.getElementById('otpEmail').value;
+        //     const code = document.getElementById('otpCode').value;
+
+        //     if (code.length !== 6) {
+        //         return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
+        //     }
+
+        //     fetch('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({ email, code })
+        //     })
+        //     .then(res => res.json())
+        //     .then(res => {
+        //         if (!res.success) {
+        //             Swal.fire('Error', res.message || 'OTP expired or invalid', 'error');
+        //         } else {
+        //             Swal.fire({
+        //                 icon: 'success',
+        //                 title: 'Email Verified',
+        //                 timer: 2000,
+        //                 showConfirmButton: false
+        //             }).then(() => location.reload());
+        //         }
+        //     })
+        //     .catch(() => {
+        //         Swal.fire('Error', 'Verification failed', 'error');
+        //     });
+        // }
     </script>
 
-
-   
 
 @endpush
