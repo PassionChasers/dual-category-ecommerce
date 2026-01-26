@@ -82,10 +82,19 @@
                         <tr>
                             <td class="px-4 py-3">{{ $medicines->firstItem() + $i }}</td>
 
+                            {{-- <td class="px-4 py-3">
+                                @if($m->ImageUrl)
+                                    <img src="https://pcsdecom.azurewebsites.net{{$m->ImageUrl}}" class="thumb">
+                                    <img src="{{$m->ImageUrl}}" class="thumb">
+                                @else
+                                    <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
+                                @endif
+                            </td> --}}
                             <td class="px-4 py-3">
                                 @if($m->ImageUrl)
-                                    {{-- <img src="https://pcsdecom.azurewebsites.net{{$m->ImageUrl}}" class="thumb"> --}}
-                                    <img src="{{$m->ImageUrl}}" class="thumb">
+                                    <a href="{{ $m->ImageUrl }}" target="_blank">
+                                        <img src="{{ $m->ImageUrl }}" class="thumb cursor-pointer">
+                                    </a>
                                 @else
                                     <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
                                 @endif

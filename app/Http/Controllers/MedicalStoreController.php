@@ -277,4 +277,39 @@ class MedicalStoreController extends Controller
             'success' => true
         ]);
     }
+
+
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp'   => 'required|digits:6',
+        ]);
+
+        // Call external API
+        $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', [
+            'email' => $request->email,
+            'code'  => $request->otp,
+        ]);
+
+        $data = $response->json();
+
+        // if (!($data['success'] ?? false)) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => $data['message'] ?? 'OTP invalid or expired'
+        //     ], 422);
+        // }
+
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Email verified successfully'
+        // ]);
+
+        if (!($data['success'] ?? false)) {
+            return redirect()->back()->withErrors(['otp' => $data['message'] ?? 'OTP invalid or expired']);
+        }
+
+        return redirect()->back()->with('success', $data['message'] ?? 'Email verified successfully!');
+        }
 }

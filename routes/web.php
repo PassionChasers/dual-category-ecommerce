@@ -248,6 +248,9 @@ Route::middleware('auth')->group(function () {
     // // ->middleware(['auth:admin'])
     // ->name('admin.verify.email');
 
+   Route::post('/medicalstore/verify-otp', [MedicalStoreController::class, 'verifyOtp'])
+    ->name('medicalStores.verifyOtp');
+
 
     /*
     |----------------------------------------------------------------------

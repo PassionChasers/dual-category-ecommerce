@@ -80,8 +80,9 @@
                         @forelse($menuItems as $item)
                             <tr>
                                 <td class="px-4 py-2">
-                                    {{ ($menuItems->currentPage() - 1) * $menuItems->perPage() + $loop->iteration }}</td>
-                                <td class="px-4 py-2">
+                                    {{ ($menuItems->currentPage() - 1) * $menuItems->perPage() + $loop->iteration }}
+                                </td>
+                                {{-- <td class="px-4 py-2">
                                     @if($item->ImageUrl)
                                         <img src="https://pcsdecom.azurewebsites.net{{$item->ImageUrl}}" class="thumb">
                                     @else
@@ -89,7 +90,22 @@
                                             class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">
                                             No</div>
                                     @endif
+                                </td> --}}
+
+                                <td class="px-4 py-2">
+                                    @if($item->ImageUrl)
+                                        <a href="https://pcsdecom.azurewebsites.net{{$item->ImageUrl}}" target="_blank">
+                                            <img src="https://pcsdecom.azurewebsites.net{{$item->ImageUrl}}" 
+                                                class="thumb cursor-pointer">
+                                        </a>
+                                    @else
+                                        <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">
+                                            No
+                                        </div>
+                                    @endif
                                 </td>
+
+
                                 <td class="px-4 py-2 font-semibold">{{ $item->Name }}</td>
                                 <td class="px-4 py-2">
                                     <div class="line-clamp-2 desc-clickable" title="{{ $item->Description }}"
