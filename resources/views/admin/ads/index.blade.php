@@ -276,7 +276,7 @@
                     </button>
     
                     <button id="submitBtn"
-                            class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg">
+                            class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded">
                         Save Ad
                     </button>
                 </div>
