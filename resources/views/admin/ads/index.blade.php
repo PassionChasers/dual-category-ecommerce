@@ -197,89 +197,94 @@
 </div> --}}
 
 {{-- Add / Edit Modal --}}
-<div id="editModal" class="fixed inset-0 hidden bg-black bg-opacity-40 flex items-center justify-center z-50">
-
-    <div class="bg-white w-full max-w-lg rounded shadow p-6 relative">
-
-        {{-- Header --}}
-        <div class="flex justify-between items-center mb-4">
-            <h3 id="modalTitle" class="text-lg font-semibold">
-                Add Advertisement
-            </h3>
-            <button onclick="closeEditModal()" class="text-gray-500 hover:text-black">
-                ✕
-            </button>
+<div id="editModal" class="fixed inset-0 hidden bg-opacity-40 z-10 ">
+    <div class="flex items-center justify-center min-h-screen">
+        <!-- overlay -->
+    <div id="overlay" class=" fixed inset-0 bg-blue-950/40 backdrop-blur-[2px] "> </div>
+    <!-- modal content -->
+        <div class="bg-white w-full max-w-lg rounded shadow p-6 relative">
+    
+            {{-- Header --}}
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modalTitle" class="text-lg font-semibold">
+                    Add Advertisement
+                </h3>
+                <button onclick="closeEditModal()" class="text-gray-500 hover:text-red-500">
+                    ✕
+                </button>
+            </div>
+    
+            {{-- Form --}}
+            <form id="editForm"
+                  method="POST"
+                  action="{{ route('admin.ads.store') }}"
+                  enctype="multipart/form-data">
+    
+                @csrf
+                <input type="hidden" name="_method" id="formMethod" value="POST">
+    
+                {{-- Title --}}
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Title</label>
+                    <input id="editTitle" type="text" name="Title" placeholder="Enter Title"
+                           class="w-full border border-gray-400 rounded px-3 py-2" required>
+                </div>
+    
+                {{-- Advertiser --}}
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Advertiser Name</label>
+                    <input id="editAdvertiser" type="text" name="AdvertiserName" placeholder="Enter Advertiser Name"
+                           class="w-full border border-gray-400 rounded px-3 py-2">
+                </div>
+    
+               
+                {{-- Redirect URL --}}
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Redirect URL</label>
+                    <input id="editRedirect" type="url" name="RedirectUrl" placeholder="https://www.example.com/search?q=url+example"
+                           class="w-full border border-gray-400 rounded px-3 py-2">
+                </div>
+    
+                {{-- Description --}}
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Description</label>
+                    <textarea id="editDescription" name="Description" placeholder="Enter Description..."
+                              class="w-full border border-gray-400 rounded px-3 py-2"></textarea>
+                </div>
+                 {{-- Existing Image Preview --}}
+                <div id="imagePreviewWrapper" class="mb-3 hidden">
+                    <label class="text-sm font-medium">Current Image</label>
+                    <img id="imagePreview"
+                        src=""
+                        class="mt-2 h-32 w-full object-cover rounded border border-gray-400">
+                </div>
+    
+                {{-- Image --}}
+                <div class="mb-3">
+                    <label class="text-sm font-medium">Image</label>
+                    <input type="file" name="ImageUrl"
+                           class="w-full border border-gray-400 rounded px-3 py-2">
+                </div>
+    
+    
+                {{-- Footer --}}
+                <div class="flex justify-end gap-2 mt-4">
+                    <button type="button"
+                            onclick="closeEditModal()"
+                            class="px-4 py-2 border rounded-lg hover:bg-red-500 hover:text-white">
+                        Cancel
+                    </button>
+    
+                    <button id="submitBtn"
+                            class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg">
+                        Save Ad
+                    </button>
+                </div>
+    
+            </form>
         </div>
-
-        {{-- Form --}}
-        <form id="editForm"
-              method="POST"
-              action="{{ route('admin.ads.store') }}"
-              enctype="multipart/form-data">
-
-            @csrf
-            <input type="hidden" name="_method" id="formMethod" value="POST">
-
-            {{-- Title --}}
-            <div class="mb-3">
-                <label class="text-sm font-medium">Title</label>
-                <input id="editTitle" type="text" name="Title"
-                       class="w-full border rounded px-3 py-2" required>
-            </div>
-
-            {{-- Advertiser --}}
-            <div class="mb-3">
-                <label class="text-sm font-medium">Advertiser Name</label>
-                <input id="editAdvertiser" type="text" name="AdvertiserName"
-                       class="w-full border rounded px-3 py-2">
-            </div>
-
-
-            {{-- Existing Image Preview --}}
-            <div id="imagePreviewWrapper" class="mb-3 hidden">
-                <label class="text-sm font-medium">Current Image</label>
-                <img id="imagePreview"
-                    src=""
-                    class="mt-2 h-32 w-full object-cover rounded border">
-            </div>
-
-            {{-- Image --}}
-            <div class="mb-3">
-                <label class="text-sm font-medium">Image</label>
-                <input type="file" name="ImageUrl"
-                       class="w-full border rounded px-3 py-2">
-            </div>
-
-            {{-- Redirect URL --}}
-            <div class="mb-3">
-                <label class="text-sm font-medium">Redirect URL</label>
-                <input id="editRedirect" type="url" name="RedirectUrl"
-                       class="w-full border rounded px-3 py-2">
-            </div>
-
-            {{-- Description --}}
-            <div class="mb-3">
-                <label class="text-sm font-medium">Description</label>
-                <textarea id="editDescription" name="Description"
-                          class="w-full border rounded px-3 py-2"></textarea>
-            </div>
-
-            {{-- Footer --}}
-            <div class="flex justify-end gap-2 mt-4">
-                <button type="button"
-                        onclick="closeEditModal()"
-                        class="px-4 py-2 border rounded">
-                    Cancel
-                </button>
-
-                <button id="submitBtn"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded">
-                    Save Ad
-                </button>
-            </div>
-
-        </form>
     </div>
+
 </div>
 
 
@@ -301,6 +306,7 @@
         document.getElementById('formMethod').value = 'POST';
 
         document.getElementById('editModal').classList.remove('hidden');
+         document.body.classList.add('overflow-hidden');
     }
 
     //open edit modal
@@ -357,6 +363,8 @@
                 setTimeout(() => msg.remove(), 500); // remove after fade
             }
         }, 3000);
+       const overlay= document.getElementById('overlay');
+       overlay.addEventListener('click',closeEditModal);
 </script>
 
 @endsection
