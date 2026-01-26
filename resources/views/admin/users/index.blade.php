@@ -41,84 +41,93 @@
 
 <!-- Add User Modal -->
 <div id="AdminModal"
-     class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+     class="fixed inset-0  hidden overflow-y-auto z-50  ">
+     <!-- overlay -->
+       <div id="modalOverlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px] "></div>
+            <div class="flex justify-center items-center w-screen h-screen">
 
-    <div class="bg-white w-full max-w-2xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
-        <!-- Header -->
-        <div class="flex justify-between items-center px-6 py-4 border-b">
-            <h3 class="text-lg font-semibold text-gray-800">Add New Admin</h3>
-            <button id="add-close-btn" class="text-gray-500 hover:text-red-600 text-xl">&times;</button>
-        </div>
-
-        <!-- Form -->
-        <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-
-            <!-- Error Display -->
-            @if ($errors->any())
-                <div class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
-                    <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
-                    <ul class="text-red-700 text-sm space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <li>• {{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-
-                <!-- Name -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Name <span class="text-red-500">*</span></label>
-                    <input type="text" name="name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-
-                <!-- Email -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
-                    <input type="email" name="email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-
-                <!-- Password -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Password <span class="text-red-500">*</span></label>
-                    <input type="password" name="password" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-
-                <!-- Phone -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                    <input type="text" name="phone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-
-                <!-- Avatar -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
-                    <input type="file" name="avatar_url" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" accept="image/*">
-                </div>
-
-                <!-- Role -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Role <span class="text-red-500">*</span></label>
-                    <input type="text" name="role" value="Admin" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100" readonly>
-                </div>
-
+                <!-- modal -->
+                 <div class="relative flex items-center justify-center  z-50">
+                     <div class="bg-white w-full max-w-2xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
+                         <!-- Header -->
+                         <div class="flex justify-between items-center px-6 py-4 bg-indigo-600 border-b">
+                             <h3 class="text-lg font-semibold text-white">Add New Admin</h3>
+                             <button id="add-close-btn" class="text-gray-200 hover:text-red-500 text-2xl">&times;</button>
+                         </div>
+                 
+                         <!-- Form -->
+                         <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
+                             @csrf
+                 
+                             <!-- Error Display -->
+                             @if ($errors->any())
+                                 <div class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
+                                     <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
+                                     <ul class="text-red-700 text-sm space-y-1">
+                                         @foreach ($errors->all() as $error)
+                                             <li>• {{ $error }}</li>
+                                         @endforeach
+                                     </ul>
+                                 </div>
+                             @endif
+                 
+                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 py-4">
+                 
+                                 <!-- Name -->
+                                 <div>
+                                     <label class="block text-sm font-medium text-gray-700 mb-2">Name <span class="text-red-500">*</span></label>
+                                     <input type="text" name="name" placeholder="Enter Your Name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                                 </div>
+                 
+                                 <!-- Email -->
+                                 <div>
+                                     <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+                                     <input type="email" name="email" placeholder="Enter Email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                                 </div>
+                 
+                                 <!-- Password -->
+                                 <div>
+                                     <label class="block text-sm font-medium text-gray-700 mb-2">Password <span class="text-red-500">*</span></label>
+                                     <input type="password" name="password" placeholder="Enter Your Password" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                                 </div>
+                 
+                                 <!-- Phone -->
+                                 <div>
+                                     <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                                     <input type="text" name="phone" placeholder="+977 98XXXXXXXX" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                                 </div>
+                 
+                                 <!-- Avatar -->
+                                 <div>
+                                     <label class="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
+                                     <input type="file" name="avatar_url" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" accept="image/*">
+                                 </div>
+                 
+                                 <!-- Role -->
+                                 <div>
+                                     <label class="block text-sm font-medium text-gray-700 mb-2">Role <span class="text-red-500">*</span></label>
+                                     <input type="text" name="role" value="Admin" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100" readonly>
+                                 </div>
+                 
+                             </div>
+                 
+                             <!-- Footer -->
+                             <div class="flex justify-end gap-2 px-6 pb-2  ">
+                                 <button type="button" id="add-cancel-btn"
+                                         class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-red-500 hover:text-white">
+                                     Cancel
+                                 </button>
+                                 <button type="submit"
+                                         class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                                     Create User
+                                 </button>
+                             </div>
+                         </form>
+                     </div>
+                 </div>
             </div>
+    
 
-            <!-- Footer -->
-            <div class="flex justify-end gap-2 px-6 py-4 border-t">
-                <button type="button" id="add-cancel-btn"
-                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
-                    Cancel
-                </button>
-                <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                    Create User
-                </button>
-            </div>
-        </form>
-    </div>
 </div>
 
 
@@ -126,63 +135,67 @@
 <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
     <div class="flex items-center justify-center min-h-screen px-4">
         <!-- Overlay -->
-        <div class="fixed inset-0 bg-gray-500 opacity-75"></div>
+        <div class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px]"></div>
 
         <!-- Modal content -->
-        <div class="bg-white rounded-lg shadow-xl border border-gray-300 transform transition-all max-w-lg w-full p-6 relative">
-            <button type="button" id="edit-close-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-lg"></i>
-            </button>
+        <div class="relative bg-white rounded-lg shadow-xl pb-4">
+            <div class="bg-indigo-600 px-6 py-4 flex justify-between rounded-t-lg">
+                 <h3 class="text-lg font-medium text-white " id="modal-title"></h3>
+                <button type="button" id="edit-close-btn" class=" text-gray-200 hover:text-red-500">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
 
-            <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title"></h3>
+            </div>
 
             <form id="customer-form" method="POST" class="space-y-4">
                 @csrf
                 <input type="hidden" id="form-method" name="_method" value="POST">
                 <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                 <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" name="name" id="customer-name"
-                        class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Name</label>
+                        <input type="text" name="name" id="customer-name"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            required>
+                    </div>
+    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" name="email" id="customer-email"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            required>
+                    </div>
+    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" name="password" id="customer-password" placeholder="Leave blank to keep unchanged"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Contact Number</label>
+                        <input type="text" name="contact_number" id="customer_contact_number"
+                            class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                            required>
+                    </div>
+    
+                    {{-- <div>
+                        <label class="block text-sm font-medium text-gray-700">Address</label>
+                        <input type="text" name="address" id="customer_address"
+                            class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            required>
+                    </div> --}}
+    
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" name="IsActive" id="IsActive" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <label for="IsActive" class="text-sm font-medium text-gray-700">Active</label>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="email" id="customer-email"
-                        class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" name="password" id="customer-password" placeholder="Leave blank to keep unchanged"
-                        class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-                    <input type="text" name="contact_number" id="customer_contact_number"
-                        class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
-                </div>
-
-                {{-- <div>
-                    <label class="block text-sm font-medium text-gray-700">Address</label>
-                    <input type="text" name="address" id="customer_address"
-                        class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
-                </div> --}}
-
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" name="IsActive" id="IsActive" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                    <label for="IsActive" class="text-sm font-medium text-gray-700">Active</label>
-                </div>
-
-                <div class="flex justify-end space-x-2">
-                    <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+                <div class="flex justify-end space-x-2 pr-6">
+                    <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-red-500 hover:text-white">Cancel</button>
                     <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save</button>
                 </div>
             </form>
@@ -201,13 +214,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const openAddBtn = document.getElementById('openAdminModal');
     const addCloseBtn = document.getElementById('add-close-btn');
     const addCancelBtn = document.getElementById('add-cancel-btn');
+    const modalOverlay=document.getElementById('modalOverlay');
 
     openAddBtn?.addEventListener('click', () => {
         addModal.classList.remove('hidden');
         addModal.classList.add('flex');
     });
 
-    [addCloseBtn, addCancelBtn].forEach(btn => {
+    [addCloseBtn, addCancelBtn, modalOverlay].forEach(btn => {
         btn?.addEventListener('click', () => {
             addModal.classList.add('hidden');
             addModal.classList.remove('flex');
@@ -220,7 +234,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const editCloseBtn = document.getElementById('edit-close-btn');
     const editCancelBtn = document.getElementById('edit-cancel-btn');
 
-    [editCloseBtn, editCancelBtn].forEach(btn => {
+    [editCloseBtn, editCancelBtn, modalOverlay ].forEach(btn => {
         btn?.addEventListener('click', () => {
             editModal.classList.add('hidden');
         });
@@ -316,5 +330,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+const addOverlay=document.getElementById('modalOverlay');
+// addOverlay.addEventListener('click' ()=>{
+//     addModal.classList.add('hidden');
+// })
+
 </script>
 @endpush
