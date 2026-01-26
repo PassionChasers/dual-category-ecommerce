@@ -64,6 +64,7 @@ class MedicineController extends Controller
 
     public function store(MedicineRequest $request)
     {
+        
         $data = $request->only([
             'MedicalStoreId',
             'MedicineCategoryId',
