@@ -71,7 +71,7 @@
                         <th class="px-4 py-3 text-left">Category</th>
                         <th class="px-4 py-3 text-left">Price</th>
                         <th class="px-4 py-3 text-left">Prescription</th>
-                        <th class="px-4 py-3 text-left">Expiry</th>
+                        {{-- <th class="px-4 py-3 text-left">Expiry</th> --}}
                         <th class="px-4 py-3 text-left">Status</th>
                         <th class="px-4 py-3 text-right">Actions</th>
                     </tr>
@@ -109,7 +109,7 @@
                             <td class="px-4 py-3">৳ {{ number_format($m->Price,2) }}</td>
 
                             <td class="px-4 py-3">{{ $m->PrescriptionRequired ? 'Yes' : 'No' }}</td>
-                            <td class="px-4 py-3">{{ $m->ExpiryDate ?: '-' }}</td>
+                            {{-- <td class="px-4 py-3">{{ $m->ExpiryDate ?: '-' }}</td> --}}
 
                             <td class="px-4 py-3">
                                 <span class="px-2 py-1 rounded text-xs {{ $m->IsActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
@@ -304,7 +304,6 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     {{-- Preview Script --}}
     <script>

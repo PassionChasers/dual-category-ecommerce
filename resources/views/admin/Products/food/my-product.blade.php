@@ -9,7 +9,7 @@
 <div class="flex-1 overflow-auto p-4 md:p-6 bg-gray-50">
 
     {{-- Flash Messages --}}
-    @if(session('success'))
+    {{-- @if(session('success'))
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             Swal.fire({
@@ -23,7 +23,7 @@
             });
         });
     </script>
-    @endif
+    @endif --}}
 
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
