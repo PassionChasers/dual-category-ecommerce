@@ -84,7 +84,8 @@
 
                             <td class="px-4 py-3">
                                 @if($m->ImageUrl)
-                                    <img src="https://pcsdecom.azurewebsites.net{{$m->ImageUrl}}" class="thumb">
+                                    {{-- <img src="https://pcsdecom.azurewebsites.net{{$m->ImageUrl}}" class="thumb"> --}}
+                                    <img src="{{$m->ImageUrl}}" class="thumb">
                                 @else
                                     <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
                                 @endif
@@ -259,7 +260,7 @@
                         <label class="block text-sm font-medium">Image URL</label>
                         <input 
                             id="field-image-url" 
-                            name="image_url" 
+                            name="ImageUrl" 
                             type="url" 
                             placeholder="Enter image URL" 
                             class="mt-1 block w-full border border-gray-400 px-3 py-2 rounded-md"

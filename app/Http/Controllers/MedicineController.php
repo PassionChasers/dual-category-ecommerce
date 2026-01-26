@@ -79,19 +79,20 @@ class MedicineController extends Controller
             'DosageForm',
             'Strength',
             'Packaging',
-            'IsActive'
+            'IsActive',
+            'ImageUrl'
         ]);
 
         // Generate UUID and set as primary key
         $data['MedicineId'] = (string) Str::uuid();
 
         // handle image upload
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = Str::slug($data['Name'] ?? 'medicine') . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('medicines', $filename, 'public');
-            $data['ImageUrl'] = $path; // store relative path like "medicines/xxx.jpg"
-        }
+        // if ($request->hasFile('image')) {
+        //     $file = $request->file('image');
+        //     $filename = Str::slug($data['Name'] ?? 'medicine') . '-' . time() . '.' . $file->getClientOriginalExtension();
+        //     $path = $file->storeAs('medicines', $filename, 'public');
+        //     $data['ImageUrl'] = $path; // store relative path like "medicines/xxx.jpg"
+        // }
 
         $medicine = Medicine::create($data);
 
