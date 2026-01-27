@@ -68,6 +68,7 @@
             });
         </script>
     @endif
+<<<<<<< HEAD
 
 
     {{-- <!-- GLOBAL NETWORK LOADER -->
@@ -144,6 +145,9 @@
 </body>
 </html>
 
+=======
+    
+>>>>>>> 10f3fe543aef0e67cb6358505c65435ae58063f9
     <div class="md:flex relative md:h-screen overflow-hidden">
 
         @include('layouts.admin.partials.sidebar')
