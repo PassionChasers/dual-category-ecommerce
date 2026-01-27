@@ -68,7 +68,6 @@
             });
         </script>
     @endif
-<<<<<<< HEAD
 
 
     {{-- <!-- GLOBAL NETWORK LOADER -->
@@ -79,7 +78,7 @@
 
        <!-- GLOBAL NETWORK LOADER -->
     <div id="global-loader"
-        class="fixed inset-0 bg-white-200 bg-opacity-75 flex items-center justify-center z-[9999] hidden">
+        class="fixed inset-0 bg-white bg-opacity-75 flex items-center justify-center z-[9999] hidden">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid"></div>
     </div>
 
@@ -145,9 +144,8 @@
 </body>
 </html>
 
-=======
-    
->>>>>>> 10f3fe543aef0e67cb6358505c65435ae58063f9
+
+
     <div class="md:flex relative md:h-screen overflow-hidden">
 
         @include('layouts.admin.partials.sidebar')
