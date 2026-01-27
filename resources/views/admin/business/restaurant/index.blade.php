@@ -46,14 +46,15 @@
 
 
 <!-- Add Restaurant Modal -->
-<div id="Add-Restaurant-Modal" class="fixed inset-0 bg-indigo-100 bg-opacity-50 hidden items-center justify-center z-50">
+<div id="Add-Restaurant-Modal" class="fixed inset-0 hidden items-center justify-center z-50">
+    <div id="addOverlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px]"></div>
 
-    <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
+    <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh] relative">
 
         <!-- Header -->
-        <div class="flex justify-between items-center px-6 py-4 border-b">
-            <h3 class="text-lg font-semibold text-gray-800">Add New Restaurant</h3>
-            <button id="add-close-btn" class="text-gray-500 hover:text-red-600 text-xl">&times;</button>
+        <div class="flex justify-between items-center bg-indigo-600 px-6 py-4 rounded-t-lg">
+            <h3 class="text-lg font-semibold text-white">Add New Restaurant</h3>
+            <button id="add-close-btn" class="text-white hover:text-red-500 text-3xl">&times;</button>
         </div>
 
         <!-- Form -->
@@ -79,7 +80,7 @@
                         Restaurant Name
                         <span class="text-red-400">*</span>
                     </label>
-                    <input type="text" name="Name" value="{{ old('Name') }}" class="input border rounded p-2 w-full" required>
+                    <input type="text" name="Name" placeholder="Enter Restaurant Name" value="{{ old('Name') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 {{-- Admin Name --}}
@@ -88,7 +89,7 @@
                         Admin Name
                         <span class="text-red-400">*</span>
                     </label>
-                    <input type="text" name="AdminName" value="{{ old('AdminName') }}" class="input border rounded p-2 w-full" required>
+                    <input type="text" name="AdminName" placeholder="Enter Admin Name" value="{{ old('AdminName') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
                 
 
@@ -96,69 +97,69 @@
                 <div>
                     <label class="block text-sm font-medium">
                         Email
-                        <span class="text-red-400">*</span>
+                        <span class="text-red-500">*</span>
                     </label>
-                    <input type="email" name="email" value="{{ old('email') }}" class="input border rounded p-2 w-full" required>
+                    <input type="email" name="email" placeholder="example@gmail.com" value="{{ old('email') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 {{-- Password --}}
                 <div>
                     <label class="block text-sm font-medium">
                         Password
-                        <span class="text-red-400">*</span>
+                        <span class="text-red-500">*</span>
                     </label>
-                    <input type="password" name="Password" value="{{ old('Password') }}" class="input border rounded p-2 w-full" required>
+                    <input type="password" name="Password" placeholder="Enter Password" value="{{ old('Password') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 {{-- Phone --}}
                 <div>
                     <label class="block text-sm font-medium">
                         Phone
-                        <span class="text-red-400">*</span>
+                        <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" name="Phone" value="{{ old('Phone') }}" class="input border rounded p-2 w-full" required>
+                    <input type="text" name="Phone" placeholder="+977 98XXXXXXXX" value="{{ old('Phone') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- Address -->
                 <div>
                     <label class="block text-sm font-medium">
                         Address
-                        <span class="text-red-400">*</span>
+                        <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" name="Address" value="{{old('Address')}}" class="input border rounded p-2 w-full" required>
+                    <input type="text" name="Address" placeholder="Enter Address" value="{{old('Address')}}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- FLICNo -->
                 <div>
                     <label class="block text-sm font-medium">
                         FLIC Number
-                        <span class="text-red-400">*</span></label>
-                    <input type="text" name="FLICNo" value="{{ old('FLICNo') }}" class="input border rounded p-2 w-full" required>
+                        <span class="text-red-500">*</span></label>
+                    <input type="text" name="FLICNo" placeholder="Enter FLIC Number" value="{{ old('FLICNo') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- GSTIN -->
                 <div>
                     <label class="block text-sm font-medium">
                         GSTIN
-                        <span class="text-red-400">*</span>
+                        <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" name="GSTIN" value="{{ old('GSTIN') }}" class="input border rounded p-2 w-full" required>
+                    <input type="text" name="GSTIN" placeholder=" Enter GSTIN" value="{{ old('GSTIN') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- PAN -->
                 <div>
                     <label class="block text-sm font-medium">
                         PAN
-                        <span class="text-red-400">*</span>
+                        <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" name="PAN" value="{{ old('PAN') }}" class="input border rounded p-2 w-full" required>
+                    <input type="text" name="PAN" placeholder="Enter PAN " value="{{ old('PAN') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                <!-- CuisineType -->
                 <div>
-                    {{-- <label class="block text-sm font-medium">Cuisine Type</label> --}}
+                     <label class="block text-sm font-medium">Cuisine Type</label>
                     {{-- <input type="text" name="cuisineType" value="{{ old('CuisineType') }}" class="input border rounded p-2 w-full"> --}}
-                    <select name="CuisineType" id="cuisineType">
+                    <select name="CuisineType" id="cuisineType" class=" border border-gray-400 rounded p-2 w-full" >
                         <option value=" ">...Select Cuisine Type... </option>
                         <option value="Nepali">Nepali</option>
                         <option value="Indian">Indian</option>
@@ -170,27 +171,27 @@
                 <div>
                     <label class="block text-sm font-medium">
                         Open Time
-                        <span class="text-red-400">*</span>
+                        <span class="text-red-500">*</span>
                     </label>
-                    <input type="time" name="OpenTime" value="{{ old('OpenTime') }}" class="input border rounded p-2 w-full" required>
+                    <input type="time" name="OpenTime" value="{{ old('OpenTime') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- CloseTime -->
                 <div>
                     <label class="block text-sm font-medium">
                         Close Time
-                        <span class="text-red-400">*</span>
+                        <span class="text-red-500">*</span>
                     </label>
-                    <input type="time" name="CloseTime" value="{{ old('CloseTime') }}" class="input border rounded p-2 w-full" required>
+                    <input type="time" name="CloseTime" value="{{ old('CloseTime') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- PrepTimeMin -->
                 <div>
                     <label class="block text-sm font-medium">
                         Preparation Time (Min)
-                        <span class="text-red-200">(optional)</span>
+                        <span class="text-blue-500">(optional)</span>
                     </label>
-                    <input type="number" name="PrepTimeMin" value="{{ old('PrepTimeMin', 30) }}" class="input border rounded p-2 w-full">
+                    <input type="number" name="PrepTimeMin" value="{{ old('PrepTimeMin', 30) }}" class="input border border-gray-400 rounded p-2 w-full">
                 </div>
 
                 <!-- DeliveryFee -->
@@ -199,7 +200,7 @@
                         Delivery Fee
                         <span class="text-red-400">*</span>
                     </label>
-                    <input type="number" step="0.01" name="DeliveryFee" value="{{ old('DeliveryFee', 0) }}" class="input border rounded p-2 w-full" required>
+                    <input type="number" step="0.01" name="DeliveryFee" value="{{ old('DeliveryFee', 0) }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- MinOrder -->
@@ -208,7 +209,7 @@
                         Minimum Order
                         <span class="text-red-400">*</span>
                     </label>
-                    <input type="number" step="0.01" name="MinOrder" value="{{ old('MinOrder', 0) }}" class="input border rounded p-2 w-full" required>
+                    <input type="number" step="0.01" name="MinOrder" value="{{ old('MinOrder', 0) }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- Latitude -->
@@ -217,7 +218,7 @@
                         Latitude
                         <span class="text-red-400">*</span>
                     </label>
-                    <input type="number" step="0.000001" name="Latitude" value="{{ old('Latitude') }}" class="input border rounded p-2 w-full" required>
+                    <input type="number" step="0.000001" name="Latitude" value="{{ old('Latitude') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- Longitude -->
@@ -226,18 +227,18 @@
                         Longitude
                         <span class="text-red-400">*</span>
                     </label>
-                    <input type="number" step="0.000001" name="Longitude" value="{{ old('Longitude') }}" class="input border rounded p-2 w-full" required>
+                    <input type="number" step="0.000001" name="Longitude" value="{{ old('Longitude') }}" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- IsActive -->
                 <div class="flex items-center gap-2">
-                    <input type="checkbox" name="IsActive" value="1" {{ old('IsActive', 1) ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <input type="checkbox" name="IsActive" value="1" {{ old('IsActive', 1) ? 'checked' : '' }} class="rounded border-gray-400 text-indigo-600 focus:ring-indigo-500">
                     <label class="text-sm font-medium">Active</label>
                 </div>
 
                 <!-- IsPureVeg -->
                 <div class="flex items-center gap-2">
-                    <input type="checkbox" name="IsPureVeg" value="1" {{ old('IsPureVeg') ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <input type="checkbox" name="IsPureVeg" value="1" {{ old('IsPureVeg') ? 'checked' : '' }} class="rounded border-gray-400 text-indigo-600 focus:ring-indigo-500">
                     <label class="text-sm font-medium">Pure Veg</label>
                 </div>
 
@@ -246,7 +247,7 @@
             <!-- Footer -->
             <div class="flex justify-end gap-2 px-6 py-4 border-t">
                 <button type="button" id="add-cancel-btn"
-                        class="px-4 py-2 bg-gray-200 rounded">
+                        class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-red-500 hover:text-white">
                     Cancel
                 </button>
                 {{-- <button type="submit"
@@ -257,7 +258,7 @@
                 <button
                     type="submit"
                     id="restaurantSubmitBtn"
-                    class="bg-green-600 text-white px-4 py-2 rounded flex items-center justify-center gap-2"
+                    class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-lg flex items-center justify-center gap-2"
                 >
                     <span id="btnText">Save Restaurant</span>
                     <svg id="btnSpinner" class="w-5 h-5 animate-spin hidden"
@@ -265,7 +266,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10"
                             stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor"
-                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path> 
                     </svg>
                 </button>
 
@@ -280,7 +281,9 @@
         const addModal = document.getElementById('Add-Restaurant-Modal');
         addModal.classList.remove('hidden');
         addModal.classList.add('flex');
+        
     });
+    
 </script>
 @endif
 
@@ -288,19 +291,21 @@
 
 {{-- Modal --}}
 <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
-    <div class="flex items-center justify-center min-h-screen px-4">
+    <div class="flex items-center justify-center min-h-screen">
         <!-- Overlay -->
-        <div class="fixed inset-0 bg-gray-500 opacity-75"></div>
+        <div id="editOverlay" class="fixed inset-0 bg-blue-950/40"></div>
 
         <!-- Modal content -->
-        <div class="bg-white rounded-lg shadow-xl border border-gray-300 transform transition-all max-w-lg w-full p-6 relative">
-            <button type="button" id="edit-close-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-lg"></i>
-            </button>
+        <div class="bg-white rounded-lg shadow-xl  transform transition-all max-w-lg w-full relative">
+            <div class="flex justify-between items-center bg-indigo-600 rounded-t-lg px-6 py-4 mb-4">
+                <h3 class="text-lg font-medium text-white " id="modal-title"></h3>
+                <button type="button" id="edit-close-btn" class=" text-white hover:text-red-500">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+                
+            </div>
 
-            <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title"></h3>
-
-            <form id="customer-form" method="POST" class="space-y-4">
+            <form id="customer-form" method="POST" class="space-y-4 px-6 pb-4">
                 @csrf
                 <input type="hidden" id="form-method" name="_method" value="POST">
                 <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
@@ -308,14 +313,14 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Name</label>
-                    <input type="text" name="name" id="customer-name"
+                    <input type="text" name="name" id="customer-name" placeholder="Enter Restaurant Name"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         required>
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Email</label>
-                    <input type="email" name="email" id="customer-email"
+                    <input type="email" name="email" id="customer-email" placeholder="example@gmail.com"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         required>
                 </div>
@@ -328,7 +333,7 @@
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-                    <input type="text" name="contact_number" id="customer_contact_number"
+                    <input type="text" name="contact_number" id="customer_contact_number" placeholder="+977 98XXXXXXXX"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         required>
                 </div>
@@ -346,8 +351,8 @@
                 </div>
 
                 <div class="flex justify-end space-x-2">
-                    <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save</button>
+                    <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-red-500 hover:text-white">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Save</button>
                 </div>
             </form>
         </div>
@@ -367,10 +372,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const editModal = document.getElementById('edit-modal');
     const editCloseBtn = document.getElementById('edit-close-btn');
     const editCancelBtn = document.getElementById('edit-cancel-btn');
+    const editOverlay = document.getElementById('editOverlay');
 
-    [editCloseBtn, editCancelBtn].forEach(btn => {
+    [editCloseBtn, editCancelBtn, editOverlay].forEach(btn => {
         btn?.addEventListener('click', () => {
             editModal.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
         });
     });
 
@@ -404,6 +411,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('current-onlineStatus').value = document.getElementById('onlineStatus').value;
 
             editmodal.classList.remove('hidden');
+            document.body.classList.add('overflow-hidden')
         }
     });
 
@@ -480,13 +488,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const openAddBtn = document.getElementById('open-register-form-modal');
     const addCloseBtn = document.getElementById('add-close-btn');
     const addCancelBtn = document.getElementById('add-cancel-btn');
+    const addOverlay = document.getElementById('addOverlay');
 
     openAddBtn?.addEventListener('click', () => {
         addModal.classList.remove('hidden');
         addModal.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
     });
 
-    [addCloseBtn, addCancelBtn].forEach(btn => {
+    [addCloseBtn, addCancelBtn,addOverlay].forEach(btn => {
         btn?.addEventListener('click', () => {
             addModal.classList.add('hidden');
             addModal.classList.remove('flex');
