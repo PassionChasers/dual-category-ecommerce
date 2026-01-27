@@ -37,7 +37,7 @@ class MedicineCategoryController extends Controller
 
         // Return partial for AJAX
         if ($request->ajax()) {
-            return view('admin.products.medicine.categories_table', compact('categories'))->render();
+            return view('admin.products.medicine.categories_table', compact('categories', 'perPage', 'allowedPerPage'))->render();
         }
 
         return view('admin.products.medicine.medicine_categories', compact('categories', 'perPage', 'allowedPerPage'));

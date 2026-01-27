@@ -1,4 +1,10 @@
 <div class="overflow-x-auto">
+    
+    <div class="px-6 py-4 border-b">
+        <h2 class="font-semibold text-gray-800">Category List</h2>
+        <!-- <p class="text-sm text-gray-500 mt-1">Showing results filtered by your search and filters.</p> -->
+    </div>
+
     <table class="min-w-full text-sm divide-y divide-gray-200">
         <thead class="bg-gray-50">
             <tr>

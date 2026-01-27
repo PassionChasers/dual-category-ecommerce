@@ -20,7 +20,7 @@
 @section('contents')
 <div class="flex-1 p-4 md:p-6 bg-gray-50">
     <!-- Header -->
-    <div class="mb-6 flex justify-between items-center flex-wrap">
+    <div class="mb-6 flex justify-between items-center flex-wrap ">
         <div class="mb-2 md:mb-0">
             <h1 class="text-2xl font-semibold text-gray-800">Medicine Category Management</h1>
             <p class="text-gray-500 mt-1">Create, update and manage medicine categories</p>
@@ -129,9 +129,28 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Show spinner while loading
         categoriesContainer.innerHTML = `
-            <div class="flex justify-center items-center py-16">
-                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-            </div>
+            <div class="overflow-x-auto">
+                <div class="px-6 py-4 border-b">
+                    <h2 class="font-semibold text-gray-800">Category List</h2>
+                </div>
+                <table class="min-w-full text-sm divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left font-medium text-gray-600">#</th>
+                            <th class="px-6 py-3 text-left font-medium text-gray-600">Category</th>
+                            <th class="px-6 py-3 text-left font-medium text-gray-600">Description</th>
+                            <th class="px-6 py-3 text-left font-medium text-gray-600">Status</th>
+                            <th class="px-6 py-3 text-center font-medium text-gray-600">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-100">
+
+                    </tbody>
+                </table>
+                <div class="flex justify-center items-center py-16">
+                    <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+                </div>
+            </div> 
         `;
 
         fetch(`{{ url('admin/medicine-categories') }}?${params.toString()}`, {
@@ -169,18 +188,39 @@ document.addEventListener('DOMContentLoaded', function () {
             link.addEventListener('click', e => {
                 e.preventDefault();
                 const url = link.getAttribute('href');
+                
                 // Show spinner
                 categoriesContainer.innerHTML = `
-                    <div class="flex justify-center items-center py-16">
-                        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
-                    </div>
+                    <div class="overflow-x-auto">
+                        <div class="px-6 py-4 border-b">
+                            <h2 class="font-semibold text-gray-800">Category List</h2>
+                        </div>
+                        <table class="min-w-full text-sm divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left font-medium text-gray-600">#</th>
+                                    <th class="px-6 py-3 text-left font-medium text-gray-600">Category</th>
+                                    <th class="px-6 py-3 text-left font-medium text-gray-600">Description</th>
+                                    <th class="px-6 py-3 text-left font-medium text-gray-600">Status</th>
+                                    <th class="px-6 py-3 text-center font-medium text-gray-600">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100">
+
+                            </tbody>
+                        </table>
+                        <div class="flex justify-center items-center py-16">
+                            <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+                        </div>
+                    </div>   
                 `;
+
                 fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                    .then(res => res.text())
-                    .then(html => {
-                        categoriesContainer.innerHTML = html;
-                        reattachEventListeners();
-                    });
+                .then(res => res.text())
+                .then(html => {
+                    categoriesContainer.innerHTML = html;
+                    reattachEventListeners();
+                });
             });
         });
     };
