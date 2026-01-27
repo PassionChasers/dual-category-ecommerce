@@ -59,6 +59,18 @@
             });
     </script>
     @endif
+
+    @if ($errors->any())
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Validation Error',
+            html: `{!! implode('<br>', $errors->all()) !!}`,
+            confirmButtonColor: '#4f46e5'
+        });
+    </script>
+    @endif
+
     
     <div class="md:flex relative md:h-screen overflow-hidden">
 

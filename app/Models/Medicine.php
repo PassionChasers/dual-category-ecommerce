@@ -19,7 +19,27 @@ class Medicine extends Model
     const CREATED_AT = 'CreatedAt';
     const UPDATED_AT = 'UpdatedAt';
 
+    // protected $fillable = [
+    //     'MedicineCategoryId',
+    //     'Name',
+    //     'GenericName',
+    //     'BrandName',
+    //     'Description',
+    //     'Price',
+    //     'PrescriptionRequired',
+    //     'Manufacturer',
+    //     'ExpiryDate',
+    //     'DosageForm',
+    //     'Strength',
+    //     'Packaging',
+    //     'ImageUrl',
+    //     'IsActive',
+    //     'AvgRating',
+    //     'TotalReviews',
+    // ];
+
     protected $fillable = [
+        'MedicineId',
         'MedicineCategoryId',
         'Name',
         'GenericName',
@@ -32,8 +52,8 @@ class Medicine extends Model
         'DosageForm',
         'Strength',
         'Packaging',
-        'ImageUrl',
         'IsActive',
+        'ImageUrl',
         'AvgRating',
         'TotalReviews',
     ];
