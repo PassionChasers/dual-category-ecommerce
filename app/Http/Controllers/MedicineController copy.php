@@ -61,37 +61,12 @@ class MedicineController extends Controller
         // Lightweight list of categories for filters (if your categories live in MedicineCategory model)
         $categories = \App\Models\MedicineCategory::select('MedicineCategoryId', 'Name')->orderBy('Name')->get();
 
-        // Return partial for AJAX
-        if ($request->ajax()) {
-            return view('admin.products.medicine.medicines_table', compact('medicines', 'categories','perPage', 'allowedPerPage'))->render();
-        }
-
         return view('admin.products.medicine.index', compact('medicines', 'categories','perPage', 'allowedPerPage'));
     }
 
 
     public function store(Request $request)
     {
-<<<<<<< HEAD
-        
-        $data = $request->only([
-            'MedicalStoreId',
-            'MedicineCategoryId',
-            'Name',
-            'GenericName',
-            'BrandName',
-            'Description',
-            'Price',
-            'MRP',
-            'PrescriptionRequired',
-            'Manufacturer',
-            'ExpiryDate',
-            'DosageForm',
-            'Strength',
-            'Packaging',
-            'IsActive',
-            'ImageUrl'
-=======
         //Validate form input
         $validated = $request->validate([
             'MedicineCategoryId'   => 'required|uuid|exists:MedicineCategories,MedicineCategoryId',
@@ -124,7 +99,6 @@ class MedicineController extends Controller
             'ImageUrl.required' => 'Medicine image URL is required.',
             'ImageUrl.url'      => 'Please enter a valid image URL.',
             'ExpiryDate.after'  => 'Expiry date must be a future date.',
->>>>>>> 25768bac44037fdc600ff8a6015f73d577bcd4fc
         ]);
 
         //Image URL existence + image type check

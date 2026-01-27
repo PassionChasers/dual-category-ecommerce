@@ -14,7 +14,7 @@
             <p class="text-gray-600">Manage all Restaurants</p>
         </div>
 
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
+        <div class="flex flex-wrap gap-2 w-full md:w-auto">
             <!-- Search Form -->
             <input type="text" id="search" name="search" placeholder="Search by Name or Email..." 
                 value="{{ request('search') }}"
@@ -41,84 +41,88 @@
 
 <!-- Add User Modal -->
 <div id="AdminModal"
-     class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+     class="fixed inset-0 hidden items-center justify-center z-50">
+     <div  class="flex items-center justify-center backdrop-blur-[2px] w-screen h-screen">
+         <!-- overlay -->
+         <div id="addOverlay" class="fixed inset-0 bg-indigo-950/40 "></div>
+         <div class="relative bg-white w-full max-w-2xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
+             <!-- Header -->
+             <div class="flex justify-between items-center px-6 py-4 bg-indigo-600">
+                 <h3 class="text-lg font-semibold text-white">Add New Restaurant</h3>
+                 <button id="add-close-btn" class="text-white hover:text-red-600 text-2xl">&times;</button>
+             </div>
+     
+             <!-- Form -->
+             <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
+                 @csrf
+     
+                 <!-- Error Display -->
+                 @if ($errors->any())
+                     <div class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
+                         <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
+                         <ul class="text-red-700 text-sm space-y-1">
+                             @foreach ($errors->all() as $error)
+                                 <li>• {{ $error }}</li>
+                             @endforeach
+                         </ul>
+                     </div>
+                 @endif
+     
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+     
+                     <!-- Name -->
+                     <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Name <span class="text-red-500">*</span></label>
+                         <input type="text" name="name" placeholder="Enter Your Name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                     </div>
+     
+                     <!-- Email -->
+                     <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+                         <input type="email" name="email" placeholder="example@gmail.com" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                     </div>
+     
+                     <!-- Password -->
+                     <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Password <span class="text-red-500">*</span></label>
+                         <input type="password" name="password" placeholder="Enter Your Password" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                     </div>
+     
+                     <!-- Phone -->
+                     <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                         <input type="text" name="phone" placeholder="+977 98XXXXXXXXX" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
+                     </div>
+     
+                     <!-- Avatar -->
+                     <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
+                         <input type="file" name="avatar_url" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" accept="image/*">
+                     </div>
+     
+                     <!-- Role -->
+                     <div>
+                         <label class="block text-sm font-medium text-gray-700 mb-2">Role <span class="text-red-500">*</span></label>
+                         <input type="text" name="role" value="Restaurant" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100" readonly>
+                     </div>
+     
+                 </div>
+     
+                 <!-- Footer -->
+                 <div class="flex justify-end gap-2 px-6 py-4 border-t">
+                     <button type="button" id="add-cancel-btn"
+                             class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-red-500 hover:text-white">
+                         Cancel
+                     </button>
+                     <button type="submit"
+                             class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                         Create User
+                     </button>
+                 </div>
+             </form>
+         </div>
+     </div>
 
-    <div class="bg-white w-full max-w-2xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
-        <!-- Header -->
-        <div class="flex justify-between items-center px-6 py-4 border-b">
-            <h3 class="text-lg font-semibold text-gray-800">Add New Restaurant</h3>
-            <button id="add-close-btn" class="text-gray-500 hover:text-red-600 text-xl">&times;</button>
-        </div>
-
-        <!-- Form -->
-        <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-
-            <!-- Error Display -->
-            @if ($errors->any())
-                <div class="mx-6 mt-6 p-4 bg-red-50 border border-red-200 rounded-md">
-                    <h4 class="text-sm font-medium text-red-800 mb-2">Please fix the following errors:</h4>
-                    <ul class="text-red-700 text-sm space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <li>• {{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
-
-                <!-- Name -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Name <span class="text-red-500">*</span></label>
-                    <input type="text" name="name" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-
-                <!-- Email -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
-                    <input type="email" name="email" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-
-                <!-- Password -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Password <span class="text-red-500">*</span></label>
-                    <input type="password" name="password" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
-                </div>
-
-                <!-- Phone -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Phone</label>
-                    <input type="text" name="phone" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500">
-                </div>
-
-                <!-- Avatar -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Avatar</label>
-                    <input type="file" name="avatar_url" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" accept="image/*">
-                </div>
-
-                <!-- Role -->
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Role <span class="text-red-500">*</span></label>
-                    <input type="text" name="role" value="Restaurant" class="w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100" readonly>
-                </div>
-
-            </div>
-
-            <!-- Footer -->
-            <div class="flex justify-end gap-2 px-6 py-4 border-t">
-                <button type="button" id="add-cancel-btn"
-                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
-                    Cancel
-                </button>
-                <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                    Create User
-                </button>
-            </div>
-        </form>
-    </div>
 </div>
 
 
@@ -126,17 +130,20 @@
 <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
     <div class="flex items-center justify-center min-h-screen px-4">
         <!-- Overlay -->
-        <div class="fixed inset-0 bg-gray-500 opacity-75"></div>
+        <div id="editOverlay" class="fixed inset-0 bg-blue-950/40"></div>
 
         <!-- Modal content -->
-        <div class="bg-white rounded-lg shadow-xl border border-gray-300 transform transition-all max-w-lg w-full p-6 relative">
-            <button type="button" id="edit-close-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times text-lg"></i>
-            </button>
+        <div class=" bg-white rounded-lg shadow-xl  transform transition-all max-w-lg w-full relative">
+            <div class="flex items-center justify-between bg-indigo-600 px-6 py-4 rounded-t-lg">
+                <h3 class="text-lg font-medium text-white" id="modal-title"></h3>
+                <button type="button" id="edit-close-btn" class=" text-white hover:text-red-500">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+    
+                
+            </div>
 
-            <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title"></h3>
-
-            <form id="customer-form" method="POST" class="space-y-4">
+            <form id="customer-form" method="POST" class="space-y-4 px-6 mt-2">
                 @csrf
                 <input type="hidden" id="form-method" name="_method" value="POST">
                 <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
@@ -181,8 +188,8 @@
                     <label for="IsActive" class="text-sm font-medium text-gray-700">Active</label>
                 </div>
 
-                <div class="flex justify-end space-x-2">
-                    <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+                <div class="flex justify-end space-x-2 mb-4">
+                    <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-red-500 hover:text-white">Cancel</button>
                     <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save</button>
                 </div>
             </form>
@@ -201,13 +208,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const openAddBtn = document.getElementById('openAdminModal');
     const addCloseBtn = document.getElementById('add-close-btn');
     const addCancelBtn = document.getElementById('add-cancel-btn');
+    const addOverlay = document.getElementById('addOverlay');
 
     openAddBtn?.addEventListener('click', () => {
         addModal.classList.remove('hidden');
         addModal.classList.add('flex');
+        document.body.classList.add('overflow-hidden');
     });
 
-    [addCloseBtn, addCancelBtn].forEach(btn => {
+    [addCloseBtn, addCancelBtn, addOverlay].forEach(btn => {
         btn?.addEventListener('click', () => {
             addModal.classList.add('hidden');
             addModal.classList.remove('flex');
@@ -219,8 +228,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const editModal = document.getElementById('edit-modal');
     const editCloseBtn = document.getElementById('edit-close-btn');
     const editCancelBtn = document.getElementById('edit-cancel-btn');
+    const editOverlay = document.getElementById('editOverlay');
 
-    [editCloseBtn, editCancelBtn].forEach(btn => {
+    [editCloseBtn, editCancelBtn, editOverlay].forEach(btn => {
         btn?.addEventListener('click', () => {
             editModal.classList.add('hidden');
         });

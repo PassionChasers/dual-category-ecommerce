@@ -219,12 +219,6 @@
 @endsection
 
 @push('scripts')
-<<<<<<< HEAD
-    {{-- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> --}}
-=======
-
->>>>>>> c0fc83ddb31d95b5044bff30f32d0e4e962de7ca
-
     <script>
         document.addEventListener('DOMContentLoaded', ()=> {
             const modal = document.getElementById('medicalstore-modal');
