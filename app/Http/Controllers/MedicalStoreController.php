@@ -229,8 +229,59 @@ class MedicalStoreController extends Controller
     /***************************** 
     ********* STORE ***********
     ***************************/
+    // public function store(Request $request)
+    // {
+    //     $token = session('jwt_token');
+
+    //     if (!$token) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Session expired. Please login again.'
+    //         ], 401);
+    //     }
+
+    //     $response = Http::withHeaders([
+    //         'Authorization' => 'Bearer ' . $token,
+    //         'Accept' => 'application/json',
+    //     ])->post(
+    //         'https://pcsdecom.azurewebsites.net/api/admin/register/medical-store',
+    //         [
+    //             'storeName' => $request->storeName,
+    //             'adminName' => $request->adminName,
+    //             'adminEmail' => $request->adminEmail,
+    //             'adminPassword' => $request->adminPassword,
+    //             'adminPhone' => $request->adminPhone,
+    //             'storeAddress' => $request->storeAddress,
+    //             'licenseNumber' => $request->licenseNumber,
+    //             'gstin' => $request->gstin,
+    //             'pan' => $request->pan,
+    //             'openTime' => $request->openTime,
+    //             'closeTime' => $request->closeTime,
+    //             'deliveryFee' => $request->deliveryFee,
+    //             'minOrder' => $request->minOrder,
+    //             'location' => [
+    //                 'latitude' => $request->latitude,
+    //                 'longitude' => $request->longitude,
+    //             ]
+    //         ]
+    //     );
+
+    //     if ($response->failed()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => $response->json()['message'] ?? 'API error'
+    //         ], 500);
+    //     }
+
+    //     return response()->json([
+    //         'success' => true
+    //     ]);
+    // }
+
+
     public function store(Request $request)
     {
+        //Token check
         $token = session('jwt_token');
 
         if (!$token) {
@@ -240,75 +291,76 @@ class MedicalStoreController extends Controller
             ], 401);
         }
 
+        //Validation
+        $validated = $request->validate([
+            'storeName'       => 'required|string|max:100',
+            'storeAddress'    => 'required|string|max:200',
+            'licenseNumber'   => 'required|string|max:100',
+            'gstin'           => 'required|string|max:50',
+            'pan'             => 'required|string|max:50',
+
+            'adminName'       => 'required|string|max:100',
+            'adminEmail'      => 'required|email',
+            'adminPassword'   => 'required|string|min:8|max:50',
+            'adminPhone'      => 'required|string|min:9|max:15',
+
+            'openTime'        => 'required|date_format:H:i',
+            'closeTime'       => 'required|date_format:H:i',
+            'deliveryFee'     => 'required|numeric|min:0',
+            'minOrder'        => 'required|numeric|min:0',
+
+            'latitude'        => 'required|numeric',
+            'longitude'       => 'required|numeric',
+        ]);
+
+        //API payload
+        $payload = [
+            'storeName'       => $validated['storeName'],
+            'adminName'       => $validated['adminName'],
+            'adminEmail'      => $validated['adminEmail'],
+            'adminPassword'   => $validated['adminPassword'],
+            'adminPhone'      => $validated['adminPhone'],
+
+            'storeAddress'    => $validated['storeAddress'],
+            'licenseNumber'   => $validated['licenseNumber'],
+            'gstin'           => $validated['gstin'],
+            'pan'             => $validated['pan'],
+
+            'openTime'        => $validated['openTime'],
+            'closeTime'       => $validated['closeTime'],
+            'deliveryFee'     => $validated['deliveryFee'],
+            'minOrder'        => $validated['minOrder'],
+
+            'location' => [
+                'latitude'  => $validated['latitude'],
+                'longitude' => $validated['longitude'],
+            ]
+        ];
+
+        // API call
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json',
         ])->post(
             'https://pcsdecom.azurewebsites.net/api/admin/register/medical-store',
-            [
-                'storeName' => $request->storeName,
-                'adminName' => $request->adminName,
-                'adminEmail' => $request->adminEmail,
-                'adminPassword' => $request->adminPassword,
-                'adminPhone' => $request->adminPhone,
-                'storeAddress' => $request->storeAddress,
-                'licenseNumber' => $request->licenseNumber,
-                'gstin' => $request->gstin,
-                'pan' => $request->pan,
-                'openTime' => $request->openTime,
-                'closeTime' => $request->closeTime,
-                'deliveryFee' => $request->deliveryFee,
-                'minOrder' => $request->minOrder,
-                'location' => [
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
-                ]
-            ]
+            $payload
         );
 
+        // API error handling
         if ($response->failed()) {
             return response()->json([
                 'success' => false,
-                'message' => $response->json()['message'] ?? 'API error'
-            ], 500);
+                'message' => $response->json('message') ?? 'API error'
+            ], $response->status());
         }
 
+        // Success
         return response()->json([
-            'success' => true
+            'success' => true,
+            // 'message' => 'Medical store registered successfully'
         ]);
     }
 
-
-    // public function verifyOtp(Request $request)
-    // {
-    //     $request->validate([
-    //         'email' => 'required|email',
-    //         'otp'   => 'required|digits:6',
-    //     ]);
-
-    //     $response = Http::post(
-    //         'https://pcsdecom.azurewebsites.net/api/Auth/verify-email',
-    //         [
-    //             'email' => $request->email,
-    //             'code'  => $request->otp,
-    //         ]
-    //     );
-
-    //     $data = $response->json();
-
-    //     if ($response->successful()) {
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => $data['message'] ?? 'Email verified successfully!',
-    //             'redirect' => route('admin.medicalstores.list'),
-    //         ]);
-    //     }
-
-    //     return response()->json([
-    //         'success' => false,
-    //         'message' => $data['message'] ?? 'OTP invalid or expired',
-    //     ], 422);
-    // }
 
     // Verify OTP
     public function verifyOtp(Request $request)
@@ -334,7 +386,7 @@ class MedicalStoreController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => $data['message'] ?? 'Email verified successfully!',
+            'message' => $data['message'] ?? 'Medicalstore created successfully.',
             'redirect' => route('admin.medicalstores.list'),
         ]);
     }

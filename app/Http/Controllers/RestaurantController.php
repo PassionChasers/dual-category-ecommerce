@@ -192,10 +192,67 @@ class RestaurantController extends Controller
     /***************************** 
     ********* STORE ***********
     ***************************/
+    // public function store(Request $request)
+    // {
+    //     $token = session('jwt_token');
+
+    //     if (!$token) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => 'Session expired. Please login again.'
+    //         ], 401);
+    //     }
+
+    //     $response = Http::withHeaders([
+    //         'Authorization' => 'Bearer ' . $token,
+    //         'Accept' => 'application/json',
+    //     ])->post(
+    //         'https://pcsdecom.azurewebsites.net/api/admin/register/restaurant',
+    //         [
+    //             'restaurantName' => $request->restaurantName,
+    //             'adminName' => $request->adminName,
+    //             'adminEmail' => $request->adminEmail,
+    //             'adminPassword' => $request->adminPassword,
+    //             'adminPhone' => $request->adminPhone,
+
+    //             'restaurantAddress' => $request->restaurantAddress,
+    //             'flicNo' => $request->flicNo,
+    //             'gstin' => $request->gstin,
+    //             'pan' => $request->pan,
+    //             'cuisineType' => $request->cuisineType,
+    //             'isPureVeg' => (bool) $request->isPureVeg,
+    //             'priority' => 0,
+
+    //             'openTime' => $request->openTime,
+    //             'closeTime' => $request->closeTime,
+    //             'prepTimeMin' => (int) $request->prepTimeMin,
+    //             'deliveryFee' => (float) $request->deliveryFee,
+    //             'minOrder' => (float) $request->minOrder,
+
+    //             'location' => [
+    //                 'latitude' => (float) $request->latitude,
+    //                 'longitude' => (float) $request->longitude,
+    //             ]
+    //         ]
+    //     );
+
+    //     if ($response->failed()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => $response->json()['message'] ?? 'API error'
+    //         ], 500);
+    //     }
+
+    //     return response()->json([
+    //         'success' => true
+    //     ]);
+    // }
+
+
     public function store(Request $request)
     {
+        // Token check
         $token = session('jwt_token');
-
         if (!$token) {
             return response()->json([
                 'success' => false,
@@ -203,48 +260,127 @@ class RestaurantController extends Controller
             ], 401);
         }
 
+        // Validation
+        $validated = $request->validate([
+            'restaurantName'     => 'required|string|max:100',
+            'restaurantAddress'  => 'required|string|max:200',
+            'flicNo'             => 'required|string|max:100',
+            'gstin'              => 'required|string|max:50',
+            'pan'                => 'required|string|max:50',
+
+            'adminName'          => 'required|string|max:100',
+            'adminEmail'         => 'required|email',
+            'adminPassword'      => 'required|string|min:8|max:50',
+            'adminPhone'         => 'required|string|min:9|max:15',
+
+            'cuisineType'        => 'required|string',
+            'openTime'           => 'required',
+            'closeTime'          => 'required',
+            'prepTimeMin'        => 'nullable|integer|min:0',
+            'deliveryFee'        => 'required|numeric|min:0',
+            'minOrder'           => 'required|numeric|min:0',
+            'isPureVeg'          => 'nullable|boolean',
+
+            'latitude'           => 'required|numeric',
+            'longitude'          => 'required|numeric',
+        ]);
+
+        // API payload (MATCHES SWAGGER 100%)
+        $payload = [
+            'restaurantName'     => $validated['restaurantName'],
+            'adminName'          => $validated['adminName'],
+            'adminEmail'         => $validated['adminEmail'],
+            'adminPassword'      => $validated['adminPassword'],
+            'adminPhone'         => $validated['adminPhone'],
+
+            'restaurantAddress'  => $validated['restaurantAddress'],
+            'flicNo'             => $validated['flicNo'],
+            'gstin'              => $validated['gstin'],
+            'pan'                => $validated['pan'],
+
+            'cuisineType'        => $validated['cuisineType'],
+            'isPureVeg'          => $request->boolean('isPureVeg'),
+            'openTime'           => $validated['openTime'],
+            'closeTime'          => $validated['closeTime'],
+            'prepTimeMin'        => $validated['prepTimeMin'],
+            'deliveryFee'        => $validated['deliveryFee'],
+            'minOrder'           => $validated['minOrder'],
+
+            'location' => [
+                'latitude'  => $validated['latitude'],
+                'longitude' => $validated['longitude'],
+            ]
+        ];
+
+        // API Call
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json',
-        ])->post(
-            'https://pcsdecom.azurewebsites.net/api/admin/register/restaurant',
-            [
-                'restaurantName' => $request->restaurantName,
-                'adminName' => $request->adminName,
-                'adminEmail' => $request->adminEmail,
-                'adminPassword' => $request->adminPassword,
-                'adminPhone' => $request->adminPhone,
+        ])->post('https://pcsdecom.azurewebsites.net/api/admin/register/restaurant', $payload);
 
-                'restaurantAddress' => $request->restaurantAddress,
-                'flicNo' => $request->flicNo,
-                'gstin' => $request->gstin,
-                'pan' => $request->pan,
-                'cuisineType' => $request->cuisineType,
-                'isPureVeg' => (bool) $request->isPureVeg,
-                'priority' => 0,
+        // API error
+        if ($response->failed()) {
+            return response()->json([
+                'success' => false,
+                'message' => $response->json('message') ?? 'API error'
+            ], $response->status());
+        }
+        
+        // Success
+        return response()->json([
+            'success' => true,
+            // 'message' => 'Restaurant registered successfully'
+        ]);
+    }
 
-                'openTime' => $request->openTime,
-                'closeTime' => $request->closeTime,
-                'prepTimeMin' => (int) $request->prepTimeMin,
-                'deliveryFee' => (float) $request->deliveryFee,
-                'minOrder' => (float) $request->minOrder,
 
-                'location' => [
-                    'latitude' => (float) $request->latitude,
-                    'longitude' => (float) $request->longitude,
-                ]
-            ]
-        );
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp'   => 'required|digits:6',
+        ]);
+
+        $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', [
+            'email' => $request->email,
+            'code'  => $request->otp,
+        ]);
 
         if ($response->failed()) {
             return response()->json([
                 'success' => false,
-                'message' => $response->json()['message'] ?? 'API error'
-            ], 500);
+                'message' => $response->json('message') ?? 'OTP invalid or expired'
+            ], $response->status() ?: 422);
+        }
+
+        $data = $response->json();
+
+        return response()->json([
+            'success' => true,
+            'message' => $data['message'] ?? 'Restaurant created successfully.',
+            'redirect' => route('admin.restaurants.list'),
+        ]);
+    }
+
+    // Resend OTP
+    public function resendOtp(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/resend-verifivation', [
+            'email' => $request->email,
+        ]);
+
+        if ($response->failed()) {
+            return response()->json([
+                'success' => false,
+                'message' => $response->json('message') ?? 'Failed to resend OTP'
+            ], $response->status() ?: 500);
         }
 
         return response()->json([
-            'success' => true
+            'success' => true,
+            'message' => $response->json('message') ?? 'OTP sent successfully'
         ]);
     }
 }

@@ -67,60 +67,82 @@
                 @csrf
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Name<span class="text-red-500">*</span>
+                        </label>
                         <input type="text" name="storeName" placeholder="Enter Store Name" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Admin Name</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Admin Name<span class="text-red-500">*</span>
+                        </label>
                         <input type="text" name="adminName" placeholder="Enter Admin Name" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Email<span class="text-red-500">*</span>
+                        </label>
                         <input type="email" name="adminEmail" placeholder="example@gmail.com" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Password<span class="text-red-500">*</span>
+                        </label>
                         <input type="password" name="adminPassword" placeholder="Enter Password" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Phone<span class="text-red-500">*</span>
+                        </label>
                         <input type="text" name="adminPhone" placeholder="+977 98XXXXXXXX" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Store Address</label>
-                        <input type="text" name="storeAddress" placeholder="Enter Store Address" class="w-full border border-gray-400 p-2 rounded">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Store Address<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="storeAddress" placeholder="Enter Store Address" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">License Number</label>
-                        <input type="text" name="licenseNumber" placeholder="License Number" class="w-full border border-gray-400 p-2 rounded">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            License Number<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="licenseNumber" placeholder="License Number" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">GSTIN</label>
-                        <input type="text" name="gstin" placeholder="GSTIN" class="w-full border border-gray-400 p-2 rounded">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            GSTIN<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="gstin" placeholder="GSTIN" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">PAN</label>
-                        <input type="text" name="pan" placeholder="PAN" class="w-full border border-gray-400 p-2 rounded">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            PAN<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="pan" placeholder="PAN" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Open Time</label>
-                            <input type="time" name="openTime" class="w-full border border-gray-400 p-2 rounded">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Open Time<span class="text-red-500">*</span>
+                            </label>
+                            <input type="time" name="openTime" class="w-full border border-gray-400 p-2 rounded" required>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Close Time</label>
-                            <input type="time" name="closeTime" class="w-full border border-gray-400 p-2 rounded">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Close Time<span class="text-red-500">*</span>
+                            </label>
+                            <input type="time" name="closeTime" class="w-full border border-gray-400 p-2 rounded" required>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Fee</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Fee (Rs.)</label>
                             <input type="number" name="deliveryFee" placeholder="Delivery Fee" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Minimum Order</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Minimum Order (Rs.)</label>
                             <input type="number" name="minOrder" placeholder="Minimum Order" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                     </div>
@@ -501,7 +523,7 @@
             modal.classList.remove('flex');
 
             clearInterval(resendInterval);
-            resendCountdown = 30;
+            resendCountdown = 60;
             document.getElementById('resendTimer').innerText = resendCountdown;
             document.getElementById('resendOtpBtn').disabled = false;
         }
@@ -576,24 +598,6 @@
             });
         }
 
-    </script>
-
-    <script>
-        @if ($errors->has('otp'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: '{{ $errors->first('otp') }}',
-            });
-        @endif
-
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: '{{ session('success') }}',
-            });
-        @endif
     </script>
 
 @endpush

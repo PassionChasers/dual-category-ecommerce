@@ -264,6 +264,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/restaurants/{id}', [RestaurantController::class, 'show'])->name('restaurants.show');
     });
 
+     Route::post('/restaurants/verify-otp', [RestaurantController::class, 'verifyOtp'])
+    ->name('restaurants.verifyOtp');
+
+    Route::post('/restaurants/resend-otp', [RestaurantController::class, 'resendOtp'])
+    ->name('restaurants.resendOtp');
 
     /*
     |----------------------------------------------------------------------
