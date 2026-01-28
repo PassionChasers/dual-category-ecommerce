@@ -13,13 +13,13 @@
                 <p class="text-gray-600">Manage all Medicalstore Businesses</p>
             </div>
 
-            <div class="flex flex-wrap gap-2 w-full md:w-auto">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
                 <!-- Search Form -->
                 <input type="text" id="search" name="search" placeholder="Search by Name, PAN, LicenseNumber, GSTIN..." 
                     value="{{ request('search') }}"
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
 
-                <select id="onlineStatus" name="onlineStatus" class="shrink-0 border rounded-md px-3 py-2 text-sm">
+                <select id="onlineStatus" name="onlineStatus" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
                     <option value="">All Status</option>
                     <option value="true" {{ request('onlineStatus')=='true' ? 'selected' : '' }}>Online</option>
                     <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>Offline</option>
@@ -38,7 +38,7 @@
 
                 {{-- This button for modal which work through api form submit --}}
                 <button onclick="openStoreModal()"
-                    class="w-full md:w-60 inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                     <i class="fas fa-plus mr-1"></i> Register Medical Store
                 </button>
             </div>
@@ -52,13 +52,15 @@
 
     
     {{-- Register new store Modal which submit form in api  --}}
-    <div id="storeModal" class="fixed inset-0 hidden items-center justify-center z-50">
-        <!-- overlay -->
-        <div onclick="closeStoreModal()" id="storeOverlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px]"></div>
-        <div class="bg-white w-full max-w-3xl overflow-y-auto max-h-[90vh] rounded-lg relative">
+    <div id="storeModal" class="fixed inset-0  hidden items-center justify-center z-50">
+        <!-- Overlay -->
+            <div id="editOverlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px] "></div>
+        <div class="bg-white w-full max-w-2xl overflow-y-auto max-h-[90vh] rounded-lg relative">
+            
+
             <div class="flex items-center justify-between rounded-t-lg bg-indigo-600 px-6 py-4 mb-4">
                 <h2 class="text-xl font-bold text-white">Register Medical Store</h2>
-                <button onclick="closeStoreModal()" class=" text-white hover:text-red-500 text-3xl">&times;</button>
+                <button onclick="closeStoreModal()" class="text-white hover:text-red-500 text-3xl">&times;</button>
             </div>
 
             <form id="storeForm" class="space-y-3">
@@ -66,15 +68,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                         <input type="text" name="storeName" placeholder="Enter Store Name" class="w-full border border-gray-400 p-2 rounded" required>
+                        <input type="text" name="storeName" placeholder="Enter Store Name" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
-                   <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Admin Name</label>
                         <input type="text" name="adminName" placeholder="Enter Admin Name" class="w-full border border-gray-400 p-2 rounded" required>
-                   </div>
+                    </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" name="adminEmail" placeholder="example@gamil.com" class="w-full border border-gray-400 p-2 rounded" required>
+                        <input type="email" name="adminEmail" placeholder="example@gmail.com" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
@@ -89,7 +91,7 @@
                         <input type="text" name="storeAddress" placeholder="Enter Store Address" class="w-full border border-gray-400 p-2 rounded">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Liceense Number</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">License Number</label>
                         <input type="text" name="licenseNumber" placeholder="License Number" class="w-full border border-gray-400 p-2 rounded">
                     </div>
                     <div>
@@ -100,7 +102,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">PAN</label>
                         <input type="text" name="pan" placeholder="PAN" class="w-full border border-gray-400 p-2 rounded">
                     </div>
-    
+
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Open Time</label>
@@ -111,48 +113,47 @@
                             <input type="time" name="closeTime" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                     </div>
-    
+
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Delivary Fee</label>
-                            <input type="number" name="deliveryFee"  class="w-full border border-gray-400 p-2 rounded">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Fee</label>
+                            <input type="number" name="deliveryFee" placeholder="Delivery Fee" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Minimum Order</label>
-                            <input type="number" name="minOrder" placeholder="Rs." class=" w-full border border-gray-400 p-2 rounded">
+                            <input type="number" name="minOrder" placeholder="Minimum Order" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                     </div>
-    
+
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
-                            <input type="number" step="any" name="latitude" placeholder="Latitude" class=" w-full border border-gray-400 p-2 rounded">
+                            <input type="number" step="any" name="latitude" placeholder="Latitude" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
-                            <input type="number" step="any" name="longitude" placeholder="Longitude" class=" w-full border border-gray-400 p-2 rounded">
+                            <input type="number" step="any" name="longitude" placeholder="Longitude" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                     </div>
                 </div>
 
-
                 <div class="flex justify-end gap-2 pt-3 mb-3 px-6">
-                    <button type="button" onclick="closeStoreModal()" class="px-4 py-2 rounded-lg text-black bg-gray-300 hover:bg-red-500 hover:text-white ">
+                    <button type="button" onclick="closeStoreModal()" class="px-4 py-2 rounded-lg text-black bg-gray-300 hover:bg-red-500 hover:text-white">
                         Cancel
                     </button>
                     <button
                         type="submit"
                         id="storeSubmitBtn"
-                        class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+                        class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded flex items-center justify-center gap-2"
                     >
                         <span id="btnText">Save Store</span>
-                        <!-- <svg id="btnSpinner" class="w-5 h-5 animate-spin hidden"
+                        <svg id="btnSpinner" class="w-5 h-5 animate-spin hidden"
                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10"
                                 stroke="currentColor" stroke-width="4"></circle>
                             <path class="opacity-75" fill="currentColor"
                                 d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                        </svg> -->
+                        </svg>
                     </button>
                 </div>
             </form>
@@ -198,23 +199,20 @@
     {{-- Edit Modal --}}
     <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
 
-        <div class="flex items-center justify-center min-h-screen ">
+        <div class="flex items-center justify-center min-h-screen px-4">
 
             <!-- Overlay -->
-            <div id="editOverlay" class="fixed inset-0 bg-blue-950/40 "></div>
+            <div class="fixed inset-0 bg-gray-500 opacity-75"></div>
 
             <!-- Modal content -->
-            <div class="bg-white rounded-lg shadow-xltransform transition-all max-w-lg w-full relative">
-                <div class="bg-indigo-600 rounded-t-lg flex items-center justify-between px-6 py-4 mb-4">
-                    <h3 class="text-lg font-medium text-white" id="modal-title"></h3>
-                    <button type="button" id="edit-close-btn" class=" text-white hover:text-red-500">
-                        <i class="fas fa-times text-lg"></i>
-                    </button>
-    
-                    
-                </div>
+            <div class="bg-white rounded-lg shadow-xl border border-gray-300 transform transition-all max-w-lg w-full p-6 relative">
+                <button type="button" id="edit-close-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
 
-                <form id="customer-form" method="POST" class="space-y-4 px-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title"></h3>
+
+                <form id="customer-form" method="POST" class="space-y-4">
                     @csrf
                     <input type="hidden" id="form-method" name="_method" value="POST">
                     <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
@@ -222,14 +220,14 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" name="name" id="customer-name" placeholder="Enter Name"
+                        <input type="text" name="name" id="customer-name"
                             class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" name="email" id="customer-email" placeholder="example@gmail.com"
+                        <input type="email" name="email" id="customer-email"
                             class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required>
                     </div>
@@ -242,7 +240,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-                        <input type="text" name="contact_number" id="customer_contact_number" placeholder="+977 98XXXXXXXX"
+                        <input type="text" name="contact_number" id="customer_contact_number"
                             class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required>
                     </div>
@@ -259,9 +257,9 @@
                         <label for="IsActive" class="text-sm font-medium text-gray-700">Active</label>
                     </div>
 
-                    <div class="flex justify-end space-x-2 mb-4">
-                        <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-red-500 hover:text-white">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Save</button>
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save</button>
                     </div>
                 </form>
             </div>
@@ -279,9 +277,8 @@
             const editModal = document.getElementById('edit-modal');
             const editCloseBtn = document.getElementById('edit-close-btn');
             const editCancelBtn = document.getElementById('edit-cancel-btn');
-            const editOverlay = document.getElementById('editOverlay');
 
-            [editCloseBtn, editCancelBtn, editOverlay].forEach(btn => {
+            [editCloseBtn, editCancelBtn].forEach(btn => {
                 btn?.addEventListener('click', () => {
                     editModal.classList.add('hidden');
                 });
@@ -395,18 +392,13 @@
             const modal = document.getElementById('storeModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            document.body.classList.add('overflow-hidden')
         }
-        
-        
+
         function closeStoreModal() {
             const modal = document.getElementById('storeModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-            document.body.classList.remove('overflow-hidden')
         }
-       
-
         document.getElementById('storeForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
