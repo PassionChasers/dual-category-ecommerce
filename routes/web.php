@@ -211,7 +211,10 @@ Route::middleware('auth')->group(function () {
     */
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
+
         Route::get('/admin', [UserController::class, 'admin'])->name('admin.index');
+        Route::post('/create-admin', [UserController::class, 'createAdmin'])->name('create-admin');
+
         Route::get('/customers', [UserController::class, 'customers'])->name('customers.index');
         Route::get('/restaurants', [UserController::class, 'restaurants'])->name('restaurants.index');
         Route::get('/medicalstores', [UserController::class, 'medicalstores'])->name('medicalstores.index');
@@ -219,6 +222,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [UserController::class, 'store'])->name('store');
         Route::put('/update/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/destroy/{user}', [UserController::class, 'destroy'])->name('destroy');
+
+        // Route::post('/verify-email', [UserController::class, 'verifyOtp'])->name('verifyOtp');
+        // Route::post('/resendOtp', [UserController::class, 'resendOtp'])->name('resendOtp');
+
     });
 
       /*

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class UserController extends Controller
 {
@@ -262,4 +263,105 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
+
+    public function createAdmin(Request $request)
+    {
+
+        // Token check
+        $token = session('jwt_token');
+        if (!$token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please login again.'
+            ], 401);
+        }
+
+        // Validation
+        $validated = $request->validate([
+            'adminName'               => 'required|string|max:100',
+            'adminEmail'              => 'required|email',
+            'adminPassword'           => 'required|min:8',
+            'adminPhone'              => 'nullable|string|max:15|min:9',
+            // 'avatar_url'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // API Call
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json',
+        ])->post('https://pcsdecom.azurewebsites.net/api/admin/system/system-admins', 
+            [
+                'name'          => $validated['adminName'],
+                'email'         => $validated['adminEmail'],
+                'password'      => $validated['adminPassword'],
+                'phone'         => $validated['adminPhone'],
+                // 'avatar_url'    => $imagePath,
+            ]
+        );
+
+        // API error
+        if ($response->failed()) {
+            return response()->json([
+                'success' => false,
+                'message' => $response->json('message') ?? 'API error'
+            ], $response->status());
+        }
+        
+        // Success
+        return response()->json([
+            'success' => true,
+            'message' => 'Admin registered successfully',
+            'redirect' => route('users.admin.index'),
+        ]);
+    }  
+    
+    // public function verifyOtp(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|email',
+    //         'otp'   => 'required|digits:6',
+    //     ]);
+
+    //     $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', [
+    //         'email' => $request->email,
+    //         'code'  => $request->otp,
+    //     ]);
+
+    //     if ($response->failed()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => $response->json('message') ?? 'OTP invalid or expired'
+    //         ], $response->status() ?: 422);
+    //     }
+
+    //     $data = $response->json();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => $data['message'] ?? 'Restaurant created successfully.',
+    //         'redirect' => route('users.admin.index'),
+    //     ]);
+    // }
+
+    // // Resend OTP
+    // public function resendOtp(Request $request)
+    // {
+    //     $request->validate(['email' => 'required|email']);
+
+    //     $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/resend-verifivation', [
+    //         'email' => $request->email,
+    //     ]);
+
+    //     if ($response->failed()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => $response->json('message') ?? 'Failed to resend OTP'
+    //         ], $response->status() ?: 500);
+    //     }
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => $response->json('message') ?? 'OTP sent successfully'
+    //     ]);
+    // }
 }

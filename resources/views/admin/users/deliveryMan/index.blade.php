@@ -57,26 +57,34 @@
 
                 <!-- Name -->
                 <div>
-                    <label class="block text-sm font-medium">Name</label>
+                    <label class="block text-sm font-medium">
+                        Name<span class="text-red-500">*</span>
+                    </label>
                     <input type="text" name="name" placeholder="Enter Your Name" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- Email -->
                 <div>
-                    <label class="block text-sm font-medium">Email</label>
+                    <label class="block text-sm font-medium">
+                        Email<span class="text-red-500">*</span>
+                    </label>
                     <input type="email" name="email" placeholder="example@gmail.com" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- Password -->
                 <div>
-                    <label class="block text-sm font-medium">Password</label>
+                    <label class="block text-sm font-medium">
+                        Password<span class="text-red-500">*</span>
+                    </label>
                     <input type="password" name="password" placeholder="Enter Password" class="input border border-gray-400 rounded  p-2 w-full" required>
                 </div>
 
                 <!-- Phone -->
                 <div>
-                    <label class="block text-sm font-medium">Phone</label>
-                    <input type="text" name="phone" placeholder="+977 98XXXXXXXX" class="input border border-gray-400 rounded p-2 w-full">
+                    <label class="block text-sm font-medium">
+                        Phone<span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="phone" placeholder="+977 98XXXXXXXX" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
                 <!-- Avatar -->
@@ -88,7 +96,7 @@
                 <!-- Role -->
                 <div>
                     <label class="block text-sm font-medium">Role</label>
-                    <input type="text" name="role" value="Admin" class="input border border-gray-400 rounded p-2 w-full" readonly>
+                    <input type="text" name="role" value="5" class="input border border-gray-400 rounded p-2 w-full" readonly>
                 </div>
 
                 {{-- <!-- Is Active -->
