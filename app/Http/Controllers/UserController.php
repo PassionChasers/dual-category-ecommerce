@@ -245,12 +245,13 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
-        $user->name = $request->input('name');
-        $user->email = $request->input('email');
+        $user->Name = $request->input('name');
+        $user->Email = $request->input('email');
+        $user->IsActive = $request->input('IsActive') ? true : false;
         // Update other fields as necessary
         $user->save();
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        return redirect()->route('users.admin.index')->with('success', 'User updated successfully.');
     }
 
     /**
@@ -261,12 +262,11 @@ class UserController extends Controller
         $user = User::findOrFail($id);
         $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        return redirect()->route('users.admin.index')->with('success', 'User deleted successfully.');
     }
 
     public function createAdmin(Request $request)
     {
-
         // Token check
         $token = session('jwt_token');
         if (!$token) {
