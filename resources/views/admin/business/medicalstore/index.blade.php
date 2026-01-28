@@ -113,7 +113,7 @@
 
 
     <!-- OTP MODAL -->
-    <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    {{-- <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
         <div class="bg-white rounded-lg w-full max-w-sm p-6 relative">
 
             <button onclick="closeOtpModal()" class="absolute top-2 right-3 text-gray-500 text-xl">&times;</button>
@@ -123,14 +123,52 @@
             <form action="{{ route('medicalStores.verifyOtp') }}" method="POST" >
                 @csrf
                 <p class="text-sm text-gray-600 text-center mb-3">
+                    Verification code sent to<br>
+                    <strong id="maskedEmail"></strong>
+                </p>
+
+                <input name="email" type="email" id="otpEmail" required>
+
+                <input
+                    name="otp"
+                    type="text"
+                    id="otpCode"
+                    maxlength="6"
+                    class="w-full border px-3 py-2 rounded text-center tracking-widest text-lg"
+                    placeholder="Enter OTP"
+                >
+
+                <input type="submit" value="Verify"
+                    class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 cursor-pointer">
+                
+            </form>     
+            
+
+            
+
+            <button
+                onclick="verifyOtp()"
+                class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+            >
+                Verify
+            </button>
+            
+        </div>
+    </div> --}}
+
+    <!-- OTP MODAL -->
+    <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-full max-w-sm p-6 relative">
+            <button onclick="closeOtpModal()" class="absolute top-2 right-3 text-gray-500 text-xl">&times;</button>
+            <h3 class="text-lg font-semibold mb-3 text-center">Verify Email</h3>
+
+            <p class="text-sm text-gray-600 text-center mb-3">
                 Verification code sent to<br>
                 <strong id="maskedEmail"></strong>
             </p>
 
-            <input name="email" type="email" id="otpEmail" required>
-
+            <input type="hidden" id="otpEmail">
             <input
-                name="otp"
                 type="text"
                 id="otpCode"
                 maxlength="6"
@@ -138,22 +176,22 @@
                 placeholder="Enter OTP"
             >
 
-            <input type="submit" value="Verify"
-                class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 cursor-pointer">
-                
-            </form>     
-            
-
-            
-
-            {{-- <button
+            <button id="verifyOtpBtn"
                 onclick="verifyOtp()"
                 class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
             >
                 Verify
-            </button> --}}
+            </button>
+
+            <button id="resendOtpBtn"
+                onclick="resendOtp()"
+                class="w-full mt-2 bg-gray-500 text-white py-2 rounded hover:bg-gray-600"
+            >
+                Resend OTP (<span id="resendTimer">30</span>s)
+            </button>
         </div>
     </div>
+
 
 
 
@@ -473,29 +511,29 @@
 
 
         // ------------- OTP MODAL -------------
-        function maskEmail(email) {
-            const [name, domain] = email.split('@');
-            return name.substring(0, 2) + '*'.repeat(name.length - 2) + '@' + domain;
-        }
+        // function maskEmail(email) {
+        //     const [name, domain] = email.split('@');
+        //     return name.substring(0, 2) + '*'.repeat(name.length - 2) + '@' + domain;
+        // }
 
-        window.openOtpModal = function(email) {
-            const modal = document.getElementById('otpModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
+        // window.openOtpModal = function(email) {
+        //     const modal = document.getElementById('otpModal');
+        //     modal.classList.remove('hidden');
+        //     modal.classList.add('flex');
 
-            document.getElementById('otpEmail').value = email;
-            document.getElementById('maskedEmail').innerText = maskEmail(email);
+        //     document.getElementById('otpEmail').value = email;
+        //     document.getElementById('maskedEmail').innerText = maskEmail(email);
 
-            setTimeout(() => {
-                document.getElementById('otpCode').focus();
-            }, 300);
-        }
+        //     setTimeout(() => {
+        //         document.getElementById('otpCode').focus();
+        //     }, 300);
+        // }
 
-        window.closeOtpModal = function() {
-            const modal = document.getElementById('otpModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
+        // window.closeOtpModal = function() {
+        //     const modal = document.getElementById('otpModal');
+        //     modal.classList.add('hidden');
+        //     modal.classList.remove('flex');
+        // }
 
         // window.verifyOtp = function() {
         //     const email = document.getElementById('otpEmail').value;
@@ -516,19 +554,128 @@
         //     })
         //     .then(res => res.json())
         //     .then(res => {
-        //         if(!res.success) {
-        //             Swal.fire('Error', res.message || 'OTP invalid or expired', 'error');
+        //         if (!res.success) {
+        //             Swal.fire('Error', res.message, 'error');
         //         } else {
-        //             Swal.fire({ icon: 'success', title: 'Email Verified', timer: 2000, showConfirmButton: false })
-        //             .then(() => {
-        //                 closeOtpModal();
-        //                 location.reload();
-        //                 fetchData();
+        //             closeOtpModal();
+
+        //             Swal.fire({
+        //                 icon: 'success',
+        //                 title: 'Email Verified',
+        //                 text: res.message,
+        //                 timer: 4000,
+        //                 showConfirmButton: true,
+        //             }).then(() => {
+        //                 window.location.href = res.redirect; //redirect here
         //             });
         //         }
         //     })
         //     .catch(() => Swal.fire('Error', 'Verification failed', 'error'));
         // }
+
+
+
+        let resendCountdown = 60;
+        let resendInterval;
+
+        function maskEmail(email) {
+            const [name, domain] = email.split('@');
+            return name.substring(0, 2) + '*'.repeat(name.length - 2) + '@' + domain;
+        }
+
+        function openOtpModal(email) {
+            const modal = document.getElementById('otpModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            document.getElementById('otpEmail').value = email;
+            document.getElementById('maskedEmail').innerText = maskEmail(email);
+            document.getElementById('otpCode').focus();
+
+            startOtpTimer();
+        }
+
+        function closeOtpModal() {
+            const modal = document.getElementById('otpModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+
+            clearInterval(resendInterval);
+            resendCountdown = 30;
+            document.getElementById('resendTimer').innerText = resendCountdown;
+            document.getElementById('resendOtpBtn').disabled = false;
+        }
+
+        // Timer for resend button
+        function startOtpTimer() {
+            const resendBtn = document.getElementById('resendOtpBtn');
+            resendBtn.disabled = true;
+            resendCountdown = 60;
+            document.getElementById('resendTimer').innerText = resendCountdown;
+
+            resendInterval = setInterval(() => {
+                resendCountdown--;
+                document.getElementById('resendTimer').innerText = resendCountdown;
+                if (resendCountdown <= 0) {
+                    clearInterval(resendInterval);
+                    resendBtn.disabled = false;
+                    document.getElementById('resendTimer').innerText = '0';
+                }
+            }, 1000);
+        }
+
+        // Verify OTP
+        function verifyOtp() {
+            const email = document.getElementById('otpEmail').value;
+            const code = document.getElementById('otpCode').value;
+
+            if (code.length !== 6) return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
+
+            fetch('{{ route("medicalStores.verifyOtp") }}', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ email, otp: code })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (!res.success) return Swal.fire('Error', res.message, 'error');
+                closeOtpModal();
+                Swal.fire({ icon: 'success', title: 'Email Verified', text: res.message }).then(() => {
+                    window.location.href = res.redirect;
+                });
+            })
+            .catch(() => Swal.fire('Error', 'Verification failed', 'error'));
+        }
+
+        // Resend OTP
+        function resendOtp() {
+            const email = document.getElementById('otpEmail').value;
+            const btn = document.getElementById('resendOtpBtn');
+
+            btn.disabled = true;
+
+            fetch('{{ route("medicalStores.resendOtp") }}', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ email })
+            })
+            .then(res => res.json())
+            .then(res => {
+                Swal.fire(res.success ? 'Success' : 'Error', res.message, res.success ? 'success' : 'error');
+                if (res.success) startOtpTimer();
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Could not resend OTP', 'error');
+                btn.disabled = false;
+            });
+        }
+
     </script>
 
     <script>
@@ -548,8 +695,4 @@
             });
         @endif
     </script>
-
-
-   
-
 @endpush
