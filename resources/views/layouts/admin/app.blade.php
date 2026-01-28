@@ -78,7 +78,7 @@
 
        <!-- GLOBAL NETWORK LOADER -->
     <div id="global-loader"
-        class="fixed inset-0 bg-white-200 bg-opacity-75 flex items-center justify-center z-[9999] hidden">
+        class="fixed inset-0 bg-white-100 bg-opacity-75 flex items-center justify-center z-[9999] hidden">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid"></div>
     </div>
 
