@@ -72,26 +72,6 @@ class MedicineController extends Controller
 
     public function store(Request $request)
     {
-<<<<<<< HEAD
-        
-        $data = $request->only([
-            'MedicalStoreId',
-            'MedicineCategoryId',
-            'Name',
-            'GenericName',
-            'BrandName',
-            'Description',
-            'Price',
-            'MRP',
-            'PrescriptionRequired',
-            'Manufacturer',
-            'ExpiryDate',
-            'DosageForm',
-            'Strength',
-            'Packaging',
-            'IsActive',
-            'ImageUrl'
-=======
         //Validate form input
         $validated = $request->validate([
             'MedicineCategoryId'   => 'required|uuid|exists:MedicineCategories,MedicineCategoryId',
@@ -124,7 +104,6 @@ class MedicineController extends Controller
             'ImageUrl.required' => 'Medicine image URL is required.',
             'ImageUrl.url'      => 'Please enter a valid image URL.',
             'ExpiryDate.after'  => 'Expiry date must be a future date.',
->>>>>>> 25768bac44037fdc600ff8a6015f73d577bcd4fc
         ]);
 
         //Image URL existence + image type check

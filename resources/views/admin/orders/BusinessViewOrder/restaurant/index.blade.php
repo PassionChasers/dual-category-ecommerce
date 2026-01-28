@@ -93,264 +93,124 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    let interval = null;           // Regular AJAX interval
-    let tableLoaderPaused = false;
-    let refreshPending = false;
+    // reject forms
+    document.querySelectorAll('.reject-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-    let inactivityTimeout = null;  // Timer to resume after inactivity
-    const INACTIVITY_DELAY = 20000; // 20 seconds
+            const status = parseInt(form.dataset.status);
+            // const blockedStatuses = [3, 4, 6, 7, 8, 10];
+            const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
 
-    function bindOrderEvents() {
+            if (blockedStatuses.includes(status)) {
+                Swal.fire({
+                    title: 'Action Not Allowed!',
+                    text: 'This order cannot be rejected in its current status.',
+                    icon: 'warning',
+                    confirmButtonColor: '#6c757d'
+                });
+                return;
+            }
 
-        // reject forms
-        document.querySelectorAll('.reject-form').forEach(form => {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e3342f',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, reject it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();  // normal submit  auto  page refresh
+                } else {
 
-                pauseTableUpdate();//
-
-                const status = parseInt(form.dataset.status);
-                // const blockedStatuses = [3, 4, 6, 7, 8, 10];
-                const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
-
-                if (blockedStatuses.includes(status)) {
-                    Swal.fire({
-                        title: 'Action Not Allowed!',
-                        text: 'This order cannot be rejected in its current status.',
-                        icon: 'warning',
-                        confirmButtonColor: '#6c757d'
-                    });
-
-                    resumeTableUpdate();
-                    return;
                 }
 
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'This action cannot be undone!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e3342f',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, reject it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();  // normal submit  auto  page refresh
-                    } else {
-                        resumeTableUpdate();
-                    }
-
-                });
             });
         });
-
-
-        // accept forms
-        document.querySelectorAll('.accept-form').forEach(form => {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                pauseTableUpdate();//
-
-                const status = parseInt(form.dataset.status);
-                // const blockedStatuses = [3, 4, 6, 7, 8, 10];
-                const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
-
-                if (blockedStatuses.includes(status)) {
-                    Swal.fire({
-                        title: 'Action Not Allowed!',
-                        text: 'This order cannot be accepted in its current status.',
-                        icon: 'warning',
-                        confirmButtonColor: '#6c757d'
-                    });
-
-                    resumeTableUpdate();
-                    return;
-                }
-
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'This action cannot be undone!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e3342f',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, accept it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();  // normal submit  auto  page refresh
-                    } else {
-                        resumeTableUpdate();
-                    }
-
-                });
-            });
-        });
-
-        // Pause AJAX while interacting with selects or inputs
-        const interactiveElements = document.querySelectorAll('.assign-deliveryman, .order-status, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
-
-        interactiveElements.forEach(el => {
-            // Any activity stops AJAX and resets the inactivity timer
-            el.addEventListener('focus', pauseTableUpdate);
-            el.addEventListener('input', pauseTableUpdate); // typing in input
-            el.addEventListener('change', pauseTableUpdate);
-            el.addEventListener('click', pauseTableUpdate);
-
-            // When user leaves element, start inactivity timer
-            el.addEventListener('blur', startInactivityTimer);
-        });
-
-        // Deliveryman assignment confirmation
-        // document.querySelectorAll('.assign-deliveryman').forEach(select => {
-        //     select.addEventListener('change', function () {
-        //         const form = this.closest('.assign-delivery-form');
-        //         const selectedName = this.options[this.selectedIndex].text;
-
-        //         if (!this.value) return;
-
-        //         pauseTableUpdate();
-
-        //         Swal.fire({
-        //             title: 'Assign Delivery Man?',
-        //             text: `Are you sure you want to assign "${selectedName}" to this order?`,
-        //             icon: 'question',
-        //             showCancelButton: true,
-        //             confirmButtonColor: '#3085d6',
-        //             cancelButtonColor: '#d33',
-        //             confirmButtonText: 'Yes, assign!',
-        //             cancelButtonText: 'Cancel'
-        //         }).then(result => {
-        //             if (result.isConfirmed){
-        //                 // resumeTableUpdate();
-        //                 form.submit();
-        //             } 
-        //             else {
-        //                 this.value = '';
-        //                 resumeTableUpdate();
-        //             }
-        //         });
-        //     });
-        // });
-
-        // Order status update via AJAX
-        const csrf = document.querySelector('meta[name="csrf-token"]').content;
-        document.querySelectorAll('.order-status').forEach(select => {
-            select.addEventListener('change', function () {
-
-                pauseTableUpdate();
-
-                fetch("{{ route('orders.update-status') }}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": csrf
-                    },
-                    body: JSON.stringify({
-                        order_id: this.dataset.orderId,
-                        status: this.value
-                    })
-                })
-                .then(r => r.json())
-                .then(res => {
-                    Swal.fire({
-                        toast: true,
-                        position: 'top-end',
-                        icon: res.success ? 'success' : 'error',
-                        title: res.message,
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                })
-                .catch(() => {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Something went wrong'
-                    });
-                })
-                .finally(() => {
-                    resumeTableUpdate();
-                });
-            });
-        });
-
-    }
-
-    function loadOrders(force = false) {
-
-        if (tableLoaderPaused && !force) {
-            refreshPending = true; // remember to refresh later
-            return;
-        }
-
-        const params = new URLSearchParams(window.location.search);
-
-        fetch("{{ route('orders.restaurant-food.index') }}?" + params.toString(), {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(r => r.text())
-        .then(html => {
-            document.getElementById('orderTable').innerHTML = html;
-            bindOrderEvents(); // re-bind events for new DOM elements
-        });
-    }
-
-    function startAutoRefresh() {
-        if (!interval) {
-            interval = setInterval(() => loadOrders(), 10000);
-        }
-    }
-
-    function pauseTableUpdate() {
-        tableLoaderPaused = true;
-        if (interval) { 
-            clearInterval(interval);
-            interval = null; 
-        }
-    }
-
-    // function pauseRefreshOnActivity() {
-    //     stopAutoRefresh();
-    //     clearTimeout(inactivityTimeout);
-    //     inactivityTimeout = setTimeout(() => {
-    //         loadOrders();      // One refresh after inactivity
-    //         startAutoRefresh(); // Resume 5s interval
-    //     }, INACTIVITY_DELAY);
-    // }
-
-    // Called when user leaves input/select
-    function startInactivityTimer() {
-        clearTimeout(inactivityTimeout);
-        inactivityTimeout = setTimeout(() => {
-            // loadOrders();
-            // startAutoRefresh();
-            resumeTableUpdate()
-        }, INACTIVITY_DELAY);
-    }
-
-    // Resume + instant refresh
-    function resumeTableUpdate() {
-        tableLoaderPaused = false;
-
-        if (refreshPending) {
-            refreshPending = false;
-            loadOrders(true); // force refresh immediately
-        }
-        
-        startAutoRefresh();
-
-    }
-
-    // Pause AJAX if tab is hidden
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) pauseTableUpdate();
-        else resumeTableUpdate();
     });
 
-    //Initial Load
-    bindOrderEvents();
-    loadOrders();
-    startAutoRefresh();
+
+    // accept forms
+    document.querySelectorAll('.accept-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const status = parseInt(form.dataset.status);
+            // const blockedStatuses = [3, 4, 6, 7, 8, 10];
+            const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
+
+            if (blockedStatuses.includes(status)) {
+                Swal.fire({
+                    title: 'Action Not Allowed!',
+                    text: 'This order cannot be accepted in its current status.',
+                    icon: 'warning',
+                    confirmButtonColor: '#6c757d'
+                });
+
+                return;
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e3342f',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, accept it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();  // normal submit  auto  page refresh
+                } else {
+                    
+                }
+
+            });
+        });
+    });
+
+    
+    // Order status update via AJAX
+    const csrf = document.querySelector('meta[name="csrf-token"]').content;
+    document.querySelectorAll('.order-status').forEach(select => {
+        select.addEventListener('change', function () {
+
+            fetch("{{ route('orders.update-status') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": csrf
+                },
+                body: JSON.stringify({
+                    order_id: this.dataset.orderId,
+                    status: this.value
+                })
+            })
+            .then(r => r.json())
+            .then(res => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: res.success ? 'success' : 'error',
+                    title: res.message,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            })
+            .catch(() => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong'
+                });
+            })
+            .finally(() => {
+                
+            });
+        });
+    });
+    
 
 });
 </script>

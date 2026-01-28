@@ -98,251 +98,156 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-    let interval = null;
-    let tableLoaderPaused = false;/////
-    let refreshPending = false;////
-
-    let inactivityTimeout = null;
-    const INACTIVITY_DELAY = 20000; // 20 seconds inactivity
     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    // Cancel forms
+    document.querySelectorAll('.cancel-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
 
-    function bindOrderEvents() {
-        // Cancel forms
-        document.querySelectorAll('.cancel-form').forEach(form => {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
+            // pauseTableUpdate();//
 
-                pauseTableUpdate();//
+            const status = parseInt(form.dataset.status);
+            const blockedStatuses = [3, 4, 6, 7, 8, 10];
 
-                const status = parseInt(form.dataset.status);
-                const blockedStatuses = [3, 4, 6, 7, 8, 10];
+            if (blockedStatuses.includes(status)) {
+                Swal.fire({
+                    title: 'Action Not Allowed!',
+                    text: 'This order cannot be canceled in its current status.',
+                    icon: 'warning',
+                    confirmButtonColor: '#6c757d'
+                });
 
-                if (blockedStatuses.includes(status)) {
-                    Swal.fire({
-                        title: 'Action Not Allowed!',
-                        text: 'This order cannot be canceled in its current status.',
-                        icon: 'warning',
-                        confirmButtonColor: '#6c757d'
-                    });
+                // resumeTableUpdate();
+                return;
+            }
 
-                    resumeTableUpdate();
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'This action cannot be undone!',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e3342f',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();  // normal submit  auto  page refresh
+                } else {
+                    // resumeTableUpdate();
+                }
+
+            });
+        });
+    });
+
+    // Assign Store
+    document.querySelectorAll('.assign-store').forEach(select => {
+        select.addEventListener('change', function () {
+            const medicalStoreId = this.value;
+            const orderId = this.dataset.orderId;
+            const selectedName = this.options[this.selectedIndex].text;
+
+            if (!medicalStoreId || !orderId) return;
+
+            // pauseTableUpdate();
+
+            Swal.fire({
+                title: 'Assign Store?',
+                text: `Are you sure you want to assign "${selectedName}" to this order?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, assign!',
+                cancelButtonText: 'Cancel'
+            }).then((result) => {
+
+                if (!result.isConfirmed) {
+                    this.value = '';
+                    // resumeTableUpdate();
                     return;
                 }
 
-                Swal.fire({
-                    title: 'Are you sure?',
-                    text: 'This action cannot be undone!',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#e3342f',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Yes, cancel it!'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit();  // normal submit  auto  page refresh
+                fetch("{{ route('orders.assign-store') }}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken
+                    },
+                    body: JSON.stringify({
+                        order_id: orderId,
+                        medical_store_id: medicalStoreId
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const statusText = document.querySelector(
+                            `.order-status-text[data-order-id="${orderId}"]`
+                        );
+                        if (statusText) statusText.textContent = 'Assigned';
+
+                        Swal.fire({
+                            toast: true,
+                            icon: 'success',
+                            title: data.message,
+                            timer: 1500,
+                            position: 'top-end',
+                            showConfirmButton: false
+                        });
                     } else {
-                        resumeTableUpdate();
-                    }
-
-                });
-            });
-        });
-
-        // Assign Store
-        document.querySelectorAll('.assign-store').forEach(select => {
-            select.addEventListener('change', function () {
-                const medicalStoreId = this.value;
-                const orderId = this.dataset.orderId;
-                const selectedName = this.options[this.selectedIndex].text;
-
-                if (!medicalStoreId || !orderId) return;
-
-                pauseTableUpdate();
-
-                Swal.fire({
-                    title: 'Assign Store?',
-                    text: `Are you sure you want to assign "${selectedName}" to this order?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, assign!',
-                    cancelButtonText: 'Cancel'
-                }).then((result) => {
-
-                    if (!result.isConfirmed) {
-                        this.value = '';
-                        resumeTableUpdate();
-                        return;
-                    }
-
-                    fetch("{{ route('orders.assign-store') }}", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRF-TOKEN": csrfToken
-                        },
-                        body: JSON.stringify({
-                            order_id: orderId,
-                            medical_store_id: medicalStoreId
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            const statusText = document.querySelector(
-                                `.order-status-text[data-order-id="${orderId}"]`
-                            );
-                            if (statusText) statusText.textContent = 'Assigned';
-
-                            Swal.fire({
-                                toast: true,
-                                icon: 'success',
-                                title: data.message,
-                                timer: 1500,
-                                position: 'top-end',
-                                showConfirmButton: false
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: data.message || 'Failed to assign store'
-                            });
-                        }
-                    })
-                    .catch(() => {
                         Swal.fire({
                             icon: 'error',
-                            title: 'Something went wrong'
+                            title: data.message || 'Failed to assign store'
                         });
-                    })
-                    .finally(() => {
-                        resumeTableUpdate();
-                    });
-
-                });
-            });
-        });
-
-        // Deliveryman assignment confirmation
-        document.querySelectorAll('.assign-deliveryman').forEach(select => {
-            select.addEventListener('change', function () {
-                const form = this.closest('.assign-delivery-form');
-                const selectedName = this.options[this.selectedIndex].text;
-
-                if (!this.value) return;
-
-                pauseTableUpdate();
-
-                Swal.fire({
-                    title: 'Assign Delivery Man?',
-                    text: `Are you sure you want to assign "${selectedName}" to this order?`,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#3085d6',
-                    cancelButtonColor: '#d33',
-                    confirmButtonText: 'Yes, assign!',
-                    cancelButtonText: 'Cancel'
-                }).then(result => {
-                    if (result.isConfirmed){
-                        // resumeTableUpdate();
-                        form.submit();
-                    } 
-                    else {
-                        this.value = '';
-                        resumeTableUpdate();
                     }
-                    
+                })
+                .catch(() => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Something went wrong'
+                    });
+                })
+                .finally(() => {
+                    // resumeTableUpdate();
                 });
+
             });
         });
-
-        // Pause auto-refresh when interacting
-        const interactiveElements = document.querySelectorAll('.assign-store, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
-        interactiveElements.forEach(el => {
-            el.addEventListener('focus', pauseTableUpdate);
-            el.addEventListener('input', pauseTableUpdate);
-            el.addEventListener('change', pauseTableUpdate);
-            el.addEventListener('click', pauseTableUpdate);
-            el.addEventListener('blur', startInactivityTimer);
-        });
-    }
-
-    function loadOrders(force = false) {
-
-        if (tableLoaderPaused && !force) {
-            refreshPending = true; // remember to refresh later
-            return;
-        }
-
-        const params = new URLSearchParams(window.location.search);
-
-        fetch("{{ route('orders.medicine.index') }}?" + params.toString(), {
-            headers: { 'X-Requested-With': 'XMLHttpRequest' }
-        })
-        .then(res => res.text())
-        .then(html => {
-            document.getElementById('orderTable').innerHTML = html;
-            bindOrderEvents(); // re-bind events for new DOM elements
-        })
-        // .catch(err => console.error('Table refresh failed:', err));
-    }
-
-    function startAutoRefresh() {
-        if (!interval) {
-            interval = setInterval(() => loadOrders(), 10000);
-        }
-    }
-
-    function pauseTableUpdate() {
-        tableLoaderPaused = true;
-        if (interval) { 
-            clearInterval(interval);
-            interval = null; 
-        }
-    }
-
-    // function pauseRefreshOnActivity() {
-    //     stopAutoRefresh();
-    //     clearTimeout(inactivityTimeout);
-    //     inactivityTimeout = setTimeout(() => {
-    //         loadOrders();
-    //         startAutoRefresh();
-    //     }, INACTIVITY_DELAY);
-    // }
-
-    function startInactivityTimer() {
-        clearTimeout(inactivityTimeout);
-        inactivityTimeout = setTimeout(() => {
-            // loadOrders();
-            // startAutoRefresh();
-            resumeTableUpdate()
-        }, INACTIVITY_DELAY);
-    }
-
-
-    // Resume + instant refresh
-    function resumeTableUpdate() {
-        tableLoaderPaused = false;
-
-        if (refreshPending) {
-            refreshPending = false;
-            loadOrders(true); // force refresh immediately
-        }
-        
-        startAutoRefresh();
-
-    }
-
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden) pauseTableUpdate();
-        else resumeTableUpdate();
     });
 
-    //Initial Load
-    bindOrderEvents();
-    loadOrders();
-    startAutoRefresh();
+    // Deliveryman assignment confirmation
+    document.querySelectorAll('.assign-deliveryman').forEach(select => {
+        select.addEventListener('change', function () {
+            const form = this.closest('.assign-delivery-form');
+            const selectedName = this.options[this.selectedIndex].text;
+
+            if (!this.value) return;
+
+            // pauseTableUpdate();
+
+            Swal.fire({
+                title: 'Assign Delivery Man?',
+                text: `Are you sure you want to assign "${selectedName}" to this order?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, assign!',
+                cancelButtonText: 'Cancel'
+            }).then(result => {
+                if (result.isConfirmed){
+                    // resumeTableUpdate();
+                    form.submit();
+                } 
+                else {
+                    this.value = '';
+                    // resumeTableUpdate();
+                }
+                
+            });
+        });
+    });
 
 });
 </script>
