@@ -293,6 +293,7 @@ class MedicalStoreController extends Controller
         ]);
 
         $data = $response->json();
+        dd($data);
 
         // if (!($data['success'] ?? false)) {
         //     return response()->json([

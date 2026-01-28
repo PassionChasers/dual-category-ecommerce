@@ -61,11 +61,6 @@ class MedicineController extends Controller
         // Lightweight list of categories for filters (if your categories live in MedicineCategory model)
         $categories = \App\Models\MedicineCategory::select('MedicineCategoryId', 'Name')->orderBy('Name')->get();
 
-        // Return partial for AJAX
-        if ($request->ajax()) {
-            return view('admin.products.medicine.medicines_table', compact('medicines', 'categories','perPage', 'allowedPerPage'))->render();
-        }
-
         return view('admin.products.medicine.index', compact('medicines', 'categories','perPage', 'allowedPerPage'));
     }
 

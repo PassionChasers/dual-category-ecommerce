@@ -5,70 +5,49 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\MedicineCategory;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\MedicineCategoryRequest;
 
 class MedicineCategoryController extends Controller
 {
-    public function __construct()
-    {
-       
-    }
-
-    /**
-     * Display a listing of the resource with search, filters, sort and pagination.
-     */
     public function index(Request $request)
     {
         $query = MedicineCategory::query();
 
-        // Include trashed filter if requested
-        if ($request->get('trashed') === 'with') {
-            $query = $query->withTrashed();
-        } elseif ($request->get('trashed') === 'only') {
-            $query = $query->onlyTrashed();
-        }
-
-        // Search across Name and Description
+        // Search filter
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
-                $q->whereRaw('LOWER("Name") LIKE ?', ["%{$search}%"])
-                    ->orWhereRaw('LOWER("Description") LIKE ?', ["%{$search}%"]);
+                $q->whereRaw('LOWER("Name") LIKE ?', ["%".strtolower($search)."%"])
+                ->orWhereRaw('LOWER("Description") LIKE ?', ["%".strtolower($search)."%"]);
             });
         }
 
-        // Filter by IsActive
-        if (!is_null($request->get('status'))) {
-            if ($request->get('status') === 'active') {
-                $query->where('IsActive', true);
-            } elseif ($request->get('status') === 'inactive') {
-                $query->where('IsActive', false);
-            }
+        // Status filter
+        if ($status = $request->get('status')) {
+            $query->where('IsActive', $status === 'active' ? 1 : 0);
         }
 
-        // Sorting - default newest first
-        $allowedSorts = ['Name', 'CreatedAt'];
-        $sortBy = in_array($request->get('sort_by'), $allowedSorts) ? $request->get('sort_by') : 'CreatedAt';
-        $sortOrder = $request->get('sort_order') === 'asc' ? 'asc' : 'desc';
-        $query->orderBy($sortBy, $sortOrder);
-
         // Per-page
+        $allowedPerPage = [5,10,25,50];
         $perPage = (int) $request->get('per_page', 5);
-        $perPage = in_array($perPage, [5, 10, 25, 50]) ? $perPage : 5;
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
 
-        $categories = $query->paginate($perPage)->appends($request->except('page'));
+        $categories = $query->orderBy('CreatedAt', 'desc')
+                            ->paginate($perPage)
+                            ->appends($request->except('page'));
 
-        return view('admin.products.medicine.medicine_categories', compact('categories'));
+        // Return partial for AJAX
+        if ($request->ajax()) {
+            return view('admin.products.medicine.categories_table', compact('categories', 'perPage', 'allowedPerPage'))->render();
+        }
+
+        return view('admin.products.medicine.medicine_categories', compact('categories', 'perPage', 'allowedPerPage'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(MedicineCategoryRequest $request)
     {
-        $data = $request->only(['Name', 'Description', 'IsActive']);
-        // Minimal change: generate UUID and set as primary key
+        $data = $request->validated();
         $data['MedicineCategoryId'] = (string) Str::uuid();
+        $data['IsActive'] = $request->has('IsActive') ? 1 : 0;
 
         $category = MedicineCategory::create($data);
 
@@ -76,21 +55,15 @@ class MedicineCategoryController extends Controller
             ->with('success', "Category '{$category->Name}' created successfully.");
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(MedicineCategoryRequest $request, $id)
     {
         $category = MedicineCategory::findOrFail($id);
-        $category->update($request->only(['Name', 'Description', 'IsActive']));
+        $category->update($request->only(['Name','Description','IsActive']));
 
         return redirect()->route('admin.medicine-categories.index')
             ->with('success', "Category '{$category->Name}' updated successfully.");
     }
 
-    /**
-     * Soft delete the specified resource.
-     */
     public function destroy($id)
     {
         $category = MedicineCategory::findOrFail($id);
@@ -100,11 +73,6 @@ class MedicineCategoryController extends Controller
             ->with('success', "Category '{$category->Name}' moved to trash.");
     }
 
-   
-
-    /**
-     * Toggle IsActive flag (AJAX friendly).
-     */
     public function toggleActive($id)
     {
         $category = MedicineCategory::findOrFail($id);

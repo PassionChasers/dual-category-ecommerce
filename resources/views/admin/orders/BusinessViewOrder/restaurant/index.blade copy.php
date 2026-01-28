@@ -47,8 +47,8 @@
 
                 <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="">All Status</option>
-                    <option value="1" {{ request('status') == 1 ? 'selected' : '' }}>Pending</option>
-                    <option value="3" {{ request('status') == 3 ? 'selected' : '' }}>Assigned</option>
+                    {{-- <option value="1" {{ request('status') == 1 ? 'selected' : '' }}>Pending</option>
+                    <option value="3" {{ request('status') == 3 ? 'selected' : '' }}>Assigned</option> --}}
                     <option value="4" {{ request('status') == 4 ? 'selected' : '' }}>Accepted</option>
                     <option value="5" {{ request('status') == 5 ? 'selected' : '' }}>Rejected</option>
                     <option value="6" {{ request('status') == 6 ? 'selected' : '' }}>Preparing</option>
@@ -81,47 +81,8 @@
     </div>
 
     <!-- Table -->
-    <div class="bg-white shadow rounded-lg overflow-hidden">
-        <div class="px-6 py-4 border-b">
-            <h2 class="font-semibold text-gray-800">Orders List</h2>
-        </div>
-        <div class="overflow-x-auto" id="tableData">
-        <table class="min-w-full divide-y divide-gray-200 text-sm">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th class="px-4 py-2">SN</th>
-                    <th class="px-4 py-2">Product Name</th>
-                    <th class="px-4 py-2">Quantity</th>
-                    <th class="px-4 py-2">Product Type</th>
-                    <th class="px-4 py-2">Total Amount</th>
-                    <th class="px-4 py-2">Delivery Address</th>
-                    <th class="px-4 py-2">Customer Name</th>
-                    {{-- <th class="px-4 py-2">Contact No.</th> --}}
-                    <th class="px-4 py-2">Assign Delivery Man</th>
-                    <th class="px-4 py-2">Status</th>
-                    <th class="px-4 py-2">Date</th>
-                    <th class="px-4 py-2">Actions</th>
-                </tr>
-            </thead>
-
-            <tbody class="divide-y divide-gray-200" id="orderTableBody">
-                                
-            </tbody>
-        </table> 
-        </div>
-
-        {{-- PAGINATION --}}
-        <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t">
-            <div class="text-sm text-gray-600">
-                Showing <strong>{{ $allOrders->firstItem() ?? 0 }}</strong> to <strong>{{ $allOrders->lastItem() ?? 0 }}</strong> of <strong>{{ $allOrders->total() }}</strong> results
-            </div>
-            <div class="mt-3 md:mt-0" id="pageLink">
-                {{ $allOrders->links() }}
-            </div>
-        </div>
-
-
-        @include('admin.orders.BusinessViewOrder.restaurant.searchedProducts', ['allOrders' => $allOrders])
+    <div class="bg-white shadow rounded-lg overflow-hidden" id="orderTable">
+        @include('admin.orders.BusinessViewOrder.restaurant.searchedProducts', ['allOrders' => $allOrders])  
     </div>
 
 </div>
@@ -129,85 +90,268 @@
 @endsection
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        
-        //For Delivery Man
-            document.querySelectorAll('.assign-deliveryman').forEach(select => {
-                select.addEventListener('change', function () {
-                    const form = this.closest('.assign-delivery-form');
-                    const selectedName = this.options[this.selectedIndex].text;
+document.addEventListener('DOMContentLoaded', function () {
 
-                    if (!this.value) return;
+    let interval = null;           // Regular AJAX interval
+    let tableLoaderPaused = false;
+    let refreshPending = false;
 
+    let inactivityTimeout = null;  // Timer to resume after inactivity
+    const INACTIVITY_DELAY = 20000; // 20 seconds
+
+    function bindOrderEvents() {
+
+        // reject forms
+        document.querySelectorAll('.reject-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                pauseTableUpdate();//
+
+                const status = parseInt(form.dataset.status);
+                // const blockedStatuses = [3, 4, 6, 7, 8, 10];
+                const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
+
+                if (blockedStatuses.includes(status)) {
                     Swal.fire({
-                        title: 'Assign Delivery Man?',
-                        text: `Are you sure you want to assign "${selectedName}" to this order?`,
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#3085d6',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, assign!',
-                        cancelButtonText: 'Cancel'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit(); // Submit the form
-                        } else {
-                            this.value = ''; // Reset selection if canceled
-                        }
+                        title: 'Action Not Allowed!',
+                        text: 'This order cannot be rejected in its current status.',
+                        icon: 'warning',
+                        confirmButtonColor: '#6c757d'
                     });
+
+                    resumeTableUpdate();
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This action cannot be undone!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, reject it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();  // normal submit  auto  page refresh
+                    } else {
+                        resumeTableUpdate();
+                    }
+
                 });
             });
+        });
 
 
-        // Update Order Status
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        // accept forms
+        document.querySelectorAll('.accept-form').forEach(form => {
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                pauseTableUpdate();//
+
+                const status = parseInt(form.dataset.status);
+                // const blockedStatuses = [3, 4, 6, 7, 8, 10];
+                const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
+
+                if (blockedStatuses.includes(status)) {
+                    Swal.fire({
+                        title: 'Action Not Allowed!',
+                        text: 'This order cannot be accepted in its current status.',
+                        icon: 'warning',
+                        confirmButtonColor: '#6c757d'
+                    });
+
+                    resumeTableUpdate();
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: 'This action cannot be undone!',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#e3342f',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Yes, accept it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit();  // normal submit  auto  page refresh
+                    } else {
+                        resumeTableUpdate();
+                    }
+
+                });
+            });
+        });
+
+        // Pause AJAX while interacting with selects or inputs
+        const interactiveElements = document.querySelectorAll('.assign-deliveryman, .order-status, input[name="search"], select[name="status"], select[name="sort_by"], select[name="per_page"]');
+
+        interactiveElements.forEach(el => {
+            // Any activity stops AJAX and resets the inactivity timer
+            el.addEventListener('focus', pauseTableUpdate);
+            el.addEventListener('input', pauseTableUpdate); // typing in input
+            el.addEventListener('change', pauseTableUpdate);
+            el.addEventListener('click', pauseTableUpdate);
+
+            // When user leaves element, start inactivity timer
+            el.addEventListener('blur', startInactivityTimer);
+        });
+
+        // Deliveryman assignment confirmation
+        // document.querySelectorAll('.assign-deliveryman').forEach(select => {
+        //     select.addEventListener('change', function () {
+        //         const form = this.closest('.assign-delivery-form');
+        //         const selectedName = this.options[this.selectedIndex].text;
+
+        //         if (!this.value) return;
+
+        //         pauseTableUpdate();
+
+        //         Swal.fire({
+        //             title: 'Assign Delivery Man?',
+        //             text: `Are you sure you want to assign "${selectedName}" to this order?`,
+        //             icon: 'question',
+        //             showCancelButton: true,
+        //             confirmButtonColor: '#3085d6',
+        //             cancelButtonColor: '#d33',
+        //             confirmButtonText: 'Yes, assign!',
+        //             cancelButtonText: 'Cancel'
+        //         }).then(result => {
+        //             if (result.isConfirmed){
+        //                 // resumeTableUpdate();
+        //                 form.submit();
+        //             } 
+        //             else {
+        //                 this.value = '';
+        //                 resumeTableUpdate();
+        //             }
+        //         });
+        //     });
+        // });
+
+        // Order status update via AJAX
+        const csrf = document.querySelector('meta[name="csrf-token"]').content;
         document.querySelectorAll('.order-status').forEach(select => {
             select.addEventListener('change', function () {
-                const orderId = this.dataset.orderId;
-                const status = this.value;
+
+                pauseTableUpdate();
 
                 fetch("{{ route('orders.update-status') }}", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "X-CSRF-TOKEN": csrfToken
+                        "X-CSRF-TOKEN": csrf
                     },
                     body: JSON.stringify({
-                        order_id: orderId,
-                        status: status
+                        order_id: this.dataset.orderId,
+                        status: this.value
                     })
                 })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        Swal.fire({
-                            toast: true,
-                            position: 'top-end',
-                            icon: 'success',
-                            title: data.message,
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: data.message || 'Failed to update status'
-                        });
-                    }
+                .then(r => r.json())
+                .then(res => {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: res.success ? 'success' : 'error',
+                        title: res.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 })
                 .catch(() => {
                     Swal.fire({
                         icon: 'error',
                         title: 'Something went wrong'
                     });
+                })
+                .finally(() => {
+                    resumeTableUpdate();
                 });
             });
         });
+
+    }
+
+    function loadOrders(force = false) {
+
+        if (tableLoaderPaused && !force) {
+            refreshPending = true; // remember to refresh later
+            return;
+        }
+
+        const params = new URLSearchParams(window.location.search);
+
+        fetch("{{ route('orders.restaurant-food.index') }}?" + params.toString(), {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(r => r.text())
+        .then(html => {
+            document.getElementById('orderTable').innerHTML = html;
+            bindOrderEvents(); // re-bind events for new DOM elements
+        });
+    }
+
+    function startAutoRefresh() {
+        if (!interval) {
+            interval = setInterval(() => loadOrders(), 10000);
+        }
+    }
+
+    function pauseTableUpdate() {
+        tableLoaderPaused = true;
+        if (interval) { 
+            clearInterval(interval);
+            interval = null; 
+        }
+    }
+
+    // function pauseRefreshOnActivity() {
+    //     stopAutoRefresh();
+    //     clearTimeout(inactivityTimeout);
+    //     inactivityTimeout = setTimeout(() => {
+    //         loadOrders();      // One refresh after inactivity
+    //         startAutoRefresh(); // Resume 5s interval
+    //     }, INACTIVITY_DELAY);
+    // }
+
+    // Called when user leaves input/select
+    function startInactivityTimer() {
+        clearTimeout(inactivityTimeout);
+        inactivityTimeout = setTimeout(() => {
+            // loadOrders();
+            // startAutoRefresh();
+            resumeTableUpdate()
+        }, INACTIVITY_DELAY);
+    }
+
+    // Resume + instant refresh
+    function resumeTableUpdate() {
+        tableLoaderPaused = false;
+
+        if (refreshPending) {
+            refreshPending = false;
+            loadOrders(true); // force refresh immediately
+        }
+        
+        startAutoRefresh();
+
+    }
+
+    // Pause AJAX if tab is hidden
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) pauseTableUpdate();
+        else resumeTableUpdate();
     });
+
+    //Initial Load
+    bindOrderEvents();
+    loadOrders();
+    startAutoRefresh();
+
+});
 </script>
 @endpush
-
-
-    
