@@ -50,180 +50,6 @@
         </div>
     </div>
 
-
-    {{-- Normal modal  --}}
-    <!-- Add Business Modal -->
-    {{-- <div id="Add-Business-Modal" class="fixed inset-0 bg-indigo-100 bg-opacity-50 hidden items-center justify-center z-50 p-4">
-
-        <div class="bg-white w-full max-w-3xl rounded-lg shadow-lg overflow-hidden max-h-[90vh] flex flex-col">
-
-            <!-- Header -->
-            <div class="flex justify-between items-center px-6 py-4 border-b">
-                <h3 class="text-lg font-semibold text-gray-800">Add New Medicalstore</h3>
-                <button id="add-close-btn" class="text-gray-500 hover:text-red-600 text-2xl">&times;</button>
-            </div>
-
-            <!-- Form Body -->
-            <div class="p-6 overflow-y-auto flex-1">
-                <form action="{{ route('medicalStores.store') }}" method="POST" enctype="multipart/form-data">
-                    @csrf
-
-                    <!-- Display errors -->
-                    @if ($errors->any())
-                        <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
-                            <ul class="list-disc list-inside">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    @endif
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-                        <!-- Name -->
-                        <div>
-                            <label class="block text-sm font-medium">
-                                Medicalstore Name
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="text" name="name" value="{{ old('name') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <!-- Email -->
-                        <div>
-                            <label class="block text-sm font-medium">
-                                Email
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="email" name="email" value="{{ old('email') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">
-                                Address
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="text" name="Address" value="{{ old('Address') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <!-- Additional Fields (optional) -->
-                        <div>
-                            <label class="block text-sm font-medium">
-                                License Number
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="text" name="LicenseNumber" value="{{ old('LicenseNumber') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">
-                                GSTIN
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="text" name="GSTIN" value="{{ old('GSTIN') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">
-                                PAN
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="text" name="PAN" value="{{ old('PAN') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">
-                                Open Time
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="time" name="OpenTime" value="{{ old('OpenTime') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">
-                                Close Time
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="time" name="CloseTime" value="{{ old('CloseTime') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">
-                                Delivery Radius (Km)
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="number" step="0.01" name="RadiusKm" value="{{ old('RadiusKm') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">
-                                Delivery Fee
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="number" step="0.01" name="DeliveryFee" value="{{ old('DeliveryFee') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">
-                                Minimum Order
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="number" step="0.01" name="MinOrder" value="{{ old('MinOrder') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">
-                                Latitude
-                                <span class="text-red-400">*</span>
-                            </label>
-                            <input type="number" step="0.000001" value="{{ old('Lattitude') }}" name="Latitude" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">
-                                Longitude
-                                <span class="text-red-400">*<span>
-                            </label>
-                            <input type="number" step="0.000001" name="Longitude" value="{{ old('Longitude') }}" class="input border rounded p-2 w-full" required>
-                        </div>
-
-                        <!-- IsActive -->
-                        <div class="flex items-center gap-2">
-                            <input type="checkbox" name="IsActive" value="1" {{ old('IsActive', 1) ? 'checked' : '' }} class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
-                            <label class="text-sm font-medium">Active</label>
-                        </div>
-
-                    </div>
-
-                    <!-- Footer -->
-                    <div class="flex justify-end gap-2 mt-4 border-t pt-4">
-                        <button type="button" id="add-cancel-btn" class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">
-                            Cancel
-                        </button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">
-                            Save Business
-                        </button>
-                    </div>
-
-                </form>
-            </div>
-
-        </div>
-
-    </div>
-
-    @if ($errors->any())
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const addModal = document.getElementById('Add-Business-Modal');
-            addModal.classList.remove('hidden');
-            addModal.classList.add('flex');
-        });
-    </script>
-    @endif --}}
-
-
     {{-- Register new store Modal which submit form in api  --}}
     <div id="storeModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
         <div class="bg-white w-full max-w-2xl rounded-lg p-6">
@@ -233,10 +59,10 @@
                 @csrf
 
                 <input type="text" name="storeName" placeholder="Store Name" class="w-full border p-2 rounded" required>
-                <input type="text" name="Name" placeholder="Admin Name" class="w-full border p-2 rounded" required>
-                <input type="email" name="Email" placeholder="Admin Email" class="w-full border p-2 rounded" required>
-                <input type="password" name="Password" placeholder="Password" class="w-full border p-2 rounded" required>
-                <input type="text" name="Phone" placeholder="Phone" class="w-full border p-2 rounded" required>
+                <input type="text" name="adminName" placeholder="Admin Name" class="w-full border p-2 rounded" required>
+                <input type="email" name="adminEmail" placeholder="Admin Email" class="w-full border p-2 rounded" required>
+                <input type="password" name="adminPassword" placeholder="Password" class="w-full border p-2 rounded" required>
+                <input type="text" name="adminPhone" placeholder="Phone" class="w-full border p-2 rounded" required>
 
                 <input type="text" name="storeAddress" placeholder="Store Address" class="w-full border p-2 rounded">
                 <input type="text" name="licenseNumber" placeholder="License Number" class="w-full border p-2 rounded">
@@ -287,11 +113,53 @@
 
 
     <!-- OTP MODAL -->
-    <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    {{-- <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
         <div class="bg-white rounded-lg w-full max-w-sm p-6 relative">
 
             <button onclick="closeOtpModal()" class="absolute top-2 right-3 text-gray-500 text-xl">&times;</button>
 
+            <h3 class="text-lg font-semibold mb-3 text-center">Verify Email</h3>
+
+            <form action="{{ route('medicalStores.verifyOtp') }}" method="POST" >
+                @csrf
+                <p class="text-sm text-gray-600 text-center mb-3">
+                    Verification code sent to<br>
+                    <strong id="maskedEmail"></strong>
+                </p>
+
+                <input name="email" type="email" id="otpEmail" required>
+
+                <input
+                    name="otp"
+                    type="text"
+                    id="otpCode"
+                    maxlength="6"
+                    class="w-full border px-3 py-2 rounded text-center tracking-widest text-lg"
+                    placeholder="Enter OTP"
+                >
+
+                <input type="submit" value="Verify"
+                    class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 cursor-pointer">
+                
+            </form>     
+            
+
+            
+
+            <button
+                onclick="verifyOtp()"
+                class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
+            >
+                Verify
+            </button>
+            
+        </div>
+    </div> --}}
+
+    <!-- OTP MODAL -->
+    <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-lg w-full max-w-sm p-6 relative">
+            <button onclick="closeOtpModal()" class="absolute top-2 right-3 text-gray-500 text-xl">&times;</button>
             <h3 class="text-lg font-semibold mb-3 text-center">Verify Email</h3>
 
             <p class="text-sm text-gray-600 text-center mb-3">
@@ -299,8 +167,7 @@
                 <strong id="maskedEmail"></strong>
             </p>
 
-            <input type="email" id="otpEmail" required>
-
+            <input type="hidden" id="otpEmail">
             <input
                 type="text"
                 id="otpCode"
@@ -309,29 +176,22 @@
                 placeholder="Enter OTP"
             >
 
-            <button
+            <button id="verifyOtpBtn"
                 onclick="verifyOtp()"
                 class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
             >
                 Verify
             </button>
 
-            <!-- Resend -->
-            {{-- <div class="text-center mt-4">
-                <button
-                    id="resendOtpBtn"
-                    onclick="resendOtp()"
-                    class="text-sm text-indigo-600 hover:underline disabled:text-gray-400"
-                >
-                    Resend Code
-                </button>
-
-                <p id="otpTimer" class="text-xs text-gray-500 mt-1 hidden">
-                    Resend available in <span id="otpSeconds">30</span>s
-                </p>
-            </div> --}}
+            <button id="resendOtpBtn"
+                onclick="resendOtp()"
+                class="w-full mt-2 bg-gray-500 text-white py-2 rounded hover:bg-gray-600"
+            >
+                Resend OTP (<span id="resendTimer">30</span>s)
+            </button>
         </div>
     </div>
+
 
 
 
@@ -575,12 +435,12 @@
             btnText.textContent = 'Saving...';
             spinner.classList.remove('hidden');
 
-            const data = new URLSearchParams({
+            const data = {
                 storeName: form.storeName.value,
-                Name: form.Name.value,
-                Email: form.Email.value,
-                Password: form.Password.value,
-                Phone: form.Phone.value,
+                adminName: form.adminName.value,
+                adminEmail: form.adminEmail.value,
+                adminPassword: form.adminPassword.value,
+                adminPhone: form.adminPhone.value,
                 storeAddress: form.storeAddress.value,
                 licenseNumber: form.licenseNumber.value,
                 gstin: form.gstin.value,
@@ -592,14 +452,16 @@
                 latitude: form.latitude.value,
                 longitude: form.longitude.value,
                 _token: '{{ csrf_token() }}'
-            });
+            };
 
             fetch('{{ route("medicalStores.store") }}', {
                 method: 'POST',
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
                 },
-                body: data
+                // body: data
+                body: JSON.stringify(data)
             })
             .then(res => res.json())
             .then(response => {
@@ -617,20 +479,17 @@
                     
                     closeStoreModal();
 
-                    const email = form.Email.value;
-
-                    document.getElementById('otpEmail').value = email;
-                    document.getElementById('maskedEmail').innerText = maskEmail(email);
-
-                    openOtpModal();
-                    startOtpTimer();
+                    const email = form.adminEmail.value;
+                    openOtpModal(email);
+                    // openOtpModal(email);
+                    // startOtpTimer();
 
 
                 } else {
                     Swal.fire({
                         icon: 'error',
                         title: 'Error',
-                        text: response.message || 'Something went wrong'
+                        text: response.message || 'Registration failed. OTP not sent.'
                     });
                 }
             })
@@ -649,185 +508,191 @@
                 spinner.classList.add('hidden');
             });
         });
-    </script>
 
-    {{-- OTP MODAL JS --}}
-    <script>
-    let otpCooldown = 30;
-    let otpInterval;
 
-    function maskEmail(email) {
-        const [name, domain] = email.split('@');
-        return name.substring(0, 2) + '*'.repeat(name.length - 2) + '@' + domain;
-    }
+        // ------------- OTP MODAL -------------
+        // function maskEmail(email) {
+        //     const [name, domain] = email.split('@');
+        //     return name.substring(0, 2) + '*'.repeat(name.length - 2) + '@' + domain;
+        // }
 
-    function openOtpModal() {
-        const modal = document.getElementById('otpModal');
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
+        // window.openOtpModal = function(email) {
+        //     const modal = document.getElementById('otpModal');
+        //     modal.classList.remove('hidden');
+        //     modal.classList.add('flex');
 
-        setTimeout(() => {
+        //     document.getElementById('otpEmail').value = email;
+        //     document.getElementById('maskedEmail').innerText = maskEmail(email);
+
+        //     setTimeout(() => {
+        //         document.getElementById('otpCode').focus();
+        //     }, 300);
+        // }
+
+        // window.closeOtpModal = function() {
+        //     const modal = document.getElementById('otpModal');
+        //     modal.classList.add('hidden');
+        //     modal.classList.remove('flex');
+        // }
+
+        // window.verifyOtp = function() {
+        //     const email = document.getElementById('otpEmail').value;
+        //     const code = document.getElementById('otpCode').value;
+
+        //     if(code.length !== 6) {
+        //         return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
+        //     }
+
+        //     fetch('{{ route("medicalStores.verifyOtp") }}', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'Accept': 'application/json',
+        //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        //         },
+        //         body: JSON.stringify({ email, otp: code })
+        //     })
+        //     .then(res => res.json())
+        //     .then(res => {
+        //         if (!res.success) {
+        //             Swal.fire('Error', res.message, 'error');
+        //         } else {
+        //             closeOtpModal();
+
+        //             Swal.fire({
+        //                 icon: 'success',
+        //                 title: 'Email Verified',
+        //                 text: res.message,
+        //                 timer: 4000,
+        //                 showConfirmButton: true,
+        //             }).then(() => {
+        //                 window.location.href = res.redirect; //redirect here
+        //             });
+        //         }
+        //     })
+        //     .catch(() => Swal.fire('Error', 'Verification failed', 'error'));
+        // }
+
+
+
+        let resendCountdown = 60;
+        let resendInterval;
+
+        function maskEmail(email) {
+            const [name, domain] = email.split('@');
+            return name.substring(0, 2) + '*'.repeat(name.length - 2) + '@' + domain;
+        }
+
+        function openOtpModal(email) {
+            const modal = document.getElementById('otpModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            document.getElementById('otpEmail').value = email;
+            document.getElementById('maskedEmail').innerText = maskEmail(email);
             document.getElementById('otpCode').focus();
-        }, 3000);
-    }
 
-    function closeOtpModal() {
-        document.getElementById('otpModal').classList.add('hidden');
-    }
-    </script>
+            startOtpTimer();
+        }
 
+        function closeOtpModal() {
+            const modal = document.getElementById('otpModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
 
-    {{-- ajax api call for otp verification --}}
-    <script>
-    // function verifyOtp() {
-    //     const email = document.getElementById('otpEmail').value;
-    //     const code = document.getElementById('otpCode').value;
+            clearInterval(resendInterval);
+            resendCountdown = 30;
+            document.getElementById('resendTimer').innerText = resendCountdown;
+            document.getElementById('resendOtpBtn').disabled = false;
+        }
 
-    //     if (code.length !== 6) {
-    //         return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
-    //     }
-
-    //     fetch('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'Authorization': 'Bearer {{ session('jwt_token') }}'
-    //         },
-    //         body: JSON.stringify({ email, code })
-    //     })
-    //     .then(res => res.json())
-    //     .then(() => {
-    //         Swal.fire({
-    //             icon: 'success',
-    //             title: 'Email Verified',
-    //             timer: 2000,
-    //             showConfirmButton: false
-    //         }).then(() => {
-    //             location.reload(); // reload table
-    //         });
-    //     })
-    //     .catch(() => {
-    //         Swal.fire('Error', 'Invalid or expired OTP', 'error');
-    //     });
-    // }
-
-    // function verifyOtp() {
-    //     const email = document.getElementById('otpEmail').value;
-    //     const code = document.getElementById('otpCode').value;
-
-    //     if (code.length !== 6) {
-    //         return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
-    //     }
-
-    //     fetch('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify({ email, code })
-    //     })
-    //     .then(res => res.json())
-    //     .then(res => {
-    //         if (!res.success) {
-    //             Swal.fire('Error', res.message || 'OTP expired or invalid', 'error');
-    //         } else {
-    //             Swal.fire({
-    //                 icon: 'success',
-    //                 title: 'Email Verified',
-    //                 text: 'Medical store registered successfully',
-    //                 timer: 2000,
-    //                 showConfirmButton: false
-    //             }).then(() => location.reload());
-    //         }
-    //     })
-    //     .catch(() => {
-    //         Swal.fire('Error', 'Verification failed', 'error');
-    //     });
-    // }
-    </script>
-
-
-{{-- RESEND OTP --}}
-    {{-- <script>
-        let otpInterval = null;
-        let otpCooldown = 30;
-
+        // Timer for resend button
         function startOtpTimer() {
-            const btn = document.getElementById('resendOtpBtn');
-            const timer = document.getElementById('otpTimer');
-            const seconds = document.getElementById('otpSeconds');
+            const resendBtn = document.getElementById('resendOtpBtn');
+            resendBtn.disabled = true;
+            resendCountdown = 60;
+            document.getElementById('resendTimer').innerText = resendCountdown;
 
-            btn.disabled = true;
-            timer.classList.remove('hidden');
-            seconds.innerText = otpCooldown;
-
-            otpInterval = setInterval(() => {
-                otpCooldown--;
-                seconds.innerText = otpCooldown;
-
-                if (otpCooldown <= 0) {
-                    clearInterval(otpInterval);
-                    btn.disabled = false;
-                    timer.classList.add('hidden');
+            resendInterval = setInterval(() => {
+                resendCountdown--;
+                document.getElementById('resendTimer').innerText = resendCountdown;
+                if (resendCountdown <= 0) {
+                    clearInterval(resendInterval);
+                    resendBtn.disabled = false;
+                    document.getElementById('resendTimer').innerText = '0';
                 }
             }, 1000);
         }
 
-        function resetOtpTimer() {
-            clearInterval(otpInterval);
-            otpCooldown = 30;
-            startOtpTimer();
-        }
+        // Verify OTP
+        function verifyOtp() {
+            const email = document.getElementById('otpEmail').value;
+            const code = document.getElementById('otpCode').value;
 
+            if (code.length !== 6) return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
 
-        function resendOtp() {
-            startOtpTimer();
-
-            fetch('https://pcsdecom.azurewebsites.net/api/Auth/resend-verification', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer {{ session('jwt_token') }}'
-            },
-            body: JSON.stringify({
-                email: document.getElementById('otpEmail').value
-            })
-            })
-            .then(() => {
-                Swal.fire('Sent', 'OTP resent successfully', 'success');
-            })
-            .catch(() => {
-                Swal.fire('Error', 'Unable to resend OTP', 'error');
-            });
-        }
-
-        function resendOtp() {
-            startOtpTimer();
-
-            fetch('https://pcsdecom.azurewebsites.net/api/Auth/resend-verification', {
+            fetch('{{ route("medicalStores.verifyOtp") }}', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 },
-                body: JSON.stringify({
-                    email: document.getElementById('otpEmail').value
-                })
+                body: JSON.stringify({ email, otp: code })
             })
             .then(res => res.json())
             .then(res => {
-                if (!res.success) {
-                    Swal.fire('Error', res.message || 'Unable to resend OTP', 'error');
-                } else {
-                    Swal.fire('Sent', 'OTP resent successfully', 'success');
-                }
+                if (!res.success) return Swal.fire('Error', res.message, 'error');
+                closeOtpModal();
+                Swal.fire({ icon: 'success', title: 'Email Verified', text: res.message }).then(() => {
+                    window.location.href = res.redirect;
+                });
+            })
+            .catch(() => Swal.fire('Error', 'Verification failed', 'error'));
+        }
+
+        // Resend OTP
+        function resendOtp() {
+            const email = document.getElementById('otpEmail').value;
+            const btn = document.getElementById('resendOtpBtn');
+
+            btn.disabled = true;
+
+            fetch('{{ route("medicalStores.resendOtp") }}', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ email })
+            })
+            .then(res => res.json())
+            .then(res => {
+                Swal.fire(res.success ? 'Success' : 'Error', res.message, res.success ? 'success' : 'error');
+                if (res.success) startOtpTimer();
             })
             .catch(() => {
-                Swal.fire('Error', 'Server error while resending OTP', 'error');
+                Swal.fire('Error', 'Could not resend OTP', 'error');
+                btn.disabled = false;
             });
         }
-    </script> --}}
 
+    </script>
 
+    <script>
+        @if ($errors->has('otp'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: '{{ $errors->first('otp') }}',
+            });
+        @endif
 
-
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: '{{ session('success') }}',
+            });
+        @endif
+    </script>
 @endpush

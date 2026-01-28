@@ -13,13 +13,13 @@
                 <p class="text-gray-600">Manage all Medicalstore Businesses</p>
             </div>
 
-            <div class="flex flex-wrap gap-2 w-full md:w-auto">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
                 <!-- Search Form -->
                 <input type="text" id="search" name="search" placeholder="Search by Name, PAN, LicenseNumber, GSTIN..." 
                     value="{{ request('search') }}"
                     class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
 
-                <select id="onlineStatus" name="onlineStatus" class="shrink-0 border rounded-md px-3 py-2 text-sm">
+                <select id="onlineStatus" name="onlineStatus" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
                     <option value="">All Status</option>
                     <option value="true" {{ request('onlineStatus')=='true' ? 'selected' : '' }}>Online</option>
                     <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>Offline</option>
@@ -38,7 +38,7 @@
 
                 {{-- This button for modal which work through api form submit --}}
                 <button onclick="openStoreModal()"
-                    class="w-full md:w-60 inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                    class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                     <i class="fas fa-plus mr-1"></i> Register Medical Store
                 </button>
             </div>
@@ -50,14 +50,17 @@
         </div>
     </div>
 
+    
     {{-- Register new store Modal which submit form in api  --}}
-    <div id="storeModal" class="fixed inset-0 hidden items-center justify-center z-50">
-        <!-- overlay -->
-        <div onclick="closeStoreModal()" id="storeOverlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px]"></div>
-        <div class="bg-white w-full max-w-3xl overflow-y-auto max-h-[90vh] rounded-lg relative">
+    <div id="storeModal" class="fixed inset-0  hidden items-center justify-center z-50">
+        <!-- Overlay -->
+            <div id="editOverlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px] "></div>
+        <div class="bg-white w-full max-w-2xl overflow-y-auto max-h-[90vh] rounded-lg relative">
+            
+
             <div class="flex items-center justify-between rounded-t-lg bg-indigo-600 px-6 py-4 mb-4">
                 <h2 class="text-xl font-bold text-white">Register Medical Store</h2>
-                <button onclick="closeStoreModal()" class=" text-white hover:text-red-500 text-3xl">&times;</button>
+                <button onclick="closeStoreModal()" class="text-white hover:text-red-500 text-3xl">&times;</button>
             </div>
 
             <form id="storeForm" class="space-y-3">
@@ -65,15 +68,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-6">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                         <input type="text" name="storeName" placeholder="Enter Store Name" class="w-full border border-gray-400 p-2 rounded" required>
+                        <input type="text" name="storeName" placeholder="Enter Store Name" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
-                   <div>
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Admin Name</label>
                         <input type="text" name="adminName" placeholder="Enter Admin Name" class="w-full border border-gray-400 p-2 rounded" required>
-                   </div>
+                    </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                        <input type="email" name="adminEmail" placeholder="example@gamil.com" class="w-full border border-gray-400 p-2 rounded" required>
+                        <input type="email" name="adminEmail" placeholder="example@gmail.com" class="w-full border border-gray-400 p-2 rounded" required>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
@@ -88,7 +91,7 @@
                         <input type="text" name="storeAddress" placeholder="Enter Store Address" class="w-full border border-gray-400 p-2 rounded">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Liceense Number</label>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">License Number</label>
                         <input type="text" name="licenseNumber" placeholder="License Number" class="w-full border border-gray-400 p-2 rounded">
                     </div>
                     <div>
@@ -99,7 +102,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">PAN</label>
                         <input type="text" name="pan" placeholder="PAN" class="w-full border border-gray-400 p-2 rounded">
                     </div>
-    
+
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Open Time</label>
@@ -110,43 +113,38 @@
                             <input type="time" name="closeTime" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                     </div>
-    
+
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Delivary Fee</label>
-                            <input type="number" name="deliveryFee"  class="w-full border border-gray-400 p-2 rounded">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Fee</label>
+                            <input type="number" name="deliveryFee" placeholder="Delivery Fee" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Minimum Order</label>
-                            <input type="number" name="minOrder" placeholder="Rs." class=" w-full border border-gray-400 p-2 rounded">
+                            <input type="number" name="minOrder" placeholder="Minimum Order" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                     </div>
-    
+
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
-                            <input type="number" step="any" name="latitude" placeholder="Latitude" class=" w-full border border-gray-400 p-2 rounded">
+                            <input type="number" step="any" name="latitude" placeholder="Latitude" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
-                            <input type="number" step="any" name="longitude" placeholder="Longitude" class=" w-full border border-gray-400 p-2 rounded">
+                            <input type="number" step="any" name="longitude" placeholder="Longitude" class="w-full border border-gray-400 p-2 rounded">
                         </div>
                     </div>
                 </div>
 
-
                 <div class="flex justify-end gap-2 pt-3 mb-3 px-6">
-                    <button type="button" onclick="closeStoreModal()" class="px-4 py-2 rounded-lg text-black bg-gray-300 hover:bg-red-500 hover:text-white ">
+                    <button type="button" onclick="closeStoreModal()" class="px-4 py-2 rounded-lg text-black bg-gray-300 hover:bg-red-500 hover:text-white">
                         Cancel
                     </button>
-                    {{-- <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">
-                        Save Store
-                    </button> --}}
-
                     <button
                         type="submit"
                         id="storeSubmitBtn"
-                        class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+                        class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded flex items-center justify-center gap-2"
                     >
                         <span id="btnText">Save Store</span>
                         <svg id="btnSpinner" class="w-5 h-5 animate-spin hidden"
@@ -162,26 +160,19 @@
         </div>
     </div>
 
-
     <!-- OTP MODAL -->
-    <div id="otpModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div id="otpModal" class="fixed inset-0 bg-indigo-950/40 backdrop-blur-[2px] hidden items-center justify-center z-50">
         <div class="bg-white rounded-lg w-full max-w-sm p-6 relative">
-
             <button onclick="closeOtpModal()" class="absolute top-2 right-3 text-gray-500 text-xl">&times;</button>
-
             <h3 class="text-lg font-semibold mb-3 text-center">Verify Email</h3>
 
-            <form action="{{ route('medicalStores.verifyOtp') }}" method="POST" >
-                @csrf
-                <p class="text-sm text-gray-600 text-center mb-3">
+            <p class="text-sm text-gray-600 text-center mb-3">
                 Verification code sent to<br>
                 <strong id="maskedEmail"></strong>
             </p>
 
-            <input name="email" type="email" id="otpEmail" required>
-
+            <input type="hidden" id="otpEmail">
             <input
-                name="otp"
                 type="text"
                 id="otpCode"
                 maxlength="6"
@@ -189,47 +180,39 @@
                 placeholder="Enter OTP"
             >
 
-            <input type="submit" value="Verify"
-                class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 cursor-pointer">
-                
-            </form>     
-            
-
-            
-
-            {{-- <button
+            <button id="verifyOtpBtn"
                 onclick="verifyOtp()"
                 class="w-full mt-4 bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700"
             >
                 Verify
-            </button> --}}
+            </button>
+
+            <button id="resendOtpBtn"
+                onclick="resendOtp()"
+                class="w-full mt-2 bg-gray-500 text-white py-2 rounded hover:bg-gray-600"
+            >
+                Resend OTP (<span id="resendTimer">30</span>s)
+            </button>
         </div>
     </div>
-
-
-
-
 
     {{-- Edit Modal --}}
     <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
 
-        <div class="flex items-center justify-center min-h-screen ">
+        <div class="flex items-center justify-center min-h-screen px-4">
 
             <!-- Overlay -->
-            <div id="editOverlay" class="fixed inset-0 bg-blue-950/40 "></div>
+            <div class="fixed inset-0 bg-gray-500 opacity-75"></div>
 
             <!-- Modal content -->
-            <div class="bg-white rounded-lg shadow-xltransform transition-all max-w-lg w-full relative">
-                <div class="bg-indigo-600 rounded-t-lg flex items-center justify-between px-6 py-4 mb-4">
-                    <h3 class="text-lg font-medium text-white" id="modal-title"></h3>
-                    <button type="button" id="edit-close-btn" class=" text-white hover:text-red-500">
-                        <i class="fas fa-times text-lg"></i>
-                    </button>
-    
-                    
-                </div>
+            <div class="bg-white rounded-lg shadow-xl border border-gray-300 transform transition-all max-w-lg w-full p-6 relative">
+                <button type="button" id="edit-close-btn" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
 
-                <form id="customer-form" method="POST" class="space-y-4 px-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title"></h3>
+
+                <form id="customer-form" method="POST" class="space-y-4">
                     @csrf
                     <input type="hidden" id="form-method" name="_method" value="POST">
                     <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
@@ -237,14 +220,14 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" name="name" id="customer-name" placeholder="Enter Name"
+                        <input type="text" name="name" id="customer-name"
                             class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" name="email" id="customer-email" placeholder="example@gmail.com"
+                        <input type="email" name="email" id="customer-email"
                             class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required>
                     </div>
@@ -257,7 +240,7 @@
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-                        <input type="text" name="contact_number" id="customer_contact_number" placeholder="+977 98XXXXXXXX"
+                        <input type="text" name="contact_number" id="customer_contact_number"
                             class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             required>
                     </div>
@@ -274,9 +257,9 @@
                         <label for="IsActive" class="text-sm font-medium text-gray-700">Active</label>
                     </div>
 
-                    <div class="flex justify-end space-x-2 mb-4">
-                        <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-red-500 hover:text-white">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Save</button>
+                    <div class="flex justify-end space-x-2">
+                        <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-md hover:bg-gray-300">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Save</button>
                     </div>
                 </form>
             </div>
@@ -290,34 +273,12 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             
-            //For normal modal 
-            // ADD MODAL
-            // const addModal = document.getElementById('Add-Business-Modal');
-            // const openAddBtn = document.getElementById('openAdminModal');
-            // const addCloseBtn = document.getElementById('add-close-btn');
-            // const addCancelBtn = document.getElementById('add-cancel-btn');
-
-            // openAddBtn?.addEventListener('click', () => {
-            //     addModal.classList.remove('hidden');
-            //     addModal.classList.add('flex');
-            // });
-
-            // [addCloseBtn, addCancelBtn].forEach(btn => {
-            //     btn?.addEventListener('click', () => {
-            //         addModal.classList.add('hidden');
-            //         addModal.classList.remove('flex');
-            //     });
-            // });
-
-
-
             // EDIT MODAL
             const editModal = document.getElementById('edit-modal');
             const editCloseBtn = document.getElementById('edit-close-btn');
             const editCancelBtn = document.getElementById('edit-cancel-btn');
-            const editOverlay = document.getElementById('editOverlay');
 
-            [editCloseBtn, editCancelBtn, editOverlay].forEach(btn => {
+            [editCloseBtn, editCancelBtn].forEach(btn => {
                 btn?.addEventListener('click', () => {
                     editModal.classList.add('hidden');
                 });
@@ -431,18 +392,13 @@
             const modal = document.getElementById('storeModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            document.body.classList.add('overflow-hidden')
         }
-        
-        
+
         function closeStoreModal() {
             const modal = document.getElementById('storeModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
-            document.body.classList.remove('overflow-hidden')
         }
-       
-
         document.getElementById('storeForm').addEventListener('submit', function (e) {
             e.preventDefault();
 
@@ -488,24 +444,11 @@
             .then(res => res.json())
             .then(response => {
                 if (response.success) {
-                    // Swal.fire({
-                    //     icon: 'success',
-                    //     title: 'Success',
-                    //     text: 'Medical store registered successfully',
-                    //     timer: 2000,
-                    //     showConfirmButton: false
-                    // });
-
-                    // form.reset();
-                    // closeStoreModal();
-                    
+                   
                     closeStoreModal();
 
                     const email = form.adminEmail.value;
                     openOtpModal(email);
-                    // openOtpModal(email);
-                    // startOtpTimer();
-
 
                 } else {
                     Swal.fire({
@@ -531,64 +474,108 @@
             });
         });
 
+        // OTP Modal Logic
+        let resendCountdown = 60;
+        let resendInterval;
 
-        // ------------- OTP MODAL -------------
         function maskEmail(email) {
             const [name, domain] = email.split('@');
             return name.substring(0, 2) + '*'.repeat(name.length - 2) + '@' + domain;
         }
 
-        window.openOtpModal = function(email) {
+        function openOtpModal(email) {
             const modal = document.getElementById('otpModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
 
             document.getElementById('otpEmail').value = email;
             document.getElementById('maskedEmail').innerText = maskEmail(email);
+            document.getElementById('otpCode').focus();
 
-            setTimeout(() => {
-                document.getElementById('otpCode').focus();
-            }, 300);
+            startOtpTimer();
         }
 
-        window.closeOtpModal = function() {
+        function closeOtpModal() {
             const modal = document.getElementById('otpModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+
+            clearInterval(resendInterval);
+            resendCountdown = 30;
+            document.getElementById('resendTimer').innerText = resendCountdown;
+            document.getElementById('resendOtpBtn').disabled = false;
         }
 
-        // window.verifyOtp = function() {
-        //     const email = document.getElementById('otpEmail').value;
-        //     const code = document.getElementById('otpCode').value;
+        // Timer for resend button
+        function startOtpTimer() {
+            const resendBtn = document.getElementById('resendOtpBtn');
+            resendBtn.disabled = true;
+            resendCountdown = 60;
+            document.getElementById('resendTimer').innerText = resendCountdown;
 
-        //     if(code.length !== 6) {
-        //         return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
-        //     }
+            resendInterval = setInterval(() => {
+                resendCountdown--;
+                document.getElementById('resendTimer').innerText = resendCountdown;
+                if (resendCountdown <= 0) {
+                    clearInterval(resendInterval);
+                    resendBtn.disabled = false;
+                    document.getElementById('resendTimer').innerText = '0';
+                }
+            }, 1000);
+        }
 
-        //     fetch('{{ route("medicalStores.verifyOtp") }}', {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json',
-        //             'Accept': 'application/json',
-        //             'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        //         },
-        //         body: JSON.stringify({ email, otp: code })
-        //     })
-        //     .then(res => res.json())
-        //     .then(res => {
-        //         if(!res.success) {
-        //             Swal.fire('Error', res.message || 'OTP invalid or expired', 'error');
-        //         } else {
-        //             Swal.fire({ icon: 'success', title: 'Email Verified', timer: 2000, showConfirmButton: false })
-        //             .then(() => {
-        //                 closeOtpModal();
-        //                 location.reload();
-        //                 fetchData();
-        //             });
-        //         }
-        //     })
-        //     .catch(() => Swal.fire('Error', 'Verification failed', 'error'));
-        // }
+        // Verify OTP
+        function verifyOtp() {
+            const email = document.getElementById('otpEmail').value;
+            const code = document.getElementById('otpCode').value;
+
+            if (code.length !== 6) return Swal.fire('Error', 'Enter valid 6-digit OTP', 'error');
+
+            fetch('{{ route("medicalStores.verifyOtp") }}', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ email, otp: code })
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (!res.success) return Swal.fire('Error', res.message, 'error');
+                closeOtpModal();
+                Swal.fire({ icon: 'success', title: 'Email Verified', text: res.message }).then(() => {
+                    window.location.href = res.redirect;
+                });
+            })
+            .catch(() => Swal.fire('Error', 'Verification failed', 'error'));
+        }
+
+        // Resend OTP
+        function resendOtp() {
+            const email = document.getElementById('otpEmail').value;
+            const btn = document.getElementById('resendOtpBtn');
+
+            btn.disabled = true;
+
+            fetch('{{ route("medicalStores.resendOtp") }}', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ email })
+            })
+            .then(res => res.json())
+            .then(res => {
+                Swal.fire(res.success ? 'Success' : 'Error', res.message, res.success ? 'success' : 'error');
+                if (res.success) startOtpTimer();
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Could not resend OTP', 'error');
+                btn.disabled = false;
+            });
+        }
+
     </script>
 
     <script>
@@ -608,8 +595,5 @@
             });
         @endif
     </script>
-
-
-   
 
 @endpush

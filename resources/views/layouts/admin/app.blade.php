@@ -69,6 +69,27 @@
         </script>
     @endif
 
+    @if (session('error'))
+    <script>
+         document.addEventListener('DOMContentLoaded', () => {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: "{{ session('error') }}",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            });
+            // Swal.fire({
+            //     icon: 'error',
+            //     title: 'Error',
+            //     text: "{{ session('error') }}",
+            // });
+    </script>
+    @endif
+
 
     {{-- <!-- GLOBAL NETWORK LOADER -->
     <div id="global-loader"

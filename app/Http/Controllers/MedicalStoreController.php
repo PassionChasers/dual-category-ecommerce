@@ -279,6 +279,38 @@ class MedicalStoreController extends Controller
     }
 
 
+    // public function verifyOtp(Request $request)
+    // {
+    //     $request->validate([
+    //         'email' => 'required|email',
+    //         'otp'   => 'required|digits:6',
+    //     ]);
+
+    //     $response = Http::post(
+    //         'https://pcsdecom.azurewebsites.net/api/Auth/verify-email',
+    //         [
+    //             'email' => $request->email,
+    //             'code'  => $request->otp,
+    //         ]
+    //     );
+
+    //     $data = $response->json();
+
+    //     if ($response->successful()) {
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => $data['message'] ?? 'Email verified successfully!',
+    //             'redirect' => route('admin.medicalstores.list'),
+    //         ]);
+    //     }
+
+    //     return response()->json([
+    //         'success' => false,
+    //         'message' => $data['message'] ?? 'OTP invalid or expired',
+    //     ], 422);
+    // }
+
+    // Verify OTP
     public function verifyOtp(Request $request)
     {
         $request->validate([
@@ -286,31 +318,46 @@ class MedicalStoreController extends Controller
             'otp'   => 'required|digits:6',
         ]);
 
-        // Call external API
         $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', [
             'email' => $request->email,
             'code'  => $request->otp,
         ]);
 
+        if ($response->failed()) {
+            return response()->json([
+                'success' => false,
+                'message' => $response->json('message') ?? 'OTP invalid or expired'
+            ], $response->status() ?: 422);
+        }
+
         $data = $response->json();
-        dd($data);
 
-        // if (!($data['success'] ?? false)) {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => $data['message'] ?? 'OTP invalid or expired'
-        //     ], 422);
-        // }
+        return response()->json([
+            'success' => true,
+            'message' => $data['message'] ?? 'Email verified successfully!',
+            'redirect' => route('admin.medicalstores.list'),
+        ]);
+    }
 
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'Email verified successfully'
-        // ]);
+    // Resend OTP
+    public function resendOtp(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
 
-        if (!($data['success'] ?? false)) {
-            return redirect()->back()->withErrors(['otp' => $data['message'] ?? 'OTP invalid or expired']);
+        $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/resend-verifivation', [
+            'email' => $request->email,
+        ]);
+
+        if ($response->failed()) {
+            return response()->json([
+                'success' => false,
+                'message' => $response->json('message') ?? 'Failed to resend OTP'
+            ], $response->status() ?: 500);
         }
 
-        return redirect()->back()->with('success', $data['message'] ?? 'Email verified successfully!');
-        }
+        return response()->json([
+            'success' => true,
+            'message' => $response->json('message') ?? 'OTP sent successfully'
+        ]);
+    }
 }
