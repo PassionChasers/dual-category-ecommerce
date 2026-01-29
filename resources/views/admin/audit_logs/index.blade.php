@@ -2,7 +2,7 @@
 @section('title', 'Admin | Audit Logs')
 
 @section('contents')
-<div class="flex-1 p-4 md:p-6 bg-gray-50">
+<div class="flex-1 p-4 md:p-6 bg-gray-50 overflow-auto">
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800 flex items-center">
@@ -116,7 +116,7 @@
                 </button>
             </div>
         </div> --}}
-        <div class="mt-4 px-4">
+        <div class="mt-4 px-4 py-4">
             {{ $logs->links() }}
         </div>
 
@@ -126,16 +126,19 @@
 <!-- Modal -->
 <div id="audit-modal" class="fixed z-50 inset-0 overflow-y-auto hidden">
     <div class="flex items-center justify-center min-h-screen px-4">
-        <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"></div>
-        <div class="bg-white rounded-2xl shadow-2xl transform transition-all max-w-4xl w-full p-8 relative z-20">
-            <button type="button" id="close-audit-modal"
-                class="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition">
-                <i class="fas fa-times text-xl"></i>
-            </button>
+        <div id="modalOverlay" class="fixed inset-0 bg-blue-950/40 bg-opacity-50 transition-opacity backdrop-blur-[2px]"></div>
+        <div class="bg-white rounded-lg shadow-2xl transform transition-all max-w-4xl w-full  relative z-20">
+            <div class="bg-indigo-600 flex items-center justify-between rounded-t-lg px-6 py-4">
+                 <h3 class="text-2xl font-semibold text-white ">Audit Log Details</h3>
+                <button type="button" id="close-audit-modal"
+                    class=" text-white hover:text-red-500  transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+    
+               
+            </div>
 
-            <h3 class="text-2xl font-semibold text-gray-900 mb-6">Audit Log Details</h3>
-
-            <div class="grid grid-cols-2 gap-4 mb-6 text-sm text-gray-700">
+            <div class="grid grid-cols-2 gap-4 mb-6 text-sm text-gray-700 px-6 mt-4">
                 <div>
                     <label class="font-medium text-gray-500">Username</label>
                     <input type="text" id="audit-username"
@@ -159,13 +162,13 @@
             </div>
 
             <!-- Side-by-side old/new JSON -->
-            <div id="audit-changes" class="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto mb-6">
+            <div id="audit-changes" class="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto  px-6">
                 <!-- dynamically injected old/new JSON -->
             </div>
 
-            <div class="flex justify-end">
+            <div class="flex justify-end px-6 py-4">
                 <button type="button" id="audit-cancel-btn"
-                    class="px-5 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition font-medium">
+                    class="px-5 py-2 bg-gray-200 rounded-lg text-black hover:bg-red-500 hover:text-white transition font-medium">
                     Cancel
                 </button>
             </div>
@@ -257,6 +260,11 @@ ${newValues}
 document.getElementById('audit-cancel-btn').addEventListener('click', () => {
     document.getElementById('audit-modal').classList.add('hidden');
 });
+const modalOverlay = document.getElementById('modalOverlay');
+modalOverlay.addEventListener('click',()=>{
+     document.getElementById('audit-modal').classList.add('hidden');
+})
+
 
 // Close modal
 document.getElementById('close-audit-modal').addEventListener('click', () => {
