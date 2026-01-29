@@ -52,7 +52,7 @@
             
             @if($order->RequiresPrescription && $order->PrescriptionImageUrl)
                 <li class="mt-2">
-                    <a href="https://pcsdecom.azurewebsites.net{{ $order->PrescriptionImageUrl }}" target="_blank" rel="noopener noreferrer"
+                    <a href="https://pcsdecom.azurewebsites.net{{ $order->PrescriptionImageUrl }}" data-no-loader target="_blank" rel="noopener noreferrer"
                        class="inline-block px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
                         View Prescription Image
                     </a>

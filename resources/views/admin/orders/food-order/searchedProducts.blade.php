@@ -6,18 +6,18 @@
     <table class="min-w-full divide-y divide-gray-200 text-sm">
         <thead class="bg-gray-50">
             <tr>
-                <th class="px-4 py-2">SN</th>
-                <th class="px-4 py-2">Product Name</th>
-                <th class="px-4 py-2">Quantity</th>
+                <th class="px-4 py-2 text-left">SN</th>
+                <th class="px-4 py-2 text-left">Product Name</th>
+                <th class="px-4 py-2 text-left">Qty</th>
                 {{-- <th class="px-4 py-2">Product Type</th> --}}
-                <th class="px-4 py-2">Total Amount</th>
+                {{-- <th class="px-4 py-2">Total Amount</th> --}}
                 {{-- <th class="px-4 py-2">Delivery Address</th> --}}
                 {{-- <th class="px-4 py-2">Customer Name</th> --}}
                 {{-- <th class="px-4 py-2">Contact No.</th> --}}
-                <th class="px-4 py-2">Assign Store</th>
-                <th class="px-4 py-2">Assign Delivery Man</th>
+                <th class="px-4 py-2 text-left">Assign Store</th>
+                <th class="px-4 py-2 text-left">Assign Delivery Man</th>
                 <th class="px-4 py-2">Status</th>
-                <th class="px-4 py-2">Date</th>
+                {{-- <th class="px-4 py-2">Date</th> --}}
                 <th class="px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -25,12 +25,12 @@
                 @forelse($allOrders as $order)
                 <tr>
                     {{-- Serial --}}
-                    <td class="px-4 py-2 text-center">
+                    <td class="px-4 py-2">
                         {{ ($allOrders->currentPage() - 1) * $allOrders->perPage() + $loop->iteration }}
                     </td>
 
                     {{-- Products --}}
-                    <td class="px-4 py-2 font-semibold text-center">
+                    <td class="px-4 py-2 font-semibold">
                         <div
                             class="max-h-20 overflow-y-auto space-y-1
                                 [&::-webkit-scrollbar]:hidden
@@ -51,7 +51,7 @@
                     </td>
 
                     {{-- Quantity --}}
-                    <td class="px-4 py-2 font-semibold text-center">
+                    <td class="px-4 py-2 font-semibold">
                         <div
                             class="max-h-20 overflow-y-auto space-y-1
                                 [&::-webkit-scrollbar]:hidden
@@ -83,12 +83,12 @@
                     </td> --}}
 
                     {{-- Total Amount --}}
-                    <td class="px-4 py-2 text-center">
+                    {{-- <td class="px-4 py-2 text-center">
                         {{ $order->TotalAmount ?? 'N/A' }}
-                    </td>
+                    </td> --}}
 
                     {{-- Assign Stores --}}
-                    <td class="px-4 py-2 text-center">
+                    {{-- <td class="px-4 py-2 text-center">
                         <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"
                             @if($order->Status == 10 || $order->Status == 9 || $order->Status == 8 || $order->Status == 7 || $order->Status == 6 || $order->Status == 4 || $order->Status == 3 || $order->Status == 2 )
                                 disabled
@@ -100,11 +100,30 @@
                                 </option>
                             @endforeach
                         </select>
+                    </td> --}}
+                    <td class="px-4 py-2">
+                        <select
+                            class="assign-store px-2 py-1 text-sm bg-transparent
+                            {{ in_array($order->Status, [1, 5])
+                                ? 'border rounded cursor-pointer appearance-auto'
+                                : 'border-0 pointer-events-none text-gray-600 appearance-none' }}"
+                            data-order-id="{{ $order->OrderId }}"
+                            {{ !in_array($order->Status, [1, 5]) ? 'disabled' : '' }}
+                        >
+                            <option value="">Assign Store</option>
+
+                            @foreach($allRestaurants as $restaurant)
+                                <option value="{{ $restaurant->RestaurantId }}"
+                                    {{ $order->BusinessId == $restaurant->RestaurantId ? 'selected' : '' }}>
+                                    {{ $restaurant->Name }}
+                                </option>
+                            @endforeach
+                        </select>
                     </td>
 
                     {{-- Assign delivery man --}}
                     <td class="px-4 py-2">
-                        <form method="POST" action="{{ route('orders.assign-deliveryman') }}" class="assign-delivery-form">
+                        {{-- <form method="POST" action="{{ route('orders.assign-deliveryman') }}" class="assign-delivery-form">
                             @csrf
                             <input type="hidden" name="order_id" value="{{ $order->OrderId }}">
                             <select name="delivery_man_id" class="assign-deliveryman border rounded px-2 py-1 text-sm" 
@@ -119,13 +138,36 @@
                                     </option>
                                 @endforeach
                             </select>
+                        </form> --}}
+
+                        <form method="POST" action="{{ route('orders.assign-deliveryman') }}" class="assign-delivery-form">
+                            @csrf
+                            <input type="hidden" name="order_id" value="{{ $order->OrderId }}">
+
+                            <select
+                                name="delivery_man_id"
+                                class="assign-deliveryman px-2 py-1 text-sm bg-transparent
+                                {{ $order->Status == 7
+                                    ? 'border rounded cursor-pointer appearance-auto'
+                                    : 'border-0 pointer-events-none text-gray-600 appearance-none' }}"
+                                {{ $order->Status != 7 ? 'disabled' : '' }}
+                            >
+                                <option value="">Assign Delivery Man</option>
+
+                                @foreach($allDeliveryMan as $deliveryMan)
+                                    <option value="{{ $deliveryMan->DeliveryManId }}"
+                                        {{ $order->DeliveryManId == $deliveryMan->DeliveryManId ? 'selected' : '' }}>
+                                        {{ $deliveryMan->user->Name ?? 'N/A' }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </form>
+
                     </td>
 
                     {{-- Status --}}
                     <td class="px-4 py-2 text-center">
-                        
-                        @if($order->Status == 1)
+                        {{-- @if($order->Status == 1)
                             Pending
                         @elseif($order->Status == 2)
                             Pending Review
@@ -145,13 +187,56 @@
                             Cancelled
                         @elseif($order->Status == 10)
                             Completed
-                        @endif
+                        @endif --}}
+                        <span class="order-status-text" data-order-id="{{ $order->OrderId }}">
+                            @if($order->Status == 1)
+                                <p class="py-1 px-2 bg-yellow-300 rounded" >
+                                    Pending
+                                </p>
+                            @elseif($order->Status == 2)
+                                <p class="py-1 px-2 bg-yellow-100 rounded" >
+                                    Pending Review
+                                </p>
+                            @elseif($order->Status == 3)
+                                <p class="py-1 px-2 bg-gray-300 rounded" >
+                                    Assigned
+                                </p>
+                            @elseif($order->Status == 4)
+                                <p class="py-1 px-2 bg-blue-500 text-white rounded" >
+                                    Accepted
+                                </p>
+                            @elseif($order->Status == 5)
+                                <p class="py-1 px-2 bg-black-200 text-white rounded" >
+                                    Rejected
+                                </p>
+                            @elseif($order->Status == 6)
+                                <p class="py-1 px-2 bg-green-200 rounded" >
+                                    Preparing
+                                </p>
+                            @elseif($order->Status == 7)
+                                <p class="py-1 px-2 bg-green-200 rounded" >
+                                    Packed
+                                </p>
+                            @elseif($order->Status == 8)
+                                <p class="py-1 px-2 bg-green-200 rounded" >
+                                    Shipping
+                                </p>
+                            @elseif($order->Status == 9)
+                                <p class="py-1 px-2 bg-red-500 text-white rounded" >
+                                    Cancelled
+                                </p>
+                            @elseif($order->Status == 10)
+                                <p class="py-1 px-2 bg-green-600 text-white rounded" >
+                                    Completed
+                                </p>
+                            @endif
+                        </span>
                     </td>
 
                     {{-- Date --}}
-                    <td class="px-4 py-2 text-center">
+                    {{-- <td class="px-4 py-2 text-center">
                         {{ $order->CreatedAt->format('Y-m-d') }}
-                    </td>
+                    </td> --}}
 
                     {{-- Actions --}}
                     <td class="px-4 py-2 text-center">
