@@ -197,7 +197,7 @@
     </div>
 
     {{-- Edit Modal --}}
-    <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+    <div id="edit-modal" class="fixed z-10 inset-0 bg-blue-950/40 backdrop-blur-[2px] overflow-y-auto hidden">
 
         <div class="flex items-center justify-center min-h-screen px-4">
 

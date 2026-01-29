@@ -197,19 +197,19 @@
 </div> --}}
 
 {{-- Add / Edit Modal --}}
-<div id="editModal" class="fixed inset-0 hidden bg-opacity-40 z-10 ">
-    <div class="flex items-center justify-center min-h-screen">
+<div id="editModal" class="fixed inset-0 hidden z-10 ">
+    <div class="flex items-center justify-center min-h-screen px-4">
         <!-- overlay -->
     <div id="overlay" class=" fixed inset-0 bg-blue-950/40 backdrop-blur-[2px] "> </div>
     <!-- modal content -->
-        <div class="bg-white w-full max-w-lg rounded shadow p-6 relative">
+        <div class=" w-full max-w-lg shadow  relative">
     
             {{-- Header --}}
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="modalTitle" class="text-lg font-semibold">
+            <div class="flex justify-between items-center bg-indigo-600 px-6 py-4 rounded-t-lg">
+                <h3 id="modalTitle" class="text-lg font-semibold text-white">
                     Add Advertisement
                 </h3>
-                <button onclick="closeEditModal()" class="text-gray-500 hover:text-red-500">
+                <button onclick="closeEditModal()" class="text-white font-bold hover:text-red-500 w">
                     ✕
                 </button>
             </div>
@@ -218,8 +218,7 @@
             <form id="editForm"
                   method="POST"
                   action="{{ route('admin.ads.store') }}"
-                  enctype="multipart/form-data">
-    
+                  enctype="multipart/form-data" class="px-6 py-4 rounded-b-lg bg-white">
                 @csrf
                 <input type="hidden" name="_method" id="formMethod" value="POST">
     
@@ -271,12 +270,12 @@
                 <div class="flex justify-end gap-2 mt-4">
                     <button type="button"
                             onclick="closeEditModal()"
-                            class="px-4 py-2 border rounded-lg hover:bg-red-500 hover:text-white">
+                            class="px-4 py-2 bg-gray-200 text-black rounded-lg hover:bg-red-500 hover:text-white">
                         Cancel
                     </button>
     
                     <button id="submitBtn"
-                            class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded">
+                            class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-lg">
                         Save Ad
                     </button>
                 </div>
