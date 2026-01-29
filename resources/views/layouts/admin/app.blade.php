@@ -79,15 +79,10 @@
                     icon: 'error',
                     title: "{{ session('error') }}",
                     showConfirmButton: false,
-                    timer: 3000,
+                    timer: 4000,
                     timerProgressBar: true
                 });
             });
-            // Swal.fire({
-            //     icon: 'error',
-            //     title: 'Error',
-            //     text: "{{ session('error') }}",
-            // });
     </script>
     @endif
 
@@ -98,7 +93,7 @@
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid"></div>
     </div> --}}
 
-       <!-- GLOBAL NETWORK LOADER -->
+    <!-- GLOBAL NETWORK LOADER -->
     <div id="global-loader" class="fixed inset-0 bg-white-100 bg-opacity-75 flex items-center justify-center z-[9999] hidden">
         <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-600 border-solid"></div>
     </div>
@@ -116,9 +111,10 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            document.querySelectorAll("form").forEach(form => {
-                form.addEventListener("submit", () => showLoader());
-            });
+
+            // document.querySelectorAll("form").forEach(form => {
+            //     form.addEventListener("submit", () => showLoader());
+            // });
 
             document.querySelectorAll("a[href]").forEach(link => {
                 link.addEventListener("click", () => {
@@ -128,6 +124,7 @@
                     }
                 });
             });
+
         });
 
         const originalFetch = window.fetch;
@@ -161,7 +158,7 @@
             });
         }
 
-        //for image modal
+        //for image modal to show image on click of image
         function showImage(url) {
             Swal.fire({
                 imageUrl: url,
@@ -171,6 +168,7 @@
                 width: '400px'
             });
         }
+
     </script>
 
 </body>

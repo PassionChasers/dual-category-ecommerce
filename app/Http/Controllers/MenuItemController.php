@@ -105,7 +105,7 @@ class MenuItemController extends Controller
             'ImageUrl' => $validated['ImageUrl'],
         ]);
 
-        return redirect()->route('menu-items.index')->with('success', 'Menu item created successfully');
+        return redirect()->route('admin.food.index')->with('success', 'Menu item created successfully');
     }
 
     /**
@@ -140,7 +140,7 @@ class MenuItemController extends Controller
             'ImageUrl' => $imagePath,
         ]);
 
-        return redirect()->route('menu-items.index')->with('success', 'Menu item updated successfully');
+        return redirect()->route('admin.food.index')->with('success', 'Menu item updated successfully');
     }
 
     /**
@@ -153,17 +153,28 @@ class MenuItemController extends Controller
 
         // Optional: prevent delete if used in orders
         if ($menuItem->orderItems()->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => "This menu item '{$name}' cannot be deleted because it is used in orders."
-            ], 400);
+
+            // return response()->json([
+            //     'success' => false,
+            //     'message' => "This menu item '{$name}' cannot be deleted because it is used in orders."
+            // ], 400);
+
+            // return back()->with('error', "MenuItem '{$name}' cannot be deleted because it is used in orders.");
+
+            return redirect()
+            ->route('admin.food.index')
+            ->with('error', "MenuItem '{$name}' cannot be deleted because it is used in orders.");
         }
 
         $menuItem->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => "Menu item  '{$name}' deleted successfully"
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => "Menu item  '{$name}' deleted successfully"
+        // ]);
+
+        return redirect()
+            ->route('admin.food.index')
+            ->with('success', "MenuItem '{$name}' deleted successfully.");
     }
 }

@@ -71,15 +71,7 @@
 
                         <form action="{{ route('admin.medicines.destroy',$m->MedicineId) }}" method="POST" class="delete-form inline">
                             @csrf @method('DELETE')
-                            {{-- <button type="submit" class="text-red-600 hover:text-red-800">
-                                <i class="fas fa-trash"></i>
-                            </button> --}}
-
-                            <button
-                                type="button"
-                                class="delete-btn text-red-600 hover:text-red-800"
-                                data-id="{{ $m->MedicineId }}"
-                                data-name="{{ $m->Name }}">
+                            <button type="button" class="delete-btn text-red-600 hover:text-red-800">
                                 <i class="fas fa-trash"></i>
                             </button>
 

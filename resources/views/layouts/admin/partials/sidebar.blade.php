@@ -130,14 +130,14 @@
                             </button>
 
                             <div x-show="open" class="ml-6 mt-2 space-y-1">
-                                <a href="{{route('product.medicine.index')}}"
+                                <a href="{{route('admin.medicines.index')}}"
                                     class="flex items-center px-2 py-2 text-sm rounded-md
-                                        {{ request()->routeIs('medicine.allmedicine') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        {{ request()->routeIs('admin.medicines.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                     <i class="fas fa-list mr-2 text-green-700"></i> All Medicines
                                 </a>
-                                <a href="{{ route('product.medicine.category') }}"
+                                <a href="{{ route('admin.medicine-categories.index') }}"
                                     class="flex items-center px-2 py-2 text-sm rounded-md
-                                    {{ request()->routeIs('product.medicine.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    {{ request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                     <i class="fas fa-tags mr-2 text-orange-500"></i> Medicine Category
                                 </a>
                             </div>
@@ -159,9 +159,9 @@
                             </button>
 
                             <div x-show="open" class="ml-6 mt-2 space-y-1">
-                                <a href="{{route('product.food.index')}}"
+                                <a href="{{route('admin.food.index')}}"
                                     class="flex items-center px-2 py-2 text-sm rounded-md
-                                        {{ request()->routeIs('product.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        {{ request()->routeIs('admin.food.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                     <i class="fas fa-list mr-2 text-green-700"></i> All Foods
                                 </a>
 
@@ -484,16 +484,16 @@
                             </button>
 
                             <div x-show="open" class="ml-6 mt-2 space-y-1">
-                                <a href="{{route('product.medicine.index')}}"
+                                <a href="{{route('admin.medicines.index')}}"
                                     class="flex items-center px-2 py-2 text-sm rounded-md
-                                        {{ request()->routeIs('product.medicine.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        {{ request()->routeIs('admin.medicines.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                     <i class="fas fa-list mr-2 text-green-700"></i> All Medicines
                                 </a>
                                 
 
-                                <a href="{{ route('product.medicine.category') }}"
+                                <a href="{{ route('admin.medicine-categories.index') }}"
                                     class="flex items-center px-2 py-2 text-sm rounded-md
-                                    {{ request()->routeIs('product.medicine.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    {{ request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                     <i class="fas fa-tags mr-2 text-orange-500"></i> Medicine Category
                                 </a>
                             </div>
@@ -514,9 +514,9 @@
                             </button>
 
                             <div x-show="open" class="ml-6 mt-2 space-y-1">
-                                <a href="{{route('product.food.index')}}"
+                                <a href="{{route('admin.food.index')}}"
                                     class="flex items-center px-2 py-2 text-sm rounded-md
-                                        {{ request()->routeIs('product.food.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        {{ request()->routeIs('admin.food.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                     <i class="fas fa-list mr-2 text-green-700"></i> All Foods
                                 </a>
                                 <a href="{{ route('product.food.category') }}"

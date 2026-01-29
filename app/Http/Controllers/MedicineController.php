@@ -180,24 +180,47 @@ class MedicineController extends Controller
 
     public function destroy($id)
     {
+        
         $medicine = Medicine::findOrFail($id);
         $name = $medicine->Name;
 
-        // Optional: prevent delete if used in orders
+
+        // Prevent delete if used in orders
         if ($medicine->orderItems()->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => "This medicine item '{$name}' cannot be deleted because it is used in orders."
-            ], 400);
+            return back()->with('error', "Medicine '{$name}' cannot be deleted because it is used in orders.");
         }
 
         $medicine->delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => "Medicine item  '{$name}' deleted successfully"
-        ]);
+        return redirect()
+            ->route('admin.medicines.index')
+            ->with('success', "Medicine '{$name}' deleted successfully.");
     }
+
+    // public function dedstroy($id)
+    // {
+    //     $medicine = Medicine::findOrFail($id);
+    //     $name = $medicine->Name;
+
+    //     // Optional: prevent delete if used in orders
+    //     if ($medicine->orderItems()->exists()) {
+    //         return response()->json([
+    //             'success' => false,
+    //             'message' => "This medicine item '{$name}' cannot be deleted because it is used in orders."
+    //         ], 400);
+    //     }
+
+    //     $medicine->delete();
+
+    //     return response()->json([
+    //         'success' => true,
+    //         'message' => "Medicine item  '{$name}' deleted successfully"
+    //     ]);
+
+    //     return redirect()
+    //     ->route('admin.medicines.index')
+    //     ->with('success', 'Medicine deleted successfully');
+    // }
 
     public function toggleActive($id)
     {

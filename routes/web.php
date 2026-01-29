@@ -106,32 +106,6 @@ Route::middleware('auth')->group(function () {
 
     /*
     |----------------------------------------------------------------------
-    | Product Routes - Food
-    |----------------------------------------------------------------------
-    */
-    // Route::resource('food', FoodController::class);
-    // menu-items resource and products-food page now use MenuItemController
-    Route::resource('menu-items', MenuItemController::class);
-    Route::get('/products-food', [MenuItemController::class, 'index'])->name('product.food.index');
-
-    Route::get('/food-category', [MenuCategoryController::class, 'index'])->name('product.food.category');
-    Route::post('/food-category', [MenuCategoryController::class, 'store'])->name('product.food.category.store');
-    Route::put('/food-category/{id}', [MenuCategoryController::class, 'update'])->name('product.food.category.update');
-    Route::delete('/food-category/{id}', [MenuCategoryController::class, 'destroy'])->name('product.food.category.destroy');
-
-    /*
-    |----------------------------------------------------------------------
-    | Product Routes - Medicine
-    |----------------------------------------------------------------------
-    */
-    Route::resource('medicine-items', MedicineController::class);
-    Route::get('/products-medicine', [MedicineController::class, 'index'])->name('product.medicine.index');
-    Route::post('/product-medicine',[MedicineController::class, 'create'])->middleware('auth')->name('product.medicine.store');
-
-    Route::get('/medicine-category', [MedicineCategoryController::class, 'index'])->name('product.medicine.category');
-
-    /*
-    |----------------------------------------------------------------------
     | Orders
     |----------------------------------------------------------------------
     */
@@ -139,7 +113,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/product-order-list', [OrderController::class, 'allOrders'])->name('orders.index');
     // Update order status (general)
     Route::post('/orders/update-status', [OrderController::class, 'updateStatus'])->name('orders.update-status');
-
 
     // Food orders
     Route::get('/food-order-list', [OrderController::class, 'foodOrders'])->name('orders.food.index');
@@ -181,6 +154,7 @@ Route::middleware('auth')->group(function () {
     |----------------------------------------------------------------------
     */
     Route::prefix('settings')->name('settings.')->group(function () {
+
         // General settings
         Route::get('/', [SettingController::class, 'index'])->name('general');
         Route::post('/', [SettingController::class, 'store'])->name('store');
@@ -198,28 +172,13 @@ Route::middleware('auth')->group(function () {
 
     /*
     |----------------------------------------------------------------------
-    | Designations
-    |----------------------------------------------------------------------
-    */
-    Route::prefix('designations')->name('designations.')->group(function () {
-        Route::get('/', [DesignationController::class, 'index'])->name('index');
-        Route::post('/', [DesignationController::class, 'store'])->name('store');
-        Route::get('/{designation}/edit', [DesignationController::class, 'edit'])->name('edit');
-        Route::put('/{designation}', [DesignationController::class, 'update'])->name('update');
-        Route::delete('/{designation}', [DesignationController::class, 'destroy'])->name('destroy');
-    });
-
-    /*
-    |----------------------------------------------------------------------
     | Users (admin, customers, medicalstores, restaurants)
     |----------------------------------------------------------------------
     */
     Route::prefix('users')->name('users.')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
-
         Route::get('/admin', [UserController::class, 'admin'])->name('admin.index');
         Route::post('/create-admin', [UserController::class, 'createAdmin'])->name('create-admin');
-
         Route::get('/customers', [UserController::class, 'customers'])->name('customers.index');
         Route::get('/restaurants', [UserController::class, 'restaurants'])->name('restaurants.index');
         Route::get('/medicalstores', [UserController::class, 'medicalstores'])->name('medicalstores.index');
@@ -227,10 +186,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [UserController::class, 'store'])->name('store');
         Route::put('/update/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/destroy/{user}', [UserController::class, 'destroy'])->name('destroy');
-
         // Route::post('/verify-email', [UserController::class, 'verifyOtp'])->name('verifyOtp');
         // Route::post('/resendOtp', [UserController::class, 'resendOtp'])->name('resendOtp');
-
     });
 
       /*
@@ -299,18 +256,6 @@ Route::middleware('auth')->group(function () {
 
     /*
     |----------------------------------------------------------------------
-    | Departments
-    |----------------------------------------------------------------------
-    */
-    Route::prefix('departments')->name('departments.')->group(function () {
-        Route::get('/', [DepartmentController::class, 'index'])->name('index');
-        Route::post('/', [DepartmentController::class, 'store'])->name('store');
-        Route::put('/{department}', [DepartmentController::class, 'update'])->name('update');
-        Route::delete('/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
-    });
-
-    /*
-    |----------------------------------------------------------------------
     | Audit Log
     |----------------------------------------------------------------------
     */
@@ -337,19 +282,13 @@ Route::fallback(function () {
 });
 
 
-// Rough routes
+// use App\Http\Controllers\MedicineCategoryController;
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     // Resourceful routes
     Route::get('medicine-categories', [MedicineCategoryController::class, 'index'])->name('medicine-categories.index');
     Route::post('medicine-categories', [MedicineCategoryController::class, 'store'])->name('medicine-categories.store');
     Route::put('medicine-categories/{id}', [MedicineCategoryController::class, 'update'])->name('medicine-categories.update');
     Route::delete('medicine-categories/{id}', [MedicineCategoryController::class, 'destroy'])->name('medicine-categories.destroy');
-
-    // inside your admin group
-    Route::get('medicines/{id}', [MedicineController::class, 'show'])->name('medicines.show');
-    Route::get('medicines/{id}/print', [MedicineController::class, 'print'])->name('medicines.print');
-    Route::get('medicines/{id}/export-pdf', [MedicineController::class, 'exportPdf'])->name('medicines.exportPdf');
-
     // Additional actions
     // Route::post('medicine-categories/{id}/restore', [MedicineCategoryController::class, 'restore'])->name('medicine-categories.restore');
     // Route::delete('medicine-categories/{id}/force-delete', [MedicineCategoryController::class, 'forceDelete'])->name('medicine-categories.forceDelete');
@@ -359,18 +298,18 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 });
 
 // use App\Http\Controllers\MedicineController;
-
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('medicines', [MedicineController::class, 'index'])->name('medicines.index');
     Route::post('medicines', [MedicineController::class, 'store'])->name('medicines.store');
     Route::put('medicines/{id}', [MedicineController::class, 'update'])->name('medicines.update');
     Route::delete('medicines/{id}', [MedicineController::class, 'destroy'])->name('medicines.destroy');
-
+    Route::get('medicines/{id}', [MedicineController::class, 'show'])->name('medicines.show');
+    Route::get('medicines/{id}/print', [MedicineController::class, 'print'])->name('medicines.print');
+    Route::get('medicines/{id}/export-pdf', [MedicineController::class, 'exportPdf'])->name('medicines.exportPdf');
     Route::post('medicines/{id}/toggle-active', [MedicineController::class, 'toggleActive'])->name('medicines.toggleActive');
 });
 
 // use App\Http\Controllers\MedicalStoreController;
-
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('allmedical-stores', [MedicalStoreController::class, 'allMedicalstores'])->name('medicalstores.list');
     Route::get('medical-stores', [MedicalStoreController::class, 'index'])->name('medicalstores.index');
@@ -378,11 +317,25 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::get('medical-stores/{id}', [MedicalStoreController::class, 'show'])->name('medicalstores.show');
     Route::put('medical-stores/{id}', [MedicalStoreController::class, 'update'])->name('medicalstores.update');
     Route::delete('medical-stores/{id}', [MedicalStoreController::class, 'destroy'])->name('medicalstores.destroy');
+    Route::post('medical-stores/{id}/toggle-active', [MedicalStoreController::class, 'toggleActive'])->name('medicalstores.toggleActive');   
+});
 
-    Route::post('medical-stores/{id}/toggle-active', [MedicalStoreController::class, 'toggleActive'])->name('medicalstores.toggleActive');
+// use App\Http\Controllers\MenuCategoryController;
+Route::get('/food-category', [MenuCategoryController::class, 'index'])->name('product.food.category');
+Route::post('/food-category', [MenuCategoryController::class, 'store'])->name('product.food.category.store');
+Route::put('/food-category/{id}', [MenuCategoryController::class, 'update'])->name('product.food.category.update');
+Route::delete('/food-category/{id}', [MenuCategoryController::class, 'destroy'])->name('product.food.category.destroy');
 
-
-    
+// use App\Http\Controllers\MenuItemController;
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::get('menu-items', [MenuItemController::class, 'index'])->name('food.index');
+    Route::post('menu-items', [MenuItemController::class, 'store'])->name('food.store');
+    Route::put('menu-items/{id}', [MenuItemController::class, 'update'])->name('food.update');
+    Route::delete('menu-items/{id}', [MenuItemController::class, 'destroy'])->name('food.destroy');
+    Route::get('menu-items/{id}', [MenuItemController::class, 'show'])->name('food.show');
+    Route::get('menu-items/{id}/print', [MenuItemController::class, 'print'])->name('food.print');
+    Route::get('menu-items/{id}/export-pdf', [MenuItemController::class, 'exportPdf'])->name('food.exportPdf');
+    Route::post('menu-items/{id}/toggle-active', [MenuItemController::class, 'toggleActive'])->name('food.toggleActive');
 });
 
 

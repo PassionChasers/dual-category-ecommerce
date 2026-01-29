@@ -276,99 +276,103 @@
 
 
         /* ================= DELETE BUTTONS ================= */
-        // document.addEventListener('click', function (e) {
-        //     if (e.target.classList.contains('delete-form')) {
-        //         e.preventDefault();
 
-        //         Swal.fire({
-        //             title: 'Delete Medicine?',
-        //             text: 'This action cannot be undone!',
-        //             icon: 'warning',
-        //             showCancelButton: true,
-        //             confirmButtonColor: '#dc2626',
-        //             cancelButtonColor: '#6b7280',
-        //             confirmButtonText: 'Yes, delete it'
-        //         }).then((result) => {
-        //             if (result.isConfirmed) {
-        //                 e.target.submit(); // normal form submit
-        //             }
-        //         });
-        //     }
-        // });
+    //     document.querySelectorAll('.delete-btn').forEach(btn => {
+    //     btn.addEventListener('click', () => {
+    //         const id = btn.dataset.id;
+    //         const name = btn.dataset.name;
 
-        document.addEventListener('click', function (e) {
-            const btn = e.target.closest('.delete-btn');
-            if (!btn) return;
+    //         Swal.fire({
+    //             title: 'Delete Item?',
+    //             text: `Are you sure you want to delete "${name}"?`,
+    //             icon: 'warning',
+    //             showCancelButton: true,
+    //             confirmButtonColor: '#dc2626',
+    //             cancelButtonColor: '#6b7280',
+    //             confirmButtonText: 'Yes, delete it'
+    //         }).then((result) => {
+    //             if (!result.isConfirmed) return;
 
-            const form = btn.closest('form');
+    //             fetch(`/medicine-items/${id}`, {
+    //                 method: 'DELETE',
+    //                 headers: {
+    //                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+    //                     'X-Requested-With': 'XMLHttpRequest',
+    //                     'Accept': 'application/json'
+    //                 }
+    //             })
+    //             .then(res => res.json())
+    //             .then(data => {
+    //                 if (data.success) {
+    //                     Swal.fire({
+    //                         toast: true,
+    //                         position: 'top-end',
+    //                         icon: 'success',
+    //                         title: data.message || 'Item deleted',
+    //                         showConfirmButton: false,
+    //                         timer: 2500
+    //                     });
 
-            Swal.fire({
-                title: 'Delete Medicine?',
-                text: 'This action cannot be undone!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#dc2626',
-                cancelButtonColor: '#6b7280',
-                confirmButtonText: 'Yes, delete it'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    showLoader();      // loader AFTER confirmation
-                    form.submit();     // now submit safely
-                }
-            });
-        });
-    
-
-    //     document.addEventListener('click', function (e) {
-    //     const btn = e.target.closest('.delete-btn');
-    //     if (!btn) return;
-
-    //     const id = btn.dataset.id;
-    //     const name = btn.dataset.name;
-
-    //     Swal.fire({
-    //         title: 'Delete Medicine?',
-    //         text: `Are you sure you want to delete "${name}"?`,
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#dc2626',
-    //         cancelButtonColor: '#6b7280',
-    //         confirmButtonText: 'Yes, delete it'
-    //     }).then((result) => {
-    //         if (!result.isConfirmed) return;
-
-    //         fetch(`/admin/medicines/${id}`, {
-    //             method: 'DELETE',
-    //             headers: {
-    //                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-    //                 'X-Requested-With': 'XMLHttpRequest',
-    //                 'Accept': 'application/json'
-    //             }
-    //         })
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             if (data.success) {
-    //                 Swal.fire({
-    //                     toast: true,
-    //                     position: 'top-end',
-    //                     icon: 'success',
-    //                     title: data.message || 'Medicine deleted',
-    //                     showConfirmButton: false,
-    //                     timer: 2500
-    //                 });
-
-    //                 performSearch(); //reload table safely
-    //                 // window.location.reload();
-
-    //             } else {
-    //                 Swal.fire('Error', data.message || 'Delete failed', 'error');
-    //             }
-    //         })
-    //         .catch(() => {
-    //             Swal.fire('Error', 'Server error occurred', 'error');
+    //                     performSearch(); // reload list (pagination + filters preserved)
+    //                 } else {
+    //                     Swal.fire('Error', data.message || 'Delete failed', 'error');
+    //                 }
+    //             })
+    //             .catch(() => {
+    //                 Swal.fire('Error', 'Server error occurred', 'error');
+    //             });
     //         });
     //     });
     // });
+
+        document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.delete-btn');
+        if (!btn) return;
+
+        const id = btn.dataset.id;
+        const name = btn.dataset.name;
+
+        Swal.fire({
+            title: 'Delete Medicine?',
+            text: `Are you sure you want to delete "${name}"?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc2626',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, delete it'
+        }).then((result) => {
+            if (!result.isConfirmed) return;
+
+            fetch(`/admin/medicines/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: data.message || 'Medicine deleted',
+                        showConfirmButton: false,
+                        timer: 2500
+                    });
+
+                    performSearch(); //reload table safely
+                } else {
+                    Swal.fire('Error', data.message || 'Delete failed', 'error');
+                }
+            })
+            .catch(() => {
+                Swal.fire('Error', 'Server error occurred', 'error');
+            });
+        });
+    });
 
 
 
@@ -382,6 +386,44 @@
 
         const performSearch=()=>{
             const params=new URLSearchParams(new FormData(filterForm));
+
+            // Show spinner while loading
+            medicinesContainer.innerHTML = `
+
+                <div class="overflow-x-auto">
+
+                    <div class="px-6 py-4 border-b">
+                        <h2 class="font-semibold text-gray-800">Medicine List</h2>
+                    </div>
+                    
+                    <table class="min-w-full text-sm divide-y divide-gray-200">
+
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-4 py-3 text-left">#</th>
+                                <th class="px-4 py-3 text-left">Image</th>
+                                <th class="px-4 py-3 text-left">Name</th>
+                                <th class="px-4 py-3 text-left">Category</th>
+                                <th class="px-4 py-3 text-left">Price</th>
+                                <th class="px-4 py-3 text-left">Prescription</th>
+                                <th class="px-4 py-3 text-left">Status</th>
+                                <th class="px-4 py-3 text-center">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="bg-white divide-y divide-gray-100">
+                            
+                        </tbody>
+
+                    </table>
+
+                    
+
+                </div>
+            `;
+            // <div class="flex justify-center items-center py-16">
+                    //     <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+                    // </div>
 
             fetch(`{{ route('admin.medicines.index') }}?${params.toString()}`,{
                 headers:{'X-Requested-With':'XMLHttpRequest','Accept':'text/html'}})

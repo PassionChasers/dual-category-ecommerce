@@ -128,17 +128,10 @@
                                             data-isavailable="{{ $item->IsAvailable }}" data-image="{{ $item->ImageUrl }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
-                                        <form method="POST" action="{{ route('menu-items.destroy', $item->MenuItemId) }}"
+                                        <form method="POST" action="{{ route('admin.food.destroy', $item->MenuItemId) }}"
                                             class="delete-form inline">
                                             @csrf @method('DELETE')
-                                            {{-- <button type="submit" class="text-red-600 hover:text-red-800">
-                                                <i class="fas fa-trash"></i>
-                                            </button> --}}
-                                            <button
-                                                type="button"
-                                                class="delete-btn text-red-600 hover:text-red-800"
-                                                data-id="{{ $item->MenuItemId }}"
-                                                data-name="{{ $item->Name }}">
+                                            <button type="button" class="delete-btn text-red-600 hover:text-red-800">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
@@ -280,24 +273,6 @@
 
 @push('scripts')
 
-    <!-- Preview Script -->
-    {{--
-    <script>
-        const imageUrlInput = document.getElementById('customer-image-url');
-        const imagePreview = document.getElementById('image-preview');
-
-        imageUrlInput.addEventListener('input', () => {
-            const url = imageUrlInput.value.trim();
-            if (url) {
-                imagePreview.src = url;
-                imagePreview.classList.remove('hidden');
-            } else {
-                imagePreview.src = '';
-                imagePreview.classList.add('hidden');
-            }
-        });
-    </script> --}}
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const modal = document.getElementById('customer-modal');
@@ -327,7 +302,7 @@
             const performSearch = () => {
                 const formData = new FormData(filterForm);
                 const params = new URLSearchParams(formData);
-                const url = `{{ route('menu-items.index') }}?${params.toString()}`;
+                const url = `{{ route('admin.food.index') }}?${params.toString()}`;
 
                 console.log('Fetching:', url);
 
@@ -338,19 +313,17 @@
                     }
                 })
                     .then(response => {
-                        console.log('Response status:', response.status);
                         return response.text();
                     })
                     .then(html => {
-                        console.log('HTML received, length:', html.length);
+
                         const parser = new DOMParser();
                         const newDoc = parser.parseFromString(html, 'text/html');
                         const newContainer = newDoc.getElementById('items-container');
-                        console.log('Container found:', !!newContainer);
+                        
                         if (newContainer) {
                             itemsContainer.innerHTML = newContainer.innerHTML;
                             reattachEventListeners();
-                            console.log('Updated table');
                         }
                     })
                     .catch(error => console.error('Error:', error));
@@ -401,51 +374,25 @@
                 });
 
                 // Delete forms
-                document.querySelectorAll('.delete-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const id = btn.dataset.id;
-                        const name = btn.dataset.name;
+                document.addEventListener('click', function (e) {
+                    const btn = e.target.closest('.delete-btn');
+                    if (!btn) return;
 
-                        Swal.fire({
-                            title: 'Delete Item?',
-                            text: `Are you sure you want to delete "${name}"?`,
-                            icon: 'warning',
-                            showCancelButton: true,
-                            confirmButtonColor: '#dc2626',
-                            cancelButtonColor: '#6b7280',
-                            confirmButtonText: 'Yes, delete it'
-                        }).then((result) => {
-                            if (!result.isConfirmed) return;
+                    const form = btn.closest('form');
 
-                            fetch(`/menu-items/${id}`, {
-                                method: 'DELETE',
-                                headers: {
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                                    'X-Requested-With': 'XMLHttpRequest',
-                                    'Accept': 'application/json'
-                                }
-                            })
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.success) {
-                                    Swal.fire({
-                                        toast: true,
-                                        position: 'top-end',
-                                        icon: 'success',
-                                        title: data.message || 'Item deleted',
-                                        showConfirmButton: false,
-                                        timer: 2500
-                                    });
-
-                                    performSearch(); //reload list (pagination + filters preserved)
-                                } else {
-                                    Swal.fire('Error', data.message || 'Delete failed', 'error');
-                                }
-                            })
-                            .catch(() => {
-                                Swal.fire('Error', 'Server error occurred', 'error');
-                            });
-                        });
+                    Swal.fire({
+                        title: 'Delete MenuItem?',
+                        text: 'This action cannot be undone!',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#dc2626',
+                        cancelButtonColor: '#6b7280',
+                        confirmButtonText: 'Yes, delete it'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            showLoader();      // loader AFTER confirmation
+                            form.submit();     // now submit safely
+                        }
                     });
                 });
 
@@ -486,7 +433,7 @@
                 });
 
                 modalTitle.innerText = 'New Item';
-                form.action = "{{ route('menu-items.store') }}";
+                form.action = "{{ route('admin.food.store') }}";
                 methodInput.value = 'POST';
                 nameInput.value = '';
                 descriptionInput.value = '';
@@ -508,16 +455,16 @@
         });
 
         // Toast alerts
-        @if(session('success'))
-            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: "{{ session('success') }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        @endif
+        // @if(session('success'))
+        //     Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: "{{ session('success') }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
+        // @endif
 
-        @if(session('error'))
-            Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: "{{ session('error') }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        @endif
+        // @if(session('error'))
+        //     Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: "{{ session('error') }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
+        // @endif
 
-        @if($errors->any())
-            Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: "{{ $errors->first() }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        @endif
+        // @if($errors->any())
+        //     Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: "{{ $errors->first() }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
+        // @endif
     </script>
 @endpush
