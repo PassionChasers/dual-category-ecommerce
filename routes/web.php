@@ -8,6 +8,7 @@ use App\Http\Controllers\AdController;
 // use App\Http\Controllers\FoodController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuItemController;
+use App\Http\Controllers\MenuCategoryController;
 
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CustomerController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\MedicineController;
+
 
 use App\Http\Controllers\DashboardController;
 
@@ -110,19 +112,22 @@ Route::middleware('auth')->group(function () {
     // Route::resource('food', FoodController::class);
     // menu-items resource and products-food page now use MenuItemController
     Route::resource('menu-items', MenuItemController::class);
-    Route::get('/products-food', [\App\Http\Controllers\MenuItemController::class, 'index'])->name('product.food.index');
-    Route::get('/food-category', [\App\Http\Controllers\MenuCategoryController::class, 'index'])->name('product.food.category');
-    Route::post('/food-category', [\App\Http\Controllers\MenuCategoryController::class, 'store'])->name('product.food.category.store');
-    Route::put('/food-category/{id}', [\App\Http\Controllers\MenuCategoryController::class, 'update'])->name('product.food.category.update');
-    Route::delete('/food-category/{id}', [\App\Http\Controllers\MenuCategoryController::class, 'destroy'])->name('product.food.category.destroy');
+    Route::get('/products-food', [MenuItemController::class, 'index'])->name('product.food.index');
+
+    Route::get('/food-category', [MenuCategoryController::class, 'index'])->name('product.food.category');
+    Route::post('/food-category', [MenuCategoryController::class, 'store'])->name('product.food.category.store');
+    Route::put('/food-category/{id}', [MenuCategoryController::class, 'update'])->name('product.food.category.update');
+    Route::delete('/food-category/{id}', [MenuCategoryController::class, 'destroy'])->name('product.food.category.destroy');
 
     /*
     |----------------------------------------------------------------------
     | Product Routes - Medicine
     |----------------------------------------------------------------------
     */
+    Route::resource('medicine-items', MedicineController::class);
     Route::get('/products-medicine', [MedicineController::class, 'index'])->name('product.medicine.index');
     Route::post('/product-medicine',[MedicineController::class, 'create'])->middleware('auth')->name('product.medicine.store');
+
     Route::get('/medicine-category', [MedicineCategoryController::class, 'index'])->name('product.medicine.category');
 
     /*

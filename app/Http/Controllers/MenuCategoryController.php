@@ -13,7 +13,7 @@ class MenuCategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->input('search', '');
+        $search = $request->input('search');
         $status = $request->input('status');
         
         $query = MenuCategory::orderBy('CreatedAt', 'desc');
@@ -32,9 +32,14 @@ class MenuCategoryController extends Controller
             $query->where('IsActive', 0);
         }
         // If status is null, empty string, or anything else, show all
+
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 5);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
         
-        $categories = $query->paginate(5)->withQueryString();
-        return view('admin.products.food.food-categories', compact('categories', 'search'));
+        $categories = $query->paginate($perPage)->withQueryString();
+        return view('admin.products.food.food-categories', compact('categories', 'search','perPage', 'allowedPerPage'));
     }
 
     /**

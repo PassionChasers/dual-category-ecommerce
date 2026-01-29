@@ -24,7 +24,7 @@
 @endpush
 
 @section('contents')
-    <div class="flex-1 p-4 md:p-6 bg-gray-50">
+    <div class="flex-1 p-4 md:p-6 bg-gray-50 overflow-auto">
         <div class="mb-6 flex justify-between items-center flex-wrap">
             <div class="mb-2 md:mb-0">
                 <h2 class="text-2xl font-bold text-gray-800">Restaurants Management</h2>
@@ -48,6 +48,13 @@
                         <option value="1" {{ request('type') === '1' ? 'selected' : '' }}>Veg</option>
                         <option value="0" {{ request('type') === '0' ? 'selected' : '' }}>Non-Veg</option>
                     </select>
+
+                    <select name="per_page" id="per-page-filter" class="custom-select pl-2 border rounded-md text-sm">
+                        @foreach($allowedPerPage as $pp)
+                            <option value="{{ $pp }}" {{ $perPage == $pp ? 'selected' : '' }}>{{ $pp }} per page</option>
+                        @endforeach
+                    </select>
+
                 </form>
                 <button id="new-user-button"
                     class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
@@ -65,14 +72,14 @@
                 <table class="min-w-full divide-y divide-gray-200 text-sm">
                     <thead class="bg-gray-100">
                         <tr>
-                            <th class="px-4 py-2">SN</th>
-                            <th class="px-4 py-2">Image</th>
-                            <th class="px-4 py-2">Name</th>
-                            <th class="px-4 py-2">Description</th>
-                            <th class="px-4 py-2">Category</th>
-                            <th class="px-4 py-2">Price</th>
-                            <th class="px-4 py-2">Type</th>
-                            <th class="px-4 py-2">Available</th>
+                            <th class="px-4 py-2 text-left">SN</th>
+                            <th class="px-4 py-2 text-left">Image</th>
+                            <th class="px-4 py-2 text-left">Name</th>
+                            <th class="px-4 py-2 text-left">Description</th>
+                            <th class="px-4 py-2 text-left">Category</th>
+                            <th class="px-4 py-2 text-left">Price</th>
+                            <th class="px-4 py-2 text-left">Type</th>
+                            <th class="px-4 py-2 text-left">Available</th>
                             <th class="px-4 py-2">Actions</th>
                         </tr>
                     </thead>
@@ -82,29 +89,18 @@
                                 <td class="px-4 py-2">
                                     {{ ($menuItems->currentPage() - 1) * $menuItems->perPage() + $loop->iteration }}
                                 </td>
-                                {{-- <td class="px-4 py-2">
-                                    @if($item->ImageUrl)
-                                        <img src="https://pcsdecom.azurewebsites.net{{$item->ImageUrl}}" class="thumb">
-                                    @else
-                                        <div
-                                            class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">
-                                            No</div>
-                                    @endif
-                                </td> --}}
 
                                 <td class="px-4 py-2">
                                     @if($item->ImageUrl)
-                                        <a href="https://pcsdecom.azurewebsites.net{{$item->ImageUrl}}" target="_blank">
-                                            <img src="https://pcsdecom.azurewebsites.net{{$item->ImageUrl}}" 
-                                                class="thumb cursor-pointer">
-                                        </a>
+                                        {{-- <a href="{{$item->ImageUrl}}" target="_blank"> --}}
+                                            <img src="{{$item->ImageUrl}}" class="thumb cursor-pointer" onclick="showImage('{{ $item->ImageUrl }}')">
+                                        {{-- </a> --}}
                                     @else
                                         <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">
                                             No
                                         </div>
                                     @endif
                                 </td>
-
 
                                 <td class="px-4 py-2 font-semibold">{{ $item->Name }}</td>
                                 <td class="px-4 py-2">
@@ -135,7 +131,14 @@
                                         <form method="POST" action="{{ route('menu-items.destroy', $item->MenuItemId) }}"
                                             class="delete-form inline">
                                             @csrf @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800">
+                                            {{-- <button type="submit" class="text-red-600 hover:text-red-800">
+                                                <i class="fas fa-trash"></i>
+                                            </button> --}}
+                                            <button
+                                                type="button"
+                                                class="delete-btn text-red-600 hover:text-red-800"
+                                                data-id="{{ $item->MenuItemId }}"
+                                                data-name="{{ $item->Name }}">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </form>
@@ -319,6 +322,7 @@
             const categoryFilter = document.getElementById('category-filter');
             const typeFilter = document.getElementById('type-filter');
             const itemsContainer = document.getElementById('items-container');
+            const perPageFilter = document.getElementById('per-page-filter');
 
             const performSearch = () => {
                 const formData = new FormData(filterForm);
@@ -375,6 +379,7 @@
             // Immediate search for dropdowns
             categoryFilter.addEventListener('change', performSearch);
             typeFilter.addEventListener('change', performSearch);
+            perPageFilter.addEventListener('change',performSearch);
 
             const reattachEventListeners = () => {
                 // Edit buttons
@@ -396,22 +401,54 @@
                 });
 
                 // Delete forms
-                document.querySelectorAll('.delete-form').forEach(f => {
-                    f.addEventListener('submit', function (e) {
-                        e.preventDefault();
+                document.querySelectorAll('.delete-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const id = btn.dataset.id;
+                        const name = btn.dataset.name;
+
                         Swal.fire({
-                            title: 'Are you sure?',
-                            text: "This action cannot be undone!",
+                            title: 'Delete Item?',
+                            text: `Are you sure you want to delete "${name}"?`,
                             icon: 'warning',
                             showCancelButton: true,
-                            confirmButtonColor: '#e3342f',
-                            cancelButtonColor: '#6c757d',
-                            confirmButtonText: 'Yes, delete it!'
+                            confirmButtonColor: '#dc2626',
+                            cancelButtonColor: '#6b7280',
+                            confirmButtonText: 'Yes, delete it'
                         }).then((result) => {
-                            if (result.isConfirmed) f.submit();
+                            if (!result.isConfirmed) return;
+
+                            fetch(`/menu-items/${id}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire({
+                                        toast: true,
+                                        position: 'top-end',
+                                        icon: 'success',
+                                        title: data.message || 'Item deleted',
+                                        showConfirmButton: false,
+                                        timer: 2500
+                                    });
+
+                                    performSearch(); //reload list (pagination + filters preserved)
+                                } else {
+                                    Swal.fire('Error', data.message || 'Delete failed', 'error');
+                                }
+                            })
+                            .catch(() => {
+                                Swal.fire('Error', 'Server error occurred', 'error');
+                            });
                         });
                     });
                 });
+
 
                 // Description clickable
                 document.querySelectorAll('.desc-clickable').forEach(el => {

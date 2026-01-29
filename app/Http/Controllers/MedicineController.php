@@ -181,17 +181,22 @@ class MedicineController extends Controller
     public function destroy($id)
     {
         $medicine = Medicine::findOrFail($id);
-        // delete image if present
-        if ($medicine->ImageUrl && Storage::disk('public')->exists($medicine->ImageUrl)) {
-            Storage::disk('public')->delete($medicine->ImageUrl);
-        }
         $name = $medicine->Name;
+
+        // Optional: prevent delete if used in orders
+        if ($medicine->orderItems()->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => "This medicine item '{$name}' cannot be deleted because it is used in orders."
+            ], 400);
+        }
+
         $medicine->delete();
 
-        return redirect()->route('admin.medicines.index')->with('success', "Medicine '{$name}' deleted.");
-
-        // Stay on the same page
-        // return back()->with('success', "Medicine '{$name}' deleted.");
+        return response()->json([
+            'success' => true,
+            'message' => "Medicine item  '{$name}' deleted successfully"
+        ]);
     }
 
     public function toggleActive($id)

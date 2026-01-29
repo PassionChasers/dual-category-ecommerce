@@ -11,7 +11,7 @@
 
 @section('title', 'Admin | Product Category')
 @section('contents')
-<div class="flex-1 p-4 md:p-6 bg-gray-50">
+<div class="flex-1 p-4 md:p-6 bg-gray-50 overflow-y-auto">
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800">Product Category Management</h2>
@@ -24,10 +24,17 @@
                     value="{{ request('search') ?? '' }}">
                 
                 <select id="status-filter" name="status" class="px-3 py-2 border rounded-md text-sm">
-                    <option value="">All</option>
+                    <option value="">Active/InActive</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
+
+                <select name="per_page" id="per-page-filter" class="custom-select pl-2 border rounded-md text-sm">
+                    @foreach($allowedPerPage as $pp)
+                        <option value="{{ $pp }}" {{ $perPage == $pp ? 'selected' : '' }}>{{ $pp }} per page</option>
+                    @endforeach
+                </select>
+
             </form>
             <button id="new-category-button"
                 class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
@@ -44,11 +51,11 @@
             <table class="min-w-full divide-y divide-gray-200 text-sm category-table">
                 <thead class="bg-gray-100">
                     <tr>
-                        <th class="px-4 py-2">SN</th>
-                        <th class="px-4 py-2">Name</th>
-                        <th class="px-4 py-2">Description</th>
-                        <th class="px-4 py-2">Status</th>
-                        <th class="px-4 py-2">Actions</th>
+                        <th class="px-4 py-2 text-left">SN</th>
+                        <th class="px-4 py-2 text-left">Name</th>
+                        <th class="px-4 py-2 text-left">Description</th>
+                        <th class="px-4 py-2 text-left">IsActive</th>
+                        <th class="px-4 py-2 ">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
@@ -67,12 +74,12 @@
                                     <button class="edit-category-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $cat->MenuCategoryId }}" data-name="{{ $cat->Name }}" data-description="{{ $cat->Description }}" data-isactive="{{ $cat->IsActive }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <form method="POST" action="{{ route('product.food.category.destroy', $cat->MenuCategoryId) }}" class="delete-form inline">
+                                    {{-- <form method="POST" action="{{ route('product.food.category.destroy', $cat->MenuCategoryId) }}" class="delete-form inline">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="text-red-600 hover:text-red-800 delete-category-btn" data-name="{{ $cat->Name }}">
                                             <i class="fas fa-trash"></i>
                                         </button>
-                                    </form>
+                                    </form> --}}
                                 </div>
                             </td>
                         </tr>
@@ -161,15 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-input');
     const statusFilter = document.getElementById('status-filter');
     const categoriesContainer = document.getElementById('categories-container');
+    const perPageFilter = document.getElementById('per-page-filter');
 
     const performSearch = () => {
         const formData = new FormData(filterForm);
         const params = new URLSearchParams(formData);
         const url = `{{ route('product.food.category') }}?${params.toString()}`;
-        
-        console.log('Fetching:', url);
-        console.log('Status value:', statusFilter.value);
-        console.log('Search value:', searchInput.value);
 
         fetch(url, {
             headers: {
@@ -179,11 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => response.text())
         .then(html => {
-            console.log('Response received, length:', html.length);
             const parser = new DOMParser();
             const newDoc = parser.parseFromString(html, 'text/html');
             const newContainer = newDoc.getElementById('categories-container');
-            console.log('Container found:', !!newContainer);
+            
             if (newContainer) {
                 categoriesContainer.innerHTML = newContainer.innerHTML;
                 // Re-sync filter values
@@ -217,6 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Immediate search for status filter
     statusFilter.addEventListener('change', performSearch);
+    perPageFilter.addEventListener('change',performSearch);
 
     const reattachEventListeners = () => {
         document.querySelectorAll('.edit-category-btn').forEach(btn => {

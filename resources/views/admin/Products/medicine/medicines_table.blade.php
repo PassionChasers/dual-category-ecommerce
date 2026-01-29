@@ -25,9 +25,9 @@
 
                 <td class="px-4 py-3">
                     @if($m->ImageUrl)
-                        <a href="{{ $m->ImageUrl }}" target="_blank">
-                            <img src="{{ $m->ImageUrl }}" class="thumb cursor-pointer">
-                        </a>
+                        {{-- <a href="{{ $m->ImageUrl }}" target="_blank"> --}}
+                            <img src="{{ $m->ImageUrl }}" class="thumb cursor-pointer" onclick="showImage('{{ $m->ImageUrl }}')">
+                        {{-- </a> --}}
                     @else
                         <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
                     @endif
@@ -71,9 +71,18 @@
 
                         <form action="{{ route('admin.medicines.destroy',$m->MedicineId) }}" method="POST" class="delete-form inline">
                             @csrf @method('DELETE')
-                            <button type="submit" class="text-red-600 hover:text-red-800">
+                            {{-- <button type="submit" class="text-red-600 hover:text-red-800">
+                                <i class="fas fa-trash"></i>
+                            </button> --}}
+
+                            <button
+                                type="button"
+                                class="delete-btn text-red-600 hover:text-red-800"
+                                data-id="{{ $m->MedicineId }}"
+                                data-name="{{ $m->Name }}">
                                 <i class="fas fa-trash"></i>
                             </button>
+
                         </form>
                     </div>
                 </td>
