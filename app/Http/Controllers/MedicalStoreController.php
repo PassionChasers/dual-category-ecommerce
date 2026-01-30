@@ -396,7 +396,7 @@ class MedicalStoreController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/resend-verifivation', [
+        $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/resend-verification', [
             'email' => $request->email,
         ]);
 

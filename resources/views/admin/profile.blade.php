@@ -36,9 +36,9 @@
             <div class="flex flex-col items-center pb-6 border-b border-gray-200 mb-6">
                 <div class="relative w-24 h-24 rounded-full overflow-hidden border-2 border-gray-300 bg-gray-100 flex items-center justify-center cursor-pointer hover:border-indigo-500 transition" id="profile-picture-wrapper">
                     @if($user->AvatarUrl)
-                        <img src="{{ asset('storage/' . $user->AvatarUrl) }}" class="w-full h-full object-cover" id="profile-picture-preview">
-                    @else
-                        <img src="{{ asset('storage/images/default-user.png') }}" class="w-full h-full object-cover" id="profile-picture-preview">
+                        <img src="{{$user->AvatarUrl}}" onclick="showImage('{{ $user->AvatarUrl }}')" class="thumb cursor-pointer w-full h-full object-cover">
+                    {{-- @else
+                        <img src="{{ asset('storage/images/default-user.png') }}" class="w-full h-full object-cover" id="profile-picture-preview"> --}}
                     @endif
                     <div class="absolute inset-0 bg-black/50 flex justify-center items-center opacity-0 hover:opacity-100 transition">
                         <span class="text-xs text-white">Change Photo</span>
@@ -51,8 +51,8 @@
             </div>
 
             <!-- Personal Information -->
-            <h3 class="text-lg font-semibold text-gray-700 mb-4">Personal Information</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <h3 class="text-lg font-semibold text-blue-700 mb-4">Personal Information</h3>
+            <div class="grid grid-cols-1 border-b border-gray-200 md:grid-cols-2 gap-4 mb-6">
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Full Name <span class="text-red-500">*</span></label>
                     <input type="text" name="name" value="{{ old('name', $user->Name) }}" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
@@ -70,6 +70,28 @@
                     <input type="text" value="{{ $user->Role == 4 ? 'Admin' : ($user->Role == 2 ? 'Medical Store' : ($user->Role == 3 ? 'Restaurant' : ($user->Role == 1 ? 'Customer' : 'Delivery'))) }}" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-100" disabled>
                 </div>
             </div>
+            <hr class="mb-6 mt-2 border-gray-300">
+
+            <!-- Password  -->
+            {{-- <h3 class="text-lg font-semibold text-blue-700 mb-4">Change Password</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Old Password<span class="text-red-500">*</span></label>
+                    <input type="password" name="oldPassword" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">New Password <span class="text-red-500">*</span></label>
+                    <input type="password" name="newPassword" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700">Confirm New Password<span class="text-red-500">*</span></label>
+                    <input type="password" name="confirmNewPassword" class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div>
+                    <a href="#">Forgot Password</a>
+                </div>
+            </div>
+            <hr class="mb-6 mt-2 border-gray-300"> --}}
 
             <!-- Organization Information (Only for store admins) -->
             @if($business)

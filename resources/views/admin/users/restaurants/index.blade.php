@@ -7,7 +7,7 @@
 @endpush
 
 @section('contents')
-<div class="flex-1 p-4 md:p-6 bg-gray-50">
+<div class="flex-1 p-4 md:p-6 bg-gray-50 overflow-auto">
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800">Restaurant Management</h2>
@@ -16,9 +16,9 @@
 
         <div class="flex flex-wrap gap-2 w-full md:w-auto">
             <!-- Search Form -->
-            <input type="text" id="search" name="search" placeholder="Search by Name or Email..." 
+            <input type="text" id="search" name="search" placeholder="Search by Name or Email or Phone..." 
                 value="{{ request('search') }}"
-                class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                class="flex-1 min-w-[250px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
 
             <select id="onlineStatus" name="onlineStatus" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
                 <option value="">All Status</option>
@@ -26,9 +26,15 @@
                 <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>Offline</option>
             </select>
 
-            <button id="openAdminModal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+            <select name="per_page" id="per-page-filter" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
+                @foreach($allowedPerPage as $pp)
+                    <option value="{{ $pp }}" {{ $perPage == $pp ? 'selected' : '' }}>{{ $pp }} per page</option>
+                @endforeach
+            </select>
+
+            {{-- <button id="openAdminModal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
                 <i class="fas fa-plus mr-1"></i> New Restaurant
-            </button>
+            </button> --}}
         </div>
     </div>
 
@@ -40,7 +46,7 @@
 
 
 <!-- Add User Modal -->
-<div id="AdminModal"
+{{-- <div id="AdminModal"
      class="fixed inset-0 hidden items-center justify-center z-50">
      <div  class="flex items-center justify-center backdrop-blur-[2px] w-screen h-screen">
          <!-- overlay -->
@@ -123,7 +129,7 @@
          </div>
      </div>
 
-</div>
+</div> --}}
 
 
 {{-- Modal --}}
@@ -163,11 +169,11 @@
                         required>
                 </div>
 
-                <div>
+                {{-- <div>
                     <label class="block text-sm font-medium text-gray-700">Password</label>
                     <input type="password" name="password" id="customer-password" placeholder="Leave blank to keep unchanged"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                </div>
+                </div> --}}
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Contact Number</label>
@@ -204,27 +210,27 @@
 document.addEventListener('DOMContentLoaded', function() {
 
      // ADD MODAL
-    const addModal = document.getElementById('AdminModal');
-    const openAddBtn = document.getElementById('openAdminModal');
-    const addCloseBtn = document.getElementById('add-close-btn');
-    const addCancelBtn = document.getElementById('add-cancel-btn');
-    const addOverlay = document.getElementById('addOverlay');
+    // const addModal = document.getElementById('AdminModal');
+    // const openAddBtn = document.getElementById('openAdminModal');
+    // const addCloseBtn = document.getElementById('add-close-btn');
+    // const addCancelBtn = document.getElementById('add-cancel-btn');
+    // const addOverlay = document.getElementById('addOverlay');
 
-    openAddBtn?.addEventListener('click', () => {
-        addModal.classList.remove('hidden');
-        addModal.classList.add('flex');
-        document.body.classList.add('overflow-hidden');
-    });
+    // openAddBtn?.addEventListener('click', () => {
+    //     addModal.classList.remove('hidden');
+    //     addModal.classList.add('flex');
+    //     document.body.classList.add('overflow-hidden');
+    // });
 
-    [addCloseBtn, addCancelBtn, addOverlay].forEach(btn => {
-        btn?.addEventListener('click', () => {
-            addModal.classList.add('hidden');
-            addModal.classList.remove('flex');
-        });
-    });
+    // [addCloseBtn, addCancelBtn, addOverlay].forEach(btn => {
+    //     btn?.addEventListener('click', () => {
+    //         addModal.classList.add('hidden');
+    //         addModal.classList.remove('flex');
+    //     });
+    // });
 
 
-     // EDIT MODAL
+    // EDIT MODAL
     const editModal = document.getElementById('edit-modal');
     const editCloseBtn = document.getElementById('edit-close-btn');
     const editCancelBtn = document.getElementById('edit-cancel-btn');
@@ -245,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const IsActiveInput = document.getElementById('IsActive');
     const contactNumberInput = document.getElementById('customer_contact_number');
     const emailInput = document.getElementById('customer-email');
-    const passwordInput = document.getElementById('customer-password');
+    // const passwordInput = document.getElementById('customer-password');
 
     // Event delegation for edit buttons (works after AJAX too)
     document.addEventListener('click', function(e) {
@@ -259,7 +265,7 @@ document.addEventListener('DOMContentLoaded', function() {
             IsActiveInput.checked = btn.dataset.isactive === '1';
             contactNumberInput.value = btn.dataset.contact_number;
             emailInput.value = btn.dataset.email;
-            passwordInput.value = '';
+            // passwordInput.value = '';
 
             // Set hidden fields for current search/filter
             document.getElementById('current-search').value = document.getElementById('search').value;
@@ -278,24 +284,52 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Fetch and update table data
+    // function fetchData(url = null) {
+    //     const search = document.getElementById('search').value;
+    //     const onlineStatus = document.getElementById('onlineStatus').value;
+    //     let fetchUrl = url ? url : `?search=${search}&onlineStatus=${onlineStatus}`;
+
+    //     if (url) setInputsFromUrl(url);
+
+    //     fetch(fetchUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    //         .then(res => res.text())
+    //         .then(data => {
+    //             document.getElementById('tableData').innerHTML = data;
+    //             if (url) setInputsFromUrl(url);
+    //         });
+    // }
+
     function fetchData(url = null) {
         const search = document.getElementById('search').value;
         const onlineStatus = document.getElementById('onlineStatus').value;
-        let fetchUrl = url ? url : `?search=${search}&onlineStatus=${onlineStatus}`;
+        const perPage = document.getElementById('per-page-filter').value;
 
-        if (url) setInputsFromUrl(url);
+        let fetchUrl;
 
-        fetch(fetchUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('tableData').innerHTML = data;
-                if (url) setInputsFromUrl(url);
-            });
+        if (url) {
+            fetchUrl = url;
+        } else {
+            fetchUrl = `?search=${encodeURIComponent(search)}&onlineStatus=${encodeURIComponent(onlineStatus)}&per_page=${perPage}`;
+        }
+
+        fetch(fetchUrl, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById('tableData').innerHTML = data;
+        });
     }
     
     // Trigger fetch on search and filter change
-    document.getElementById('search').addEventListener('keyup', () => fetchData());
+    // document.getElementById('search').addEventListener('keyup', () => fetchData());
+    document.getElementById('search').addEventListener('keyup', function (e) {
+        if (e.key === 'Enter') {
+            fetchData();
+        }
+    });
     document.getElementById('onlineStatus').addEventListener('change', () => fetchData());
+    document.getElementById('per-page-filter').addEventListener('change', () => fetchData());
 
     // AJAX pagination
     document.addEventListener('click', function(e) {

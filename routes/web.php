@@ -103,6 +103,8 @@ Route::middleware('auth')->group(function () {
 
     // NOTE: In Laravel it's recommended to make logout a POST route.
     Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.update');
+
 
     /*
     |----------------------------------------------------------------------
@@ -172,7 +174,7 @@ Route::middleware('auth')->group(function () {
 
     /*
     |----------------------------------------------------------------------
-    | Users (admin, customers, medicalstores, restaurants)
+    | Users (admin, customers, medicalstores, restaurants, deliveryman)
     |----------------------------------------------------------------------
     */
     Route::prefix('users')->name('users.')->group(function () {
@@ -183,11 +185,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/restaurants', [UserController::class, 'restaurants'])->name('restaurants.index');
         Route::get('/medicalstores', [UserController::class, 'medicalstores'])->name('medicalstores.index');
         Route::get('/delivery-man', [UserController::class, 'deliveryMan'])->name('delivery-man.index');
+        Route::post('/create-delivery-man', [UserController::class, 'createDeliveryMan'])->name('create-delivery-man');
         Route::post('/store', [UserController::class, 'store'])->name('store');
         Route::put('/update/{user}', [UserController::class, 'update'])->name('update');
         Route::delete('/destroy/{user}', [UserController::class, 'destroy'])->name('destroy');
         // Route::post('/verify-email', [UserController::class, 'verifyOtp'])->name('verifyOtp');
         // Route::post('/resendOtp', [UserController::class, 'resendOtp'])->name('resendOtp');
+        
     });
 
       /*

@@ -28,7 +28,12 @@ class UserController extends Controller
             $search = $request->search;
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            $query->where('Name', 'ilike', '%' . $search . '%');
+            // $query->where('Name', 'ilike', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'ilike', "%{$search}%")
+                ->orWhere('Email', 'ilike', "%{$search}%")
+                ->orWhere('Phone', 'ilike', "%{$search}%");
+            });
         }
 
         //Filter by online status
@@ -36,16 +41,21 @@ class UserController extends Controller
             $query->where('IsActive', $request->onlineStatus);
         }
 
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 5);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+
         // Paginate results with query parameters
-        $users = $query->latest()->paginate(5)->appends($request->all());
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
         // $allOrders = $medicineOrders;
 
         //AJAX response
         if($request->ajax()){
-            return view('admin.users.searchedUsers', compact('users'))->render();
+            return view('admin.users.searchedUsers', compact('users','perPage', 'allowedPerPage'))->render();
         }
         //Normal load
-        return view('admin.users.index', compact('users'));
+        return view('admin.users.index', compact('users','perPage', 'allowedPerPage'));
     }
 
     public function customers(Request $request)
@@ -58,7 +68,12 @@ class UserController extends Controller
             $search = $request->search;
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            $query->where('Name', 'ilike', '%' . $search . '%');
+            // $query->where('Name', 'ilike', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'ilike', "%{$search}%")
+                ->orWhere('Email', 'ilike', "%{$search}%")
+                ->orWhere('Phone', 'ilike', "%{$search}%");
+            });
         }
 
         //Filter by online status
@@ -66,16 +81,21 @@ class UserController extends Controller
             $query->where('IsActive', $request->onlineStatus);
         }
 
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 5);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+
         // Paginate results with query parameters
-        $users = $query->latest()->paginate(5)->appends($request->all());
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
         // $allOrders = $medicineOrders;
 
         //AJAX response
         if($request->ajax()){
-            return view('admin.users.customers.searchedCustomers', compact('users'))->render();
+            return view('admin.users.customers.searchedCustomers', compact('users','perPage', 'allowedPerPage'))->render();
         }
         //Normal load
-        return view('admin.users.customers.index', compact('users'));
+        return view('admin.users.customers.index', compact('users','perPage', 'allowedPerPage'));
     }
 
     public function medicalstores(Request $request)
@@ -88,7 +108,13 @@ class UserController extends Controller
             $search = $request->search;
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            $query->where('Name', 'ilike', '%' . $search . '%');
+            // $query->where('Name', 'ilike', '%' . $search . '%');
+
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'ilike', "%{$search}%")
+                ->orWhere('Email', 'ilike', "%{$search}%")
+                ->orWhere('Phone', 'ilike', "%{$search}%");
+            });
         }
 
         //Filter by online status
@@ -96,16 +122,21 @@ class UserController extends Controller
             $query->where('IsActive', $request->onlineStatus);
         }
 
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 5);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+
         // Paginate results with query parameters
-        $users = $query->latest()->paginate(5)->appends($request->all());
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
         // $allOrders = $medicineOrders;
 
         //AJAX response
         if($request->ajax()){
-            return view('admin.users.medical_stores.searchedMedicalstore', compact('users'))->render();
+            return view('admin.users.medical_stores.searchedMedicalstore', compact('users','perPage', 'allowedPerPage'))->render();
         }
         //Normal load
-        return view('admin.users.medical_stores.index', compact('users'));
+        return view('admin.users.medical_stores.index', compact('users','perPage', 'allowedPerPage'));
     }
 
     public function restaurants(Request $request)
@@ -118,7 +149,14 @@ class UserController extends Controller
             $search = $request->search;
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            $query->where('Name', 'ilike', '%' . $search . '%');
+            // $query->where('Name', 'ilike', '%' . $search . '%');
+
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'ilike', "%{$search}%")
+                ->orWhere('Email', 'ilike', "%{$search}%")
+                ->orWhere('Phone', 'ilike', "%{$search}%");
+            });
+            
         }
 
         //Filter by online status
@@ -126,16 +164,21 @@ class UserController extends Controller
             $query->where('IsActive', $request->onlineStatus);
         }
 
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 5);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+
         // Paginate results with query parameters
-        $users = $query->latest()->paginate(5)->appends($request->all());
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
         // $allOrders = $medicineOrders;
 
         //AJAX response
         if($request->ajax()){
-            return view('admin.users.restaurants.searchedRestaurants', compact('users'))->render();
+            return view('admin.users.restaurants.searchedRestaurants', compact('users','perPage', 'allowedPerPage'))->render();
         }
         //Normal load
-        return view('admin.users.restaurants.index', compact('users'));
+        return view('admin.users.restaurants.index', compact('users','perPage', 'allowedPerPage'));
     }
 
     public function deliveryMan(Request $request)
@@ -148,7 +191,12 @@ class UserController extends Controller
             $search = $request->search;
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            $query->where('Name', 'ilike', '%' . $search . '%');
+            // $query->where('Name', 'ilike', '%' . $search . '%');
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'ilike', "%{$search}%")
+                ->orWhere('Email', 'ilike', "%{$search}%")
+                ->orWhere('Phone', 'ilike', "%{$search}%");
+            });
         }
 
         //Filter by online status
@@ -156,16 +204,21 @@ class UserController extends Controller
             $query->where('IsActive', $request->onlineStatus);
         }
 
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 5);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+
         // Paginate results with query parameters
-        $users = $query->latest()->paginate(5)->appends($request->all());
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
         // $allOrders = $medicineOrders;
 
         //AJAX response
         if($request->ajax()){
-            return view('admin.users.deliveryMan.searchedDeliveryMan', compact('users'))->render();
+            return view('admin.users.deliveryMan.searchedDeliveryMan', compact('users','perPage', 'allowedPerPage'))->render();
         }
         //Normal load
-        return view('admin.users.deliveryMan.index', compact('users'));
+        return view('admin.users.deliveryMan.index', compact('users','perPage', 'allowedPerPage'));
     }
 
     /**
@@ -251,7 +304,18 @@ class UserController extends Controller
         // Update other fields as necessary
         $user->save();
 
-        return redirect()->route('users.admin.index')->with('success', 'User updated successfully.');
+        if ($user->Role == 4) {
+            return redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.');
+        } elseif ($user->Role == 1) {
+            return redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.');
+        } elseif ($user->Role == 2) {
+            return redirect()->route('users.medicalstores.index')->with('success', 'Medical Store user  updated successfully.');
+        } elseif ($user->Role == 3) {
+            return redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated user successfully.');
+        } elseif ($user->Role == 5) {
+            return redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.');
+        }       
+        // return redirect()->route('users.admin.index')->with('success', 'User updated successfully.');
     }
 
     /**
@@ -313,7 +377,77 @@ class UserController extends Controller
             'message' => 'Admin registered successfully',
             'redirect' => route('users.admin.index'),
         ]);
-    }  
+    } 
+    
+    public function createDeliveryMan(Request $request)
+    {
+        // Token check
+        $token = session('jwt_token');
+        if (!$token) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Session expired. Please login again.'
+            ], 401);
+        }
+
+        // Validation
+        $validated = $request->validate([
+            // 'name'               => 'required|string|max:100',
+            // 'email'              => 'required|email',
+            // 'phone'              => 'required|string|max:15|min:9',
+            // 'vehicleType'        => 'required|string|max:200',
+            // 'vehicleNumber'      => 'required|string|max:100',
+            // 'licenseNumber'      => 'required|string|max:100',
+            // 'latitude'           => 'required|number|max:200',
+            // 'longitude'          => 'required|number|max:200',
+
+            'name'           => 'required|string|max:100',
+            'email'          => 'required|email',
+            'phone'          => 'required|string|min:9|max:15',
+
+            'vehicleType'    => 'required|string|max:200',
+            'vehicleNumber'  => 'required|string|max:100',
+            'licenseNumber'  => 'required|string|max:100',
+
+            'latitude'       => 'required|numeric|between:-90,90',
+            'longitude'      => 'required|numeric|between:-180,180',
+
+        ]);
+
+        // API Call
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . $token,
+            'Accept' => 'application/json',
+        ])->post('https://pcsdecom.azurewebsites.net/api/admin/register/delivery-man', 
+            [
+                'name'          => $validated['name'],
+                'email'         => $validated['email'],
+                'phone'         => $validated['phone'],
+                'vehicleType'   => $validated['vehicleType'],
+                'vehicleNumber' => $validated['vehicleNumber'],
+                'licenseNumber' => $validated['licenseNumber'],
+                'location'      => [
+                    'latitude'  => (float) $validated['latitude'],
+                    'longitude' => (float) $validated['longitude'],
+                ],
+            ]
+        );
+
+        // API error
+        if ($response->failed()) {
+            return response()->json([
+                'success' => false,
+                'message' => $response->json('message') ?? 'API error'
+            ], $response->status());
+        }
+        
+        // Success
+        return response()->json([
+            'success' => true,
+            'message' => 'Delivery Man registered successfully, please check your email to see your login Password.',
+            'redirect' => route('users.delivery-man.index'),
+        ]);
+    } 
     
     // public function verifyOtp(Request $request)
     // {

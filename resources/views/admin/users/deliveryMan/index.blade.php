@@ -8,15 +8,15 @@
 <div class="flex-1 p-4 md:p-6 bg-gray-50">
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
-            <h2 class="text-2xl font-bold text-gray-800">Customer Management</h2>
-            <p class="text-gray-600">Manage all Customers</p>
+            <h2 class="text-2xl font-bold text-gray-800">DeliveryMan Management</h2>
+            <p class="text-gray-600">Manage all DeliveryMan</p>
         </div>
 
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
             <!-- Search Form -->
-            <input type="text" id="search" name="search" placeholder="Search by Name or Email..." 
+            <input type="text" id="search" name="search" placeholder="Search by Name or Email or Phone..." 
                 value="{{ request('search') }}"
-                class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                class="flex-1 min-w-[250px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
 
             <select id="onlineStatus" name="onlineStatus" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
                 <option value="">All Status</option>
@@ -24,8 +24,19 @@
                 <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>Offline</option>
             </select>
 
-            <button id="openAdminModal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
-                <i class="fas fa-plus mr-1"></i> New Customer
+            <select name="per_page" id="per-page-filter" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
+                @foreach($allowedPerPage as $pp)
+                    <option value="{{ $pp }}" {{ $perPage == $pp ? 'selected' : '' }}>{{ $pp }} per page</option>
+                @endforeach
+            </select>
+
+            {{-- <button id="openAdminModal" class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                <i class="fas fa-plus mr-1"></i> Add DeliveryMan
+            </button> --}}
+
+            <button onclick="openDeliveryManModal()"
+                class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
+                <i class="fas fa-plus mr-1"></i> Register New DeliveryMan
             </button>
         </div>
     </div>
@@ -38,19 +49,20 @@
 
 
 <!-- Add User Modal -->
-<div id="AdminModal"
+<div id="DeliveryManModal"
      class="fixed inset-0  hidden items-center justify-center z-50">
      <div id="addOverlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px]"></div>
 
     <div class="bg-white w-full max-w-2xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh] relative">
         <!-- Header -->
         <div class="flex justify-between items-center px-6 py-4 bg-indigo-600 ">
-            <h3 class="text-lg font-semibold text-white">Add New Customer</h3>
-            <button id="add-close-btn" class="text-white hover:text-red-500 text-3xl">&times;</button>
+            <h3 class="text-lg font-semibold text-white">Add Delivery Man</h3>
+            {{-- <button id="add-close-btn" class="text-white hover:text-red-500 text-3xl">&times;</button> --}}
+            <button onclick="closeDeliveryManModal()" class="text-white hover:text-red-500 text-3xl">&times;</button>
         </div>
 
         <!-- Form -->
-        <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
+        <form id="delivery-man-form" action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
@@ -71,14 +83,6 @@
                     <input type="email" name="email" placeholder="example@gmail.com" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
-                <!-- Password -->
-                <div>
-                    <label class="block text-sm font-medium">
-                        Password<span class="text-red-500">*</span>
-                    </label>
-                    <input type="password" name="password" placeholder="Enter Password" class="input border border-gray-400 rounded  p-2 w-full" required>
-                </div>
-
                 <!-- Phone -->
                 <div>
                     <label class="block text-sm font-medium">
@@ -87,56 +91,75 @@
                     <input type="text" name="phone" placeholder="+977 98XXXXXXXX" class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
-                <!-- Avatar -->
+                <!-- Vehicle Type -->
                 <div>
-                    <label class="block text-sm font-medium">Avatar</label>
-                    <input type="file" name="avatar_url" class="input border border-gray-400 rounded p-2 w-full">
+                    <label class="block text-sm font-medium">
+                        Vehicle Type<span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="vehicleType" placeholder="Vechicle Type" class="input border border-gray-400 rounded  p-2 w-full" required>
                 </div>
 
-                <!-- Role -->
+                <!-- Vehicle Number -->
                 <div>
-                    <label class="block text-sm font-medium">Role</label>
-                    <input type="text" name="role" value="5" class="input border border-gray-400 rounded p-2 w-full" readonly>
+                    <label class="block text-sm font-medium">
+                        Vehicle Number<span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="vehicleNumber" placeholder="Vechicle Number"  class="input border border-gray-400 rounded p-2 w-full" required>
                 </div>
 
-                {{-- <!-- Is Active -->
+                <!-- License Number -->
                 <div>
-                    <label class="block text-sm font-medium">Is Active</label>
-                    <select name="is_active" class="input">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                </div> --}}
+                    <label class="block text-sm font-medium">
+                        License Number<span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="licenseNumber" placeholder="License Number"  class="input border border-gray-400 rounded p-2 w-full" required>
+                </div>
 
-                <!-- Is Email Verified -->
-                {{-- <div>
-                    <label class="block text-sm font-medium">Email Verified</label>
-                    <select name="is_email_verified" class="input">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
-                    </select>
-                </div> --}}
+                <!-- Latitude -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        Latitude<span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="latitude" placeholder="Latitude"  class="input border border-gray-400 rounded p-2 w-full" required>
+                </div>
 
-                <!-- Is Business Admin -->
-                {{-- <div>
-                    <label class="block text-sm font-medium">Business Admin</label>
-                    <select name="is_business_admin" class="input" readonly>
-                        <option value="0" selected>No</option>
-                        <option value="1">Yes</option>
-                    </select>
-                </div> --}}
-
+                <!-- Longitude -->
+                <div>
+                    <label class="block text-sm font-medium">
+                        Longitude<span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="longitude" placeholder="Longitude"  class="input border border-gray-400 rounded p-2 w-full" required>
+                </div>
             </div>
 
             <!-- Footer -->
             <div class="flex justify-end gap-2 px-6 py-4">
-                <button type="button" id="add-cancel-btn"
+                {{-- <button type="button" id="add-cancel-btn"
                         class="px-4 py-2 bg-gray-200 hover:text-white hover:bg-red-500 rounded-lg">
                     Cancel
                 </button>
                 <button type="submit"
                         class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg">
                     Save User
+                </button> --}}
+
+                <button type="button" onclick="closeDeliveryManModal()" class="px-4 py-2 rounded-lg text-black bg-gray-300 hover:bg-red-500 hover:text-white">
+                    Cancel
+                </button>
+                
+                <button
+                    type="submit"
+                    id="SubmitBtn"
+                    class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-lg flex items-center justify-center gap-2"
+                >
+                    <span id="btnText">Save DeliveryMAn</span>
+                    <svg id="btnSpinner" class="w-5 h-5 animate-spin hidden"
+                        xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                            stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path> 
+                    </svg>
                 </button>
             </div>
         </form>
@@ -157,8 +180,6 @@
                 <button type="button" id="edit-close-btn" class=" text-white hover:text-red-500 text-3xl ">
                     <i class="fas fa-times text-lg"></i>
                 </button>
-    
-               
             </div>
 
             <form id="customer-form" method="POST" class="space-y-4 px-6 py-4">
@@ -181,11 +202,11 @@
                         required>
                 </div>
 
-                <div>
+                {{-- <div>
                     <label class="block text-sm font-medium text-gray-700">Password</label>
                     <input type="password" name="password" id="customer-password" placeholder="Leave blank to keep unchanged"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                </div>
+                </div> --}}
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Contact Number</label>
@@ -263,7 +284,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const IsActiveInput = document.getElementById('IsActive');
     const contactNumberInput = document.getElementById('customer_contact_number');
     const emailInput = document.getElementById('customer-email');
-    const passwordInput = document.getElementById('customer-password');
+    // const passwordInput = document.getElementById('customer-password');
 
     // Event delegation for edit buttons (works after AJAX too)
     document.addEventListener('click', function(e) {
@@ -277,7 +298,7 @@ document.addEventListener('DOMContentLoaded', function() {
             IsActiveInput.checked = btn.dataset.isactive === '1';
             contactNumberInput.value = btn.dataset.contact_number;
             emailInput.value = btn.dataset.email;
-            passwordInput.value = '';
+            // passwordInput.value = '';
 
             // Set hidden fields for current search/filter
             document.getElementById('current-search').value = document.getElementById('search').value;
@@ -296,24 +317,54 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Fetch and update table data
+    // function fetchData(url = null) {
+    //     const search = document.getElementById('search').value;
+    //     const onlineStatus = document.getElementById('onlineStatus').value;
+    //     let fetchUrl = url ? url : `?search=${search}&onlineStatus=${onlineStatus}`;
+
+    //     if (url) setInputsFromUrl(url);
+
+    //     fetch(fetchUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+    //         .then(res => res.text())
+    //         .then(data => {
+    //             document.getElementById('tableData').innerHTML = data;
+    //             if (url) setInputsFromUrl(url);
+    //         });
+    // }
+
     function fetchData(url = null) {
         const search = document.getElementById('search').value;
         const onlineStatus = document.getElementById('onlineStatus').value;
-        let fetchUrl = url ? url : `?search=${search}&onlineStatus=${onlineStatus}`;
+        const perPage = document.getElementById('per-page-filter').value;
 
-        if (url) setInputsFromUrl(url);
+        let fetchUrl;
 
-        fetch(fetchUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-            .then(res => res.text())
-            .then(data => {
-                document.getElementById('tableData').innerHTML = data;
-                if (url) setInputsFromUrl(url);
-            });
+        if (url) {
+            fetchUrl = url;
+            setInputsFromUrl(url);
+        } else {
+            fetchUrl = `?search=${encodeURIComponent(search)}&onlineStatus=${encodeURIComponent(onlineStatus)}&per_page=${perPage}`;
+        }
+
+        fetch(fetchUrl, {
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.text())
+        .then(data => {
+            document.getElementById('tableData').innerHTML = data;
+            if (url) setInputsFromUrl(url);
+        });
     }
     
     // Trigger fetch on search and filter change
-    document.getElementById('search').addEventListener('keyup', () => fetchData());
+    // document.getElementById('search').addEventListener('keyup', () => fetchData());
+    document.getElementById('search').addEventListener('keyup', function (e) {
+        if (e.key === 'Enter') {
+            fetchData();
+        }
+    });
     document.getElementById('onlineStatus').addEventListener('change', () => fetchData());
+    document.getElementById('per-page-filter').addEventListener('change', () => fetchData());
 
     // AJAX pagination
     document.addEventListener('click', function(e) {
@@ -344,5 +395,92 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+    // Delivery MAn Form Submission
+    function openDeliveryManModal() {
+        const modal = document.getElementById('DeliveryManModal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+    }
+
+    function closeDeliveryManModal() {
+        const modal = document.getElementById('DeliveryManModal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }
+
+
+    document.getElementById('delivery-man-form').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const form = e.target;
+        const btn = document.getElementById('SubmitBtn');
+        const btnText = document.getElementById('btnText');
+        const spinner = document.getElementById('btnSpinner');
+
+        // Disable button
+        btn.disabled = true;
+        btn.classList.add('opacity-70', 'cursor-not-allowed');
+        btnText.textContent = 'Saving...';
+        spinner.classList.remove('hidden');
+
+        //CORRECT CAMEL CASE FOR KEYS
+        const data = {
+            name: form.name.value,
+            email: form.email.value,
+            phone: form.phone.value,
+            vehicleType: form.vehicleType.value,
+            vehicleNumber: form.vehicleNumber.value,
+            licenseNumber: form.licenseNumber.value,
+            latitude: form.latitude.value,
+            longitude: form.longitude.value,
+            _token: '{{ csrf_token() }}'
+        };
+
+        fetch('{{ route("users.create-delivery-man") }}', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(res => res.json())
+        .then(response => {
+            if (response.success) {
+                
+                closeDeliveryManModal();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: response.message || 'Registration successful.'
+                })
+                .then(() => {
+                    window.location.href = response.redirect;
+                });
+
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: response.message || 'DeliveryMan Registration failed'
+                });
+            }
+        })
+        .catch(() => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Server Error',
+                text: 'Please try again later'
+            });
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.classList.remove('opacity-70', 'cursor-not-allowed');
+            btnText.textContent = 'Save DeliveryMAn';
+            spinner.classList.add('hidden');
+        });
+    });
 </script>
 @endpush

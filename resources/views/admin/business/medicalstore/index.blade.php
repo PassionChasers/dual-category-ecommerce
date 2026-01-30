@@ -565,7 +565,7 @@
             .then(res => {
                 if (!res.success) return Swal.fire('Error', res.message, 'error');
                 closeOtpModal();
-                Swal.fire({ icon: 'success', title: 'Email Verified', text: res.message }).then(() => {
+                Swal.fire({ icon: 'success', title: 'Medicalstore created successfully', text: res.message }).then(() => {
                     window.location.href = res.redirect;
                 });
             })

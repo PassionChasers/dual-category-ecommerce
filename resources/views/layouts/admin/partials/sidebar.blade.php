@@ -264,15 +264,36 @@
                         <a href="{{ route('settings.general') }}"
                             class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('settings.general') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-sliders-h mr-2">
-                            </i>
-                            General Setting
+                            <i class="fas fa-cogs mr-2"></i>Application Setting
                         </a>
-                        <a href="{{ route('settings.institutions') }}"
+
+                        <a href="{{ route('admin.profile.edit') }}"
+                            class="flex items-center px-2 py-2 text-sm rounded-md
+                                {{ request()->routeIs('admin.profile.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-user-circle mr-2"></i>Profile Setting
+                        </a>
+
+                        <!-- Change Password (Modal Trigger) -->
+                        {{-- <button type="button"
+                            id="changePasswordBtn"
+                            onclick="openChangePasswordModal()"
+                            class="w-full flex items-center px-2 py-2 text-sm rounded-md
+                            text-gray-600 hover:bg-gray-100">
+                            <i class="fas fa-key mr-2"></i> Change Password
+                        </button> --}}
+
+                        <a href="javascript:void(0)" data-no-loader
+                        @click="openChangePasswordModal()"
+                        class="block px-2 py-2 text-sm rounded-md 
+                                {{ request()->routeIs('password.update') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-key mr-2"></i> Change Password
+                        </a>
+                        
+                        {{-- <a href="{{ route('settings.institutions') }}"
                             class="hidden items-center px-2 py-2 text-sm rounded-md
                             {{ request()->routeIs('settings.institutions') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fas fa-university mr-2"></i> Institution Setup
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
 
@@ -356,10 +377,10 @@
                                 class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.medicalstores.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-clinic-medical mr-2"></i> Medicalstore Business
                             </a>
-                             <a href="#"
+                             {{-- <a href="#"
                                 class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.add-business.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-add mr-2 text-blue-600"></i> Add New Business
-                            </a>
+                            </a> --}}
                         </div>
                     </div>
 
@@ -588,13 +609,13 @@
 
 
                 <!-- Settings Dropdown -->
-                <div x-data="{ open: {{ request()->routeIs('settings.*') ? 'true' : 'false' }} }">
+                <div x-data="{ open: {{ request()->routeIs('settings.*') || request()->routeIs('admin.profile.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open"
                         class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
-                    {{ request()->routeIs('settings.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                    {{ request()->routeIs('settings.*') || request()->routeIs('admin.profile.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
                         <div class="flex items-center">
                             <i
-                                class="fas fa-cog mr-3 text-gray-500 {{ request()->routeIs('settings.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
+                                class="fas fa-cog mr-3 text-gray-500 {{ request()->routeIs('settings.*') || request()->routeIs('admin.profile.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
                             <span>Settings</span>
                         </div>
                         <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
@@ -604,13 +625,36 @@
                         <a href="{{ route('settings.general') }}"
                             class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('settings.general') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-sliders-h mr-2"></i> General Setting
+                            <i class="fas fa-cogs mr-2"></i> Application Setting
                         </a>
-                        <a href="{{ route('settings.institutions') }}"
+
+                        <a href="{{ route('admin.profile.edit') }}"
+                            class="flex items-center px-2 py-2 text-sm rounded-md
+                                {{ request()->routeIs('admin.profile.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-user-circle mr-2"></i> Profile Setting
+                        </a>
+
+                        <!-- Change Password (Modal Trigger) -->
+                        {{-- <button type="button"
+                            id="changePasswordBtn"
+                            onclick="openChangePasswordModal()"
+                            class="w-full flex items-center px-2 py-2 text-sm rounded-md
+                            text-gray-600 hover:bg-gray-100">
+                            <i class="fas fa-key mr-2"></i> Change Password
+                        </button> --}}
+
+                        <a href="javascript:void(0)" data-no-loader
+                        @click="openChangePasswordModal()"
+                        class="block px-2 py-2 text-sm rounded-md 
+                                {{ request()->routeIs('password.update') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-key mr-2"></i> Change Password
+                        </a>
+
+                        {{-- <a href="{{ route('settings.institutions') }}"
                             class="hidden items-center px-2 py-2 text-sm rounded-md
                             {{ request()->routeIs('settings.institutions') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fas fa-university mr-2"></i> Institution Setup
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
 
@@ -696,10 +740,10 @@
                                 class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.medicalstores.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-clinic-medical mr-2 text-red-600"></i> Medicalstore Business
                             </a>
-                            <a href="#"
+                            {{-- <a href="#"
                                 class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.add-business.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                                 <i class="fas fa-add mr-2 text-blue-600"></i> Add New Business
-                            </a>
+                            </a> --}}
 
                         </div>
                     </div>

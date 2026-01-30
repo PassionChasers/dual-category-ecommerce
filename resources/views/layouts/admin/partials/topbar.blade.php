@@ -40,6 +40,13 @@
                     <a href="{{ route('admin.profile.edit') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                         <i class="fas fa-user mr-2"></i> Profile
                     </a>
+
+                    <a href="javascript:void(0)" data-no-loader
+                    @click="openChangePasswordModal()"
+                    class="block px-4 py-2 text-gray-700 hover:bg-gray-100" 
+                            {{ request()->routeIs('password.update') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                        <i class="fas fa-key mr-2"></i> Change Password
+                    </a>
     
                     <a href="{{ route('logout') }}" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
                         <i class="fas fa-sign-out-alt mr-2"></i> Logout

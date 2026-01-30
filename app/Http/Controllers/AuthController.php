@@ -243,4 +243,49 @@ class AuthController extends Controller
     }
 
 
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'oldPassword'        => 'required|string',
+            'newPassword'        => 'required|string|min:6',
+            'confirmNewPassword' => 'required|same:newPassword',
+        ]);
+
+        $token = session('jwt_token'); // or auth token source
+
+        if (!$token) {
+            return back()->with('error', 'Session expired. Please login again.');
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Accept'        => 'application/json',
+            ])->post(
+                'https://pcsdecom.azurewebsites.net/api/Auth/change-password',
+                [
+                    'currentPassword' => $request->oldPassword,
+                    'newPassword' => $request->newPassword,
+                ]
+            );
+
+            if ($response->failed()) {
+                \Log::error('Password change failed', [
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
+                return back()->with(
+                    'error',
+                    $response->json('message') ?? 'Password update failed'
+                );
+            }
+
+            return back()->with('success', 'Password updated successfully.');
+
+        } catch (\Exception $e) {
+            return back()->with('error', 'Server error. Please try again later.');
+        }
+    }
+
+
 }

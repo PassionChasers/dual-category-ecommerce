@@ -171,12 +171,74 @@
 
     </script>
 
+    <script>
+        function openChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.remove('hidden');
+        }
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.add('hidden');
+        }
+
+        // Close modal on ESC key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeChangePasswordModal();
+            }
+        });
+    </script>
+
 </body>
 </html>
 
 
 
     <div class="md:flex relative md:h-screen overflow-hidden">
+
+        <!-- Change Password Modal -->
+        <div id="changePasswordModal"
+            class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center">
+
+            <div class="bg-white rounded-lg w-full max-w-md p-6 relative">
+                <h3 class="text-lg font-semibold mb-4">Change Password</h3>
+
+                <form method="POST" action="{{ route('password.update') }}">
+                    @csrf
+
+                    <div class="mb-3">
+                        <label class="text-sm font-medium">Current Password</label>
+                        <input type="password" name="oldPassword"
+                            class="w-full border rounded px-3 py-2 mt-1" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="text-sm font-medium">New Password</label>
+                        <input type="password" name="newPassword"
+                            class="w-full border rounded px-3 py-2 mt-1" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-sm font-medium">Confirm New Password</label>
+                        <input type="password" name="confirmNewPassword"
+                            class="w-full border rounded px-3 py-2 mt-1" required>
+                    </div>
+
+                    <div class="flex justify-end gap-2">
+                        <button type="button"
+                            onclick="closeChangePasswordModal()"
+                            class="px-4 py-2 bg-gray-200 rounded">
+                            Cancel
+                        </button>
+
+                        <button type="submit"
+                            class="px-4 py-2 bg-indigo-600 text-white rounded">
+                            Update Password
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
 
         @include('layouts.admin.partials.sidebar')
 
