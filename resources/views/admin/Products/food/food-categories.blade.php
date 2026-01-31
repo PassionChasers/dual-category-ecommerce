@@ -11,7 +11,7 @@
 
 @section('title', 'Admin | Product Category')
 @section('contents')
-<div class="flex-1 p-4 md:p-6 bg-gray-50 overflow-y-auto">
+<div class="flex-1 p-4 md:p-6 bg-gray-50 overflow-auto">
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
             <h2 class="text-2xl font-bold text-gray-800">Product Category Management</h2>
@@ -213,9 +213,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Debounce for search input
     let searchTimeout;
-    searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(performSearch, 500);
+    // searchInput.addEventListener('input', () => {
+    //     clearTimeout(searchTimeout);
+    //     searchTimeout = setTimeout(performSearch, 500);
+    // });
+
+    searchInput.addEventListener('keyup', function (e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
     });
 
     // Immediate search for status filter

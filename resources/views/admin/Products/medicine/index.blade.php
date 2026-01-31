@@ -403,9 +403,15 @@
             };
 
         let searchTimeout;
-        searchInput.addEventListener('input',()=>{
-            clearTimeout(searchTimeout); 
-            searchTimeout=setTimeout(performSearch,500);
+        // searchInput.addEventListener('input',()=>{
+        //     clearTimeout(searchTimeout); 
+        //     searchTimeout=setTimeout(performSearch,500);
+        // });
+
+        searchInput.addEventListener('keyup', function (e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
         });
 
         categoryFilter.addEventListener('change',performSearch);

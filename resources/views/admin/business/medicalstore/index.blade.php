@@ -386,7 +386,13 @@
             }
 
             /*Live search */
-            searchInput.addEventListener('keyup', () => fetchData());
+            // searchInput.addEventListener('keyup', () => fetchData());
+
+            searchInput.addEventListener('keyup', function (e) {
+                if (e.key === 'Enter') {
+                    fetchData();
+                }
+            });
 
             /*Status filter */
             statusSelect.addEventListener('change', () => fetchData());

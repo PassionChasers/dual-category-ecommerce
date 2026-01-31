@@ -18,7 +18,7 @@
 @endpush
 
 @section('contents')
-<div class="flex-1 p-4 md:p-6 bg-gray-50">
+<div class="flex-1 p-4 md:p-6 bg-gray-50 overflow-auto">
     <!-- Header -->
     <div class="mb-6 flex justify-between items-center flex-wrap ">
         <div class="mb-2 md:mb-0">
@@ -173,9 +173,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let searchTimeout;
     // Search input
-    searchInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(performSearch, 500);
+    // searchInput.addEventListener('input', () => {
+    //     clearTimeout(searchTimeout);
+    //     searchTimeout = setTimeout(performSearch, 500);
+    // });
+
+    searchInput.addEventListener('keyup', function (e) {
+        if (e.key === 'Enter') {
+            performSearch();
+        }
     });
 
     // Status filter

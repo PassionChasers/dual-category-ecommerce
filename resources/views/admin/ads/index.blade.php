@@ -8,13 +8,13 @@
     {{-- Header --}}
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
-            <i class="fas fa-ad text-indigo-600"></i>
+            <i class="fas fa-ad mr-2 text-green-500"></i>
             Ads Management
         </h2>
 
         <button onclick="openAdModal()"
             class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded">
-            <i class="fas fa-plus mr-1"></i> Add Ad
+            <i class="fas fa-plus mr-1"></i> New Ad
         </button>
     </div>
 
@@ -36,7 +36,7 @@
                     <th class="px-4 py-3 text-left">Advertiser</th>
                     <th class="px-4 py-3 text-left">Status</th>
                     <th class="px-4 py-3 text-left">Budget</th>
-                    <th class="px-4 py-3 text-left">Stats</th>
+                    {{-- <th class="px-4 py-3 text-left">Stats</th> --}}
                     <th class="px-4 py-3 text-left">Start Date</th>
                     <th class="px-4 py-3 text-left">End Date</th> 
                     <th class="px-4 py-3 text-center">Actions</th>
@@ -80,10 +80,10 @@
                         </td>
 
                         {{-- Stats --}}
-                        <td class="px-4 py-2 text-xs text-gray-600">
+                        {{-- <td class="px-4 py-2 text-xs text-gray-600">
                             👁 {{ $ad->TotalImpressions }} <br>
                             🖱 {{ $ad->TotalClicks }}
-                        </td>
+                        </td> --}}
 
                         {{-- Start Date --}}
                         <td class="px-4 py-2">
@@ -122,14 +122,14 @@
                                 </button>
 
                                 {{-- Delete --}}
-                                <form method="POST" action="{{ route('admin.ads.destroy', $ad->AdId) }}"
+                                {{-- <form method="POST" action="{{ route('admin.ads.destroy', $ad->AdId) }}"
                                     onsubmit="return confirm('Delete this ad?')">
                                     @csrf
                                     @method('DELETE')
                                     <button title="Delete">
                                         <i class="fas fa-trash text-red-600"></i>
                                     </button>
-                                </form>
+                                </form> --}}
                             </div>
                         </td>
                     </tr>
