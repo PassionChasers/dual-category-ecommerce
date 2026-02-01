@@ -125,7 +125,8 @@
                                             data-id="{{ $item->MenuItemId }}" data-name="{{ $item->Name }}"
                                             data-description="{{ $item->Description }}" data-price="{{ $item->Price }}"
                                             data-category="{{ $item->MenuCategoryId }}" data-isveg="{{ $item->IsVeg }}"
-                                            data-isavailable="{{ $item->IsAvailable }}" data-image="{{ $item->ImageUrl }}">
+                                            data-isavailable="{{ $item->IsAvailable }}" data-image="{{ $item->ImageUrl }}"
+                                            data-image="{{ $item->ImageUrl ? $item->ImageUrl : '' }}">
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <form method="POST" action="{{ route('admin.food.destroy', $item->MenuItemId) }}"
@@ -275,6 +276,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+
             const modal = document.getElementById('customer-modal');
             const overlay = document.getElementById('modalOverlay');
             const newBtn = document.getElementById('new-user-button');
@@ -289,7 +291,21 @@
             const categoryInput = document.getElementById('customer-category');
             const isVegInput = document.getElementById('customer-isveg');
             const isAvailableInput = document.getElementById('customer-isavailable');
-            const imageInput = document.getElementById('customer-image');
+            // const imageInput = document.getElementById('customer-image');
+            const imageField = document.getElementById('customer-image-url');
+            const imagePreview = document.getElementById('image-preview');
+
+            // Image preview
+            imageField.addEventListener('input', () => {
+                const url = imageField.value.trim();
+                if(url) {
+                    imagePreview.src = url;
+                    imagePreview.classList.remove('hidden');
+                } else {
+                    imagePreview.src = '';
+                    imagePreview.classList.add('hidden');
+                }
+            });
 
             // AJAX SEARCH & FILTERS
             const filterForm = document.getElementById('filter-form');
@@ -328,6 +344,7 @@
                     })
                     .catch(error => console.error('Error:', error));
             };
+
             // open model
             function openModal() {
                 modal.classList.remove('hidden');
@@ -364,6 +381,7 @@
                 // Edit buttons
                 document.querySelectorAll('.edit-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
+
                         modalTitle.innerText = 'Edit Item';
                         form.action = `/menu-items/${btn.dataset.id}`;
                         methodInput.value = 'PUT';
@@ -373,7 +391,16 @@
                         categoryInput.value = btn.dataset.category;
                         isVegInput.checked = btn.dataset.isveg == 1 || btn.dataset.isveg === 'true';
                         isAvailableInput.checked = btn.dataset.isavailable == 1 || btn.dataset.isavailable === 'true';
-                        imageInput.value = '';
+
+                        if(btn.dataset.image && btn.dataset.image.trim() !== '') {
+                            imageField.value = btn.dataset.image;
+                            imagePreview.src = btn.dataset.image;
+                            imagePreview.classList.remove('hidden');
+                        } else {
+                            imageField.value = '';
+                            imagePreview.src = '';
+                            imagePreview.classList.add('hidden');
+                        }
                         openModal();
 
                     });
@@ -424,19 +451,20 @@
 
             // Open modal for create
             newBtn.addEventListener('click', () => {
-                const imageUrlInput = document.getElementById('customer-image-url');
-                const imagePreview = document.getElementById('image-preview');
 
-                imageUrlInput.addEventListener('input', () => {
-                    const url = imageUrlInput.value.trim(); // just for preview
-                    if (url) {
-                        imagePreview.src = url;
-                        imagePreview.classList.remove('hidden');
-                    } else {
-                        imagePreview.src = '';
-                        imagePreview.classList.add('hidden');
-                    }
-                });
+                // const imageUrlInput = document.getElementById('customer-image-url');
+                // const imagePreview = document.getElementById('image-preview');
+
+                // imageUrlInput.addEventListener('input', () => {
+                //     const url = imageUrlInput.value.trim(); // just for preview
+                //     if (url) {
+                //         imagePreview.src = url;
+                //         imagePreview.classList.remove('hidden');
+                //     } else {
+                //         imagePreview.src = '';
+                //         imagePreview.classList.add('hidden');
+                //     }
+                // });
 
                 modalTitle.innerText = 'New Item';
                 form.action = "{{ route('admin.food.store') }}";
@@ -447,7 +475,10 @@
                 categoryInput.value = '';
                 isVegInput.checked = false;
                 isAvailableInput.checked = true;
-                // imageInput.value = '';
+                imageField.value = '';
+                imagePreview.src = '';
+                imagePreview.classList.add('hidden');
+                
                  openModal();
             });
 

@@ -85,6 +85,13 @@
                           class="px-3 mt-1 block w-full border border-gray-400 rounded-md" required></textarea>
             </div>
 
+            {{-- IMAGE URL --}}
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium">Image URL</label>
+                <input id="field-image-url" name="ImageUrl" type="url" placeholder="Enter image URL" class="mt-1 block w-full border border-gray-400 px-3 py-2 rounded-md" required>
+                <img id="image-preview" class="mt-2 w-28 h-28 rounded-md border border-gray-400 object-cover hidden"/>
+            </div>
+
             <div class="flex items-center gap-3">
                 <label class="flex items-center gap-2 text-sm">
                     <input type="checkbox" id="field-isactive" name="IsActive" value="1" class="h-4 w-4">
@@ -104,6 +111,22 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function () {
+
+    /* ================= IMAGE URL PREVIEW ================= */
+    const imageUrlInput = document.getElementById('field-image-url');
+    const imagePreview = document.getElementById('image-preview');
+
+    imageUrlInput.addEventListener('input', () => {
+        const url = imageUrlInput.value.trim();
+        if (url) {
+            imagePreview.src = url;
+            imagePreview.classList.remove('hidden');
+        } else {
+            imagePreview.src = '';
+            imagePreview.classList.add('hidden');
+        }
+    });
+
     const filterForm = document.getElementById('filter-form');
     const searchInput = document.getElementById('search-input');
     const statusFilter = document.getElementById('status-filter');
@@ -162,6 +185,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(html => {
             categoriesContainer.innerHTML = html; // replace spinner with data
             reattachEventListeners(); // reattach edit/delete buttons
+            attachPaginationLinks(); // reattach pagination links
         })
         .catch(() => {
             categoriesContainer.innerHTML = `
@@ -233,17 +257,38 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     };
 
-    const openModal = () => { modal.classList.remove('hidden'); modal.classList.add('flex'); };
+    const openModal = () => { 
+        modal.classList.remove('hidden'); 
+        modal.classList.add('flex'); 
+    };
+    
     const closeModal = () => {
-        modal.classList.remove('flex'); modal.classList.add('hidden');
-        form.reset(); methodField.value = 'POST'; categoryIdField.value = '';
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+
+        form.reset(); 
+        methodField.value = 'POST'; 
+        categoryIdField.value = '';
         form.action = "{{ route('admin.medicine-categories.store') }}";
+
+        // reset image preview
+        imagePreview.src = '';
+        imagePreview.classList.add('hidden');
     };
 
     openCreate.addEventListener('click', () => {
-        modalTitle.innerText = 'New Category'; methodField.value = 'POST';
-        categoryIdField.value = ''; nameField.value = ''; descField.value = '';
-        isActiveField.checked = true; form.action = "{{ route('admin.medicine-categories.store') }}";
+        modalTitle.innerText = 'New Category'; 
+        methodField.value = 'POST';
+        categoryIdField.value = ''; 
+        nameField.value = ''; 
+        descField.value = '';
+        isActiveField.checked = true; 
+
+        imageUrlInput.value = '';
+        imagePreview.src = '';
+        imagePreview.classList.add('hidden');
+
+        form.action = "{{ route('admin.medicine-categories.store') }}";
         openModal();
     });
 
@@ -260,6 +305,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 descField.value = this.dataset.description;
                 isActiveField.checked = this.dataset.isactive === '1';
                 form.action = `/admin/medicine-categories/${id}`;
+                if(this.dataset.image){ imagePreview.src=this.dataset.image; imagePreview.classList.remove('hidden'); imageUrlInput.value=this.dataset.image; }
                 openModal();
             });
         });
@@ -267,7 +313,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initial
     reattachEventListeners();
-    interceptPaginationLinks();
+    // interceptPaginationLinks();
+    attachPaginationLinks();
 });
 </script>
 @endpush

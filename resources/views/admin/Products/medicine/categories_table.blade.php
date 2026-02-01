@@ -9,6 +9,7 @@
         <thead class="bg-gray-50">
             <tr>
                 <th class="px-6 py-3 text-left font-medium text-gray-600">#</th>
+                <th class="px-6 py-3 text-left font-medium text-gray-600">Image</th>
                 <th class="px-6 py-3 text-left font-medium text-gray-600">Category</th>
                 <th class="px-6 py-3 text-left font-medium text-gray-600">Description</th>
                 <th class="px-6 py-3 text-left font-medium text-gray-600">Status</th>
@@ -21,6 +22,19 @@
                 <tr class="font-medium text-gray-800">
                     <td class="px-6 py-4">
                         {{ $categories->firstItem() + $index }}
+                    </td>
+                    <td class="px-4 py-3">
+                        @if($c->ImageUrl)
+                            <img 
+                                src="{{ $c->ImageUrl }}"
+                                class="w-16 h-12 object-cover rounded cursor-pointer"
+                                onclick="showImage('{{ $c->ImageUrl }}')"
+                            >
+                        @else
+                            <div class="w-16 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">
+                                No
+                            </div>
+                        @endif
                     </td>
                     <td class="px-6 py-4">
                         <div class="font-medium text-gray-800">{{ $c->Name }}</div>
@@ -40,7 +54,8 @@
                                 data-id="{{ $c->MedicineCategoryId }}"
                                 data-name="{{ e($c->Name) }}"
                                 data-description="{{ e($c->Description) }}"
-                                data-isactive="{{ $c->IsActive ? '1' : '0' }}">
+                                data-isactive="{{ $c->IsActive ? '1' : '0' }}"
+                                data-image="{{ $c->ImageUrl ? $c->ImageUrl : '' }}">
                                 <i class="fas fa-edit"></i>
                             </button>
 

@@ -223,12 +223,20 @@
         const packagingField = document.getElementById('field-packaging');
         const isActiveField = document.getElementById('field-isactive');
 
-        const openModal = () => { modal.classList.remove('hidden'); modal.classList.add('flex'); };
+        const openModal = () => { 
+            modal.classList.remove('hidden'); 
+            modal.classList.add('flex'); 
+        };
+
         const closeModal = () => { 
             modal.classList.add('hidden'); 
-            form.reset(); methodField.value='POST'; 
+            form.reset(); 
+            methodField.value='POST'; 
             idField.value=''; 
-            imagePreview.classList.add('hidden'); 
+
+            imagePreview.src = '';
+            imagePreview.classList.add('hidden');
+
             form.action="{{ route('admin.medicines.store') }}"; 
         };
 
@@ -237,6 +245,11 @@
             isActiveField.checked=true; 
             methodField.value='POST'; 
             idField.value=''; 
+
+            imageUrlInput.value = '';
+            imagePreview.src = '';
+            imagePreview.classList.add('hidden');
+
             form.action="{{ route('admin.medicines.store') }}"; 
             openModal();
         });

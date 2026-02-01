@@ -2,32 +2,53 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Models\MedicineCategory;
-use App\Http\Requests\MedicineCategoryRequest;
+use Illuminate\Support\Facades\Http;
 
 class MedicineCategoryController extends Controller
 {
+    // ================= IMAGE URL CHECK =================
+    // private function imageExists(string $url): bool
+    // {
+    //     if (!filter_var($url, FILTER_VALIDATE_URL)) {
+    //         return false;
+    //     }
+
+    //     try {
+    //         $headers = get_headers($url, 1);
+
+    //         if ($headers === false || !str_contains($headers[0], '200')) {
+    //             return false;
+    //         }
+
+    //         $contentType = $headers['Content-Type'] ?? null;
+    //         if (is_array($contentType)) $contentType = end($contentType);
+
+    //         return str_starts_with($contentType, 'image/');
+    //     } catch (\Exception $e) {
+    //         return false;
+    //     }
+    // }
+
+    // ================= INDEX =================
     public function index(Request $request)
     {
         $query = MedicineCategory::query();
 
-        // Search filter
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
-                $q->whereRaw('LOWER("Name") LIKE ?', ["%".strtolower($search)."%"])
-                ->orWhereRaw('LOWER("Description") LIKE ?', ["%".strtolower($search)."%"]);
+                $q->whereRaw('LOWER(Name) LIKE ?', ['%' . strtolower($search) . '%'])
+                  ->orWhereRaw('LOWER(Description) LIKE ?', ['%' . strtolower($search) . '%']);
             });
         }
 
-        // Status filter
         if ($status = $request->get('status')) {
             $query->where('IsActive', $status === 'active' ? 1 : 0);
         }
 
-        // Per-page
-        $allowedPerPage = [5,10,25,50];
+        $allowedPerPage = [5, 10, 25, 50];
         $perPage = (int) $request->get('per_page', 5);
         $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
 
@@ -35,7 +56,6 @@ class MedicineCategoryController extends Controller
                             ->paginate($perPage)
                             ->appends($request->except('page'));
 
-        // Return partial for AJAX
         if ($request->ajax()) {
             return view('admin.products.medicine.categories_table', compact('categories', 'perPage', 'allowedPerPage'))->render();
         }
@@ -43,36 +63,110 @@ class MedicineCategoryController extends Controller
         return view('admin.products.medicine.medicine_categories', compact('categories', 'perPage', 'allowedPerPage'));
     }
 
-    public function store(MedicineCategoryRequest $request)
+    // ================= STORE =================
+    public function store(Request $request)
     {
-        $data = $request->validated();
-        $data['MedicineCategoryId'] = (string) Str::uuid();
-        $data['IsActive'] = $request->has('IsActive') ? 1 : 0;
+        // Validation
+        $request->validate([
+            'Name' => 'required|string|max:255',
+            'Description' => 'required|string',
+            'ImageUrl' => 'required|url',
+            'IsActive' => 'nullable|boolean',
+        ], [
+            'Name.required' => 'Category name is required.',
+            'Description.required' => 'Description is required.',
+            'ImageUrl.required' => 'Medicine image URL is required.',
+            'ImageUrl.url'      => 'Please enter a valid image URL.',
+        ]);
 
-        $category = MedicineCategory::create($data);
+        //Image URL existence + image type check
+        try {
+            $response = Http::timeout(5)->retry(2, 100)->head($request['ImageUrl']);
+
+            if (
+                ! $response->successful() ||
+                ! str_starts_with($response->header('Content-Type'), 'image/')
+            ) {
+                return back()
+                    ->withErrors(['ImageUrl' => 'Image URL does not exist or is not a valid image.'])
+                    ->withInput();
+            }
+        } catch (\Exception $e) {
+            return back()
+                ->withErrors(['ImageUrl' => 'Unable to verify image URL. Please try another one.'])
+                ->withInput();
+        }
+
+        $category = MedicineCategory::create([
+            'MedicineCategoryId' => (string) Str::uuid(),
+            'Name' => $request->Name,
+            'Description' => $request->Description,
+            'ImageUrl' => $request->ImageUrl,
+            'IsActive' => $request->has('IsActive') ? 1 : 0,
+        ]);
 
         return redirect()->route('admin.medicine-categories.index')
-            ->with('success', "Category '{$category->Name}' created successfully.");
+                         ->with('success', "Category '{$category->Name}' created successfully.");
     }
 
-    public function update(MedicineCategoryRequest $request, $id)
+    // ================= UPDATE =================
+    public function update(Request $request, $id)
     {
+        // Validation
+        $request->validate([
+            'Name' => 'required|string|max:255',
+            'Description' => 'required|string',
+            'ImageUrl' => 'required|url',
+            'IsActive' => 'nullable|boolean',
+        ], [
+            'Name.required' => 'Category name is required.',
+            'Description.required' => 'Description is required.',
+            'ImageUrl.required' => 'Medicine image URL is required.',
+            'ImageUrl.url'      => 'Please enter a valid image URL.',
+        ]);
+
+        //Image URL existence + image type check
+        try {
+            $response = Http::timeout(5)->retry(2, 100)->head($request['ImageUrl']);
+
+            if (
+                ! $response->successful() ||
+                ! str_starts_with($response->header('Content-Type'), 'image/')
+            ) {
+                return back()
+                    ->withErrors(['ImageUrl' => 'Image URL does not exist or is not a valid image.'])
+                    ->withInput();
+            }
+        } catch (\Exception $e) {
+            return back()
+                ->withErrors(['ImageUrl' => 'Unable to verify image URL. Please try another one.'])
+                ->withInput();
+        }
+
         $category = MedicineCategory::findOrFail($id);
-        $category->update($request->only(['Name','Description','IsActive']));
+
+        $category->update([
+            'Name' => $request->Name,
+            'Description' => $request->Description,
+            'ImageUrl' => $request->ImageUrl,
+            'IsActive' => $request->has('IsActive') ? 1 : 0,
+        ]);
 
         return redirect()->route('admin.medicine-categories.index')
-            ->with('success', "Category '{$category->Name}' updated successfully.");
+                         ->with('success', "Category '{$category->Name}' updated successfully.");
     }
 
+    // ================= DESTROY =================
     public function destroy($id)
     {
         $category = MedicineCategory::findOrFail($id);
         $category->delete();
 
         return redirect()->route('admin.medicine-categories.index')
-            ->with('success', "Category '{$category->Name}' moved to trash.");
+                         ->with('success', "Category '{$category->Name}' moved to trash.");
     }
 
+    // ================= TOGGLE ACTIVE =================
     public function toggleActive($id)
     {
         $category = MedicineCategory::findOrFail($id);

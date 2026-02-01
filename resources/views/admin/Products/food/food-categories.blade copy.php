@@ -63,11 +63,17 @@
                     @forelse($categories as $cat)
                         <tr>
                             <td class="px-4 py-2">{{ ($categories->currentPage() - 1) * $categories->perPage() + $loop->iteration }}</td>
-                            <td class="px-4 py-2">
+                            <td class="px-4 py-3">
                                 @if($cat->ImageUrl)
-                                    <img src="{{ $cat->ImageUrl }}" class="w-16 h-12 object-cover rounded cursor-pointer" onclick="showImage('{{ $cat->ImageUrl }}')">
+                                    <img 
+                                        src="{{ $cat->ImageUrl }}"
+                                        class="w-16 h-12 object-cover rounded cursor-pointer"
+                                        onclick="showImage('{{ $cat->ImageUrl }}')"
+                                    >
                                 @else
-                                    <div class="w-16 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
+                                    <div class="w-16 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">
+                                        No
+                                    </div>
                                 @endif
                             </td>
                             <td class="px-4 py-2 font-semibold">{{ $cat->Name }}</td>
@@ -79,7 +85,7 @@
                             </td>
                             <td class="px-4 py-2">
                                 <div class="flex items-center justify-center gap-3">
-                                    <button class="edit-category-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $cat->MenuCategoryId }}" data-name="{{ $cat->Name }}" data-description="{{ $cat->Description }}" data-isactive="{{ $cat->IsActive }}" data-image="{{ $cat->ImageUrl ? $cat->ImageUrl : '' }}">
+                                    <button class="edit-category-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $cat->MenuCategoryId }}" data-name="{{ $cat->Name }}" data-description="{{ $cat->Description }}" data-isactive="{{ $cat->IsActive }}">
                                         <i class="fas fa-edit"></i>
                                     </button>
                                     {{-- <form method="POST" action="{{ route('product.food.category.destroy', $cat->MenuCategoryId) }}" class="delete-form inline">
@@ -138,12 +144,18 @@
                              <label class="block text-sm font-medium">Description</label>
                              <textarea name="Description" id="category-description" placeholder="Category Description..." class="mt-1 block w-full border border-gray-400 rounded px-3 py-2" rows="3"></textarea>
                          </div>
-                         <div>
+
+                         <!-- Image URL -->
+                        <div>
                             <label class="block text-sm font-medium text-gray-700">Image URL</label>
                             <input type="url" name="ImageUrl" id="customer-image-url" placeholder="Enter image URL"
-                                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 sm:text-sm">
-                            <img id="image-preview" class="mt-2 w-28 h-28 rounded-md border border-gray-300 object-cover hidden" alt="Image Preview" />
+                                class="mt-1 block w-full border border-gray-300 rounded-md  px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <p class="mt-1 text-xs text-gray-500">Leave blank to keep existing image</p>
+                            <img id="image-preview"
+                                class="mt-2 w-28 h-28 rounded-md border border-gray-300 object-cover hidden"
+                                alt="Image Preview" />
                         </div>
+
                          <div class="flex items-center gap-2">
                              <input type="checkbox" name="IsActive" id="category-active" value="1" checked>
                              <label for="category-active" class="text-sm">Active</label>
@@ -165,6 +177,24 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+
+    /* ================= IMAGE URL PREVIEW ================= */
+    const imageUrlInput = document.getElementById('field-image-url');
+    const imagePreview = document.getElementById('image-preview');
+
+    imageUrlInput.addEventListener('input', () => {
+        const url = imageUrlInput.value.trim();
+        if (url) {
+            imagePreview.src = url;
+            imagePreview.classList.remove('hidden');
+        } else {
+            imagePreview.src = '';
+            imagePreview.classList.add('hidden');
+        }
+    });
+
+
+
     const modal = document.getElementById('category-modal');
     const overlay= document.getElementById('modalOverlay');
     const newBtn = document.getElementById('new-category-button');
@@ -176,20 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nameInput = document.getElementById('category-name');
     const descInput = document.getElementById('category-description');
     const activeInput = document.getElementById('category-active');
-    const imageField = document.getElementById('customer-image-url');
-    const imagePreview = document.getElementById('image-preview');
-
-    // Image preview
-    imageField.addEventListener('input', () => {
-        const url = imageField.value.trim();
-        if(url) {
-            imagePreview.src = url;
-            imagePreview.classList.remove('hidden');
-        } else {
-            imagePreview.src = '';
-            imagePreview.classList.add('hidden');
-        }
-    });
+    const imageInput = document.getElementById('customer-image');
 
     // AJAX SEARCH & FILTERS
     const filterForm = document.getElementById('filter-form');
@@ -239,6 +256,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     }
 
+    overlay.addEventListener("click", closeModal);
+
     // Debounce for search input
     let searchTimeout;
     // searchInput.addEventListener('input', () => {
@@ -265,17 +284,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 nameInput.value = btn.dataset.name;
                 descInput.value = btn.dataset.description;
                 activeInput.checked = btn.dataset.isactive == 1 || btn.dataset.isactive === 'true';
-
-                if(btn.dataset.image && btn.dataset.image.trim() !== '') {
-                    imageField.value = btn.dataset.image;
-                    imagePreview.src = btn.dataset.image;
-                    imagePreview.classList.remove('hidden');
-                } else {
-                    imageField.value = '';
-                    imagePreview.src = '';
-                    imagePreview.classList.add('hidden');
-                }
-
                 openModal();
             });
         });
@@ -310,9 +318,6 @@ document.addEventListener('DOMContentLoaded', () => {
         nameInput.value = '';
         descInput.value = '';
         activeInput.checked = true;
-        imageField.value = '';
-        imagePreview.src = '';
-        imagePreview.classList.add('hidden');
         openModal();
     });
     overlay.addEventListener('click', closeModal)

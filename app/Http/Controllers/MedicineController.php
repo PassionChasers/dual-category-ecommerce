@@ -159,19 +159,38 @@ class MedicineController extends Controller
             'DosageForm',
             'Strength',
             'Packaging',
-            'IsActive'
+            'IsActive',
+            'ImageUrl'
         ]);
 
-        // image update: delete old if exists
-        if ($request->hasFile('image')) {
-            if ($medicine->ImageUrl && Storage::disk('public')->exists($medicine->ImageUrl)) {
-                Storage::disk('public')->delete($medicine->ImageUrl);
+        //Image URL existence + image type check
+        try {
+            $response = Http::timeout(5)->retry(2, 100)->head($data['ImageUrl']);
+
+            if (
+                ! $response->successful() ||
+                ! str_starts_with($response->header('Content-Type'), 'image/')
+            ) {
+                return back()
+                    ->withErrors(['ImageUrl' => 'Image URL does not exist or is not a valid image.'])
+                    ->withInput();
             }
-            $file = $request->file('image');
-            $filename = Str::slug($data['Name'] ?? 'medicine') . '-' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('medicines', $filename, 'public');
-            $data['ImageUrl'] = $path;
+        } catch (\Exception $e) {
+            return back()
+                ->withErrors(['ImageUrl' => 'Unable to verify image URL. Please try another one.'])
+                ->withInput();
         }
+
+        // image update: delete old if exists
+        // if ($request->hasFile('image')) {
+        //     if ($medicine->ImageUrl && Storage::disk('public')->exists($medicine->ImageUrl)) {
+        //         Storage::disk('public')->delete($medicine->ImageUrl);
+        //     }
+        //     $file = $request->file('image');
+        //     $filename = Str::slug($data['Name'] ?? 'medicine') . '-' . time() . '.' . $file->getClientOriginalExtension();
+        //     $path = $file->storeAs('medicines', $filename, 'public');
+        //     $data['ImageUrl'] = $path;
+        // }
 
         $medicine->update($data);
 
