@@ -22,6 +22,7 @@ class MedicineCategory extends Model
         'Name',
         'Description',
         'IsActive',
+        'ImageUrl',
     ];
 
     protected static function booted()
@@ -31,5 +32,11 @@ class MedicineCategory extends Model
                 $model->MedicineCategoryId = (string) Str::uuid();
             }
         });
+    }
+
+    // Relationships
+    public function medicineItems()
+    {
+        return $this->hasMany(Medicine::class, 'MedicineCategoryId', 'MedicineCategoryId');
     }
 }

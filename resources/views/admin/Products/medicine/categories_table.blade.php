@@ -60,15 +60,14 @@
                             </button>
 
                             {{-- Optional Delete Form --}}
-                            {{-- 
                             <form action="{{ route('admin.medicine-categories.destroy', $c->MedicineCategoryId) }}" method="POST" class="delete-form inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-800">
+                                <button type="submit" class="text-red-600 hover:text-red-800 delete-category-btn" data-name="{{ $c->Name }}">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </form>
-                            --}}
+                           
                         </div>
                     </td>
                 </tr>

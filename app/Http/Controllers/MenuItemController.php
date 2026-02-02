@@ -135,12 +135,14 @@ class MenuItemController extends Controller
             ) {
                 return back()
                     ->withErrors(['ImageUrl' => 'Image URL does not exist or is not a valid image.'])
-                    ->withInput();
+                    ->withInput()
+                    ->with('edit_id', $id);
             }
         } catch (\Exception $e) {
             return back()
                 ->withErrors(['ImageUrl' => 'Unable to verify image URL. Please try another one.'])
-                ->withInput();
+                ->withInput()
+                ->with('edit_id', $id);
         }
 
         $menuItem->update([

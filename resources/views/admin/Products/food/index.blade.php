@@ -280,7 +280,7 @@
         </div>
     </div>
 
-    @if ($errors->any())
+    {{-- @if ($errors->any())
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 const modal = document.getElementById('customer-modal');
@@ -288,6 +288,22 @@
                 document.body.classList.add('overflow-hidden');
             });
         </script>
+    @endif --}}
+
+    @if ($errors->any() && session('edit_id'))
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('customer-modal');
+        const form = document.getElementById('customer-form');
+        const methodInput = document.getElementById('form-method');
+
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+
+        form.action = "{{ url('admin/menu-items') }}/{{ session('edit_id') }}";
+        methodInput.value = 'PUT';
+    });
+    </script>
     @endif
 
 @endsection

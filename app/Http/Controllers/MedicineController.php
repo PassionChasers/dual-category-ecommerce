@@ -53,8 +53,8 @@ class MedicineController extends Controller
 
         // Per-page
         $allowedPerPage = [5, 10, 25, 50];
-        $perPage = (int) $request->get('per_page', 5);
-        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10 ;
 
         $medicines = $query->paginate($perPage)->appends($request->except('page'));
 
@@ -140,32 +140,47 @@ class MedicineController extends Controller
             ->with('success', "Medicine '{$medicine->Name}' created successfully.");
     }
 
+
     public function update(MedicineRequest $request, $id)
     {
-        $medicine = Medicine::findOrFail($id);
 
-        $data = $request->only([
-            'MedicalStoreId',
-            'MedicineCategoryId',
-            'Name',
-            'GenericName',
-            'BrandName',
-            'Description',
-            'Price',
-            'MRP',
-            'PrescriptionRequired',
-            'Manufacturer',
-            'ExpiryDate',
-            'DosageForm',
-            'Strength',
-            'Packaging',
-            'IsActive',
-            'ImageUrl'
+        //Validate form input
+        $validated = $request->validate([
+            'MedicineCategoryId'   => 'required|uuid|exists:MedicineCategories,MedicineCategoryId',
+
+            'Name'                 => 'required|string|max:255',
+            'GenericName'          => 'nullable|string|max:255',
+            'BrandName'            => 'nullable|string|max:255',
+
+            'Description'          => 'nullable|string|max:1000',
+
+            'Price'                => 'required|numeric|min:0',
+            // 'MRP'                  => 'required|numeric|min:0',
+
+            'PrescriptionRequired' => 'nullable|boolean',
+
+            'Manufacturer'         => 'nullable|string|max:255',
+
+            'ExpiryDate'           => 'nullable|date|after:today',
+
+            'DosageForm'           => 'required|string|max:100',
+            'Strength'             => 'nullable|string|max:100',
+
+            'Packaging'            => 'required|string|max:100',
+
+            'IsActive'             => 'nullable|boolean',
+
+            // Image URL basic validation
+            'ImageUrl'             => 'required|url',
+        ], [
+            'ImageUrl.required' => 'Medicine image URL is required.',
+            'ImageUrl.url'      => 'Please enter a valid image URL.',
+            'ExpiryDate.after'  => 'Expiry date must be a future date.',
         ]);
 
         //Image URL existence + image type check
         try {
-            $response = Http::timeout(5)->retry(2, 100)->head($data['ImageUrl']);
+            $response = Http::timeout(5)->retry(2, 100)->head($validated['ImageUrl']);
 
             if (
                 ! $response->successful() ||
@@ -173,26 +188,19 @@ class MedicineController extends Controller
             ) {
                 return back()
                     ->withErrors(['ImageUrl' => 'Image URL does not exist or is not a valid image.'])
-                    ->withInput();
+                    ->withInput()
+                    ->with('edit_id', $id);
             }
         } catch (\Exception $e) {
             return back()
                 ->withErrors(['ImageUrl' => 'Unable to verify image URL. Please try another one.'])
-                ->withInput();
+                ->withInput()
+                ->with('edit_id', $id);
         }
 
-        // image update: delete old if exists
-        // if ($request->hasFile('image')) {
-        //     if ($medicine->ImageUrl && Storage::disk('public')->exists($medicine->ImageUrl)) {
-        //         Storage::disk('public')->delete($medicine->ImageUrl);
-        //     }
-        //     $file = $request->file('image');
-        //     $filename = Str::slug($data['Name'] ?? 'medicine') . '-' . time() . '.' . $file->getClientOriginalExtension();
-        //     $path = $file->storeAs('medicines', $filename, 'public');
-        //     $data['ImageUrl'] = $path;
-        // }
+        $medicine = Medicine::findOrFail($id);
 
-        $medicine->update($data);
+        $medicine->update($validated);
 
         return redirect()->route('admin.medicines.index')->with('success', "Medicine '{$medicine->Name}' updated.");
     }
@@ -206,7 +214,8 @@ class MedicineController extends Controller
 
         // Prevent delete if used in orders
         if ($medicine->orderItems()->exists()) {
-            return back()->with('error', "Medicine '{$name}' cannot be deleted because it is used in orders.");
+            return back()
+            ->with('delete_error', "Medicine '{$name}' cannot be deleted because it is used in orders.");
         }
 
         $medicine->delete();
@@ -216,30 +225,6 @@ class MedicineController extends Controller
             ->with('success', "Medicine '{$name}' deleted successfully.");
     }
 
-    // public function dedstroy($id)
-    // {
-    //     $medicine = Medicine::findOrFail($id);
-    //     $name = $medicine->Name;
-
-    //     // Optional: prevent delete if used in orders
-    //     if ($medicine->orderItems()->exists()) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => "This medicine item '{$name}' cannot be deleted because it is used in orders."
-    //         ], 400);
-    //     }
-
-    //     $medicine->delete();
-
-    //     return response()->json([
-    //         'success' => true,
-    //         'message' => "Medicine item  '{$name}' deleted successfully"
-    //     ]);
-
-    //     return redirect()
-    //     ->route('admin.medicines.index')
-    //     ->with('success', 'Medicine deleted successfully');
-    // }
 
     public function toggleActive($id)
     {

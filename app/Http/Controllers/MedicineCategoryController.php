@@ -9,29 +9,6 @@ use Illuminate\Support\Facades\Http;
 
 class MedicineCategoryController extends Controller
 {
-    // ================= IMAGE URL CHECK =================
-    // private function imageExists(string $url): bool
-    // {
-    //     if (!filter_var($url, FILTER_VALIDATE_URL)) {
-    //         return false;
-    //     }
-
-    //     try {
-    //         $headers = get_headers($url, 1);
-
-    //         if ($headers === false || !str_contains($headers[0], '200')) {
-    //             return false;
-    //         }
-
-    //         $contentType = $headers['Content-Type'] ?? null;
-    //         if (is_array($contentType)) $contentType = end($contentType);
-
-    //         return str_starts_with($contentType, 'image/');
-    //     } catch (\Exception $e) {
-    //         return false;
-    //     }
-    // }
-
     // ================= INDEX =================
     public function index(Request $request)
     {
@@ -49,8 +26,8 @@ class MedicineCategoryController extends Controller
         }
 
         $allowedPerPage = [5, 10, 25, 50];
-        $perPage = (int) $request->get('per_page', 5);
-        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
 
         $categories = $query->orderBy('CreatedAt', 'desc')
                             ->paginate($perPage)
@@ -68,12 +45,13 @@ class MedicineCategoryController extends Controller
     {
         // Validation
         $request->validate([
-            'Name' => 'required|string|max:255',
+            'Name' => 'required|string|max:255|unique:MedicineCategories,Name',
             'Description' => 'required|string',
             'ImageUrl' => 'required|url',
             'IsActive' => 'nullable|boolean',
         ], [
             'Name.required' => 'Category name is required.',
+            'Name.unique'       => 'This Medicine category already exists.',
             'Description.required' => 'Description is required.',
             'ImageUrl.required' => 'Medicine image URL is required.',
             'ImageUrl.url'      => 'Please enter a valid image URL.',
@@ -135,12 +113,14 @@ class MedicineCategoryController extends Controller
             ) {
                 return back()
                     ->withErrors(['ImageUrl' => 'Image URL does not exist or is not a valid image.'])
-                    ->withInput();
+                    ->withInput()
+                    ->with('edit_id', $id);
             }
         } catch (\Exception $e) {
             return back()
                 ->withErrors(['ImageUrl' => 'Unable to verify image URL. Please try another one.'])
-                ->withInput();
+                ->withInput()
+                ->with('edit_id', $id);
         }
 
         $category = MedicineCategory::findOrFail($id);
@@ -160,6 +140,12 @@ class MedicineCategoryController extends Controller
     public function destroy($id)
     {
         $category = MedicineCategory::findOrFail($id);
+
+        if ($category->medicineItems()->exists()) {
+            return redirect()->route('admin.medicine-categories.index')
+                ->with('delete_error', 'Cannot delete this category because it has medicine items.');
+        }
+
         $category->delete();
 
         return redirect()->route('admin.medicine-categories.index')

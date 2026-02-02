@@ -68,33 +68,49 @@
             <button id="close-modal" class="text-white hover:text-red-500 text-xl"><i class="fas fa-times"></i></button>
         </div>
 
+        {{-- ERRORS --}}
+        <div id="form-errors">
+            @if ($errors->any())
+                <div class="mb-4 bg-red-100 text-red-700 p-3 rounded">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+        </div>
+
         <form id="category-form" method="POST" class="space-y-4 px-6 py-6">
             @csrf
             <input type="hidden" id="category-id" name="id" value="">
             <input type="hidden" id="method-field" name="_method" value="POST">
 
             <div>
-                <label class="block text-sm font-medium text-gray-700">Category Name</label>
-                <input type="text" id="field-name" name="Name" placeholder="eg. Category 1" required
+                <label class="block text-sm font-medium text-gray-700">Category Name<span class="text-red-500">*</span></label>
+                <input type="text" id="field-name" value="{{ old('Name') }}" name="Name" placeholder="eg. Category 1" required
                        class="mt-1 block w-full border border-gray-400 rounded-md px-3 py-2">
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700">Description</label>
+                <label class="block text-sm font-medium text-gray-700">Description<span class="text-red-500">*</span></label>
                 <textarea id="field-description" name="Description" rows="4" placeholder="Description of Category..."
-                          class="px-3 mt-1 block w-full border border-gray-400 rounded-md" required></textarea>
+                          class="px-3 mt-1 block w-full border border-gray-400 rounded-md" required>{{ old('Description') }}</textarea>
             </div>
 
             {{-- IMAGE URL --}}
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium">Image URL</label>
-                <input id="field-image-url" name="ImageUrl" type="url" placeholder="Enter image URL" class="mt-1 block w-full border border-gray-400 px-3 py-2 rounded-md" required>
-                <img id="image-preview" class="mt-2 w-28 h-28 rounded-md border border-gray-400 object-cover hidden"/>
+                <label class="block text-sm font-medium">Image URL<span class="text-red-500">*</span></label>
+                <input id="field-image-url" name="ImageUrl" value="{{ old('ImageUrl') }}" type="url" placeholder="Enter image URL" class="mt-1 block w-full border border-gray-400 px-3 py-2 rounded-md" required>
+                <img id="image-preview" 
+                    class="mt-2 w-28 h-28 rounded-md border border-gray-400 object-cover {{ old('ImageUrl') ? '' : 'hidden' }}"
+                    src="{{ old('ImageUrl') ?? '' }}"
+                    alt="Image Preview"/>
             </div>
 
             <div class="flex items-center gap-3">
                 <label class="flex items-center gap-2 text-sm">
-                    <input type="checkbox" id="field-isactive" name="IsActive" value="1" class="h-4 w-4">
+                    <input type="checkbox" id="field-isactive" name="IsActive" value="1" {{ old('IsActive', 1) ? 'checked' : '' }} class="h-4 w-4">
                     <span>Active</span>
                 </label>
 
@@ -106,6 +122,40 @@
         </form>
     </div>
 </div>
+
+
+{{-- This error for Create form only --}}
+@if ($errors->any() && !session('edit_id'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('category-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+    </script>
+@endif
+
+{{-- This error for Edit form restore --}}
+@if ($errors->any() && session('edit_id'))
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('category-modal');
+            const form = document.getElementById('category-form');
+            const methodField = document.getElementById('method-field');
+            const categoryIdField = document.getElementById('category-id');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            //RESTORE EDIT MODE
+            const id = "{{ session('edit_id') }}";
+            form.action = `/admin/medicine-categories/${id}`;
+            methodField.value = 'PUT';
+            categoryIdField.value = id;
+        });
+    </script>
+@endif
+
 @endsection
 
 @push('scripts')
@@ -276,7 +326,18 @@ document.addEventListener('DOMContentLoaded', function () {
         imagePreview.classList.add('hidden');
     };
 
+    function clearFormErrors() {
+        const errorBox = document.getElementById('form-errors');
+        if (errorBox) {
+            errorBox.innerHTML = '';
+        }
+    }
+
+
+    // Open Create Modal
     openCreate.addEventListener('click', () => {
+        form.reset();
+        clearFormErrors();
         modalTitle.innerText = 'New Category'; 
         methodField.value = 'POST';
         categoryIdField.value = ''; 
@@ -292,12 +353,16 @@ document.addEventListener('DOMContentLoaded', function () {
         openModal();
     });
 
+    // Close Modal
     closeModalBtns.forEach(btn => btn && btn.addEventListener('click', closeModal));
+    // close Modal on overlay click
     overlay.addEventListener('click', closeModal);
 
+    // Edit buttons
     const reattachEventListeners = () => {
         categoriesContainer.querySelectorAll('.edit-btn').forEach(btn => {
             btn.addEventListener('click', function () {
+                clearFormErrors();
                 const id = this.dataset.id;
                 modalTitle.innerText = 'Edit Category';
                 methodField.value = 'PUT'; categoryIdField.value = id;
@@ -309,11 +374,32 @@ document.addEventListener('DOMContentLoaded', function () {
                 openModal();
             });
         });
+
+        document.querySelectorAll('.delete-category-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const categoryName = btn.dataset.name;
+                const deleteForm = btn.closest('.delete-form');
+
+                Swal.fire({
+                    title: 'Delete Category',
+                    text: `Are you sure you want to delete "${categoryName}"?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        deleteForm.submit();
+                    }
+                });
+            });
+        });
     };
 
     // Initial
     reattachEventListeners();
-    // interceptPaginationLinks();
     attachPaginationLinks();
 });
 </script>
