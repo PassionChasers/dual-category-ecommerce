@@ -86,6 +86,16 @@
     </script>
     @endif
 
+    {{-- @if ($errors->any())
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops!',
+            html: `{!! implode('<br>', $errors->all()) !!}`,
+        });
+    </script>
+    @endif --}}
+
 
     {{-- <!-- GLOBAL NETWORK LOADER -->
     <div id="global-loader"

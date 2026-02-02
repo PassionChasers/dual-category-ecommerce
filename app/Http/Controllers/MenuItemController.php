@@ -89,11 +89,6 @@ class MenuItemController extends Controller
                 ->withInput();
         }
 
-        // $imagePath = null;
-        // if ($request->hasFile('ImageUrl')) {
-        //     $imagePath = $request->file('ImageUrl')->store('menu-items', 'public');
-        // }
-
         MenuItem::create([
             'MenuItemId' => Str::uuid(),
             'Name' => $validated['Name'],

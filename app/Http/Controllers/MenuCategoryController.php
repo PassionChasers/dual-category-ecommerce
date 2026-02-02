@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\MenuCategory;
+use Illuminate\Support\Facades\Http;
 
 class MenuCategoryController extends Controller
 {
@@ -51,12 +52,36 @@ class MenuCategoryController extends Controller
             'Name' => 'required|string|max:255',
             'Description' => 'nullable|string',
             'IsActive' => 'nullable|boolean',
+            'ImageUrl' => 'required|url',
+        ],
+        [
+            'ImageUrl.required' => 'Food Item image URL is required.',
+            'ImageUrl.url'      => 'Please enter a valid image URL.',
         ]);
+
+        //Image URL existence + image type check
+        try {
+            $response = Http::timeout(5)->retry(2, 100)->head($validated['ImageUrl']);
+
+            if (
+                ! $response->successful() ||
+                ! str_starts_with($response->header('Content-Type'), 'image/')
+            ) {
+                return back()
+                    ->withErrors(['ImageUrl' => 'Image URL does not exist or is not a valid image.'])
+                    ->withInput();
+            }
+        } catch (\Exception $e) {
+            return back()
+                ->withErrors(['ImageUrl' => 'Unable to verify image URL. Please try another one.'])
+                ->withInput();
+        }
 
         $category = MenuCategory::create([
             'MenuCategoryId' => Str::uuid(),
             'Name' => $validated['Name'],
             'Description' => $validated['Description'] ?? null,
+            'ImageUrl' => $validated['ImageUrl'],
             'IsActive' => $request->has('IsActive') ? 1 : 0,
         ]);
 
@@ -74,11 +99,31 @@ class MenuCategoryController extends Controller
             'Name' => 'required|string|max:255',
             'Description' => 'nullable|string',
             'IsActive' => 'nullable|boolean',
+            'ImageUrl' => 'required|url',
         ]);
+
+        //Image URL existence + image type check
+        try {
+            $response = Http::timeout(5)->retry(2, 100)->head($validated['ImageUrl']);
+
+            if (
+                ! $response->successful() ||
+                ! str_starts_with($response->header('Content-Type'), 'image/')
+            ) {
+                return back()
+                    ->withErrors(['ImageUrl' => 'Image URL does not exist or is not a valid image.'])
+                    ->withInput();
+            }
+        } catch (\Exception $e) {
+            return back()
+                ->withErrors(['ImageUrl' => 'Unable to verify image URL. Please try another one.'])
+                ->withInput();
+        }
 
         $category->update([
             'Name' => $validated['Name'],
             'Description' => $validated['Description'] ?? null,
+            'ImageUrl' => $validated['ImageUrl'],
             'IsActive' => $request->has('IsActive') ? 1 : 0,
         ]);
 

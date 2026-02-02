@@ -136,12 +136,12 @@
                          </div>
                          <div>
                              <label class="block text-sm font-medium">Description</label>
-                             <textarea name="Description" id="category-description" placeholder="Category Description..." class="mt-1 block w-full border border-gray-400 rounded px-3 py-2" rows="3"></textarea>
+                             <textarea name="Description" id="category-description" placeholder="Category Description..." class="mt-1 block w-full border border-gray-400 rounded px-3 py-2" rows="3" required></textarea>
                          </div>
                          <div>
                             <label class="block text-sm font-medium text-gray-700">Image URL</label>
                             <input type="url" name="ImageUrl" id="customer-image-url" placeholder="Enter image URL"
-                                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 sm:text-sm">
+                                class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 sm:text-sm" required>
                             <img id="image-preview" class="mt-2 w-28 h-28 rounded-md border border-gray-300 object-cover hidden" alt="Image Preview" />
                         </div>
                          <div class="flex items-center gap-2">
@@ -159,6 +159,16 @@
          </div>
     </div>
 </div>
+
+@if ($errors->any())
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const modal = document.getElementById('category-modal');
+        modal.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+    });
+</script>
+@endif
 
 @endsection
 
@@ -241,10 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Debounce for search input
     let searchTimeout;
-    // searchInput.addEventListener('input', () => {
-    //     clearTimeout(searchTimeout);
-    //     searchTimeout = setTimeout(performSearch, 500);
-    // });
 
     searchInput.addEventListener('keyup', function (e) {
         if (e.key === 'Enter') {
