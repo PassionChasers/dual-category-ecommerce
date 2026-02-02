@@ -26,6 +26,7 @@ class MenuCategory extends Model
         'Name',
         'Description',
         'IsActive',
+        'ImageUrl',
     ];
 
     // Relationships

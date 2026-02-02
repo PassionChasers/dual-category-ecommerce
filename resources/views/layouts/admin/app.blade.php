@@ -54,6 +54,13 @@
 </head>
 
 <body class="bg-gray-50 font-sans">
+
+    @if(session('delete_error'))
+        <script>
+            Swal.fire('Warning!', '{{ session("delete_error") }}', 'error');
+        </script>
+    @endif
+
     @if (session('success'))
         <script>
             document.addEventListener('DOMContentLoaded', () => {

@@ -36,8 +36,8 @@ class MenuCategoryController extends Controller
 
         // Per-page
         $allowedPerPage = [5, 10, 25, 50];
-        $perPage = (int) $request->get('per_page', 5);
-        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
         
         $categories = $query->paginate($perPage)->withQueryString();
         return view('admin.products.food.food-categories', compact('categories', 'search','perPage', 'allowedPerPage'));
@@ -49,12 +49,13 @@ class MenuCategoryController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'Name' => 'required|string|max:255',
+            'Name' => 'required|string|max:255|unique:MenuCategories,Name',
             'Description' => 'nullable|string',
             'IsActive' => 'nullable|boolean',
             'ImageUrl' => 'required|url',
         ],
         [
+            'Name.unique'       => 'This food category already exists.',
             'ImageUrl.required' => 'Food Item image URL is required.',
             'ImageUrl.url'      => 'Please enter a valid image URL.',
         ]);
@@ -136,6 +137,12 @@ class MenuCategoryController extends Controller
     public function destroy($id)
     {
         $category = MenuCategory::findOrFail($id);
+
+        if ($category->menuItems()->exists()) {
+            return redirect()->route('product.food.category')
+                ->with('delete_error', 'Cannot delete this category because it has menu items.');
+        }
+
         $category->delete();
 
         return redirect()->route('product.food.category')->with('success', 'Category deleted');

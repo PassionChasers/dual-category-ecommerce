@@ -38,8 +38,8 @@ class MenuItemController extends Controller
 
         // Per-page
         $allowedPerPage = [5, 10, 25, 50];
-        $perPage = (int) $request->get('per_page', 5);
-        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
 
         $menuItems = $query->orderBy('CreatedAt', 'desc')
             ->paginate($perPage)
@@ -117,12 +117,30 @@ class MenuItemController extends Controller
             'MenuCategoryId' => 'required|exists:MenuCategories,MenuCategoryId',
             'IsVeg' => 'nullable|boolean',
             'IsAvailable' => 'nullable|boolean',
-            'ImageUrl' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            // 'ImageUrl' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'ImageUrl' => 'required|url',
+        ],
+        [
+            'ImageUrl.required' => 'Food image URL is required.',
+            'ImageUrl.url'      => 'Please enter a valid image URL.',
         ]);
 
-        $imagePath = $menuItem->ImageUrl;
-        if ($request->hasFile('ImageUrl')) {
-            $imagePath = $request->file('ImageUrl')->store('menu-items', 'public');
+        //Image URL existence + image type check
+        try {
+            $response = Http::timeout(5)->retry(2, 100)->head($validated['ImageUrl']);
+
+            if (
+                ! $response->successful() ||
+                ! str_starts_with($response->header('Content-Type'), 'image/')
+            ) {
+                return back()
+                    ->withErrors(['ImageUrl' => 'Image URL does not exist or is not a valid image.'])
+                    ->withInput();
+            }
+        } catch (\Exception $e) {
+            return back()
+                ->withErrors(['ImageUrl' => 'Unable to verify image URL. Please try another one.'])
+                ->withInput();
         }
 
         $menuItem->update([
@@ -132,7 +150,7 @@ class MenuItemController extends Controller
             'MenuCategoryId' => $validated['MenuCategoryId'],
             'IsVeg' => $request->has('IsVeg') ? 1 : 0,
             'IsAvailable' => $request->has('IsAvailable') ? 1 : 0,
-            'ImageUrl' => $imagePath,
+            'ImageUrl' => $validated['ImageUrl'],
         ]);
 
         return redirect()->route('admin.food.index')->with('success', 'Menu item updated successfully');
@@ -148,25 +166,12 @@ class MenuItemController extends Controller
 
         // Optional: prevent delete if used in orders
         if ($menuItem->orderItems()->exists()) {
-
-            // return response()->json([
-            //     'success' => false,
-            //     'message' => "This menu item '{$name}' cannot be deleted because it is used in orders."
-            // ], 400);
-
-            // return back()->with('error', "MenuItem '{$name}' cannot be deleted because it is used in orders.");
-
             return redirect()
             ->route('admin.food.index')
-            ->with('error', "MenuItem '{$name}' cannot be deleted because it is used in orders.");
+            ->with('delete_error', "MenuItem '{$name}' cannot be deleted because it is used in orders.");
         }
 
         $menuItem->delete();
-
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => "Menu item  '{$name}' deleted successfully"
-        // ]);
 
         return redirect()
             ->route('admin.food.index')

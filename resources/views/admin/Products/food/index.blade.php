@@ -125,8 +125,8 @@
                                             data-id="{{ $item->MenuItemId }}" data-name="{{ $item->Name }}"
                                             data-description="{{ $item->Description }}" data-price="{{ $item->Price }}"
                                             data-category="{{ $item->MenuCategoryId }}" data-isveg="{{ $item->IsVeg }}"
-                                            data-isavailable="{{ $item->IsAvailable }}" data-image="{{ $item->ImageUrl }}"
-                                            data-image="{{ $item->ImageUrl ? $item->ImageUrl : '' }}">
+                                            data-isavailable="{{ $item->IsAvailable }}" data-image="{{ $item->ImageUrl ?? '' }}"
+                                            >
                                             <i class="fas fa-edit"></i>
                                         </button>
                                         <form method="POST" action="{{ route('admin.food.destroy', $item->MenuItemId) }}"
@@ -181,6 +181,20 @@
                     <h3 class="text-lg font-medium text-white " id="modal-title"></h3>
                 </div>
                 <div class="px-6 pt-4">
+
+                    {{-- ERRORS --}}
+                    <div id="form-errors">
+                        @if ($errors->any())
+                            <div class="mb-4 bg-red-100 text-red-700 p-3 rounded">
+                                <ul class="list-disc pl-5">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+
                     <!-- Form -->
                     <form id="customer-form" method="POST" class="space-y-4" enctype="multipart/form-data">
                         @csrf
@@ -188,72 +202,68 @@
 
                         <!-- Name -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Name</label>
-                            <input type="text" name="Name" placeholder="Enter Food Name" id="customer-name" value=""
+                            <label class="block text-sm font-medium text-gray-700">Name<span class="text-red-500">*</span></label>
+                            <input type="text" name="Name" placeholder="Enter Food Name" id="customer-name" value="{{ old('Name') }}"
                                 class="mt-1 block w-full border border-gray-300 rounded-md  px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required>
                         </div>
 
                         <!-- Description -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Description</label>
+                            <label class="block text-sm font-medium text-gray-700">Description<span class="text-red-500">*</span></label>
                             <textarea name="Description" id="customer-description" placeholder="Food Description..."
                                 rows="3"
                                 class="mt-1 block w-full border border-gray-300 rounded-md  px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                                required></textarea>
+                                required>{{ old('Description') }}</textarea>
                         </div>
 
                         <!-- Price -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Price</label>
-                            <input type="number" name="Price" id="customer-price" placeholder="Rs." step="0.01" value=""
+                            <label class="block text-sm font-medium text-gray-700">Price<span class="text-red-500">*</span></label>
+                            <input type="number" name="Price" id="customer-price" placeholder="Rs." step="0.01" value="{{ old('Price') }}"
                                 class="mt-1 block w-full border border-gray-300 rounded-md  px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required>
                         </div>
 
                         <!-- Category -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Category</label>
+                            <label class="block text-sm font-medium text-gray-700">Category<span class="text-red-500">*</span></label>
                             <select name="MenuCategoryId" id="customer-category"
                                 class="mt-1 block w-full border border-gray-300 rounded-md  px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                                 required>
                                 <option value="">Select Category</option>
                                 @foreach($categories ?? [] as $category)
-                                    <option value="{{ $category->MenuCategoryId }}">{{ $category->Name }}</option>
+                                    <option value="{{ $category->MenuCategoryId }}"
+                                        {{ old('MenuCategoryId') == $category->MenuCategoryId ? 'selected' : '' }}>
+                                        {{ $category->Name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
 
                         <!-- Is Veg -->
                         <div class="flex items-center">
-                            <input type="checkbox" name="IsVeg" id="customer-isveg" value="1"
+                            <input type="checkbox" name="IsVeg" id="customer-isveg" value="1" {{ old('IsVeg') ? 'checked' : '' }}
                                 class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
                             <label for="customer-isveg" class="ml-2 block text-sm text-gray-700">Is Vegetarian</label>
                         </div>
 
                         <!-- Is Available -->
                         <div class="flex items-center">
-                            <input type="checkbox" name="IsAvailable" id="customer-isavailable" value="1" checked
+                            <input type="checkbox" name="IsAvailable" id="customer-isavailable" value="1" {{ old('IsAvailable', 1) ? 'checked' : '' }}
                                 class="h-4 w-4 text-indigo-600 border-gray-300 rounded">
                             <label for="customer-isavailable" class="ml-2 block text-sm text-gray-700">Is Available</label>
                         </div>
 
-                        <!-- Image -->
-                        {{-- <div>
-                            <label class="block text-sm font-medium text-gray-700">Image</label>
-                            <input type="file" name="ImageUrl" id="customer-image" accept="image/*"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                            <p class="mt-1 text-xs text-gray-500">Leave blank to keep existing image</p>
-                        </div> --}}
-
                         <!-- Image URL -->
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Image URL</label>
-                            <input type="url" name="ImageUrl" id="customer-image-url" placeholder="Enter image URL"
-                                class="mt-1 block w-full border border-gray-300 rounded-md  px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                            <label class="block text-sm font-medium text-gray-700">Image URL<span class="text-red-500">*</span></label>
+                            <input type="url" name="ImageUrl" id="customer-image-url" placeholder="Enter image URL" value="{{ old('ImageUrl') }}"
+                                class="mt-1 block w-full border border-gray-300 rounded-md  px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
                             <p class="mt-1 text-xs text-gray-500">Leave blank to keep existing image</p>
                             <img id="image-preview"
-                                class="mt-2 w-28 h-28 rounded-md border border-gray-300 object-cover hidden"
+                                class="mt-2 w-28 h-28 rounded-md border border-gray-300 object-cover {{ old('ImageUrl') ? '' : 'hidden' }}"
+                                src="{{ old('ImageUrl') ?? '' }}"
                                 alt="Image Preview" />
                         </div>
 
@@ -269,6 +279,16 @@
             </div>
         </div>
     </div>
+
+    @if ($errors->any())
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const modal = document.getElementById('customer-modal');
+                modal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+            });
+        </script>
+    @endif
 
 @endsection
 
@@ -348,23 +368,48 @@
             // open model
             function openModal() {
                 modal.classList.remove('hidden');
-                document.body.classList.add('overflow-hidden'); // 🔒 lock background scroll
+                document.body.classList.add('overflow-hidden'); 
             }
 
             // close model
             function closeModal() {
                 modal.classList.add('hidden');
-               ocument.body.classList.remove('overflow-hidden');  d// 🔓 unlock scroll
+               document.body.classList.remove('overflow-hidden');  
             }
 
             overlay.addEventListener("click", closeModal);
 
+            function resetForm() {
+                form.reset();                    // resets inputs & checkboxes
+                methodInput.value = 'POST';       // default method
+                form.action = '';                // clear action
+
+                // Explicit resets (important for JS-filled fields)
+                nameInput.value = '';
+                descriptionInput.value = '';
+                priceInput.value = '';
+                categoryInput.value = '';
+                isVegInput.checked = false;
+                isAvailableInput.checked = true;
+
+                imageField.value = '';
+                imagePreview.src = '';
+                imagePreview.classList.add('hidden');
+
+                // Clear validation errors
+                const errorBox = document.getElementById('form-errors');
+                if (errorBox) errorBox.innerHTML = '';
+            }
+
+            function clearFormErrors() {
+                const errorBox = document.getElementById('form-errors');
+                if (errorBox) {
+                    errorBox.innerHTML = '';
+                }
+            }
+
             // Debounce for search input
             let searchTimeout;
-            // searchInput.addEventListener('input', () => {
-            //     clearTimeout(searchTimeout);
-            //     searchTimeout = setTimeout(performSearch, 500);
-            // });
 
             searchInput.addEventListener('keyup', function (e) {
                 if (e.key === 'Enter') {
@@ -382,8 +427,11 @@
                 document.querySelectorAll('.edit-btn').forEach(btn => {
                     btn.addEventListener('click', () => {
 
+                        resetForm();
+                        clearFormErrors();
+
                         modalTitle.innerText = 'Edit Item';
-                        form.action = `/menu-items/${btn.dataset.id}`;
+                        form.action = `{{ url('admin/menu-items') }}/${btn.dataset.id}`;
                         methodInput.value = 'PUT';
                         nameInput.value = btn.dataset.name;
                         descriptionInput.value = btn.dataset.description;
@@ -437,8 +485,9 @@
                         const img = el.dataset.img || '';
                         const name = el.dataset.name || '';
                         let html = '';
-                        if (img) html += `<img src="https://pcsdecom.azurewebsites.net${img}" alt="${name}" style="max-width:100%;display:block;margin-bottom:8px;border-radius:6px;">`;
-                        html += `<div style="text-align:left">${desc}</div>`;
+                        // if (img) html += `<img src="https://pcsdecom.azurewebsites.net${img}" alt="${name}" style="max-width:100%;display:block;margin-bottom:8px;border-radius:6px;">`;
+                        if (img) html += `<img src="${img}">`;
+                        html += `<div style="text-align:center">${desc}</div>`;
                         Swal.fire({
                             title: name || 'Description',
                             html: html,
@@ -452,19 +501,8 @@
             // Open modal for create
             newBtn.addEventListener('click', () => {
 
-                // const imageUrlInput = document.getElementById('customer-image-url');
-                // const imagePreview = document.getElementById('image-preview');
-
-                // imageUrlInput.addEventListener('input', () => {
-                //     const url = imageUrlInput.value.trim(); // just for preview
-                //     if (url) {
-                //         imagePreview.src = url;
-                //         imagePreview.classList.remove('hidden');
-                //     } else {
-                //         imagePreview.src = '';
-                //         imagePreview.classList.add('hidden');
-                //     }
-                // });
+                resetForm();
+                clearFormErrors();
 
                 modalTitle.innerText = 'New Item';
                 form.action = "{{ route('admin.food.store') }}";
@@ -491,17 +529,5 @@
 
         });
 
-        // Toast alerts
-        // @if(session('success'))
-        //     Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: "{{ session('success') }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        // @endif
-
-        // @if(session('error'))
-        //     Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: "{{ session('error') }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        // @endif
-
-        // @if($errors->any())
-        //     Swal.fire({ toast: true, position: 'top-end', icon: 'error', title: "{{ $errors->first() }}", showConfirmButton: false, timer: 3000, timerProgressBar: true });
-        // @endif
     </script>
 @endpush
