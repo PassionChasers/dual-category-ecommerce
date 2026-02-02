@@ -27,9 +27,9 @@
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
                 <form id="filter-form" class="flex flex-wrap gap-2 w-full md:w-auto">
                     <div class="flex-1 min-w-[150px]">
-                        <input type="text" id="search-input" name="search" placeholder="Search medicines..."
+                        <input type="text" id="search-input" name="search" placeholder="By medicines name........"
                             value="{{ request('search') }}"
-                            class="w-full px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
+                            class="w-ful px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
                     </div>
 
                     <select id="category-filter" name="category" class="px-3 py-2 border rounded-md text-sm">

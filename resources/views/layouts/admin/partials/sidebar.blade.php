@@ -113,64 +113,68 @@
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
 
-                        
-                        <!--Dropdown for Medicines -->
-                        <div x-data="{ open: {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'true' : 'false' }} }">
-                            <button @click="open = !open"
-                                class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
-                                {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <div class="flex items-center">
-                                    <i
-                                        class="fa-solid fa-capsules text-green-500
-                                    mr-3 {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-500' : 'text-gray-600' }}">
-                                    </i>
-                                    <span>Medicine</span>
+                        @if(auth()->user()->Role === 2 || auth()->user()->Role === 4 )
+                            <!--Dropdown for Medicines -->
+                            <div x-data="{ open: {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'true' : 'false' }} }">
+                                <button @click="open = !open"
+                                    class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
+                                    {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <div class="flex items-center">
+                                        <i
+                                            class="fa-solid fa-capsules text-green-500
+                                        mr-3 {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-500' : 'text-gray-600' }}">
+                                        </i>
+                                        <span>Medicine</span>
+                                    </div>
+                                    <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
+                                </button>
+
+                                <div x-show="open" class="ml-6 mt-2 space-y-1">
+                                    <a href="{{route('admin.medicines.index')}}"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                            {{ request()->routeIs('admin.medicines.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-list mr-2 text-green-700"></i> All Medicines
+                                    </a>
+                                    <a href="{{ route('admin.medicine-categories.index') }}"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                        {{ request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-tags mr-2 text-orange-500"></i> Medicine Category
+                                    </a>
                                 </div>
-                                <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
-                            </button>
-
-                            <div x-show="open" class="ml-6 mt-2 space-y-1">
-                                <a href="{{route('admin.medicines.index')}}"
-                                    class="flex items-center px-2 py-2 text-sm rounded-md
-                                        {{ request()->routeIs('admin.medicines.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                    <i class="fas fa-list mr-2 text-green-700"></i> All Medicines
-                                </a>
-                                <a href="{{ route('admin.medicine-categories.index') }}"
-                                    class="flex items-center px-2 py-2 text-sm rounded-md
-                                    {{ request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                    <i class="fas fa-tags mr-2 text-orange-500"></i> Medicine Category
-                                </a>
                             </div>
-                        </div>
+                        @endif
 
-                        <!-- Dropdown for food -->
-                        <div x-data="{ open: {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'true' : 'false' }} }">
-                            <button @click="open = !open"
-                                class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
-                                {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <div class="flex items-center">
-                                    <i class="fa-solid fa-utensils text-yellow-500
-                                    mr-3 {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'text-indigo-500' : 'text-gray-600' }}">
-                                    </i>
-                                    <span>Food</span>
+                        @if(auth()->user()->Role === 3 || auth()->user()->Role === 4 )
+                            <!-- Dropdown for food -->
+                            <div x-data="{ open: {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'true' : 'false' }} }">
+                                <button @click="open = !open"
+                                    class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
+                                    {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <div class="flex items-center">
+                                        <i class="fa-solid fa-utensils text-yellow-500
+                                        mr-3 {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'text-indigo-500' : 'text-gray-600' }}">
+                                        </i>
+                                        <span>Food</span>
+                                    </div>
+                                    <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
+                                </button>
+
+                                <div x-show="open" class="ml-6 mt-2 space-y-1">
+                                    <a href="{{route('admin.food.index')}}"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                            {{ request()->routeIs('admin.food.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-list mr-2 text-green-700"></i> All Foods
+                                    </a>
+
+                                    <a href="{{ route('product.food.category') }}"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                        {{ request()->routeIs('product.food.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-tags mr-2 text-orange-500"></i> Food Category
+                                    </a>
                                 </div>
-                                <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
-                            </button>
-
-                            <div x-show="open" class="ml-6 mt-2 space-y-1">
-                                <a href="{{route('admin.food.index')}}"
-                                    class="flex items-center px-2 py-2 text-sm rounded-md
-                                        {{ request()->routeIs('admin.food.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                    <i class="fas fa-list mr-2 text-green-700"></i> All Foods
-                                </a>
-
-                                <a href="{{ route('product.food.category') }}"
-                                    class="flex items-center px-2 py-2 text-sm rounded-md
-                                    {{ request()->routeIs('product.food.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                    <i class="fas fa-tags mr-2 text-orange-500"></i> Food Category
-                                </a>
                             </div>
-                        </div>
+                        @endif
+
                     </div>
                 </div>
 
@@ -247,6 +251,7 @@
 
                 <!-- Settings Dropdown -->
                 <div x-data="{ open: {{ request()->routeIs('settings.*') ? 'true' : 'false' }} }">
+                    
                     <button @click="open = !open"
                         class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
                         {{ request()->routeIs('settings.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
@@ -260,26 +265,20 @@
                     </button>
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
-                        <a href="{{ route('settings.general') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('settings.general') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-cogs mr-2"></i>Application Setting
-                        </a>
+
+                        @if(auth()->user()->Role === 4)
+                            <a href="{{ route('settings.general') }}"
+                                class="flex items-center px-2 py-2 text-sm rounded-md
+                                    {{ request()->routeIs('settings.general') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <i class="fas fa-cogs mr-2"></i>Application Setting
+                            </a>
+                        @endif
 
                         <a href="{{ route('admin.profile.edit') }}"
                             class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('admin.profile.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fas fa-user-circle mr-2"></i>Profile Setting
                         </a>
-
-                        <!-- Change Password (Modal Trigger) -->
-                        {{-- <button type="button"
-                            id="changePasswordBtn"
-                            onclick="openChangePasswordModal()"
-                            class="w-full flex items-center px-2 py-2 text-sm rounded-md
-                            text-gray-600 hover:bg-gray-100">
-                            <i class="fas fa-key mr-2"></i> Change Password
-                        </button> --}}
 
                         <a href="javascript:void(0)" data-no-loader
                         @click="openChangePasswordModal()"
@@ -288,114 +287,116 @@
                             <i class="fas fa-key mr-2"></i> Change Password
                         </a>
                         
-                        {{-- <a href="{{ route('settings.institutions') }}"
-                            class="hidden items-center px-2 py-2 text-sm rounded-md
-                            {{ request()->routeIs('settings.institutions') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-university mr-2"></i> Institution Setup
-                        </a> --}}
                     </div>
                 </div>
 
-                {{-- ADS Settings --}}
-                <div>
-                    <a href="{{route('admin.ads.index')}}"
-                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 
-                            {{ request()->routeIs('admin.ads.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                        <i class="fas fa-ad mr-2 text-green-500"></i>Manage Ads
-                    </a>
-                </div>
+                @if(auth()->user()->Role === 4)
+                    {{-- ADS Settings --}}
+                    <div>
+                        <a href="{{route('admin.ads.index')}}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 
+                                {{ request()->routeIs('admin.ads.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-ad mr-2 text-green-500"></i>Manage Ads
+                        </a>
+                    </div>
+                @endif
 
-                <!-- Admin Section -->
-                <div class="pt-4 mt-4 border-t border-gray-200">
-                    <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Administration
-                    </h3>
 
-                    <div x-data="{ open: {{ request()->routeIs('users.*') || request()->routeIs('designations.*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open"
-                            class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
-                                {{ request()->routeIs('users.*') || request()->routeIs('designations.*') || request()->routeIs('departments.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <span class="flex items-center">
-                                <i
-                                    class="fas fa-users-cog mr-3 text-purple-500
-                                        {{ request()->routeIs('users.*') || request()->routeIs('designations.*') || request()->routeIs('departments.*') ? 'text-indigo-500' : 'text-gray-600' }}">
-                                </i>
-                                User Management
-                            </span>
-                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                                </path>
-                            </svg>
-                        </button>
+                {{-- for main admin --}}
+                @if(auth()->user()->Role === 4)
+                    <!-- Admin Section -->
+                    <div class="pt-4 mt-4 border-t border-gray-200">
+                        <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Administration
+                        </h3>
 
-                        <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
-                            <a href="{{ route('users.admin.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.admin.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-user-shield mr-2 text-indigo-600"></i> Admin
-                            </a>
-                            <a href="{{ route('users.medicalstores.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.medicalstores.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-clinic-medical mr-2 text-red-600"></i> Medicalstore
-                            </a>
-                            <a href="{{ route('users.restaurants.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.restaurants.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-utensils mr-2 text-yellow-500"></i> Restaurants
-                            </a>
-                            <a href="{{ route('users.customers.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.customers.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-users mr-2 text-purple-500"></i> Customer
-                            </a>
+                        <div x-data="{ open: {{ request()->routeIs('users.*') || request()->routeIs('designations.*') ? 'true' : 'false' }} }">
+                            <button @click="open = !open"
+                                class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
+                                    {{ request()->routeIs('users.*') || request()->routeIs('designations.*') || request()->routeIs('departments.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <span class="flex items-center">
+                                    <i
+                                        class="fas fa-users-cog mr-3 text-purple-500
+                                            {{ request()->routeIs('users.*') || request()->routeIs('designations.*') || request()->routeIs('departments.*') ? 'text-indigo-500' : 'text-gray-600' }}">
+                                    </i>
+                                    User Management
+                                </span>
+                                <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                                    </path>
+                                </svg>
+                            </button>
+
+                            <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
+                                <a href="{{ route('users.admin.index') }}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.admin.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-user-shield mr-2 text-indigo-600"></i> Admin
+                                </a>
+                                <a href="{{ route('users.medicalstores.index') }}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.medicalstores.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-clinic-medical mr-2 text-red-600"></i> Medicalstore
+                                </a>
+                                <a href="{{ route('users.restaurants.index') }}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.restaurants.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-utensils mr-2 text-yellow-500"></i> Restaurants
+                                </a>
+                                <a href="{{ route('users.customers.index') }}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.customers.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-users mr-2 text-purple-500"></i> Customer
+                                </a>
+                            </div>
                         </div>
-                    </div>
 
-                    {{-- Register Business --}}
-                    <div x-data="{ open: {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open"
-                            class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
-                                {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <span class="flex items-center">
-                                <i class="fas fa-briefcase mr-3 text-blue-600
-                                    {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'text-indigo-500' : 'text-gray-600' }}">
-                                </i>
-                                Register Business
-                            </span>
-                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                                </path>
-                            </svg>
-                        </button>
+                        {{-- Register Business --}}
+                        <div x-data="{ open: {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'true' : 'false' }} }">
+                            <button @click="open = !open"
+                                class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
+                                    {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <span class="flex items-center">
+                                    <i class="fas fa-briefcase mr-3 text-blue-600
+                                        {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'text-indigo-500' : 'text-gray-600' }}">
+                                    </i>
+                                    Register Business
+                                </span>
+                                <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                                    </path>
+                                </svg>
+                            </button>
 
-                        <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
-                            <a href="{{route('admin.restaurants.list')}}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-utensils mr-2"></i> Restaurant Business
-                            </a>
-                            <a href="{{route('admin.medicalstores.list')}}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.medicalstores.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-clinic-medical mr-2"></i> Medicalstore Business
-                            </a>
-                             {{-- <a href="#"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.add-business.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-add mr-2 text-blue-600"></i> Add New Business
-                            </a> --}}
+                            <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
+                                <a href="{{route('admin.restaurants.list')}}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-utensils mr-2"></i> Restaurant Business
+                                </a>
+                                <a href="{{route('admin.medicalstores.list')}}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.medicalstores.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-clinic-medical mr-2"></i> Medicalstore Business
+                                </a>
+                                {{-- <a href="#"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.add-business.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-add mr-2 text-blue-600"></i> Add New Business
+                                </a> --}}
+                            </div>
                         </div>
+
+
+                        <a href="{{route('auditlog.index')}}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 
+                                {{ request()->routeIs('auditlog.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-history mr-2"></i> Audit Logs
+                        </a>
+
+                        <a href="{{route('admin.reward-transactions.index')}}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 
+                                {{ request()->routeIs('admin.reward-transactions.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-coins mr-2"></i> Reward Transactions
+                        </a>
                     </div>
+                @endif
 
-
-                    <a href="{{route('auditlog.index')}}"
-                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 
-                            {{ request()->routeIs('auditlog.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                        <i class="fas fa-history mr-2"></i> Audit Logs
-                    </a>
-
-                    <a href="{{route('admin.reward-transactions.index')}}"
-                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 
-                            {{ request()->routeIs('admin.reward-transactions.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                        <i class="fas fa-coins mr-2"></i> Reward Transactions
-                    </a>
-                </div>
             </div>
         </div>
 
@@ -475,6 +476,7 @@
 
                 <!-- Products Dropdown -->
                 <div x-data="{ open: {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') || request()->routeIs('admin.medicine-categories.*') || request()->routeIs('admin.medicines.*') ? 'true' : 'false' }} }">
+
                     <button @click="open = !open"
                         class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
                         {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') || request()->routeIs('admin.medicine-categories.*') || request()->routeIs('admin.medicines.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
@@ -488,63 +490,68 @@
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
 
-                        
-                        <!-- Dropdown for Medicine -->
-                        <div x-data="{ open: {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'true' : 'false' }} }">
-                            <button @click="open = !open"
-                                class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
-                            {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <div class="flex items-center">
-                                    <i class="fa-solid fa-capsules text-green-500
-                                    mr-3 {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
-                                    <span>Medicine</span>
+                        @if(auth()->user()->Role === 2 || auth()->user()->Role === 4 )
+                            <!-- Dropdown for Medicine -->
+                            <div x-data="{ open: {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'true' : 'false' }} }">
+                                <button @click="open = !open"
+                                    class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
+                                {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <div class="flex items-center">
+                                        <i class="fa-solid fa-capsules text-green-500
+                                        mr-3 {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
+                                        <span>Medicine</span>
+                                    </div>
+                                    <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
+                                </button>
+
+                                <div x-show="open" class="ml-6 mt-2 space-y-1">
+                                    <a href="{{route('admin.medicines.index')}}"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                            {{ request()->routeIs('admin.medicines.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-list mr-2 text-green-700"></i> All Medicines
+                                    </a>
+                                    
+
+                                    <a href="{{ route('admin.medicine-categories.index') }}"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                        {{ request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-tags mr-2 text-orange-500"></i> Medicine Category
+                                    </a>
                                 </div>
-                                <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
-                            </button>
-
-                            <div x-show="open" class="ml-6 mt-2 space-y-1">
-                                <a href="{{route('admin.medicines.index')}}"
-                                    class="flex items-center px-2 py-2 text-sm rounded-md
-                                        {{ request()->routeIs('admin.medicines.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                    <i class="fas fa-list mr-2 text-green-700"></i> All Medicines
-                                </a>
-                                
-
-                                <a href="{{ route('admin.medicine-categories.index') }}"
-                                    class="flex items-center px-2 py-2 text-sm rounded-md
-                                    {{ request()->routeIs('admin.medicine-categories.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                    <i class="fas fa-tags mr-2 text-orange-500"></i> Medicine Category
-                                </a>
                             </div>
-                        </div>
+                        @endif
 
-                        <!--Dropdown for Food -->
-                        <div x-data="{ open: {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'true' : 'false' }} }">
-                            <button @click="open = !open"
-                                class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
-                            {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <div class="flex items-center">
-                                    <i
-                                        class=" fa-solid fa-utensils text-yellow-500
-                                    mr-3 {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
-                                    <span>Food</span>
+
+                        @if(auth()->user()->Role === 3 || auth()->user()->Role === 4 )
+                            <!--Dropdown for Food -->
+                            <div x-data="{ open: {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'true' : 'false' }} }">
+                                <button @click="open = !open"
+                                    class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
+                                {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'text-indigo-700 bg-indigo-100' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <div class="flex items-center">
+                                        <i
+                                            class=" fa-solid fa-utensils text-yellow-500
+                                        mr-3 {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
+                                        <span>Food</span>
+                                    </div>
+                                    <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
+                                </button>
+
+                                <div x-show="open" class="ml-6 mt-2 space-y-1">
+                                    <a href="{{route('admin.food.index')}}"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                            {{ request()->routeIs('admin.food.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-list mr-2 text-green-700"></i> All Foods
+                                    </a>
+                                    <a href="{{ route('product.food.category') }}"
+                                        class="flex items-center px-2 py-2 text-sm rounded-md
+                                        {{ request()->routeIs('product.food.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                        <i class="fas fa-tags mr-2 text-orange-500"></i> Food Category
+                                    </a>
                                 </div>
-                                <i :class="open ? 'fas fa-chevron-up' : 'fas fa-chevron-down'" class="text-xs"></i>
-                            </button>
-
-                            <div x-show="open" class="ml-6 mt-2 space-y-1">
-                                <a href="{{route('admin.food.index')}}"
-                                    class="flex items-center px-2 py-2 text-sm rounded-md
-                                        {{ request()->routeIs('admin.food.*') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                    <i class="fas fa-list mr-2 text-green-700"></i> All Foods
-                                </a>
-                                <a href="{{ route('product.food.category') }}"
-                                    class="flex items-center px-2 py-2 text-sm rounded-md
-                                    {{ request()->routeIs('product.food.category') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                    <i class="fas fa-tags mr-2 text-orange-500"></i> Food Category
-                                </a>
                             </div>
-                        </div>
+                        @endif
+
                     </div>
                 </div>
 
@@ -562,12 +569,6 @@
                     </button>
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
-
-                        {{-- <a href="{{ route('orders.index') }}"
-                            class="flex items-center px-2 py-2 text-sm rounded-md
-                                {{ request()->routeIs('orders.index') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fa-solid fa-clipboard-list mr-2 text-pink-500"></i> All orders
-                        </a> --}}
 
                         {{-- for main admin --}}
                         @if(auth()->user()->Role === 4)
@@ -620,11 +621,15 @@
                     </button>
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
+
+                        {{-- for main admin --}}
+                        @if(auth()->user()->Role === 4)
                         <a href="{{ route('settings.general') }}"
                             class="flex items-center px-2 py-2 text-sm rounded-md
                                 {{ request()->routeIs('settings.general') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
                             <i class="fas fa-cogs mr-2"></i> Application Setting
                         </a>
+                        @endif
 
                         <a href="{{ route('admin.profile.edit') }}"
                             class="flex items-center px-2 py-2 text-sm rounded-md
@@ -633,14 +638,6 @@
                         </a>
 
                         <!-- Change Password (Modal Trigger) -->
-                        {{-- <button type="button"
-                            id="changePasswordBtn"
-                            onclick="openChangePasswordModal()"
-                            class="w-full flex items-center px-2 py-2 text-sm rounded-md
-                            text-gray-600 hover:bg-gray-100">
-                            <i class="fas fa-key mr-2"></i> Change Password
-                        </button> --}}
-
                         <a href="javascript:void(0)" data-no-loader
                         @click="openChangePasswordModal()"
                         class="block px-2 py-2 text-sm rounded-md 
@@ -648,14 +645,11 @@
                             <i class="fas fa-key mr-2"></i> Change Password
                         </a>
 
-                        {{-- <a href="{{ route('settings.institutions') }}"
-                            class="hidden items-center px-2 py-2 text-sm rounded-md
-                            {{ request()->routeIs('settings.institutions') ? 'text-indigo-700 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <i class="fas fa-university mr-2"></i> Institution Setup
-                        </a> --}}
                     </div>
                 </div>
 
+                {{-- for main admin --}}
+                @if(auth()->user()->Role === 4)
                 {{-- ADS Settings --}}
                 <div>
                     <a href="{{route('admin.ads.index')}}"
@@ -664,100 +658,105 @@
                         <i class="fas fa-ad mr-2 text-green-500"></i> Manage Ads
                     </a>
                 </div>
+                @endif
 
 
-                <!-- Admin Section -->
-                <div class="pt-4 mt-4 border-t border-gray-200">
-                    <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        Administration
-                    </h3>
+                
+                {{-- for main admin --}}
+                @if(auth()->user()->Role === 4)
+                    <!-- Admin Section -->
+                    <div class="pt-4 mt-4 border-t border-gray-200">
+                        <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                            Administration
+                        </h3>
 
-                    <div x-data="{ open: {{ request()->routeIs('users.*') || request()->routeIs('customers.*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open"
-                            class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
-                                {{ request()->routeIs('users.*') || request()->routeIs('customers.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <span class="flex items-center">
-                                <i class="fas fa-users-cog mr-3 text-purple-500 {{ request()->routeIs('users.*') || request()->routeIs('customers.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
-                                User Management
-                            </span>
-                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                                </path>
-                            </svg>
-                        </button>
+                        <div x-data="{ open: {{ request()->routeIs('users.*') || request()->routeIs('customers.*') ? 'true' : 'false' }} }">
+                            <button @click="open = !open"
+                                class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
+                                    {{ request()->routeIs('users.*') || request()->routeIs('customers.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <span class="flex items-center">
+                                    <i class="fas fa-users-cog mr-3 text-purple-500 {{ request()->routeIs('users.*') || request()->routeIs('customers.*') ? 'text-indigo-500' : 'text-gray-600' }}"></i>
+                                    User Management
+                                </span>
+                                <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                                    </path>
+                                </svg>
+                            </button>
 
-                        <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
-                            <a href="{{ route('users.admin.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.admin.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-user-shield mr-2 text-indigo-600"></i> Admin User
-                            </a>
-                            <a href="{{ route('users.medicalstores.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.medicalstores.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fa-solid fa-user-doctor mr-2 text-red-600"></i> Medicalstore User
-                            </a>
-                            <a href="{{ route('users.restaurants.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.restaurants.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fa-solid fa-utensils mr-2 text-yellow-500"></i> Restaurants User
-                            </a>
-                            <a href="{{ route('users.customers.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.customers.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-users mr-2 text-purple-500"></i> Customer User
-                            </a>
-                            <a href="{{ route('users.delivery-man.index') }}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.delivery-man.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fa-solid fa-motorcycle mr-2 text-purple-500"></i> Delivery Man User
-                            </a>
+                            <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
+                                <a href="{{ route('users.admin.index') }}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.admin.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-user-shield mr-2 text-indigo-600"></i> Admin User
+                                </a>
+                                <a href="{{ route('users.medicalstores.index') }}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.medicalstores.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fa-solid fa-user-doctor mr-2 text-red-600"></i> Medicalstore User
+                                </a>
+                                <a href="{{ route('users.restaurants.index') }}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.restaurants.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fa-solid fa-utensils mr-2 text-yellow-500"></i> Restaurants User
+                                </a>
+                                <a href="{{ route('users.customers.index') }}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.customers.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-users mr-2 text-purple-500"></i> Customer User
+                                </a>
+                                <a href="{{ route('users.delivery-man.index') }}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('users.delivery-man.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fa-solid fa-motorcycle mr-2 text-purple-500"></i> Delivery Man User
+                                </a>
 
+                            </div>
                         </div>
-                    </div>
 
-                    
-                    {{-- Register the business --}}
-                    <div x-data="{ open: {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'true' : 'false' }} }">
-                        <button @click="open = !open"
-                            class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
-                                {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
-                            <span class="flex items-center">
-                                <i class="fas fa-briefcase mr-3 text-blue-600"></i>
-                                Register Business
-                            </span>
-                            <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
-                                stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
-                                </path>
-                            </svg>
-                        </button>
+                        
+                        {{-- Register the business --}}
+                        <div x-data="{ open: {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'true' : 'false' }} }">
+                            <button @click="open = !open"
+                                class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium
+                                    {{ request()->routeIs('admin.medicalstores.*') || request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 rounded-md' : 'text-gray-600 hover:bg-gray-100' }}">
+                                <span class="flex items-center">
+                                    <i class="fas fa-briefcase mr-3 text-blue-600"></i>
+                                    Register Business
+                                </span>
+                                <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transition-transform" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                                    </path>
+                                </svg>
+                            </button>
 
-                        <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
-                            <a href="{{route('admin.restaurants.list')}}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-utensils mr-2 text-yellow-500"></i> Restaurant Business
-                            </a>
-                            <a href="{{route('admin.medicalstores.list')}}"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.medicalstores.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-clinic-medical mr-2 text-red-600"></i> Medicalstore Business
-                            </a>
-                            {{-- <a href="#"
-                                class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.add-business.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                                <i class="fas fa-add mr-2 text-blue-600"></i> Add New Business
-                            </a> --}}
+                            <div x-show="open" class="ml-6 mt-2 space-y-1" x-cloak>
+                                <a href="{{route('admin.restaurants.list')}}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.restaurants.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-utensils mr-2 text-yellow-500"></i> Restaurant Business
+                                </a>
+                                <a href="{{route('admin.medicalstores.list')}}"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.medicalstores.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-clinic-medical mr-2 text-red-600"></i> Medicalstore Business
+                                </a>
+                                {{-- <a href="#"
+                                    class="flex items-center px-2 py-2 text-sm rounded-md {{ request()->routeIs('admin.add-business.*') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                                    <i class="fas fa-add mr-2 text-blue-600"></i> Add New Business
+                                </a> --}}
 
+                            </div>
                         </div>
+
+                        <a href="{{route('auditlog.index')}}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100
+                            {{ request()->routeIs('auditlog.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-history mr-2"></i> Audit Logs
+                        </a>
+
+                        <a href="{{route('admin.reward-transactions.index')}}"
+                            class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100
+                            {{ request()->routeIs('admin.reward-transactions.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
+                            <i class="fas fa-coins mr-2"></i> Reward Transactions
+                        </a>
                     </div>
-
-                    <a href="{{route('auditlog.index')}}"
-                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100
-                        {{ request()->routeIs('auditlog.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                        <i class="fas fa-history mr-2"></i> Audit Logs
-                    </a>
-
-                    <a href="{{route('admin.reward-transactions.index')}}"
-                        class="flex items-center px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100
-                        {{ request()->routeIs('admin.reward-transactions.index') ? 'text-indigo-500 bg-indigo-100 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">
-                        <i class="fas fa-coins mr-2"></i> Reward Transactions
-                    </a>
-                </div>
+                @endif
             </div>
         </div>
 
