@@ -10,22 +10,21 @@ return new class extends Migration
     {
         Schema::create('OrderRejections', function (Blueprint $table) {
 
-            // Primary Key
+            // Primary key
             $table->uuid('OrderRejectionId')->primary();
 
-            // Foreign & related columns
+            // Columns
             $table->uuid('OrderId');
             $table->uuid('BusinessId');
             $table->string('BusinessType', 20);
             $table->string('RejectionReason', 500)->nullable();
             $table->timestampTz('RejectedAt');
 
-            // Foreign Key Constraint
+            // Foreign key
             $table->foreign('OrderId', 'FK_OrderRejections_Orders_OrderId')
-                ->references('OrderId')
-                ->on('Orders')
-                ->onDelete('cascade')
-                ->onUpdate('no action');
+                  ->references('OrderId')->on('Orders')
+                  ->onUpdate('NO ACTION')
+                  ->onDelete('CASCADE');
 
             // Indexes
             $table->index('BusinessId', 'IX_OrderRejections_BusinessId');

@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -8,8 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('Restaurants', function (Blueprint $table) {
+
+            // Primary key
             $table->uuid('RestaurantId')->primary();
+
+            // Foreign key
             $table->uuid('UserId');
+
+            // Columns
             $table->string('Name', 150);
             $table->string('Slug', 160);
             $table->text('Address');
@@ -29,15 +36,18 @@ return new class extends Migration
             $table->timestampTz('CreatedAt');
             $table->boolean('IsActive');
 
-            // Foreign key
-            $table->foreign('UserId')
+            // Indexes
+            $table->unique(
+                'UserId',
+                'IX_Restaurants_UserId'
+            );
+
+            // Foreign key constraints
+            $table->foreign('UserId', 'FK_Restaurants_Users_UserId')
                   ->references('UserId')
                   ->on('Users')
                   ->onUpdate('no action')
                   ->onDelete('cascade');
-
-            // Unique index on UserId
-            $table->unique('UserId', 'IX_Restaurants_UserId');
         });
     }
 

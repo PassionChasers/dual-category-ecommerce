@@ -1,14 +1,20 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
         Schema::create('Settings', function (Blueprint $table) {
+
+            // Primary key
             $table->integer('Id')->primary();
+
+            // Columns
             $table->text('AppName')->default('Unified App');
             $table->text('AppLogo');
             $table->text('Favicon');

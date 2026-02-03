@@ -1,14 +1,20 @@
 <?php
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
     public function up(): void
     {
         Schema::create('Ads', function (Blueprint $table) {
+
+            // Primary key
             $table->uuid('AdId')->primary();
+
+            // Columns
             $table->string('Title', 200);
             $table->string('ImageUrl', 500);
             $table->string('RedirectUrl', 500);
