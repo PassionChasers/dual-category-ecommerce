@@ -1,6 +1,14 @@
 @extends('layouts.admin.app')
 
-@section('title', 'Admin | Medicines')
+@if(auth()->user()->Role === 4)
+{
+    @section('title', 'Admin | Medicines')
+}
+@elseif(auth()->user()->Role === 2)
+{
+   @section('title', 'Business Admin | Medicines') 
+}
+@endif
 
 @push('styles')
     <style>

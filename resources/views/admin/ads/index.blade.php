@@ -49,7 +49,7 @@
                         {{-- Image --}}
                         <td class="px-4 py-2">
                             @if($ad->ImageUrl)
-                                <img src="https://pcsdecom.azurewebsites.net{{$ad->ImageUrl}}" 
+                                <img src="{{$ad->ImageUrl}}" 
                                     class="h-12 w-24 object-cover rounded">
                             @else
                                 <span class="text-gray-400">No Image</span>

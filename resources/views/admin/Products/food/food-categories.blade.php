@@ -11,7 +11,17 @@
     </style>
 @endpush
 
-@section('title', 'Admin | Product Category')
+{{-- @section('title', 'Admin | Product Category') --}}
+@if(auth()->user()->Role === 4)
+{
+    @section('title', 'Admin | Food Category')
+}
+@elseif(auth()->user()->Role === 3)
+{
+   @section('title', 'Business Admin | Food Category') 
+}
+@endif
+
 @section('contents')
     <div class="flex-1 p-4 md:p-6 bg-gray-50 overflow-auto">
         <div class="mb-6 flex justify-between items-center flex-wrap">

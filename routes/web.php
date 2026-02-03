@@ -99,6 +99,8 @@ Route::middleware('auth')->group(function () {
     |----------------------------------------------------------------------
     */
     Route::get('/admin/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    // Route::get('/admin/dashboard', [DashboardController::class, 'businessDashboard'])->name('admin.business-dashboard');
+
     Route::get('/api/dashboard/stats', [DashboardController::class, 'getStats'])->name('api.dashboard.stats');
 
     // NOTE: In Laravel it's recommended to make logout a POST route.

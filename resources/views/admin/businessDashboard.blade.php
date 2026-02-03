@@ -1,5 +1,6 @@
 @extends('layouts.admin.app')
-@section('title', 'Admin Dashboard')
+
+@section('title', 'Business Admin Dashboard')
 
 @push('styles')
     {{-- Extra dashboard-specific styles if needed --}}
@@ -34,7 +35,7 @@
             {{-- ================= TOP STATS CARDS ================= --}}
             <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
                 <!-- Total Users -->
-                <a href="{{ route('users.index') }}" class="block">
+                {{-- <a href="{{ route('users.index') }}" class="block">
                     <div class="bg-white overflow-hidden shadow rounded-lg hover:shadow-lg transition">
                         <div class="px-4 py-5 sm:p-6">
                             <div class="flex items-center">
@@ -58,10 +59,10 @@
                             </div>
                         </div>
                     </div>
-                </a>
+                </a> --}}
 
                 <!-- Total Customers -->
-                <div class="bg-white overflow-hidden shadow rounded-lg">
+                {{-- <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 bg-blue-500 rounded-md p-3">
@@ -82,9 +83,10 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Medical Orders -->
+                @if(auth()->user()->Role === 2)
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex items-center">
@@ -93,7 +95,7 @@
                             </div>
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Medical Orders</dt>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Medicine Orders</dt>
                                     <dd class="flex items-baseline">
                                         <div id="stat-medicalOrders" class="text-2xl font-semibold text-gray-900">
                                             {{ number_format($stats['medicalOrders'] ?? 0) }}
@@ -101,14 +103,16 @@
                                     </dd>
                                 </dl>
                                 <p class="text-xs text-gray-500 mt-1">
-                                    From medical supplier module
+                                    From customers for medicines
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <!-- Food Orders -->
+                @if(auth()->user()->Role === 3)
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
                         <div class="flex items-center">
@@ -125,16 +129,14 @@
                                     </dd>
                                 </dl>
                                 <p class="text-xs text-gray-500 mt-1">
-                                    From food delivery module
+                                    From customers for food items
                                 </p>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                @endif
 
-            {{-- SECOND ROW METRICS --}}
-            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
                 <!-- Total Revenue -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
                     <div class="px-4 py-5 sm:p-6">
@@ -194,6 +196,11 @@
                         </div>
                     </div>
                 </div>
+            </div>
+
+            {{-- SECOND ROW METRICS --}}
+            <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+                
 
                 <!-- Active Ads / Notifications -->
                 <div class="bg-white overflow-hidden shadow rounded-lg">
@@ -502,7 +509,7 @@
                             <h3 class="text-lg font-medium leading-6 text-gray-900">Platform Snapshot</h3>
                         </div>
                         <div class="p-4 space-y-4 text-sm text-gray-700">
-                            <div class="flex items-center justify-between">
+                            {{-- <div class="flex items-center justify-between">
                                 <span>Medical Stores</span>
                                 <span class="font-semibold text-gray-900">
                                     {{ number_format($stats['totalMedicalStores'] ?? 0) }}
@@ -513,7 +520,7 @@
                                 <span class="font-semibold text-gray-900">
                                     {{ number_format($stats['totalRestaurants'] ?? 0) }}
                                 </span>
-                            </div>
+                            </div> --}}
                             <div class="flex items-center justify-between">
                                 <span>Total Orders</span>
                                 <span class="font-semibold text-gray-900">
