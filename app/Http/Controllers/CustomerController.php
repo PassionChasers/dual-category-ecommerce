@@ -30,7 +30,7 @@ class CustomerController extends Controller
         }
 
         // Paginate results with query parameters
-        $users = $query->latest()->paginate(5)->appends($request->all());
+        $users = $query->latest()->paginate(10)->appends($request->all());
         // $allOrders = $medicineOrders;
 
         //AJAX response
@@ -91,12 +91,6 @@ class CustomerController extends Controller
         // return redirect()->route('customers.index')->with('success', 'Customer updated successfully.');
 
         return back()->with('success', 'Customer updated successfully.');
-
-        // Preserve search and filter parameters
-        // $queryParams = $request->only(['search', 'onlineStatus']);
-
-        // return redirect()->route('customers.index', $queryParams)
-        // ->with('success', 'Customer updated successfully.');
     }
 
     /**

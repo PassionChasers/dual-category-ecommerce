@@ -3,13 +3,9 @@
 {{-- @section('title', 'Admin | Medicine Categories') --}}
 
 @if(auth()->user()->Role === 4)
-{
     @section('title', 'Admin | Medicine Categories')
-}
 @elseif(auth()->user()->Role === 2)
-{
    @section('title', 'Business Admin | Medicine Categories') 
-}
 @endif
 
 @push('styles')

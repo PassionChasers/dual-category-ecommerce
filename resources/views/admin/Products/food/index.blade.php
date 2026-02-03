@@ -1,13 +1,9 @@
 @extends('layouts.admin.app')
-{{-- @section('title', 'Admin | User Management') --}}
+
 @if(auth()->user()->Role === 4)
-{
     @section('title', 'Admin | Food')
-}
 @elseif(auth()->user()->Role === 3)
-{
    @section('title', 'Business Admin | Food') 
-}
 @endif
 
 @push('styles')

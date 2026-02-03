@@ -192,63 +192,6 @@ class RestaurantController extends Controller
     /***************************** 
     ********* STORE ***********
     ***************************/
-    // public function store(Request $request)
-    // {
-    //     $token = session('jwt_token');
-
-    //     if (!$token) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => 'Session expired. Please login again.'
-    //         ], 401);
-    //     }
-
-    //     $response = Http::withHeaders([
-    //         'Authorization' => 'Bearer ' . $token,
-    //         'Accept' => 'application/json',
-    //     ])->post(
-    //         'https://pcsdecom.azurewebsites.net/api/admin/register/restaurant',
-    //         [
-    //             'restaurantName' => $request->restaurantName,
-    //             'adminName' => $request->adminName,
-    //             'adminEmail' => $request->adminEmail,
-    //             'adminPassword' => $request->adminPassword,
-    //             'adminPhone' => $request->adminPhone,
-
-    //             'restaurantAddress' => $request->restaurantAddress,
-    //             'flicNo' => $request->flicNo,
-    //             'gstin' => $request->gstin,
-    //             'pan' => $request->pan,
-    //             'cuisineType' => $request->cuisineType,
-    //             'isPureVeg' => (bool) $request->isPureVeg,
-    //             'priority' => 0,
-
-    //             'openTime' => $request->openTime,
-    //             'closeTime' => $request->closeTime,
-    //             'prepTimeMin' => (int) $request->prepTimeMin,
-    //             'deliveryFee' => (float) $request->deliveryFee,
-    //             'minOrder' => (float) $request->minOrder,
-
-    //             'location' => [
-    //                 'latitude' => (float) $request->latitude,
-    //                 'longitude' => (float) $request->longitude,
-    //             ]
-    //         ]
-    //     );
-
-    //     if ($response->failed()) {
-    //         return response()->json([
-    //             'success' => false,
-    //             'message' => $response->json()['message'] ?? 'API error'
-    //         ], 500);
-    //     }
-
-    //     return response()->json([
-    //         'success' => true
-    //     ]);
-    // }
-
-
     public function store(Request $request)
     {
         // Token check

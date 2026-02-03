@@ -13,13 +13,9 @@
 
 {{-- @section('title', 'Admin | Product Category') --}}
 @if(auth()->user()->Role === 4)
-{
     @section('title', 'Admin | Food Category')
-}
 @elseif(auth()->user()->Role === 3)
-{
    @section('title', 'Business Admin | Food Category') 
-}
 @endif
 
 @section('contents')

@@ -99,6 +99,7 @@
                 </a>
 
                 <!-- products Dropdown -->
+                @if(auth()->user()->Role === 4 )
                 <div x-data="{ open: {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') || request()->routeIs('admin.medicine-categories.*') || request()->routeIs('admin.medicines.*') ? 'true' : 'false' }} }">
                     <button @click="open = !open"
                         class="w-full flex items-center justify-between px-2 py-3 text-sm font-medium rounded-md
@@ -113,7 +114,7 @@
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
 
-                        @if(auth()->user()->Role === 2 || auth()->user()->Role === 4 )
+                        @if(auth()->user()->Role === 4 )
                             <!--Dropdown for Medicines -->
                             <div x-data="{ open: {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'true' : 'false' }} }">
                                 <button @click="open = !open"
@@ -144,7 +145,7 @@
                             </div>
                         @endif
 
-                        @if(auth()->user()->Role === 3 || auth()->user()->Role === 4 )
+                        @if(auth()->user()->Role === 4 )
                             <!-- Dropdown for food -->
                             <div x-data="{ open: {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'true' : 'false' }} }">
                                 <button @click="open = !open"
@@ -177,6 +178,7 @@
 
                     </div>
                 </div>
+                @endif
 
 
 
@@ -475,6 +477,7 @@
                 </a>
 
                 <!-- Products Dropdown -->
+                @if(auth()->user()->Role === 4 )
                 <div x-data="{ open: {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') || request()->routeIs('admin.medicine-categories.*') || request()->routeIs('admin.medicines.*') ? 'true' : 'false' }} }">
 
                     <button @click="open = !open"
@@ -490,7 +493,7 @@
 
                     <div x-show="open" class="ml-6 mt-2 space-y-1">
 
-                        @if(auth()->user()->Role === 2 || auth()->user()->Role === 4 )
+                        @if(auth()->user()->Role === 4 )
                             <!-- Dropdown for Medicine -->
                             <div x-data="{ open: {{ request()->routeIs('admin.medicines.*') || request()->routeIs('admin.medicine-categories.*') ? 'true' : 'false' }} }">
                                 <button @click="open = !open"
@@ -522,7 +525,7 @@
                         @endif
 
 
-                        @if(auth()->user()->Role === 3 || auth()->user()->Role === 4 )
+                        @if(auth()->user()->Role === 4 )
                             <!--Dropdown for Food -->
                             <div x-data="{ open: {{ request()->routeIs('product.food.*') || request()->routeIs('admin.food.*') ? 'true' : 'false' }} }">
                                 <button @click="open = !open"
@@ -554,6 +557,7 @@
 
                     </div>
                 </div>
+                @endif
 
 
                 {{-- // Orders Link --}}

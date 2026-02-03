@@ -43,8 +43,8 @@ class UserController extends Controller
 
         // Per-page
         $allowedPerPage = [5, 10, 25, 50];
-        $perPage = (int) $request->get('per_page', 5);
-        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
 
         // Paginate results with query parameters
         $users = $query->latest()->paginate($perPage)->appends($request->all());
@@ -83,8 +83,8 @@ class UserController extends Controller
 
         // Per-page
         $allowedPerPage = [5, 10, 25, 50];
-        $perPage = (int) $request->get('per_page', 5);
-        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
 
         // Paginate results with query parameters
         $users = $query->latest()->paginate($perPage)->appends($request->all());
@@ -124,8 +124,8 @@ class UserController extends Controller
 
         // Per-page
         $allowedPerPage = [5, 10, 25, 50];
-        $perPage = (int) $request->get('per_page', 5);
-        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
 
         // Paginate results with query parameters
         $users = $query->latest()->paginate($perPage)->appends($request->all());
@@ -166,8 +166,8 @@ class UserController extends Controller
 
         // Per-page
         $allowedPerPage = [5, 10, 25, 50];
-        $perPage = (int) $request->get('per_page', 5);
-        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
 
         // Paginate results with query parameters
         $users = $query->latest()->paginate($perPage)->appends($request->all());
@@ -206,8 +206,8 @@ class UserController extends Controller
 
         // Per-page
         $allowedPerPage = [5, 10, 25, 50];
-        $perPage = (int) $request->get('per_page', 5);
-        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 5;
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
 
         // Paginate results with query parameters
         $users = $query->latest()->paginate($perPage)->appends($request->all());
