@@ -39,16 +39,15 @@
 
                     {{-- <div class="px-3 py-2 rounded-md hover:bg-gray-200"> --}}
                         <input type="text" name="search" class="border border-none focus:outline-none px-2 py-2 " placeholder="Search by product name..."
-                        value="{{ request('search') }}"
-                        class="px-3 py-2 border rounded-md bg-white focus:ring-indigo-500 focus:border-indigo-500" 
+                        value="{{ request('search') }}" 
                         />
-                        <button type="submit" class="px-3 py-2 rounded-r-lg bg-gray-200 ">
+                        <button type="submit" onclick="showLoader()" class="px-3 py-2 rounded-r-lg bg-gray-200 hover:bg-gray-400 hover:text-lg">
                             <i class="fas fa-search"></i>
                         </button>
                     {{-- </div><br> --}}
                 </div>
 
-                <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
+                <select name="status" onchange="showLoader(); this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="">All Status</option>
                     <option value="1" {{ request('status') == 1 ? 'selected' : '' }}>Pending</option>
                     <option value="2" {{ request('status') == 2 ? 'selected' : '' }}>Pending Review</option>
@@ -62,12 +61,12 @@
                     <option value="10" {{ request('status') == 10 ? 'selected' : '' }}>Completed</option>
                 </select>
 
-                <select name="sort_by" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
+                <select name="sort_by" onchange="showLoader(); this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="CreatedAt" {{ request('sort_by')==='CreatedAt' ? 'selected' : '' }}>Sort by Newest</option>
                     <option value="TotalAmount" {{ request('sort_by')==='TotalAmount' ? 'selected' : '' }}>Sort by Amount</option>
                 </select>
 
-                <select name="per_page" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
+                <select name="per_page" onchange="showLoader(); this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     @foreach([5,10,25,50] as $p)
                         <option value="{{ $p }}" {{ request('per_page',10)==$p ? 'selected':'' }}>{{ $p }}</option>
                     @endforeach

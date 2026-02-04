@@ -16,17 +16,23 @@
 
         <div class="flex flex-wrap gap-2 w-full md:w-auto">
             <!-- Search Form -->
-            <input type="text" id="search" name="search" placeholder="Search by Name or Email or Phone..." 
-                value="{{ request('search') }}"
-                class="flex-1 min-w-[250px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+            <div class=" group border b rounded-lg focus-within:border-2 ">
+                <input type="text" id="search" name="search" placeholder="Search by Name or Email or Phone..." 
+                    value="{{ request('search') }}"
+                    class="border border-none focus:outline-none px-2 py-2 " 
+                >
+                <button type="submit" id="search_icon" class="px-3 py-2 rounded-r-lg bg-gray-200 hover:bg-gray-400 ">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
 
-            <select id="onlineStatus" name="onlineStatus" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
+            <select id="onlineStatus" name="onlineStatus" class="px-3 py-2 border rounded-md text-sm">
                 <option value="">All Status</option>
                 <option value="true" {{ request('onlineStatus')=='true' ? 'selected' : '' }}>Online</option>
                 <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>Offline</option>
             </select>
 
-            <select name="per_page" id="per-page-filter" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
+            <select name="per_page" id="per-page-filter" class="px-3 py-2 border rounded-md text-sm">
                 @foreach($allowedPerPage as $pp)
                     <option value="{{ $pp }}" {{ $perPage == $pp ? 'selected' : '' }}>{{ $pp }} per page</option>
                 @endforeach
@@ -330,6 +336,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     document.getElementById('onlineStatus').addEventListener('change', () => fetchData());
     document.getElementById('per-page-filter').addEventListener('change', () => fetchData());
+    document.getElementById('search_icon').addEventListener('click', function (e) {fetchData();});
 
     // AJAX pagination
     document.addEventListener('click', function(e) {

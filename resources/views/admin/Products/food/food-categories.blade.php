@@ -27,9 +27,15 @@
             </div>
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
                 <form id="filter-form" class="flex flex-wrap gap-2 w-full md:w-auto">
-                    <input type="text" id="search-input" name="search" placeholder="Search categories..."
-                        class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
-                        value="{{ request('search') ?? '' }}">
+                    <div class=" group border b rounded-lg focus-within:border-2 ">
+                        <input type="text" id="search-input" name="search" placeholder="Search categories..."
+                            class="border border-none focus:outline-none px-2 py-2 "
+                            value="{{ request('search') ?? '' }}"
+                        >
+                        <button type="submit" onclick="showLoader()" class="px-3 py-2 rounded-r-lg bg-gray-200 hover:bg-gray-400 ">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
 
                     <select id="status-filter" name="status" class="px-3 py-2 border rounded-md text-sm">
                         <option value="">Active/InActive</option>
@@ -37,7 +43,7 @@
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
 
-                    <select name="per_page" id="per-page-filter" class="custom-select pl-2 border rounded-md text-sm">
+                    <select name="per_page" id="per-page-filter" class="px-3 py-2 border rounded-md text-sm">
                         @foreach ($allowedPerPage as $pp)
                             <option value="{{ $pp }}" {{ $perPage == $pp ? 'selected' : '' }}>{{ $pp }}
                                 per page</option>

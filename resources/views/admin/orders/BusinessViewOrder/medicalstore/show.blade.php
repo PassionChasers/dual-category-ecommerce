@@ -51,7 +51,7 @@
                 
                 @if($order->RequiresPrescription && $order->PrescriptionImageUrl)
                     <li class="mt-2">
-                        <a href="https://pcsdecom.azurewebsites.net{{ $order->PrescriptionImageUrl }}" target="_blank" rel="noopener noreferrer"
+                        <a href="{{ $order->PrescriptionImageUrl }}" target="_blank" rel="noopener noreferrer"
                         class="inline-block px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
                             View Prescription Image
                         </a>
@@ -89,7 +89,7 @@
                         <td>{{ $key + 1 }}</td>
                         <td class="px-4 py-2">
                             {{-- <img src="{{ asset('storage/products/' . $item->ItemImageUrl) }}" alt="{{ $item->ItemName }}" class="thumb-lg mx-auto" /> --}}
-                            <img src="https://pcsdecom.azurewebsites.net{{$item->medicine->ImageUrl}}" alt="{{ $item->ItemName }}" class="w-12 h-12 object-cover rounded mx-auto">
+                            <img src="{{$item->medicine->ImageUrl}}" alt="{{ $item->ItemName }}" class="w-12 h-12 object-cover rounded mx-auto">
                         </td>
                         <td class="px-4 py-2 font-semibold">{{ $item->medicine->Name ?? 'N/A' }}</td>
                         <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>

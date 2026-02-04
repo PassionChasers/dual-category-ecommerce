@@ -42,11 +42,11 @@
                             @if($order->Status == 2)
                                 <div>
                                     @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->OrderDescription)
-                                        <a href="https://pcsdecom.azurewebsites.net{{$order->PrescriptionImageUrl}}" data-no-loader target="_blank" rel="noopener noreferrer"  class="text-sm bg-green-200 text-gray-400 ">
+                                        <a href="{{$order->PrescriptionImageUrl}}" data-no-loader target="_blank" rel="noopener noreferrer"  class="text-sm bg-green-200 text-gray-400 ">
                                             <i>Prescription Review is Pending(Image+Notes)Uploaded</i>
                                         </a>
                                     @elseif($order->RequiresPrescription && $order->PrescriptionImageUrl && !$order->OrderDescription)
-                                        <a href="https://pcsdecom.azurewebsites.net{{$order->PrescriptionImageUrl}}" data-no-loader target="_blank" rel="noopener noreferrer" class="text-sm bg-green-200 text-gray-400 ">
+                                        <a href="{{$order->PrescriptionImageUrl}}" data-no-loader target="_blank" rel="noopener noreferrer" class="text-sm bg-green-200 text-gray-400 ">
                                             <i>Prescription Review is Pending(Image)Uploaded</i>
                                         </a>
                                     @elseif(!$order->RequiresPrescription && !$order->PrescriptionImageUrl && $order->OrderDescription)

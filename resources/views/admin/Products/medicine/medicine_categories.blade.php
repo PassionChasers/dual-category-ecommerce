@@ -34,17 +34,23 @@
 
         <div class="flex flex-col md:flex-row md:items-center gap-2 w-full md:w-auto">
             <form id="filter-form" class="flex flex-wrap gap-2 w-full md:w-auto">
-                <input type="text" id="search-input" name="search" placeholder="By categories name........"
-                       value="{{ request('search') }}"
-                       class="flex-1 min-w-[150px] px-3 py-2 border rounded-md focus:ring-indigo-500 focus:border-indigo-500" />
+                <div class=" group border b rounded-lg focus-within:border-2 ">
+                    <input type="text" id="search-input" name="search" placeholder="Search by categories name........"
+                        value="{{ request('search') }}"
+                        class="border border-none focus:outline-none px-2 py-2 " 
+                    />
+                    <button type="submit" onclick="showLoader()" class="px-3 py-2 rounded-r-lg bg-gray-200 hover:bg-gray-400 ">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
 
-                <select id="status-filter" name="status" class="custom-select pl-2 border rounded-md text-sm">
+                <select id="status-filter" name="status" class="px-3 py-2 border rounded-md text-sm">
                     <option value="">All Status</option>
                     <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                     <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                 </select>
 
-                <select name="per_page" id="per-page-filter" class="custom-select pl-2 border rounded-md text-sm">
+                <select name="per_page" id="per-page-filter" class="px-3 py-2 border rounded-md text-sm">
                     @foreach($allowedPerPage as $pp)
                         <option value="{{ $pp }}" {{ $perPage == $pp ? 'selected' : '' }}>{{ $pp }} per page</option>
                     @endforeach

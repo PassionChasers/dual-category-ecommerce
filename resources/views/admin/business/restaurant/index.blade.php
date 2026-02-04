@@ -14,17 +14,23 @@
 
             <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
                 <!-- Search Form -->
-                    <input type="text" id="search" name="search" placeholder="Search by Name, PAN, GSTIN, FLICNo..." 
-                        value="{{ request('search') }}"
-                        class="flex-1 min-w-[150px] border rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    <div class=" group border b rounded-lg focus-within:border-2 ">
+                        <input type="text" id="search" name="search" placeholder="Search by Name, PAN, GSTIN, FLICNo..." 
+                            value="{{ request('search') }}"
+                            class="border border-none focus:outline-none px-2 py-2 "
+                        >
+                        <button type="button" id="search_icon" class="px-3 py-2 rounded-r-lg bg-gray-200 hover:bg-gray-400 ">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
 
-                    <select id="onlineStatus" name="onlineStatus" class="flex-shrink-0 border rounded-md px-3 py-2 text-sm">
+                    <select id="onlineStatus" name="onlineStatus" class="px-3 py-2 border rounded-md text-sm">
                         <option value="">All Status</option>
                         <option value="true" {{ request('onlineStatus')=='true' ? 'selected' : '' }}>Online</option>
                         <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>Offline</option>
                     </select>
 
-                    <select id="per_page" name="per_page" class="px-3 py-2 border rounded-md cursor-pointer">
+                    <select id="per_page" name="per_page" class="px-3 py-2 border rounded-md text-sm">
                         @foreach([5,10,25,50] as $p)
                             <option value="{{ $p }}" {{ request('per_page',10)==$p ? 'selected':'' }}>{{ $p }}</option>
                         @endforeach
@@ -473,6 +479,7 @@
             const searchInput = document.getElementById('search');
             const statusSelect = document.getElementById('onlineStatus');
             const perPageSelect = document.getElementById('per_page');
+            const searchIcon = document.getElementById('search_icon');
 
             function fetchData(url = null) {
                 const search = searchInput.value;
@@ -493,11 +500,15 @@
             }
 
             /*Live search */
-            // searchInput.addEventListener('keyup', () => fetchData());
             searchInput.addEventListener('keyup', function (e) {
                 if (e.key === 'Enter') {
                     fetchData();
                 }
+            });
+
+            // search icon click
+            searchIcon.addEventListener('click', function (e) {
+                fetchData();
             });
 
             /*Status filter */

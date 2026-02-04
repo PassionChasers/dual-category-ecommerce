@@ -1,5 +1,5 @@
 @extends('layouts.admin.app')
-@section('title', 'Business Admin | Food Order Management')
+@section('title', 'Business Admin | Medicine Order Management')
 
 @push('styles')
 <!-- add any page-specific styles here -->
@@ -27,28 +27,29 @@
 
     <div class="mb-6 flex justify-between items-center flex-wrap">
         <div class="mb-2 md:mb-0">
-            <h2 class="text-2xl font-bold text-gray-800">Food Order Management</h2>
-            <p class="text-gray-600">Food Order List</p>
+            <h2 class="text-2xl font-bold text-gray-800">Medicine Order Management</h2>
+            <p class="text-gray-600">Medicine Order List</p>
         </div><br>
 
       
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2">
 
-            <form method="GET" action="{{ route('orders.restaurant-food.index') }}" class="flex gap-2 items-center">
+            <form method="GET" action="{{ route('orders.medicalstore-medicine.index') }}" class="flex gap-2 items-center">
                 <div class=" group border b rounded-lg focus-within:border-2 ">
                     <input type="text" name="search" placeholder="Search by product name..."
-                        value="{{ request('search') }}"
-                        class="border border-none focus:outline-none px-2 py-2 "
+                    value="{{ request('search') }}"
+                    class="border border-none focus:outline-none px-2 py-2 "
                     />
-                    <button type="submit" onclick="showLoader()" class="px-3 py-2 rounded-r-lg bg-gray-200 hover:bg-gray-400 hover:text-lg">
+                    <button type="submit" class="px-3 py-2 rounded-r-lg bg-gray-200 hover:bg-gray-400 hover:text-lg">
                         <i class="fas fa-search"></i>
                     </button>
                 </div>
 
-                <select name="status" onchange="showLoader(); this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
+                <select name="status" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="">All Status</option>
                     {{-- <option value="1" {{ request('status') == 1 ? 'selected' : '' }}>Pending</option>
-                    <option value="3" {{ request('status') == 3 ? 'selected' : '' }}>Assigned</option> --}}
+                    <option value="2" {{ request('status') == 2 ? 'selected' : '' }}>Pending Review</option> --}}
+                    <option value="3" {{ request('status') == 3 ? 'selected' : '' }}>Assigned</option>
                     <option value="4" {{ request('status') == 4 ? 'selected' : '' }}>Accepted</option>
                     <option value="5" {{ request('status') == 5 ? 'selected' : '' }}>Rejected</option>
                     <option value="6" {{ request('status') == 6 ? 'selected' : '' }}>Preparing</option>
@@ -58,12 +59,12 @@
                     <option value="10" {{ request('status') == 10 ? 'selected' : '' }}>Completed</option>
                 </select>
 
-                <select name="sort_by" onchange="showLoader(); this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
+                <select name="sort_by" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="CreatedAt" {{ request('sort_by')==='CreatedAt' ? 'selected' : '' }}>Sort by Newest</option>
                     <option value="TotalAmount" {{ request('sort_by')==='TotalAmount' ? 'selected' : '' }}>Sort by Amount</option>
                 </select>
 
-                <select name="per_page" onchange="showLoader(); this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
+                <select name="per_page" onchange="this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     @foreach([5,10,25,50] as $p)
                         <option value="{{ $p }}" {{ request('per_page',10)==$p ? 'selected':'' }}>{{ $p }}</option>
                     @endforeach
@@ -77,12 +78,13 @@
                     <i class="fas fa-file-excel mr-1"></i> Export
                 </a>
             </div>
+
         </div>
     </div>
 
     <!-- Table -->
     <div class="bg-white shadow rounded-lg overflow-hidden" id="orderTable">
-        @include('admin.orders.BusinessViewOrder.restaurant.searchedProducts', ['allOrders' => $allOrders])  
+        @include('admin.orders.BusinessViewOrder.medicalstore.searchedProducts', ['allOrders' => $allOrders])
     </div>
 
 </div>
@@ -98,6 +100,8 @@ document.addEventListener('DOMContentLoaded', function () {
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
+            
+
             const status = parseInt(form.dataset.status);
             // const blockedStatuses = [3, 4, 6, 7, 8, 10];
             const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
@@ -109,6 +113,8 @@ document.addEventListener('DOMContentLoaded', function () {
                     icon: 'warning',
                     confirmButtonColor: '#6c757d'
                 });
+
+                
                 return;
             }
 
@@ -124,13 +130,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (result.isConfirmed) {
                     form.submit();  // normal submit  auto  page refresh
                 } else {
-
+                    
                 }
 
             });
         });
     });
-
 
     // accept forms
     document.querySelectorAll('.accept-form').forEach(form => {
@@ -138,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function () {
             e.preventDefault();
 
             const status = parseInt(form.dataset.status);
-            // const blockedStatuses = [3, 4, 6, 7, 8, 10];
+            
             const blockedStatuses = [10, 9, 8, 7, 6, 5, 4, 2, 1];
 
             if (blockedStatuses.includes(status)) {
@@ -149,6 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     confirmButtonColor: '#6c757d'
                 });
 
+                
                 return;
             }
 
@@ -171,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    
+
     // Order status update via AJAX
     const csrf = document.querySelector('meta[name="csrf-token"]').content;
     document.querySelectorAll('.order-status').forEach(select => {
@@ -209,9 +215,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 
             });
         });
-    });
-    
+    });  
 
 });
 </script>
+
 @endpush
+
+
+
+    
