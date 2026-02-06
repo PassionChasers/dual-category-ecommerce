@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Setting;
 
 class AuthController extends Controller
 {
@@ -230,6 +231,120 @@ class AuthController extends Controller
             ->with('success', 'You have been logged out successfully.');
     }
 
+    /**
+     * Forgot password form
+     */
+    public function forgotPasswordForm()
+    {
+        $setting = Setting::first();
+        return view('auth.reset-password', compact('setting'));
+    }
+
+    /**
+     * handle forgot password form data 
+     */
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email'        => 'required|email',
+        ]);
+
+        try {
+            // Make API request
+            $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/forgot-password', [
+                'email' => $request->email,
+            ]);
+
+            // Check status code
+            if ($response->successful()) {
+                // Status 200 OK
+                return view('auth.set-newPassword')->with('success', 'Password reset code sent to your email successfully.');
+            } else {
+                // Any other status code
+                $message = $response->json('message') ?? 'Something went wrong. Please try again.';
+                return back()->withErrors(['email' => $message])->withInput();
+            }
+        } catch (\Exception $e) {
+            // Handle network or other errors
+            return back()->withErrors(['email' => 'Unable to send reset email. Please try again later.'])->withInput();
+        }
+    }
+
+    
+    // public function setNewPassword(Request $request)
+    // {
+    //     $request->validate([
+    //         'resetCode'        => 'required|string|min:4',
+    //         'newPassword'        => 'required|string|min:8',
+    //     ]);
+
+    //     try {
+    //         // Make API request
+    //         $response = Http::timeout(15)->post('https://pcsdecom.azurewebsites.net/api/Auth/reset-password', [
+    //             'code' => $request->resetCode,
+    //             'newPassword' => $request->newPassword,
+    //         ]);
+
+    //         // Check status code
+    //         if ($response->successful()) {
+    //             // Status 200 OK
+    //             return view('auth.login')->with('success', 'Password reset successfully.');
+    //         } else {
+    //             // Any other status code
+    //             $message = $response->json('message') ?? 'Something went wrong. Please try again.';
+    //             return back()->withErrors(['resetCode' => $message])->withInput();
+    //         }
+    //     } catch (\Exception $e) {
+    //         // Handle network or other errors
+    //         return back()->withErrors(['resetCode' => 'Unable to send reset password. Please try again later.'])->withInput();
+    //     }
+    // }
+
+
+    /**
+     * handle  setNewPassword form data 
+     */
+    public function setNewPassword(Request $request)
+    {
+        $request->validate([
+            'resetCode'   => 'required|string|min:4',
+            'newPassword' => 'required|string|min:8|confirmed',
+        ]);
+
+        try {
+            $response = Http::timeout(15)->post(
+                'https://pcsdecom.azurewebsites.net/api/Auth/reset-password',
+                [
+                    'code'        => $request->resetCode,
+                    'newPassword' => $request->newPassword,
+                ]
+            );
+
+            if ($response->successful()) {
+                return redirect()
+                    ->route('login')
+                    ->with('success', 'Password reset successfully.');
+            }
+
+            // Handle API validation errors
+            $message =
+                $response->json('message') ??
+                $response->json('title') ??
+                'Something went wrong. Please try again.';
+
+            return back()
+                ->withErrors(['resetCode' => $message])
+                ->withInput();
+
+        } catch (\Exception $e) {
+            Log::error('Reset password failed: ' . $e->getMessage());
+
+            return back()
+                ->withErrors(['resetCode' => 'Unable to reset password. Please try again later.'])
+                ->withInput();
+        }
+    }
+
 
     public function verifyEmailForm(Request $request)
     {
@@ -243,6 +358,9 @@ class AuthController extends Controller
     }
 
 
+    /**
+     * handle change password form data 
+     */
     public function changePassword(Request $request)
     {
         $request->validate([

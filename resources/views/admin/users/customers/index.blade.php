@@ -51,78 +51,6 @@
 </div>
 
 
-<!-- Add User Modal -->
-{{-- <div id="AdminModal"
-     class="fixed inset-0 hidden items-center justify-center z-50 p-6">
-     <!-- overlay -->
-     <div id="addOverlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px]"></div>
-
-    <div  class="relative bg-white w-full max-w-2xl rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
-        <!-- Header -->
-        <div class="flex justify-between items-center px-6 py-4 bg-indigo-600">
-            <h3 class="text-lg font-semibold text-white">Add New Customer</h3>
-            <button id="add-close-btn" class="text-white hover:text-red-500 text-3xl">&times;</button>
-        </div>
-
-        <!-- Form -->
-        <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
-            @csrf
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 py-4">
-
-                <!-- Name -->
-                <div>
-                    <label class="block text-sm font-medium">Name</label>
-                    <input type="text" name="name" placeholder="Enter Your Name" class="input w-full border border-gray-400 rounded p-2" required>
-                </div>
-
-                <!-- Email -->
-                <div>
-                    <label class="block text-sm font-medium">Email</label>
-                    <input type="email" name="email" placeholder="example@gmail.com" class="input w-full border border-gray-400 rounded p-2" required>
-                </div>
-
-                <!-- Password -->
-                <div>
-                    <label class="block text-sm font-medium">Password</label>
-                    <input type="password" name="password" placeholder="Enter Your Password" class="input w-full border border-gray-400 rounded p-2" required>
-                </div>
-
-                <!-- Phone -->
-                <div>
-                    <label class="block text-sm font-medium">Phone</label>
-                    <input type="text" name="phone" placeholder="+977 98XXXXXXXX" class="input w-full border border-gray-400 rounded p-2">
-                </div>
-
-                <!-- Avatar -->
-                <div>
-                    <label class="block text-sm font-medium">Avatar</label>
-                    <input type="file" name="avatar_url" class="input w-full border border-gray-400 rounded p-2">
-                </div>
-
-                <!-- Role -->
-                <div>
-                    <label class="block text-sm font-medium">Role</label>
-                    <input type="text" name="role" value="Admin" class="input w-full border border-gray-400 rounded p-2" readonly>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="flex justify-end gap-2 px-6 py-4">
-                <button type="button" id="add-cancel-btn"
-                        class="px-4 py-2 bg-gray-200 hover:bg-red-500 hover:text-white rounded-lg">
-                    Cancel
-                </button>
-                <button type="submit"
-                        class="px-4 py-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded">
-                    Save User
-                </button>
-            </div>
-        </form>
-    </div>
-</div> --}}
-
-
 {{--Edit Modal --}}
 <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
     <div class="flex items-center justify-center min-h-screen ">
@@ -136,8 +64,6 @@
                 <button type="button" id="edit-close-btn" class=" text-white hover:text-red-500">
                     <i class="fas fa-times text-lg"></i>
                 </button>
-    
-              
             </div>
 
             <form id="customer-form" method="POST" class="space-y-4 px-6">
@@ -200,26 +126,6 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
 
-    // ADD MODAL
-    // const addModal = document.getElementById('AdminModal');
-    // const openAddBtn = document.getElementById('openAdminModal');
-    // const addCloseBtn = document.getElementById('add-close-btn');
-    // const addCancelBtn = document.getElementById('add-cancel-btn');
-    // const addOverlay = document.getElementById('addOverlay');
-
-    // openAddBtn?.addEventListener('click', () => {
-    //     addModal.classList.remove('hidden');
-    //     addModal.classList.add('flex');
-    // });
-
-    // [addCloseBtn, addCancelBtn, addOverlay].forEach(btn => {
-    //     btn?.addEventListener('click', () => {
-    //         addModal.classList.add('hidden');
-    //         addModal.classList.remove('flex');
-    //     });
-    // });
-
-
      // EDIT MODAL
     const editModal = document.getElementById('edit-modal');
     const editCloseBtn = document.getElementById('edit-close-btn');
@@ -273,24 +179,6 @@ document.addEventListener('DOMContentLoaded', function() {
         if (params.has('search')) document.getElementById('search').value = params.get('search');
         if (params.has('onlineStatus')) document.getElementById('onlineStatus').value = params.get('onlineStatus');
     }
-    
-    // Fetch and update table data
-    // function fetchData(url = null) {
-    //     const search = document.getElementById('search').value;
-    //     const onlineStatus = document.getElementById('onlineStatus').value;
-    //     const perpage = document.getElementById('per-page-filter').value;
-
-    //     let fetchUrl = url ? url : `?search=${search}&onlineStatus=${onlineStatus}`;
-
-    //     if (url) setInputsFromUrl(url);
-
-    //     fetch(fetchUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-    //         .then(res => res.text())
-    //         .then(data => {
-    //             document.getElementById('tableData').innerHTML = data;
-    //             if (url) setInputsFromUrl(url);
-    //         });
-    // }
 
     function fetchData(url = null) {
         const search = document.getElementById('search').value;

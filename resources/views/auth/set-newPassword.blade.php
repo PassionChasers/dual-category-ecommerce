@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Reset Password | {{ $setting->AppName }} </title>
+    <title>Reset Password | {{ $setting->AppName ?? 'App' }} </title>
      @if($setting && $setting->Favicon)
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('storage/' . $setting->Favicon) }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->Favicon) }}">
@@ -40,29 +40,66 @@
         <div class=" px-8 py-6 bg-orange-50 rounded-xl login-card overflow-hidden border border-gray-200">
 
             <h2 class="text-2xl font-semibold text-center text-gray-800 mb-4">Reset Password</h2>
-            <p class="text-gray-600 text-sm text-center mb-6">Enter your email below.</p>
+            {{-- <p class="text-gray-600 text-sm text-center mb-6">Enter your email below.</p> --}}
 
             @if(session('success'))
                 <div class="bg-green-100 text-green-700 p-2 rounded mb-4">{{ session('success') }}</div>
             @endif
-            {{-- @if($errors->any())
-                <div class="bg-red-100 text-red-700 p-2 rounded mb-4">{{ $errors->first() }}</div>
-            @endif --}}
 
-            <form method="POST" action="{{ route('reset-password') }}" id="resetPasswordForm">
+            <form method="POST" action="{{ route('set-new-password') }}" id="resetPasswordForm">
                 @csrf
                 <div>
-                    <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                    <label for="reset-code" class="block text-sm font-medium text-gray-700 mb-1">Reset Code</label>
+                    <div class="relative">
+                        {{-- <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div> --}}
+                        <input id="reset-code" name="resetCode" type="text" value="{{ old('resetCode') }}" required
+                            class="pl-10 pr-10 w-full p-3 border rounded-lg   outline-none transition input-focus"
+                            placeholder="23******">
+                    </div>
+                    @if($errors->has('resetCode'))
+                        <p class="mt-1 text-sm text-red-600">{{ $errors->first('resetCode') }}</p>
+                    @endif
+                </div>
+
+                <div class="mt-4">
+                    <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i class="fas fa-envelope text-gray-400"></i>
+                            <i class="fas fa-lock text-gray-400"></i>
                         </div>
-                        <input id="email" name="email" type="email" value="{{ old('email') }}" required
-                            class="pl-10 w-full p-3 border border-gray-200 rounded-lg focus:ring-2 outline-none transition input-focus"
-                            placeholder="your@email.com">
+                        <input id="new-password" name="newPassword" type="password" value="{{ old('newPassword') }}" required
+                            class="pl-10 pr-10 w-full p-3 border rounded-lg   outline-none transition input-focus"
+                            placeholder="New password">
+                        <!-- Eye toggle button -->
+                        {{-- <button type="button" id="togglePassword"
+                            class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                            <i class="fas fa-eye"></i>
+                        </button> --}}
                     </div>
-                    @if($errors->has('email'))
-                        <p class="mt-1 text-sm text-red-600">{{ $errors->first('email') }}</p>
+                    @if($errors->has('newPassword'))
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $errors->first('newPassword') }}
+                        </p>
+                    @endif
+                </div>
+
+                <div class="mt-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1"> Confirm Password </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" name="newPassword_confirmation"
+                            class="pl-10 pr-10 w-full p-3 border rounded-lg   outline-none transition input-focus"
+                            placeholder="Confirm password"
+                        >
+                    </div>
+                    @if($errors->has('newPassword_confirmation'))
+                        <p class="mt-1 text-sm text-red-600">
+                            {{ $errors->first('newPassword_confirmation') }}
+                        </p>
                     @endif
                 </div>
 

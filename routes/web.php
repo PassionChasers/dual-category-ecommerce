@@ -85,6 +85,16 @@ Route::view('/privacy-policy', 'frontend.privacy')->name('privacy');
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate'])->name('login.authenticate');
 
+// Forgot password flow
+Route::get('/forgot-password', [AuthController::class, 'forgotPasswordForm'])
+    ->name('forgot-password');
+
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+    ->name('reset-password');
+
+Route::post('/set-new-password', [AuthController::class, 'setNewPassword'])
+    ->name('set-new-password');
+
 
 /*
 |--------------------------------------------------------------------------

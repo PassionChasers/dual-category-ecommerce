@@ -40,11 +40,27 @@
                     {{ $user->IsActive ? 'Active': 'Inactive' }}
                 </td>
                 <td class="px-4 py-2 flex space-x-2">
-                    <button class="edit-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $user->UserId }}"
-                        data-name="{{ $user->Name }}" data-email="{{ $user->Email }}" data-isactive="{{ $user->IsActive ? '1' : '0' }}"
-                        data-contact_number="{{ $user->Phone }}">
+                    <button class="edit-btn text-indigo-600 hover:text-indigo-800" 
+                        data-id="{{ $user->MedicalStoreId }}"
+                        data-business-name="{{ $user->Name }}"
+                        data-business-admin-name="{{ $user->user->Name }}"
+                        data-business-admin-email="{{ $user->user->Email }}"
+                        data-business-admin-contact="{{ $user->user->Phone }}"
+                        data-business-address="{{ $user->Address }}"
+                        data-license-number="{{ $user->LicenseNumber }}"
+                        data-gstin="{{ $user->GSTIN }}"
+                        data-pan="{{ $user->PAN }}"
+                        data-open-time="{{ \Carbon\Carbon::parse($user->OpenTime)->format('H:i') }}"
+                        data-close-time="{{ \Carbon\Carbon::parse($user->CloseTime)->format('H:i') }}"
+                        data-delivery-fee="{{ $user->DeliveryFee }}"
+                        data-minimum-order="{{ $user->MinOrder }}"
+                        data-latitude="{{ $user->Latitude }}"
+                        data-longitude="{{ $user->Longitude }}"
+                        data-is-active="{{ $user->IsActive ? '1' : '0' }}"
+                    >
                         <i class="fas fa-edit"></i>
                     </button>
+                    
                     <form method="POST" action="{{ route('users.destroy', $user->UserId) }}" class="inline delete-form">
                         @csrf @method('DELETE')
                         <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
