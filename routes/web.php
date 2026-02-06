@@ -206,29 +206,11 @@ Route::middleware('auth')->group(function () {
         
     });
 
-      /*
-    |----------------------------------------------------------------------
-    | Customers
-    |----------------------------------------------------------------------
-    */
-    // Route::prefix('customers')->name('customers.')->group(function () {
-    //     Route::get('/', [CustomerController::class, 'index'])->name('index');
-    //     Route::post('/store', [CustomerController::class, 'store'])->name('store');
-    //     Route::put('/update/{customer}', [CustomerController::class, 'update'])->name('update');
-    //     Route::delete('/destroy/{customer}', [CustomerController::class, 'destroy'])->name('destroy');
-    // });
-
     /*
     |----------------------------------------------------------------------
     | MedicalStores
     |----------------------------------------------------------------------
     */
-    Route::prefix('medicalStores')->name('medicalStores.')->group(function () {
-        Route::post('/store', [MedicalStoreController::class, 'store'])->name('store');
-        Route::put('/update/{customer}', [MedicalStoreController::class, 'update'])->name('update');
-        Route::delete('/destroy/{customer}', [MedicalStoreController::class, 'destroy'])->name('destroy');
-    });
-
     Route::post('/medicalstore/verify-otp', [MedicalStoreController::class, 'verifyOtp'])
     ->name('medicalStores.verifyOtp');
 
@@ -305,12 +287,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
     Route::post('medicine-categories', [MedicineCategoryController::class, 'store'])->name('medicine-categories.store');
     Route::put('medicine-categories/{id}', [MedicineCategoryController::class, 'update'])->name('medicine-categories.update');
     Route::delete('medicine-categories/{id}', [MedicineCategoryController::class, 'destroy'])->name('medicine-categories.destroy');
-    // Additional actions
-    // Route::post('medicine-categories/{id}/restore', [MedicineCategoryController::class, 'restore'])->name('medicine-categories.restore');
-    // Route::delete('medicine-categories/{id}/force-delete', [MedicineCategoryController::class, 'forceDelete'])->name('medicine-categories.forceDelete');
-    // Route::post('medicine-categories/{id}/toggle-active', [MedicineCategoryController::class, 'toggleActive'])->name('medicine-categories.toggleActive');
-    Route::post('medicine-categories/{id}/toggle-active', [MedicineCategoryController::class, 'toggleActive'])
-        ->name('medicine-categories.toggleActive');
+    Route::post('medicine-categories/{id}/toggle-active', [MedicineCategoryController::class, 'toggleActive'])->name('medicine-categories.toggleActive');
 });
 
 // use App\Http\Controllers\MedicineController;
@@ -328,7 +305,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 // use App\Http\Controllers\MedicalStoreController;
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
     Route::get('allmedical-stores', [MedicalStoreController::class, 'allMedicalstores'])->name('medicalstores.list');
-    Route::get('medical-stores', [MedicalStoreController::class, 'index'])->name('medicalstores.index');
     Route::post('medical-stores', [MedicalStoreController::class, 'store'])->name('medicalstores.store');
     Route::get('medical-stores/{id}', [MedicalStoreController::class, 'show'])->name('medicalstores.show');
     Route::put('medical-stores/{id}', [MedicalStoreController::class, 'update'])->name('medicalstores.update');

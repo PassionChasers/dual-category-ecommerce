@@ -330,73 +330,150 @@
         </script>
     @endif
 
-    {{-- Modal --}}
-    <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
-        <div class="flex items-center justify-center min-h-screen">
-            <!-- Overlay -->
-            <div id="editOverlay" class="fixed inset-0 bg-blue-950/40"></div>
+    {{-- Edit Modal --}}
+    <div id="edit-modal" class="fixed inset-0  hidden items-center justify-center z-50">
 
-            <!-- Modal content -->
-            <div class="bg-white rounded-lg shadow-xl  transform transition-all max-w-lg w-full relative">
-                <div class="flex justify-between items-center bg-indigo-600 rounded-t-lg px-6 py-4 mb-4">
-                    <h3 class="text-lg font-medium text-white " id="modal-title"></h3>
-                    <button type="button" id="edit-close-btn" class=" text-white hover:text-red-500">
-                        <i class="fas fa-times text-lg"></i>
-                    </button>
-                    
-                </div>
+        <!-- Overlay -->
+        <div id="editOverlay" class="fixed inset-0 bg-blue-950/40 backdrop-blur-[2px] ">
+        </div>
 
-                <form id="customer-form" method="POST" class="space-y-4 px-6 pb-4">
-                    @csrf
-                    <input type="hidden" id="form-method" name="_method" value="POST">
-                    <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
-                    <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+        <div class="bg-white w-full max-w-2xl overflow-y-auto max-h-[90vh] rounded-lg relative">
 
+            <div class="flex items-center justify-between rounded-t-lg bg-indigo-600 px-6 py-4 mb-4">
+                <h3 class="text-xl font-bold text-white" id="modal-title"></h3>
+                <button type="button" id="edit-close-btn"
+                    class="text-white hover:text-red-500 text-3xl">
+                    &times;
+                </button>
+            </div>
+
+            <form id="customer-form" method="POST" class="space-y-4">
+                @csrf
+                <input type="hidden" name="_method" id="form-method" value="PUT">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Name</label>
-                        <input type="text" name="name" id="customer-name" placeholder="Enter Restaurant Name"
-                            class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Business Name<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="storeName" id="businessName" placeholder="Enter Store Name"
+                            class="w-full border border-gray-400 p-2 rounded" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Admin Name<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="adminName" id="businessAdminName" placeholder="Enter Admin Name"
+                            class="w-full border border-gray-400 p-2 rounded" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Email<span class="text-red-500">*</span>
+                        </label>
+                        <input type="email" name="adminEmail" id="businessAdminEmail" placeholder="example@gmail.com"
+                            class="w-full border border-gray-400 p-2 rounded" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Phone<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="adminPhone" id="businessAdminContact"
+                            placeholder="+977 98XXXXXXXX" class="w-full border border-gray-400 p-2 rounded" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Store Address<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="storeAddress" id="businessAddress" placeholder="Enter Store Address"
+                            class="w-full border border-gray-400 p-2 rounded" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            FLICNo<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="flicNo" id="flicNo" placeholder="FLIC No."
+                            class="w-full border border-gray-400 p-2 rounded" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            GSTIN<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="gstin" id="gstin" placeholder="GSTIN"
+                            class="w-full border border-gray-400 p-2 rounded" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            PAN<span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="pan" id="pan" placeholder="PAN"
+                            class="w-full border border-gray-400 p-2 rounded" required>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Open Time<span class="text-red-500">*</span>
+                            </label>
+                            <input type="time" name="openTime" id="openTime" class="w-full border border-gray-400 p-2 rounded"
+                                required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">
+                                Close Time<span class="text-red-500">*</span>
+                            </label>
+                            <input type="time" name="closeTime" id="closeTime" class="w-full border border-gray-400 p-2 rounded"
+                                required>
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Email</label>
-                        <input type="email" name="email" id="customer-email" placeholder="example@gmail.com"
-                            class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Delivery Fee (Rs.)</label>
+                        <input type="number" name="deliveryFee" id="deliveryFee" placeholder="Delivery Fee"
+                            class="w-full border border-gray-400 p-2 rounded">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Password</label>
-                        <input type="password" name="password" id="customer-password" placeholder="Leave blank to keep unchanged"
-                            class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Minimum Order (Rs.)</label>
+                        <input type="number" name="minOrder" id="minimumOrder" placeholder="Minimum Order"
+                            class="w-full border border-gray-400 p-2 rounded">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Contact Number</label>
-                        <input type="text" name="contact_number" id="customer_contact_number" placeholder="+977 98XXXXXXXX"
-                            class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                        <input type="number" step="any" name="latitude" id="latitude" placeholder="Latitude"
+                            class="w-full border border-gray-400 p-2 rounded">
                     </div>
 
-                    {{-- <div>
-                        <label class="block text-sm font-medium text-gray-700">Address</label>
-                        <input type="text" name="address" id="customer_address"
-                            class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                            required>
-                    </div> --}}
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                        <input type="number" step="any" name="longitude" id="longitude" placeholder="Longitude"
+                            class="w-full border border-gray-400 p-2 rounded">
+                    </div>
 
                     <div class="flex items-center gap-2">
-                        <input type="checkbox" name="IsActive" id="IsActive" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                        <input type="checkbox" name="IsActive" id="isActive" value="1"
+                            class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                         <label for="IsActive" class="text-sm font-medium text-gray-700">Active</label>
                     </div>
 
-                    <div class="flex justify-end space-x-2">
-                        <button type="button" id="edit-cancel-btn" class="px-4 py-2 bg-gray-200 rounded-lg hover:bg-red-500 hover:text-white">Cancel</button>
-                        <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">Save</button>
-                    </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 mb-3 px-6">
+                    <button type="button" id="edit-cancel-btn"
+                        class="px-4 py-2 rounded-lg text-black bg-gray-300 hover:bg-red-500 hover:text-white">Cancel</button>
+                    <button type="submit" id="storeSubmitBtn"
+                        class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded flex items-center justify-center gap-2">
+                        <span id="btnText">Save Store</span>
+                        <svg id="btnSpinner" class="w-5 h-5 animate-spin hidden" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                        </svg>
+                    </button>
+                </div>
+
+            </form>
         </div>
     </div>
 
@@ -406,51 +483,51 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            // EDIT MODAL
+           // EDIT MODAL
             const editModal = document.getElementById('edit-modal');
             const editCloseBtn = document.getElementById('edit-close-btn');
             const editCancelBtn = document.getElementById('edit-cancel-btn');
-            const editOverlay = document.getElementById('editOverlay');
 
-            [editCloseBtn, editCancelBtn, editOverlay].forEach(btn => {
-                btn?.addEventListener('click', () => {
-                    editModal.classList.add('hidden');
-                    document.body.classList.remove('overflow-hidden');
-                });
-            });
-
-            //for edit modal
-            const editmodal = document.getElementById('edit-modal');
+            
             const form = document.getElementById('customer-form');
             const modalTitle = document.getElementById('modal-title');
             const methodInput = document.getElementById('form-method');
-            const nameInput = document.getElementById('customer-name');
-            const IsActiveInput = document.getElementById('IsActive');
-            const contactNumberInput = document.getElementById('customer_contact_number');
-            const emailInput = document.getElementById('customer-email');
-            const passwordInput = document.getElementById('customer-password');
 
-            // Event delegation for edit buttons (works after AJAX too)
+            [editCloseBtn, editCancelBtn].forEach(btn => {
+                btn?.addEventListener('click', () => {
+                    editModal.classList.add('hidden');
+                });
+            });
+            
             document.addEventListener('click', function(e) {
+
                 const btn = e.target.closest('.edit-btn');
-                if (btn) {
-                    modalTitle.innerText = 'Edit Restaurant';
-                    form.action = `/users/update/${btn.dataset.id}`;
-                    methodInput.value = 'PUT';
-                    nameInput.value = btn.dataset.name;
-                    // addressInput.value = btn.dataset.address;
-                    IsActiveInput.checked = btn.dataset.isactive === '1';
-                    contactNumberInput.value = btn.dataset.contact_number;
-                    emailInput.value = btn.dataset.email;
-                    passwordInput.value = '';
+                if (!btn) return;
 
-                    // Set hidden fields for current search/filter
-                    document.getElementById('current-search').value = document.getElementById('search').value;
-                    document.getElementById('current-onlineStatus').value = document.getElementById('onlineStatus').value;
+                modalTitle.innerText = 'Edit Restaurant';
+                form.action = `/admin/restaurants/${btn.dataset.id}`;
+                methodInput.value = 'PUT';
 
-                    editmodal.classList.remove('hidden');
-                    document.body.classList.add('overflow-hidden')
+                // Auto-fill all inputs based on ID
+                form.querySelectorAll('input, select, textarea').forEach(input => {
+
+                const id = input.id;
+                if (!id) return;
+
+                const value = btn.dataset[id];
+
+                if (value !== undefined) {
+                    if (input.type === 'checkbox') {
+                        input.checked = value == '1' || value === true;
+                    } else {
+                        input.value = value;
+                    }
                 }
+            });
+
+                editModal.classList.remove('hidden');
+                editModal.classList.add('flex');
+
             });
 
             // Delete confirmation

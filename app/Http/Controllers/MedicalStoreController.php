@@ -14,135 +14,6 @@ use Illuminate\Support\Facades\Http;
 class MedicalStoreController extends Controller
 {
 
-    /***************************** 
-    ********* INDEX ***********
-    ***************************/
-    public function index(Request $request)
-    {
-        $query = MedicalStore::query();
-
-        // search by name, license, gstin, pan
-        if ($search = $request->get('search')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'ilike', "%{$search}%")
-                    ->orWhere('LicenseNumber', 'ilike', "%{$search}%")
-                    ->orWhere('GSTIN', 'ilike', "%{$search}%")
-                    ->orWhere('PAN', 'ilike', "%{$search}%");
-            });
-        }
-
-        // status filter
-        if ($request->filled('status')) {
-            if ($request->status === 'active') $query->where('IsActive', true);
-            if ($request->status === 'inactive') $query->where('IsActive', false);
-        }
-
-        // sort & pagination
-        $allowedSorts = ['Name', 'CreatedAt', 'Priority'];
-        $sortBy = in_array($request->get('sort_by'), $allowedSorts) ? $request->get('sort_by') : 'CreatedAt';
-        $sortOrder = $request->get('sort_order') === 'asc' ? 'asc' : 'desc';
-        $query->orderBy($sortBy, $sortOrder);
-
-        $perPage = (int) $request->get('per_page', 10);
-        $perPage = in_array($perPage, [5,10,25,50]) ? $perPage : 10;
-
-        $medicalstores = $query->paginate($perPage)->appends($request->except('page'));
-
-        return view('admin.users.medical_stores.searchedMedicalstore', [
-            'medicalstores' => $medicalstores,
-        ]);
-    }
-
-
-    /***************************** 
-    ********* SHPW ***********
-    ***************************/
-    public function show($id)
-    {
-        $store = MedicalStore::findOrFail($id);
-        return view('admin.users.medical_stores.show', compact('store'));
-    }
-
-
-
-    /***************************** 
-    ********* UPDATE ***********
-    ***************************/
-    public function update(Request $request, string $id)
-    {
-        $store = MedicalStore::findOrFail($id);
-
-        // $data = $request->only([
-        //     'Name','Slug','LicenseNumber','GSTIN','PAN','IsActive','IsFeatured',
-        //     'OpenTime','CloseTime','RadiusKm','DeliveryFee','MinOrder',
-        //     'Latitude','Longitude','Priority'
-        // ]);
-
-        // $data['IsActive'] = $request->has('IsActive') ? (bool)$request->get('IsActive') : $store->IsActive;
-        // $data['IsFeatured'] = $request->has('IsFeatured') ? (bool)$request->get('IsFeatured') : $store->IsFeatured;
-
-        // if ($request->hasFile('image')) {
-        //     // delete old
-        //     if ($store->ImageUrl && Storage::disk('public')->exists($store->ImageUrl)) {
-        //         Storage::disk('public')->delete($store->ImageUrl);
-        //     }
-        //     $file = $request->file('image');
-        //     $filename = Str::slug($data['Name'] ?? $store->Name) . '-' . time() . '.' . $file->getClientOriginalExtension();
-        //     $path = $file->storeAs('medicalstores', $filename, 'public');
-        //     $data['ImageUrl'] = $path;
-        // }
-
-        // $store->update($data);
-
-        $validated = $request->validate([
-            'storeName'     => 'required|string|max:255',
-            'adminName'     => 'required|string|max:255',
-            'adminEmail'    => 'required|email|unique:users,email,' . $id,
-            'adminPhone'    => 'required|unique:users,phone,' . $id,
-            'storeAddress'  => 'required|string|max:255',
-
-            'licenseNumber' => 'required|unique:medical_stores,license_number,' . $id,
-            'gstin'         => 'required|unique:medical_stores,gstin,' . $id,
-            'pan'           => 'required|unique:medical_stores,pan,' . $id,
-
-            'openTime'      => 'required',
-            'closeTime'     => 'required',
-
-            'deliveryFee'   => 'nullable|numeric',
-            'minOrder'      => 'nullable|numeric',
-
-            'latitude'      => 'nullable|numeric',
-            'longitude'     => 'nullable|numeric',
-
-            'IsActive'      => 'nullable|boolean',
-        ]);
-
-        return redirect()->route('admin.medicalstores.list')->with('success','Medical store updated.');
-    }
-
-
-    /***************************** 
-    ********* DESTROY ***********
-    ***************************/
-    public function destroy($id)
-    {
-        $store = MedicalStore::findOrFail($id);
-        if ($store->ImageUrl && Storage::disk('public')->exists($store->ImageUrl)) {
-            Storage::disk('public')->delete($store->ImageUrl);
-        }
-        $store->delete();
-        return redirect()->route('admin.medicalstores.list')->with('success', 'Medical store deleted.');
-    }
-
-    public function toggleActive($id)
-    {
-        $store = MedicalStore::findOrFail($id);
-        $store->IsActive = !$store->IsActive;
-        $store->save();
-        return response()->json(['success' => true, 'IsActive' => $store->IsActive]);
-    }
-
-    
 
     /***************************** 
         ALL MEDICICALSTORES
@@ -182,6 +53,114 @@ class MedicalStoreController extends Controller
 
         return view('admin.business.medicalstore.index', compact('users'));
     }
+
+    /***************************** 
+    ********* SHOW ***********
+    ***************************/
+    public function show($id)
+    {
+        $store = MedicalStore::findOrFail($id);
+        return view('admin.users.medical_stores.show', compact('store'));
+    }
+
+
+    /***************************** 
+    ********* UPDATE ***********
+    ***************************/
+    public function update(Request $request, $id)
+    {
+        // Find medical store
+        $store = MedicalStore::findOrFail($id);
+
+        // Find related user
+        $user = User::where('UserId', $store->UserId)->firstOrFail();
+
+        // Validate input
+        $request->validate([
+            'storeName'     => 'required|string|max:255',
+            'adminName'     => 'required|string|max:255',
+
+            // Ignore current user for unique validation
+            'adminEmail'    => 'required|email|unique:Users,Email,' . $user->UserId . ',UserId',
+            'adminPhone'    => 'required|unique:Users,Phone,' . $user->UserId . ',UserId',
+
+            'storeAddress'  => 'required|string|max:255',
+
+            // Ignore current store for unique validation
+            'licenseNumber' => 'required|unique:MedicalStores,LicenseNumber,' . $store->MedicalStoreId . ',MedicalStoreId',
+            'gstin'         => 'required|unique:MedicalStores,GSTIN,' . $store->MedicalStoreId . ',MedicalStoreId',
+            'pan'           => 'required|unique:MedicalStores,PAN,' . $store->MedicalStoreId . ',MedicalStoreId',
+
+            'openTime'      => 'required',
+            'closeTime'     => 'required',
+
+            'deliveryFee'   => 'nullable|numeric',
+            'minOrder'      => 'nullable|numeric',
+            'latitude'      => 'nullable|numeric',
+            'longitude'     => 'nullable|numeric',
+            'IsActive'      => 'nullable|boolean',
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update User (Admin)
+        |--------------------------------------------------------------------------
+        */
+        $user->update([
+            'Name'  => $request->adminName,
+            'Email' => $request->adminEmail,
+            'Phone' => $request->adminPhone,
+        ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Update Medical Store
+        |--------------------------------------------------------------------------
+        */
+        $store->update([
+            'Name'          => $request->storeName,
+            'Slug'          => Str::slug($request->storeName),
+            'LicenseNumber' => $request->licenseNumber,
+            'GSTIN'         => $request->gstin,
+            'PAN'           => $request->pan,
+            'Address'       => $request->storeAddress,
+            'OpenTime'      => $request->openTime,
+            'CloseTime'     => $request->closeTime,
+            'DeliveryFee'   => $request->deliveryFee,
+            'MinOrder'      => $request->minOrder,
+            'Latitude'      => $request->latitude,
+            'Longitude'     => $request->longitude,
+            'IsActive'      => $request->has('IsActive') ? 1 : 0,
+        ]);
+
+        return redirect()->route('admin.medicalstores.list')->with('success', 'Medical store updated successfully.');
+    }
+
+
+    /***************************** 
+    ********* DESTROY ***********
+    ***************************/
+    public function destroy($id)
+    {
+        $store = MedicalStore::findOrFail($id);
+        if ($store->ImageUrl && Storage::disk('public')->exists($store->ImageUrl)) {
+            Storage::disk('public')->delete($store->ImageUrl);
+        }
+        $store->delete();
+        return redirect()->route('admin.medicalstores.list')->with('success', 'Medical store deleted.');
+    }
+
+
+    /********* TOGGLE ACTIVE ***********
+    *************************************/
+    public function toggleActive($id)
+    {
+        $store = MedicalStore::findOrFail($id);
+        $store->IsActive = !$store->IsActive;
+        $store->save();
+        return response()->json(['success' => true, 'IsActive' => $store->IsActive]);
+    }
+
 
 
     // /***************************** 
@@ -468,6 +447,8 @@ class MedicalStoreController extends Controller
             'redirect' => route('admin.medicalstores.list'),
         ]);
     }
+
+
 
     // Resend OTP
     public function resendOtp(Request $request)

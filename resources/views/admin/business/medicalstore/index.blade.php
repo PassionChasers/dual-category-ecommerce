@@ -242,10 +242,7 @@
 
             <form id="customer-form" method="POST" class="space-y-4">
                 @csrf
-
-                <input type="hidden" id="form-method" name="_method" value="POST">
-                <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
-                <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+                <input type="hidden" name="_method" id="form-method" value="PUT">
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 px-6">
                     <div>
@@ -384,26 +381,24 @@
             const editCloseBtn = document.getElementById('edit-close-btn');
             const editCancelBtn = document.getElementById('edit-cancel-btn');
 
+            
+            const form = document.getElementById('customer-form');
+            const modalTitle = document.getElementById('modal-title');
+            const methodInput = document.getElementById('form-method');
+
             [editCloseBtn, editCancelBtn].forEach(btn => {
                 btn?.addEventListener('click', () => {
                     editModal.classList.add('hidden');
                 });
             });
 
-            //for edit modal
-            const editmodal = document.getElementById('edit-modal');
-            const form = document.getElementById('customer-form');
-            const modalTitle = document.getElementById('modal-title');
-            const methodInput = document.getElementById('form-method');
-
-            // Event delegation for edit buttons (works after AJAX too)
             document.addEventListener('click', function(e) {
 
                 const btn = e.target.closest('.edit-btn');
                 if (!btn) return;
 
                 modalTitle.innerText = 'Edit Medical Store';
-                form.action = `/users/update/${btn.dataset.id}`;
+                form.action = `/admin/medical-stores/${btn.dataset.id}`;
                 methodInput.value = 'PUT';
 
                 // Auto-fill all inputs based on ID
@@ -563,7 +558,7 @@
                 _token: '{{ csrf_token() }}'
             };
 
-            fetch('{{ route('medicalStores.store') }}', {
+            fetch('{{ route('admin.medicalstores.store') }}', {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',

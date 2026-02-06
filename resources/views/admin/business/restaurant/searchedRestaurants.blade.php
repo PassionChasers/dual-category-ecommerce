@@ -7,9 +7,6 @@
             <tr>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">#</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Restaurant Name</th>
-                {{-- <th class="px-4 py-2 text-left font-semibold text-gray-700">Owner Name</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Email</th>
-                <th class="px-4 py-2 text-left font-semibold text-gray-700">Contact</th> --}}
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Address</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">IsActive</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Actions</th>
@@ -24,25 +21,35 @@
                 <td class="px-4 py-2 font-semibold text-gray-800">
                     {{ $user->Name }}
                 </td>
-                {{-- <td class="px-4 py-2 font-semibold text-gray-800">
-                    {{ $user->user->Name }}
-                </td>
-                <td class="px-4 py-2 text-gray-600">
-                    {{ $user->user->Email }}
-                </td>
-                <td class="px-4 py-2 text-gray-600">
-                    {{ $user->user->Phone?? '-' }}
-                </td> --}}
                 <td class="px-4 py-2 text-gray-600">
                     {{ $user->Address ?? '-' }}
                 </td>
                 <td class="px-4 py-2 text-gray-600">
-                    {{ $user->IsActive ? 'Active': 'Inactive' }}
+                    @if($user->IsActive)
+                        <p class="py-1 text-green-600 bg-green-100 text-center rounded">Active</p>
+                    @else
+                        <p class="py-1 text-red-600 bg-red-100 text-center rounded">InActive</p>
+                    @endif
                 </td>
                 <td class="px-4 py-2 flex space-x-2">
-                    <button class="edit-btn text-indigo-600 hover:text-indigo-800" data-id="{{ $user->UserId }}"
-                        data-name="{{ $user->Name }}" data-email="{{ $user->Email }}" data-isactive="{{ $user->IsActive ? '1' : '0' }}"
-                        data-contact_number="{{ $user->Phone }}">
+                    <button class="edit-btn text-indigo-600 hover:text-indigo-800" 
+                        data-id="{{ $user->RestaurantId }}"
+                        data-business-name="{{ $user->Name }}"
+                        data-business-admin-name="{{ $user->user->Name }}"
+                        data-business-admin-email="{{ $user->user->Email }}"
+                        data-business-admin-contact="{{ $user->user->Phone }}"
+                        data-business-address="{{ $user->Address }}"
+                        data-flic-no="{{ $user->FLICNo }}"
+                        data-gstin="{{ $user->GSTIN }}"
+                        data-pan="{{ $user->PAN }}"
+                        data-open-time="{{ \Carbon\Carbon::parse($user->OpenTime)->format('H:i') }}"
+                        data-close-time="{{ \Carbon\Carbon::parse($user->CloseTime)->format('H:i') }}"
+                        data-delivery-fee="{{ $user->DeliveryFee }}"
+                        data-minimum-order="{{ $user->MinOrder }}"
+                        data-latitude="{{ $user->Latitude }}"
+                        data-longitude="{{ $user->Longitude }}"
+                        data-is-active="{{ $user->IsActive ? '1' : '0' }}"
+                    >
                         <i class="fas fa-edit"></i>
                     </button>
                     <form method="POST" action="{{ route('users.destroy', $user->UserId) }}" class="inline delete-form">
