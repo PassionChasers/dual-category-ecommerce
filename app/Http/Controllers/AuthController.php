@@ -137,7 +137,7 @@ class AuthController extends Controller
 
     public function authenticate(Request $request)
     {
-        Log::info('Login process started');
+        // Log::info('Login process started');
 
         // Validate request
         $request->validate([
@@ -145,10 +145,10 @@ class AuthController extends Controller
             'password' => 'required|string|min:8',
         ]);
 
-        Log::info('Validation passed', ['email' => $request->email]);
+        // Log::info('Validation passed', ['email' => $request->email]);
 
         // Call external API
-        Log::info('Calling login API');
+        // Log::info('Calling login API');
 
         $response = Http::post(
             'https://pcsdecom.azurewebsites.net/api/Auth/login',
@@ -158,10 +158,10 @@ class AuthController extends Controller
             ]
         );
 
-        Log::info('API response received', [
-            'status' => $response->status(),
-            'body' => $response->json(),
-        ]);
+        // Log::info('API response received', [
+        //     'status' => $response->status(),
+        //     'body' => $response->json(),
+        // ]);
 
         // Handle API failure
         if (!$response->successful()) {
@@ -177,7 +177,7 @@ class AuthController extends Controller
 
         if (!isset($data['user']) || !isset($data['user']['email'])) 
         {
-            Log::error('Invalid API response structure', $data);
+            // Log::error('Invalid API response structure', $data);
 
             return back()->withErrors([
                 'email' => 'Invalid login response from server.',
@@ -185,15 +185,15 @@ class AuthController extends Controller
         }
 
         $apiUser = $data['user'];
-        Log::info('API user extracted', $apiUser);
+        // Log::info('API user extracted', $apiUser);
 
         // Find local user (PostgreSQL case-sensitive)
         $user = User::where('Email', $apiUser['email'])->first();
 
         if (!$user) {
-            Log::error('Local user not found', [
-                'email' => $apiUser['email'],
-            ]);
+            // Log::error('Local user not found', [
+            //     'email' => $apiUser['email'],
+            // ]);
 
             return back()->withErrors([
                 'email' => 'User not found in local system.',

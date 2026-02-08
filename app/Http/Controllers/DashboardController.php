@@ -30,7 +30,6 @@ class DashboardController extends Controller
             4 => $this->adminDashboard(),
             2 => $this->businessDashboard(),
             3 => $this->businessDashboard(),
-            // 3 => $this->deliveryDashboard(),
             default => abort(403, 'Access denied'),
         };
 
@@ -305,114 +304,114 @@ class DashboardController extends Controller
                 $stats['cancelledOrders'] = (int) ($orderStats->cancelled ?? 0);
 
                 /* ---------------- REVENUE ---------------- */
-            $revenueStats = DB::table('Orders')
-                ->where('BusinessId', $medicalStoreId)
-                ->where('Status', AdminOrderStatus::Completed->value)
-                ->selectRaw('SUM("TotalAmount") as total, AVG("TotalAmount") as avg')
+                $revenueStats = DB::table('Orders')
+                    ->where('BusinessId', $medicalStoreId)
+                    ->where('Status', AdminOrderStatus::Completed->value)
+                    ->selectRaw('SUM("TotalAmount") as total, AVG("TotalAmount") as avg')
+                    ->first();
+
+                $stats['totalRevenue']  = (float) ($revenueStats->total ?? 0);
+                $stats['avgOrderValue'] = (float) ($revenueStats->avg ?? 0);
+
+                /* ---------------- ADS ---------------- */
+                $stats['activeAds'] = Ad::where('IsActive', true)->count();
+
+                /* ---------------- MEDICAL / FOOD SPLIT ---------------- */
+                $moduleCounts = OrderItem::whereHas('order', function ($q) use ($medicalStoreId) {
+                    $q->where('BusinessId', $medicalStoreId);
+                })
+                ->selectRaw(
+                    'COUNT(DISTINCT CASE 
+                    WHEN lower("ItemType") = \'medicine\' THEN "OrderId"
+                    END) as medical,
+                    COUNT(DISTINCT CASE
+                    WHEN lower("ItemType") IN (\'food\',\'menuitem\') THEN "OrderId"
+                    END) as food'
+                )
                 ->first();
 
-            $stats['totalRevenue']  = (float) ($revenueStats->total ?? 0);
-            $stats['avgOrderValue'] = (float) ($revenueStats->avg ?? 0);
+                $stats['medicalOrders'] = (int) ($moduleCounts->medical ?? 0);
+                $stats['foodOrders']    = (int) ($moduleCounts->food ?? 0);
 
-            /* ---------------- ADS ---------------- */
-            $stats['activeAds'] = Ad::where('IsActive', true)->count();
+                $moduleSplitChart = [
+                    'labels' => ['Medical', 'Food'],
+                    'data'   => [$stats['medicalOrders'], $stats['foodOrders']],
+                ];
 
-            /* ---------------- MEDICAL / FOOD SPLIT ---------------- */
-            $moduleCounts = OrderItem::whereHas('order', function ($q) use ($medicalStoreId) {
-                $q->where('BusinessId', $medicalStoreId);
-            })
-            ->selectRaw(
-                'COUNT(DISTINCT CASE 
-                   WHEN lower("ItemType") = \'medicine\' THEN "OrderId"
-                END) as medical,
-                COUNT(DISTINCT CASE
-                   WHEN lower("ItemType") IN (\'food\',\'menuitem\') THEN "OrderId"
-                END) as food'
-            )
-            ->first();
+                /* ---------------- ORDER STATUS CHART ---------------- */
+                $orderStatusChart = [
+                    'labels' => ['Pending', 'Assigned', 'Completed', 'Cancelled'],
+                    'data'   => [
+                        $stats['pendingOrders'],
+                        $stats['assignedOrders'],
+                        $stats['completedOrders'],
+                        $stats['cancelledOrders'],
+                    ],
+                ];
 
-            $stats['medicalOrders'] = (int) ($moduleCounts->medical ?? 0);
-            $stats['foodOrders']    = (int) ($moduleCounts->food ?? 0);
+                /* ---------------- COMMON ORDER QUERY ---------------- */
+                $baseQuery = Order::with('customer', 'items.food', 'items.medicine')
+                    ->where('BusinessId', $medicalStoreId)
+                    ->orderBy('CreatedAt', 'desc');
 
-            $moduleSplitChart = [
-                'labels' => ['Medical', 'Food'],
-                'data'   => [$stats['medicalOrders'], $stats['foodOrders']],
-            ];
+                $recentOrders    = (clone $baseQuery)->limit(5)->get();
+                $pendingOrders   = (clone $baseQuery)->whereIn('Status', [
+                                        AdminOrderStatus::Pending->value,
+                                        AdminOrderStatus::PendingReview->value,
+                                    ])->limit(5)->get();
+                $assignedOrders  = (clone $baseQuery)->where('Status', AdminOrderStatus::Assigned->value)->limit(5)->get();
+                $completedOrders = (clone $baseQuery)->where('Status', AdminOrderStatus::Completed->value)->limit(5)->get();
 
-            /* ---------------- ORDER STATUS CHART ---------------- */
-            $orderStatusChart = [
-                'labels' => ['Pending', 'Assigned', 'Completed', 'Cancelled'],
-                'data'   => [
-                    $stats['pendingOrders'],
-                    $stats['assignedOrders'],
-                    $stats['completedOrders'],
-                    $stats['cancelledOrders'],
-                ],
-            ];
+                /* ---------------- LAST 7 DAYS CHARTS ---------------- */
+                $from = Carbon::now()->subDays(6)->startOfDay();
+                $to   = Carbon::now()->endOfDay();
 
-            /* ---------------- COMMON ORDER QUERY ---------------- */
-            $baseQuery = Order::with('customer', 'items.food', 'items.medicine')
-                ->where('BusinessId', $medicalStoreId)
-                ->orderBy('CreatedAt', 'desc');
+                // $ordersByDay = Order::whereBetween('CreatedAt', [$from, $to])
+                //     ->selectRaw('DATE("CreatedAt") as date, COUNT(*) as total')
+                //     ->groupBy('date')
+                //     ->pluck('total', 'date');
 
-            $recentOrders    = (clone $baseQuery)->limit(5)->get();
-            $pendingOrders   = (clone $baseQuery)->whereIn('Status', [
-                                    AdminOrderStatus::Pending->value,
-                                    AdminOrderStatus::PendingReview->value,
-                                ])->limit(5)->get();
-            $assignedOrders  = (clone $baseQuery)->where('Status', AdminOrderStatus::Assigned->value)->limit(5)->get();
-            $completedOrders = (clone $baseQuery)->where('Status', AdminOrderStatus::Completed->value)->limit(5)->get();
-
-            /* ---------------- LAST 7 DAYS CHARTS ---------------- */
-            $from = Carbon::now()->subDays(6)->startOfDay();
-            $to   = Carbon::now()->endOfDay();
-
-            // $ordersByDay = Order::whereBetween('CreatedAt', [$from, $to])
-            //     ->selectRaw('DATE("CreatedAt") as date, COUNT(*) as total')
-            //     ->groupBy('date')
-            //     ->pluck('total', 'date');
-
-            $ordersByDay = Order::where('BusinessId', $medicalStoreId)
-    ->whereBetween('CreatedAt', [$from, $to])
-    ->selectRaw('DATE("CreatedAt") as date, COUNT(*) as total')
-    ->groupBy('date')
-    ->pluck('total', 'date');
+                $ordersByDay = Order::where('BusinessId', $medicalStoreId)
+                ->whereBetween('CreatedAt', [$from, $to])
+                ->selectRaw('DATE("CreatedAt") as date, COUNT(*) as total')
+                ->groupBy('date')
+                ->pluck('total', 'date');
 
 
-            // $revenueByDay = Order::where('Status', AdminOrderStatus::Completed->value)
-            //     ->whereBetween('CreatedAt', [$from, $to])
-            //     ->selectRaw('DATE("CreatedAt") as date, SUM("TotalAmount") as total')
-            //     ->groupBy('date')
-            //     ->pluck('total', 'date');
+                // $revenueByDay = Order::where('Status', AdminOrderStatus::Completed->value)
+                //     ->whereBetween('CreatedAt', [$from, $to])
+                //     ->selectRaw('DATE("CreatedAt") as date, SUM("TotalAmount") as total')
+                //     ->groupBy('date')
+                //     ->pluck('total', 'date');
 
-            $revenueByDay = Order::where('BusinessId', $medicalStoreId)
-    ->where('Status', AdminOrderStatus::Completed->value)
-    ->whereBetween('CreatedAt', [$from, $to])
-    ->selectRaw('DATE("CreatedAt") as date, SUM("TotalAmount") as total')
-    ->groupBy('date')
-    ->pluck('total', 'date');
+                $revenueByDay = Order::where('BusinessId', $medicalStoreId)
+                ->where('Status', AdminOrderStatus::Completed->value)
+                ->whereBetween('CreatedAt', [$from, $to])
+                ->selectRaw('DATE("CreatedAt") as date, SUM("TotalAmount") as total')
+                ->groupBy('date')
+                ->pluck('total', 'date');
 
-            for ($i = 0; $i < 7; $i++) {
-                $date = $from->copy()->addDays($i)->format('Y-m-d');
+                for ($i = 0; $i < 7; $i++) {
+                    $date = $from->copy()->addDays($i)->format('Y-m-d');
 
-                $ordersPerDayChart['labels'][]  = Carbon::parse($date)->format('d M');
-                $ordersPerDayChart['data'][]    = (int) ($ordersByDay[$date] ?? 0);
+                    $ordersPerDayChart['labels'][]  = Carbon::parse($date)->format('d M');
+                    $ordersPerDayChart['data'][]    = (int) ($ordersByDay[$date] ?? 0);
 
-                $revenuePerDayChart['labels'][] = Carbon::parse($date)->format('d M');
-                $revenuePerDayChart['data'][]   = (float) ($revenueByDay[$date] ?? 0);
-            }
+                    $revenuePerDayChart['labels'][] = Carbon::parse($date)->format('d M');
+                    $revenuePerDayChart['data'][]   = (float) ($revenueByDay[$date] ?? 0);
+                }
 
             }
             elseif($restaurantId)
-                {
-                    $orderStats = DB::table('Orders')
+            {
+                $orderStats = DB::table('Orders')
                 ->where('BusinessId', $restaurantId)
                 ->selectRaw(
                     'COUNT(*) as total,
-                     SUM(CASE WHEN "Status" = ? THEN 1 ELSE 0 END) as pending,
-                     SUM(CASE WHEN "Status" = ? THEN 1 ELSE 0 END) as assigned,
-                     SUM(CASE WHEN "Status" = ? THEN 1 ELSE 0 END) as completed,
-                     SUM(CASE WHEN "Status" = ? THEN 1 ELSE 0 END) as cancelled',
+                        SUM(CASE WHEN "Status" = ? THEN 1 ELSE 0 END) as pending,
+                        SUM(CASE WHEN "Status" = ? THEN 1 ELSE 0 END) as assigned,
+                        SUM(CASE WHEN "Status" = ? THEN 1 ELSE 0 END) as completed,
+                        SUM(CASE WHEN "Status" = ? THEN 1 ELSE 0 END) as cancelled',
                     [
                         AdminOrderStatus::Pending->value,
                         AdminOrderStatus::Assigned->value,
@@ -428,112 +427,108 @@ class DashboardController extends Controller
                 $stats['completedOrders'] = (int) ($orderStats->completed ?? 0);
                 $stats['cancelledOrders'] = (int) ($orderStats->cancelled ?? 0);
 
-                /* ---------------- REVENUE ---------------- */
-            $revenueStats = DB::table('Orders')
-                ->where('BusinessId', $restaurantId)
-                ->where('Status', AdminOrderStatus::Completed->value)
-                ->selectRaw('SUM("TotalAmount") as total, AVG("TotalAmount") as avg')
+                    /* ---------------- REVENUE ---------------- */
+                $revenueStats = DB::table('Orders')
+                    ->where('BusinessId', $restaurantId)
+                    ->where('Status', AdminOrderStatus::Completed->value)
+                    ->selectRaw('SUM("TotalAmount") as total, AVG("TotalAmount") as avg')
+                    ->first();
+
+                $stats['totalRevenue']  = (float) ($revenueStats->total ?? 0);
+                $stats['avgOrderValue'] = (float) ($revenueStats->avg ?? 0);
+
+                /* ---------------- ADS ---------------- */
+                $stats['activeAds'] = Ad::where('IsActive', true)->count();
+
+                /* ---------------- MEDICAL / FOOD SPLIT ---------------- */
+                $moduleCounts = OrderItem::whereHas('order', function ($q) use ($restaurantId) {
+                    $q->where('BusinessId', $restaurantId);
+                })
+                ->selectRaw(
+                    'COUNT(DISTINCT CASE 
+                    WHEN lower("ItemType") = \'medicine\' THEN "OrderId"
+                    END) as medical,
+                    COUNT(DISTINCT CASE
+                    WHEN lower("ItemType") IN (\'food\',\'menuitem\') THEN "OrderId"
+                    END) as food'
+                )
                 ->first();
 
-            $stats['totalRevenue']  = (float) ($revenueStats->total ?? 0);
-            $stats['avgOrderValue'] = (float) ($revenueStats->avg ?? 0);
+                $stats['medicalOrders'] = (int) ($moduleCounts->medical ?? 0);
+                $stats['foodOrders']    = (int) ($moduleCounts->food ?? 0);
 
-            /* ---------------- ADS ---------------- */
-            $stats['activeAds'] = Ad::where('IsActive', true)->count();
+                $moduleSplitChart = [
+                    'labels' => ['Medical', 'Food'],
+                    'data'   => [$stats['medicalOrders'], $stats['foodOrders']],
+                ];
 
-            /* ---------------- MEDICAL / FOOD SPLIT ---------------- */
-            $moduleCounts = OrderItem::whereHas('order', function ($q) use ($restaurantId) {
-                $q->where('BusinessId', $restaurantId);
-            })
-            ->selectRaw(
-                'COUNT(DISTINCT CASE 
-                   WHEN lower("ItemType") = \'medicine\' THEN "OrderId"
-                END) as medical,
-                COUNT(DISTINCT CASE
-                   WHEN lower("ItemType") IN (\'food\',\'menuitem\') THEN "OrderId"
-                END) as food'
-            )
-            ->first();
+                /* ---------------- ORDER STATUS CHART ---------------- */
+                $orderStatusChart = [
+                    'labels' => ['Pending', 'Assigned', 'Completed', 'Cancelled'],
+                    'data'   => [
+                        $stats['pendingOrders'],
+                        $stats['assignedOrders'],
+                        $stats['completedOrders'],
+                        $stats['cancelledOrders'],
+                    ],
+                ];
 
-            $stats['medicalOrders'] = (int) ($moduleCounts->medical ?? 0);
-            $stats['foodOrders']    = (int) ($moduleCounts->food ?? 0);
+                /* ---------------- COMMON ORDER QUERY ---------------- */
+                $baseQuery = Order::with('customer', 'items.food', 'items.medicine')
+                    ->where('BusinessId', $restaurantId)
+                    ->orderBy('CreatedAt', 'desc');
 
-            $moduleSplitChart = [
-                'labels' => ['Medical', 'Food'],
-                'data'   => [$stats['medicalOrders'], $stats['foodOrders']],
-            ];
+                $recentOrders    = (clone $baseQuery)->limit(5)->get();
+                $pendingOrders   = (clone $baseQuery)->whereIn('Status', [
+                                        AdminOrderStatus::Pending->value,
+                                        AdminOrderStatus::PendingReview->value,
+                                    ])->limit(5)->get();
+                $assignedOrders  = (clone $baseQuery)->where('Status', AdminOrderStatus::Assigned->value)->limit(5)->get();
+                $completedOrders = (clone $baseQuery)->where('Status', AdminOrderStatus::Completed->value)->limit(5)->get();
 
-            /* ---------------- ORDER STATUS CHART ---------------- */
-            $orderStatusChart = [
-                'labels' => ['Pending', 'Assigned', 'Completed', 'Cancelled'],
-                'data'   => [
-                    $stats['pendingOrders'],
-                    $stats['assignedOrders'],
-                    $stats['completedOrders'],
-                    $stats['cancelledOrders'],
-                ],
-            ];
+                /* ---------------- LAST 7 DAYS CHARTS ---------------- */
+                $from = Carbon::now()->subDays(6)->startOfDay();
+                $to   = Carbon::now()->endOfDay();
 
-            /* ---------------- COMMON ORDER QUERY ---------------- */
-            $baseQuery = Order::with('customer', 'items.food', 'items.medicine')
-                ->where('BusinessId', $restaurantId)
-                ->orderBy('CreatedAt', 'desc');
+                // $ordersByDay = Order::whereBetween('CreatedAt', [$from, $to])
+                //     ->selectRaw('DATE("CreatedAt") as date, COUNT(*) as total')
+                //     ->groupBy('date')
+                //     ->pluck('total', 'date');
 
-            $recentOrders    = (clone $baseQuery)->limit(5)->get();
-            $pendingOrders   = (clone $baseQuery)->whereIn('Status', [
-                                    AdminOrderStatus::Pending->value,
-                                    AdminOrderStatus::PendingReview->value,
-                                ])->limit(5)->get();
-            $assignedOrders  = (clone $baseQuery)->where('Status', AdminOrderStatus::Assigned->value)->limit(5)->get();
-            $completedOrders = (clone $baseQuery)->where('Status', AdminOrderStatus::Completed->value)->limit(5)->get();
-
-            /* ---------------- LAST 7 DAYS CHARTS ---------------- */
-            $from = Carbon::now()->subDays(6)->startOfDay();
-            $to   = Carbon::now()->endOfDay();
-
-            // $ordersByDay = Order::whereBetween('CreatedAt', [$from, $to])
-            //     ->selectRaw('DATE("CreatedAt") as date, COUNT(*) as total')
-            //     ->groupBy('date')
-            //     ->pluck('total', 'date');
-
-            $ordersByDay = Order::where('BusinessId', $restaurantId)
-    ->whereBetween('CreatedAt', [$from, $to])
-    ->selectRaw('DATE("CreatedAt") as date, COUNT(*) as total')
-    ->groupBy('date')
-    ->pluck('total', 'date');
+                $ordersByDay = Order::where('BusinessId', $restaurantId)
+                ->whereBetween('CreatedAt', [$from, $to])
+                ->selectRaw('DATE("CreatedAt") as date, COUNT(*) as total')
+                ->groupBy('date')
+                ->pluck('total', 'date');
 
 
-            // $revenueByDay = Order::where('Status', AdminOrderStatus::Completed->value)
-            //     ->whereBetween('CreatedAt', [$from, $to])
-            //     ->selectRaw('DATE("CreatedAt") as date, SUM("TotalAmount") as total')
-            //     ->groupBy('date')
-            //     ->pluck('total', 'date');
+                // $revenueByDay = Order::where('Status', AdminOrderStatus::Completed->value)
+                //     ->whereBetween('CreatedAt', [$from, $to])
+                //     ->selectRaw('DATE("CreatedAt") as date, SUM("TotalAmount") as total')
+                //     ->groupBy('date')
+                //     ->pluck('total', 'date');
 
-            $revenueByDay = Order::where('BusinessId', $restaurantId)
-    ->where('Status', AdminOrderStatus::Completed->value)
-    ->whereBetween('CreatedAt', [$from, $to])
-    ->selectRaw('DATE("CreatedAt") as date, SUM("TotalAmount") as total')
-    ->groupBy('date')
-    ->pluck('total', 'date');
+                $revenueByDay = Order::where('BusinessId', $restaurantId)
+                ->where('Status', AdminOrderStatus::Completed->value)
+                ->whereBetween('CreatedAt', [$from, $to])
+                ->selectRaw('DATE("CreatedAt") as date, SUM("TotalAmount") as total')
+                ->groupBy('date')
+                ->pluck('total', 'date');
 
-            for ($i = 0; $i < 7; $i++) {
-                $date = $from->copy()->addDays($i)->format('Y-m-d');
+                for ($i = 0; $i < 7; $i++) {
+                    $date = $from->copy()->addDays($i)->format('Y-m-d');
 
-                $ordersPerDayChart['labels'][]  = Carbon::parse($date)->format('d M');
-                $ordersPerDayChart['data'][]    = (int) ($ordersByDay[$date] ?? 0);
+                    $ordersPerDayChart['labels'][]  = Carbon::parse($date)->format('d M');
+                    $ordersPerDayChart['data'][]    = (int) ($ordersByDay[$date] ?? 0);
 
-                $revenuePerDayChart['labels'][] = Carbon::parse($date)->format('d M');
-                $revenuePerDayChart['data'][]   = (float) ($revenueByDay[$date] ?? 0);
+                    $revenuePerDayChart['labels'][] = Carbon::parse($date)->format('d M');
+                    $revenuePerDayChart['data'][]   = (float) ($revenueByDay[$date] ?? 0);
+                }
             }
-                }
-                else 
-                {
-                   abort(401, 'Unauthorized'); 
-                }
-            
-
-                                
-
+            else 
+            {
+                abort(401, 'Unauthorized'); 
+            }
         } catch (\Throwable $e) {
             Log::error('Dashboard load failed', [
                 'message' => $e->getMessage(),

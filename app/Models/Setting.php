@@ -8,12 +8,14 @@ class Setting extends Model
 {
     // Allow mass assignment for all attributes
     // protected $guarded = [];
+    // OR if you want to be strict, use fillable instead of guarded:
+
     protected $table = 'Settings';
     protected $primaryKey = 'Id';
-        // ✅ IMPORTANT FIX
+
+    //IMPORTANT FIX
     const CREATED_AT = 'CreatedAt';
     const UPDATED_AT = 'UpdatedAt';
-    // OR if you want to be strict, use fillable instead of guarded:
 
     public $incrementing = true;   // IMPORTANT
     protected $keyType = 'int';    // IMPORTANT
@@ -45,7 +47,8 @@ class Setting extends Model
     //     'custom_script_head',
     //     'custom_script_body',
     // ];
-        protected $fillable = [
+    
+    protected $fillable = [
         'AppName',
         'AppLogo',
         'Favicon',
