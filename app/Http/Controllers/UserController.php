@@ -324,9 +324,14 @@ class UserController extends Controller
     public function destroy(string $id)
     {
         $user = User::findOrFail($id);
-        $user->delete();
-
-        return redirect()->route('users.admin.index')->with('success', 'User deleted successfully.');
+        
+        try {
+            $user->delete();
+            return back()->with('success', 'User deleted successfully.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'User cannot be deleted.');
+        }
+        
     }
 
     public function createAdmin(Request $request)
