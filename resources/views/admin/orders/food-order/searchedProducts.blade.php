@@ -222,7 +222,7 @@
                                     Shipping
                                 </p>
                             @elseif($order->Status == 9)
-                                <p class="py-1 px-2 bg-red-500 text-white rounded" >
+                                <p class="py-1 px-2 text-red-500 rounded" >
                                     Cancelled
                                 </p>
                             @elseif($order->Status == 10)

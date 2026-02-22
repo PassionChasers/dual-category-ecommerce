@@ -175,9 +175,13 @@
                             @elseif($order->Status == 3)
                                 <p class="bg-green-200 py-2 text-center rounded">Assigned</p>
                             @elseif($order->Status == 10)
-                                Completed
+                                <p class="py-1 px-2 text-green-800 rounded" >
+                                    Completed
+                                </p>
                             @elseif($order->Status == 9)
-                                Cancelled
+                                <p class="py-1 px-2 text-red-500 rounded" >
+                                    Cancelled
+                                </p>
                             @endif
                         </span>
                     </td>
