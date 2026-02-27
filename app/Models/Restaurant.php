@@ -4,11 +4,14 @@ namespace App\Models;
 
 use GuzzleHttp\Promise\Is;
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Encryptable;
 
 class Restaurant extends Model
 {
     // Table name with capital first letter
     protected $table = 'Restaurants';
+
+    use Encryptable;
 
     // Primary key is UUID non-incrementing
     protected $primaryKey = 'RestaurantId';
@@ -44,6 +47,17 @@ class Restaurant extends Model
         'FLICNo',
     ];
 
+    /*
+    |--------------------------------------------------------------------------
+    | Encryption Column List
+    |--------------------------------------------------------------------------
+    */
+    protected $encrypted = [
+        'FLICNo',
+        'GSTIN',
+        'PAN',
+    ];
+
     // // Casts
     // protected $casts = [
     //     'IsActive' => 'boolean',
@@ -70,6 +84,57 @@ class Restaurant extends Model
         'Longitude'    => 'decimal:7',
         'Priority'     => 'integer',
     ];
+
+
+    // Accessors for encrypted fields
+    
+    public function getFlicNoAttribute($value)
+    {
+        return $this->decryptAttribute($value);
+    }
+
+    public function getGstinAttribute($value)
+    {
+        return $this->decryptAttribute($value);
+    }
+
+    public function getPanAttribute($value)
+    {
+        return $this->decryptAttribute($value);
+    }
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Safe Decryption Handler (PostgreSQL bytea Compatible)
+    |--------------------------------------------------------------------------
+    */
+
+    protected function decryptSafe($value)
+    {
+        if (!$value) {
+            return null;
+        }
+
+        try {
+
+            if (is_resource($value)) {
+                $value = stream_get_contents($value);
+            }
+
+            if (!is_string($value)) {
+                return null;
+            }
+
+            return app(\App\Services\AesEncryptionService::class)
+                ->decrypt($value);
+
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
 
     // Boot method for UUID generation and slug
     public static function booted()

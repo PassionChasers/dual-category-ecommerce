@@ -143,7 +143,7 @@
                             id="SubmitBtn"
                             class="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-lg flex items-center justify-center gap-2"
                         >
-                            <span id="btnText">Save Restaurant</span>
+                            <span id="btnText">Save Admin</span>
                             <svg id="btnSpinner" class="w-5 h-5 animate-spin hidden"
                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10"

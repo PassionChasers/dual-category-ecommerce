@@ -56,19 +56,26 @@ class User extends Authenticatable
 
     /*
     |--------------------------------------------------------------------------
-    | Universal Safe Attribute Getter (BEST PRACTICE ⭐)
+    | Universal Safe Attribute Getter (BEST PRACTICE )
     |--------------------------------------------------------------------------
     */
 
-    public function getAttribute($key)
+    // Decrypt Name
+    public function getNameAttribute($value)
     {
-        $value = parent::getAttribute($key);
+        return $this->decryptAttribute($value);
+    }
 
-        if (in_array($key, ['Name','Email','Phone'])) {
-            return $this->decryptSafe($value);
-        }
+    // Decrypt Email
+    public function getEmailAttribute($value)
+    {
+        return $this->decryptAttribute($value);
+    }
 
-        return $value;
+    // Decrypt Phone
+    public function getPhoneAttribute($value)
+    {
+        return $this->decryptAttribute($value);
     }
 
     /*

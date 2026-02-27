@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Encryptable;
 
 class MedicalStore extends Model
 {
+    use Encryptable;
+
     // Table name with capital first letter
     protected $table = 'MedicalStores';
 
@@ -38,6 +41,12 @@ class MedicalStore extends Model
         'Priority',
     ];
 
+    protected $encrypted = [
+        'LicenseNumber',
+        'GSTIN',
+        'PAN',
+    ];
+
     // Casts
     // protected $casts = [
     //     'IsActive' => 'boolean',
@@ -53,17 +62,67 @@ class MedicalStore extends Model
     // ];
 
     protected $casts = [
-    'IsActive'    => 'boolean',
-    'IsFeatured'  => 'boolean',
-    'OpenTime'    => 'datetime:H:i',   // if storing TIME, otherwise 'string' is okay
-    'CloseTime'   => 'datetime:H:i',   // same as above
-    'RadiusKm'    => 'decimal:2',
-    'DeliveryFee' => 'decimal:2',
-    'MinOrder'    => 'decimal:2',
-    'Latitude'    => 'decimal:7',
-    'Longitude'   => 'decimal:7',
-    'Priority'    => 'integer',
-];
+        'IsActive'    => 'boolean',
+        'IsFeatured'  => 'boolean',
+        'OpenTime'    => 'datetime:H:i',   // if storing TIME, otherwise 'string' is okay
+        'CloseTime'   => 'datetime:H:i',   // same as above
+        'RadiusKm'    => 'decimal:2',
+        'DeliveryFee' => 'decimal:2',
+        'MinOrder'    => 'decimal:2',
+        'Latitude'    => 'decimal:7',
+        'Longitude'   => 'decimal:7',
+        'Priority'    => 'integer',
+    ];
+
+
+    // Accessors for encrypted fields
+    
+    public function getLicenseNumberAttribute($value)
+    {
+        return $this->decryptAttribute($value);
+    }
+
+    public function getGstinAttribute($value)
+    {
+        return $this->decryptAttribute($value);
+    }
+
+    public function getPanAttribute($value)
+    {
+        return $this->decryptAttribute($value);
+    }
+
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | Safe Decryption Handler (PostgreSQL bytea Compatible)
+    |--------------------------------------------------------------------------
+    */
+
+    protected function decryptSafe($value)
+    {
+        if (!$value) {
+            return null;
+        }
+
+        try {
+
+            if (is_resource($value)) {
+                $value = stream_get_contents($value);
+            }
+
+            if (!is_string($value)) {
+                return null;
+            }
+
+            return app(\App\Services\AesEncryptionService::class)
+                ->decrypt($value);
+
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
 
     // Boot method for UUID generation and slug
     public static function booted()

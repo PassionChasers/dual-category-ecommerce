@@ -217,7 +217,7 @@ class AuthController extends Controller
         //Redirect properly (middleware will run)
         return redirect()
         ->route('admin.dashboard')
-        ->with('success', 'Welcome back, ' . auth()->user()->name . '!');
+        ->with('success', 'Welcome back, ' . auth()->user()->Name . '!');
     }
 
     /**

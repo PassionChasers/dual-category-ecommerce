@@ -295,27 +295,50 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    // public function update(Request $request, string $id)
+    // {
+    //     $user = User::findOrFail($id);
+    //     $user->Name = $request->input('name');
+    //     $user->Email = $request->input('email');
+    //     $user->IsActive = $request->input('IsActive') ? true : false;
+    //     // Update other fields as necessary
+    //     $user->save();
+
+    //     if ($user->Role == 4) {
+    //         return redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.');
+    //     } elseif ($user->Role == 1) {
+    //         return redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.');
+    //     } elseif ($user->Role == 2) {
+    //         return redirect()->route('users.medicalstores.index')->with('success', 'Medical Store user  updated successfully.');
+    //     } elseif ($user->Role == 3) {
+    //         return redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated user successfully.');
+    //     } elseif ($user->Role == 5) {
+    //         return redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.');
+    //     }       
+    //     // return redirect()->route('users.admin.index')->with('success', 'User updated successfully.');
+    // }
+
+
     public function update(Request $request, string $id)
     {
+        // dd($request->all(), $id);
         $user = User::findOrFail($id);
-        $user->Name = $request->input('name');
-        $user->Email = $request->input('email');
-        $user->IsActive = $request->input('IsActive') ? true : false;
-        // Update other fields as necessary
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email',
+        ]);
+
+        $user->fill([
+            'Name'  => $request->name,
+            'Email' => $request->email,
+        ]);
+
+        $user->IsActive = $request->has('IsActive');
+
         $user->save();
 
-        if ($user->Role == 4) {
-            return redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.');
-        } elseif ($user->Role == 1) {
-            return redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.');
-        } elseif ($user->Role == 2) {
-            return redirect()->route('users.medicalstores.index')->with('success', 'Medical Store user  updated successfully.');
-        } elseif ($user->Role == 3) {
-            return redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated user successfully.');
-        } elseif ($user->Role == 5) {
-            return redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.');
-        }       
-        // return redirect()->route('users.admin.index')->with('success', 'User updated successfully.');
+        return back()->with('success', 'User updated successfully.');
     }
 
     /**
