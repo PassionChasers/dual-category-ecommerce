@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use App\Traits\Encryptable;
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
+    use Encryptable;
 
     /**
      * Primary key is UUID
@@ -42,6 +44,33 @@ class User extends Authenticatable
         'IsBusinessAdmin',
         'remember_token',
     ];   
+
+    protected $encrypted = [
+        'name',
+        'email',
+        'phone_number'
+    ];
+
+
+    public function getAttribute($key)
+    {
+        $value = parent::getAttribute($key);
+
+        if (isset($this->encrypted) && in_array($key, $this->encrypted)) {
+            return $this->decryptAttribute($value);
+        }
+
+        return $value;
+    }
+
+    public function setAttribute($key, $value)
+    {
+        if (isset($this->encrypted) && in_array($key, $this->encrypted)) {
+            $value = $this->encryptAttribute($value);
+        }
+
+        return parent::setAttribute($key, $value);
+    }
 
        /**
      * Tell Laravel which column stores the password

@@ -183,7 +183,7 @@ class UserController extends Controller
 
     public function deliveryMan(Request $request)
     {
-        $query = User::query()->where('Role', 5);
+        $query = User::with('deliveryMan')->where('Role', 5);
 
         // Search by user name
         if ($request->filled('search')) {
@@ -199,7 +199,7 @@ class UserController extends Controller
             });
         }
 
-        //Filter by online status
+        //Filter by Active status
         if ($request->filled('onlineStatus')) {
             $query->where('IsActive', $request->onlineStatus);
         }

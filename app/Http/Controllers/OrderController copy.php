@@ -321,15 +321,11 @@ class OrderController extends Controller
                 ->get();
         });
 
-        // $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
-        //     return DeliveryMan::with('user')->where('IsOnline', true)
-        //         ->whereHas('user', fn ($q) => $q->where('Role', 5))
-        //         ->get();
-        // });
-
-        $allDeliveryMan = DeliveryMan::with('user')->where('IsOnline', true)
-            ->whereHas('user', fn ($q) => $q->where('Role', 5))
-            ->get();
+        $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
+            return DeliveryMan::with('user')
+                ->whereHas('user', fn ($q) => $q->where('Role', 5))
+                ->get();
+        });
 
         //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
         if ($request->ajax()) {
@@ -364,18 +360,14 @@ class OrderController extends Controller
             return OrderItem::select('ItemType')->distinct()->pluck('ItemType');
         });
 
-        // $allRestaurants = cache()->remember('active_restaurants', 3600, function () {
-        //     return Restaurant::where('IsActive', true)
-        //         ->orderBy('Priority', 'asc')
-        //         ->get();
-        // });
-
-        $allDeliveryMan = DeliveryMan::with('user')->where('IsOnline', true)
-            ->whereHas('user', fn ($q) => $q->where('Role', 5))
-            ->get();
+        $allRestaurants = cache()->remember('active_restaurants', 3600, function () {
+            return Restaurant::where('IsActive', true)
+                ->orderBy('Priority', 'asc')
+                ->get();
+        });
 
         $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
-            return DeliveryMan::with('user')->where('IsOnline', true)
+            return DeliveryMan::with('user')
                 ->whereHas('user', fn ($q) => $q->where('Role', 5))
                 ->get();
         });
@@ -422,16 +414,11 @@ class OrderController extends Controller
                 ->get();
         });
 
-        // $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
-        //     return DeliveryMan::with('user')->where('IsOnline', true)
-        //         ->whereHas('user', fn ($q) => $q->where('Role', 5))
-        //         ->get();
-        // });
-
-        $allDeliveryMan = DeliveryMan::with('user')->where('IsOnline', true)
-            ->whereHas('user', fn ($q) => $q->where('Role', 5))
-            ->get();
-        
+        $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
+            return DeliveryMan::with('user')
+                ->whereHas('user', fn ($q) => $q->where('Role', 5))
+                ->get();
+        });
 
         //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
         if ($request->ajax()) {
@@ -474,15 +461,11 @@ class OrderController extends Controller
                 ->get();
         });
 
-        // $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
-        //     return DeliveryMan::with('user')->where('IsOnline', true)
-        //         ->whereHas('user', fn ($q) => $q->where('Role', 5))
-        //         ->get();
-        // });
-
-        $allDeliveryMan = DeliveryMan::with('user')->where('IsOnline', true)
-        ->whereHas('user', fn ($q) => $q->where('Role', 5))
-        ->get();
+        $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
+            return DeliveryMan::with('user')
+                ->whereHas('user', fn ($q) => $q->where('Role', 5))
+                ->get();
+        });
 
         //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
         if ($request->ajax()) {

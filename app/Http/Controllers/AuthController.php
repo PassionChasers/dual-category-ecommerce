@@ -188,7 +188,11 @@ class AuthController extends Controller
         // Log::info('API user extracted', $apiUser);
 
         // Find local user (PostgreSQL case-sensitive)
-        $user = User::where('Email', $apiUser['email'])->first();
+        // $user = User::where('Email', $apiUser['email'])->first();
+
+        $emailHash = strtolower(hash('sha256', $apiUser['email']));
+
+        $user = User::where('EmailHash', $emailHash)->first();
 
         if (!$user) {
             // Log::error('Local user not found', [

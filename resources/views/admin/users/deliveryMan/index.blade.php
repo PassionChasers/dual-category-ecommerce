@@ -1,5 +1,5 @@
 @extends('layouts.admin.app')
-@section('title', 'Admin | Customer Management')
+@section('title', 'Admin | DeliveryMan Management')
 
 @push('styles')
 @endpush
@@ -26,8 +26,8 @@
 
             <select id="onlineStatus" name="onlineStatus" class="px-3 py-2 border rounded-md text-sm">
                 <option value="">All Status</option>
-                <option value="true" {{ request('onlineStatus')=='true' ? 'selected' : '' }}>Online</option>
-                <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>Offline</option>
+                <option value="true" {{ request('onlineStatus')=='true' ? 'selected' : '' }}>Active</option>
+                <option value="false" {{ request('onlineStatus')=='false' ? 'selected' : '' }}>InActive</option>
             </select>
 
             <select name="per_page" id="per-page-filter" class="px-3 py-2 border rounded-md text-sm">
@@ -49,7 +49,7 @@
 
     <!-- Table -->
     <div id="tableData" class="bg-white shadow rounded-lg overflow-hidden">
-        @include('admin.users.customers.searchedCustomers', ['users' => $users])
+        @include('admin.users.deliveryMan.searchedDeliveryMan', ['users' => $users])
     </div>
 </div>
 

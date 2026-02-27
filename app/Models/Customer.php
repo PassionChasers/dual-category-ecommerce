@@ -2,24 +2,22 @@
 
 namespace App\Models;
 
+use App\Traits\Encryptable;
 use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    // Table name with capital first letter
+    use Encryptable;
+
     protected $table = 'Customers';
 
-    // Primary key is UUID
     protected $primaryKey = 'CustomerId';
     public $incrementing = false;
     protected $keyType = 'string';
 
-    // Timestamps enabled (use custom column names)
-    public $timestamps = true;
     const CREATED_AT = 'CreatedAt';
     const UPDATED_AT = 'UpdatedAt';
 
-    // All user-assignable columns (exclude primary key and timestamps)
     protected $fillable = [
         'UserId',
         'Name',
@@ -31,12 +29,42 @@ class Customer extends Model
         'Location',
     ];
 
-    public function order()
+    protected $encrypted = [
+        'Name',
+        'AllergyNotes',
+        'Location'
+    ];
+
+    /**
+     * Global attribute interceptor (BEST ENTERPRISE WAY)
+     */
+    public function getAttribute($key)
     {
-        return $this->hasMany(Order::class, 'CustomerId', 'CustomerId'); //First is related model(Order), second is foreign key in Order, third is local key in Order
+        $value = parent::getAttribute($key);
+
+        if (isset($this->encrypted) && in_array($key, $this->encrypted)) {
+            return $this->decryptAttribute($value);
+        }
+
+        return $value;
     }
 
-    public function user() {
-        return $this->belongsTo(User::class, 'UserId', 'UserId');//Second is foreign key in Customer, third is local key in User
+    public function setAttribute($key, $value)
+    {
+        if (isset($this->encrypted) && in_array($key, $this->encrypted)) {
+            $value = $this->encryptAttribute($value);
+        }
+
+        return parent::setAttribute($key, $value);
+    }
+
+    public function order()
+    {
+        return $this->hasMany(Order::class, 'CustomerId', 'CustomerId');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'UserId', 'UserId');
     }
 }
