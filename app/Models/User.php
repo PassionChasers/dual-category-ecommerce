@@ -14,10 +14,8 @@ class User extends Authenticatable
 
     protected $table = 'Users';
 
-    /**
-     * UUID primary key
-     */
     protected $primaryKey = 'UserId';
+
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -26,9 +24,11 @@ class User extends Authenticatable
     const CREATED_AT = 'CreatedAt';
     const UPDATED_AT = null;
 
-    /**
-     * Fillable columns
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Fillable Fields
+    |--------------------------------------------------------------------------
+    */
     protected $fillable = [
         'Role',
         'Name',
@@ -43,44 +43,61 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    /**
-     * Encrypted columns (IMPORTANT → Match DB EXACTLY)
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Encryption Column List
+    |--------------------------------------------------------------------------
+    */
     protected $encrypted = [
         'Name',
         'Email',
         'Phone'
     ];
 
-    /**
-     * Attribute Getter Override (Safe Version)
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Universal Safe Attribute Getter (BEST PRACTICE ⭐)
+    |--------------------------------------------------------------------------
+    */
+
     public function getAttribute($key)
     {
         $value = parent::getAttribute($key);
 
-        if (isset($this->encrypted) && in_array($key, $this->encrypted)) {
+        if (in_array($key, ['Name','Email','Phone'])) {
             return $this->decryptSafe($value);
         }
 
         return $value;
     }
 
-    /**
-     * Attribute Setter Override
-     */
-    public function setAttribute($key, $value)
-    {
-        if (isset($this->encrypted) && in_array($key, $this->encrypted)) {
-            $value = $this->encryptAttribute($value);
-        }
+    /*
+    |--------------------------------------------------------------------------
+    | Mutators (Encryption Writing)
+    |--------------------------------------------------------------------------
+    */
 
-        return parent::setAttribute($key, $value);
+    public function setNameAttribute($value)
+    {
+        $this->attributes['Name'] = $this->encryptAttribute($value);
     }
 
-    /**
-     * Safe decrypt handler (PostgreSQL bytea compatible)
-     */
+    public function setEmailAttribute($value)
+    {
+        $this->attributes['Email'] = $this->encryptAttribute($value);
+    }
+
+    public function setPhoneAttribute($value)
+    {
+        $this->attributes['Phone'] = $this->encryptAttribute($value);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Safe Decryption Handler (PostgreSQL bytea Compatible)
+    |--------------------------------------------------------------------------
+    */
+
     protected function decryptSafe($value)
     {
         if (!$value) {
@@ -90,7 +107,6 @@ class User extends Authenticatable
         try {
 
             if (is_resource($value)) {
-                rewind($value);
                 $value = stream_get_contents($value);
             }
 
@@ -106,17 +122,23 @@ class User extends Authenticatable
         }
     }
 
-    /**
-     * Authentication password column
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Password Column
+    |--------------------------------------------------------------------------
+    */
+
     public function getAuthPassword()
     {
         return $this->attributes['PasswordHash'] ?? null;
     }
 
-    /**
-     * Relationships
-     */
+    /*
+    |--------------------------------------------------------------------------
+    | Relationships
+    |--------------------------------------------------------------------------
+    */
+
     public function customer()
     {
         return $this->hasOne(Customer::class, 'UserId', 'UserId');
