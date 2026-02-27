@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Str;
 use App\Traits\Encryptable;
 
 class User extends Authenticatable
@@ -12,23 +13,24 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
     use Encryptable;
 
-    protected $table = 'Users';
-
     /**
-     * UUID primary key
+     * Primary key is UUID
      */
-    protected $primaryKey = 'UserId';
-    public $incrementing = false;
-    protected $keyType = 'string';
+    // protected $primaryKey = 'id';
+    public $incrementing = false;       // not auto-incrementing
+    protected $keyType = 'string';      // stored as string
+
+    protected $table = 'Users';
 
     public $timestamps = true;
 
+    // Primary key (assumed)
+    protected $primaryKey = 'UserId'; // change if different
+    
     const CREATED_AT = 'CreatedAt';
     const UPDATED_AT = null;
 
-    /**
-     * Fillable columns
-     */
+    // PostgreSQL case-sensitive columns
     protected $fillable = [
         'Role',
         'Name',
@@ -41,34 +43,26 @@ class User extends Authenticatable
         'DeletedAt',
         'IsBusinessAdmin',
         'remember_token',
-    ];
+    ];   
 
-    /**
-     * Encrypted columns (IMPORTANT → Match DB EXACTLY)
-     */
     protected $encrypted = [
-        'Name',
-        'Email',
-        'Phone'
+        'name',
+        'email',
+        'phone_number'
     ];
 
-    /**
-     * Attribute Getter Override (Safe Version)
-     */
+
     public function getAttribute($key)
     {
         $value = parent::getAttribute($key);
 
         if (isset($this->encrypted) && in_array($key, $this->encrypted)) {
-            return $this->decryptSafe($value);
+            return $this->decryptAttribute($value);
         }
 
         return $value;
     }
 
-    /**
-     * Attribute Setter Override
-     */
     public function setAttribute($key, $value)
     {
         if (isset($this->encrypted) && in_array($key, $this->encrypted)) {
@@ -78,45 +72,31 @@ class User extends Authenticatable
         return parent::setAttribute($key, $value);
     }
 
-    /**
-     * Safe decrypt handler (PostgreSQL bytea compatible)
-     */
-    protected function decryptSafe($value)
-    {
-        if (!$value) {
-            return null;
-        }
-
-        try {
-
-            if (is_resource($value)) {
-                rewind($value);
-                $value = stream_get_contents($value);
-            }
-
-            if (!is_string($value)) {
-                return null;
-            }
-
-            return app(\App\Services\AesEncryptionService::class)
-                ->decrypt($value);
-
-        } catch (\Throwable $e) {
-            return null;
-        }
-    }
-
-    /**
-     * Authentication password column
+       /**
+     * Tell Laravel which column stores the password
      */
     public function getAuthPassword()
     {
-        return $this->attributes['PasswordHash'] ?? null;
+        return $this->attributes['PasswordHash'];
     }
 
     /**
-     * Relationships
+     * Accessor for auth()->user()->email
      */
+    public function getEmailAttribute()
+    {
+        return $this->attributes['Email'] ?? null;
+    }
+
+    /**
+     * Accessor for auth()->user()->name
+     */
+    public function getNameAttribute()
+    {
+        return $this->attributes['Name'] ?? null;
+    }
+
+    // User → Customer
     public function customer()
     {
         return $this->hasOne(Customer::class, 'UserId', 'UserId');
@@ -136,4 +116,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(MedicalStore::class, 'UserId', 'UserId');
     }
+
+    
 }
