@@ -38,7 +38,7 @@
                 <div class="w-full md:w-auto group border rounded-lg focus-within:border-2 flex">
 
                     {{-- <div class="px-3 py-2 rounded-md hover:bg-gray-200"> --}}
-                        <input type="text" name="search" class="w-full md:w-64 border focus:outline-none px-2 py-2 " placeholder="Search by product name..."
+                        <input type="text" name="search" class="w-full md:w-64 border-none focus:outline-none px-2 py-2 " placeholder="Search by product name..."
                         value="{{ request('search') }}" 
                         />
                         <button type="submit" onclick="showLoader()" class="px-3 py-2 rounded-r-lg bg-gray-200 hover:bg-gray-400 hover:text-lg">

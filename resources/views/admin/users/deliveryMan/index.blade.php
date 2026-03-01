@@ -15,7 +15,7 @@
         <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
             <!-- Search Form -->
             <div class=" group border b rounded-lg focus-within:border-2 ">
-                <input type="text" id="search" name="search" placeholder="Search by Name or Email or Phone..." 
+                <input type="text" id="search" name="search" placeholder="Search by Email or Phone..." 
                     value="{{ request('search') }}"
                     class="border border-none focus:outline-none px-2 py-2 "
                 >

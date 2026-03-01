@@ -34,25 +34,43 @@ class AesEncryptionService
         return $iv . $cipherText;
     }
 
-    public function decrypt(?string $encryptedData): ?string
+
+    public function decrypt(mixed $encryptedData): ?string
     {
-        if ($encryptedData === null) {
+        if (!$encryptedData) {
             return null;
         }
 
-        if (is_resource($encryptedData)) {
-            $encryptedData = stream_get_contents($encryptedData);
+        try {
+
+            // Handle PostgreSQL bytea stream resource
+            if (is_resource($encryptedData)) {
+                $encryptedData = stream_get_contents($encryptedData);
+            }
+
+            if (!is_string($encryptedData)) {
+                return null;
+            }
+
+            if (strlen($encryptedData) < 16) {
+                return null;
+            }
+
+            $iv = substr($encryptedData, 0, 16);
+            $cipherText = substr($encryptedData, 16);
+
+            $plainText = openssl_decrypt(
+                $cipherText,
+                'AES-256-CBC',
+                $this->key,
+                OPENSSL_RAW_DATA,
+                $iv
+            );
+
+            return $plainText !== false ? $plainText : null;
+
+        } catch (\Throwable) {
+            return null;
         }
-
-        $iv = substr($encryptedData, 0, 16);
-        $cipherText = substr($encryptedData, 16);
-
-        return openssl_decrypt(
-            $cipherText,
-            'AES-256-CBC',
-            $this->key,
-            OPENSSL_RAW_DATA,
-            $iv
-        );
     }
 }

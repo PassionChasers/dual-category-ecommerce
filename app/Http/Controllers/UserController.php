@@ -6,18 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-
-    }
-
-    
     public function admin(Request $request)
     {
         $query = User::query()->where('Role', 4);
@@ -26,13 +18,17 @@ class UserController extends Controller
         if ($request->filled('search')) {
 
             $search = $request->search;
+            $searchhash = hash('sha256', strtolower($search));
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            // $query->where('Name', 'ilike', '%' . $search . '%');
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'ilike', "%{$search}%")
-                ->orWhere('Email', 'ilike', "%{$search}%")
-                ->orWhere('Phone', 'ilike', "%{$search}%");
+            $query->where(function ($q) use ($searchhash) {
+
+                // $q->where('Name', 'ilike', "%{$search}%")
+                // ->orWhere('EmailHash', 'ilike', "%{$searchhash}%")
+                // ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
+                
+                $q->Where('EmailHash', 'ilike', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
             });
         }
 
@@ -48,7 +44,6 @@ class UserController extends Controller
 
         // Paginate results with query parameters
         $users = $query->latest()->paginate($perPage)->appends($request->all());
-        // $allOrders = $medicineOrders;
 
         //AJAX response
         if($request->ajax()){
@@ -66,13 +61,18 @@ class UserController extends Controller
         if ($request->filled('search')) {
 
             $search = $request->search;
+            $searchhash = hash('sha256', strtolower($search));
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            // $query->where('Name', 'ilike', '%' . $search . '%');
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'ilike', "%{$search}%")
-                ->orWhere('Email', 'ilike', "%{$search}%")
-                ->orWhere('Phone', 'ilike', "%{$search}%");
+            $query->where(function ($q) use ($searchhash) {
+
+                // $q->where('Name', 'ilike', "%{$search}%")
+                // ->orWhere('Email', 'ilike', "%{$search}%")
+                // ->orWhere('Phone', 'ilike', "%{$search}%");
+
+                $q->Where('EmailHash', 'ilike', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
+
             });
         }
 
@@ -106,14 +106,17 @@ class UserController extends Controller
         if ($request->filled('search')) {
 
             $search = $request->search;
+            $searchhash = hash('sha256', strtolower($search));
             // $search = ucfirst(strtolower($request->search)); // First letter uppercase
 
-            // $query->where('Name', 'ilike', '%' . $search . '%');
+            $query->where(function ($q) use ($searchhash) {
 
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'ilike', "%{$search}%")
-                ->orWhere('Email', 'ilike', "%{$search}%")
-                ->orWhere('Phone', 'ilike', "%{$search}%");
+                // $q->where('Name', 'ilike', "%{$search}%")
+                // ->orWhere('Email', 'ilike', "%{$search}%")
+                // ->orWhere('Phone', 'ilike', "%{$search}%");
+
+                $q->Where('EmailHash', 'ilike', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
             });
         }
 
@@ -147,14 +150,15 @@ class UserController extends Controller
         if ($request->filled('search')) {
 
             $search = $request->search;
-            // $search = ucfirst(strtolower($request->search)); // First letter uppercase
+            $searchhash = hash('sha256', strtolower($search));
 
-            // $query->where('Name', 'ilike', '%' . $search . '%');
+            $query->where(function ($q) use ($searchhash) {
+                // $q->where('Name', 'ilike', "%{$search}%")
+                // ->orWhere('Email', 'ilike', "%{$search}%")
+                // ->orWhere('Phone', 'ilike', "%{$search}%");
 
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'ilike', "%{$search}%")
-                ->orWhere('Email', 'ilike', "%{$search}%")
-                ->orWhere('Phone', 'ilike', "%{$search}%");
+                $q->Where('EmailHash', 'ilike', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
             });
             
         }
@@ -189,13 +193,15 @@ class UserController extends Controller
         if ($request->filled('search')) {
 
             $search = $request->search;
-            // $search = ucfirst(strtolower($request->search)); // First letter uppercase
+            $searchhash = hash('sha256', strtolower($search));
 
-            // $query->where('Name', 'ilike', '%' . $search . '%');
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'ilike', "%{$search}%")
-                ->orWhere('Email', 'ilike', "%{$search}%")
-                ->orWhere('Phone', 'ilike', "%{$search}%");
+            $query->where(function ($q) use ($searchhash) {
+                // $q->where('Name', 'ilike', "%{$search}%")
+                // ->orWhere('Email', 'ilike', "%{$search}%")
+                // ->orWhere('Phone', 'ilike', "%{$search}%");
+
+                $q->Where('EmailHash', 'ilike', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
             });
         }
 
@@ -319,27 +325,82 @@ class UserController extends Controller
     // }
 
 
+    // public function update(Request $request, string $id)
+    // {
+    //     // dd($request->all(), $id);
+    //     $user = User::findOrFail($id);
+
+    //     $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         // 'email' => 'required|email',
+    //         'email' => [
+    //             'required',
+    //             'email',
+    //             Rule::unique('Users', 'EmailHash')->ignore($user->UserId, 'UserId')
+    //         ],
+    //         // 'contact_number' => 'required|string|max:14|min:9',
+    //     ]);
+
+    //     $user->fill([
+    //         'Name'  => $request->name,
+    //         'Email' => $request->email,
+    //         // 'EmailHash' => hash('sha256', strtolower($request->email)),
+    //         // 'Phone' => $request->contact_number,
+    //         // 'PhoneHash' => hash('sha256', $request->contact_number),
+    //     ]);
+
+    //     $user->IsActive = $request->has('IsActive');
+
+    //     $user->save();
+
+    //     if ($user->Role == 4) {
+    //         return redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.');
+    //     } elseif ($user->Role == 1) {
+    //         return redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.');
+    //     } elseif ($user->Role == 2) {
+    //         return redirect()->route('users.medicalstores.index')->with('success', 'Medical Store user  updated successfully.');
+    //     } elseif ($user->Role == 3) {
+    //         return redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated user successfully.');
+    //     } elseif ($user->Role == 5) {
+    //         return redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.');
+    //     }  
+
+    //     // return back()->with('success', 'User updated successfully.');
+    // }
+
     public function update(Request $request, string $id)
-    {
-        // dd($request->all(), $id);
-        $user = User::findOrFail($id);
+{
+    $user = User::findOrFail($id);
 
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email',
-        ]);
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => [
+            'required',
+            'email',
+            Rule::unique('Users', 'EmailHash')
+                ->ignore($user->UserId, 'UserId')
+        ],
+    ]);
 
-        $user->fill([
-            'Name'  => $request->name,
-            'Email' => $request->email,
-        ]);
+    // 🔥 DO NOT manually set EmailHash
+    // Mutator will handle encryption + hash automatically
 
-        $user->IsActive = $request->has('IsActive');
+    $user->Name  = $request->name;
+    $user->Email = $request->email;
 
-        $user->save();
+    $user->IsActive = $request->has('IsActive');
 
-        return back()->with('success', 'User updated successfully.');
-    }
+    $user->save();
+
+    return match ($user->Role) {
+        4 => redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.'),
+        1 => redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.'),
+        2 => redirect()->route('users.medicalstores.index')->with('success', 'Medical Store updated successfully.'),
+        3 => redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated successfully.'),
+        5 => redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.'),
+        default => back()->with('success', 'User updated successfully.'),
+    };
+}
 
     /**
      * Remove the specified resource from storage.

@@ -176,11 +176,11 @@
                     <td class="px-4 py-2">
                         <select
                             class="assign-store px-2 py-1 text-sm bg-transparent
-                            {{ in_array($order->Status, [1, 5])
+                            {{ in_array($order->Status, [5])
                                 ? 'border rounded cursor-pointer appearance-auto'
                                 : 'border-0 pointer-events-none text-gray-600 appearance-none' }}"
                             data-order-id="{{ $order->OrderId }}"
-                            {{ !in_array($order->Status, [1, 5]) ? 'disabled' : '' }}
+                            {{ !in_array($order->Status, [5]) ? 'disabled' : '' }}
                         >
                             <option value="">Assign Store</option>
 
@@ -316,7 +316,9 @@
                                 @method('PATCH')
                                 <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
                                 <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
-                                <button type="submit" class="text-red-500 py-1 px-2 hover:bg-red-500 hover:text-white rounded-lg ">
+                                <button type="submit" class="text-red-500 py-1 px-2 hover:bg-red-500 hover:text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed" 
+                                    {{ in_array($order->Status, [3, 4, 6, 7, 8, 9, 10]) ? 'disabled' : '' }}
+                                >
                                     {{-- <i class="fas fa-times"></i> --}}cancel
                                 </button>
                             </form>

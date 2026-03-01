@@ -41,6 +41,9 @@ class User extends Authenticatable
         'DeletedAt',
         'IsBusinessAdmin',
         'remember_token',
+        'PhoneHash',
+        'EmailHash',
+
     ];
 
     /*
@@ -52,6 +55,13 @@ class User extends Authenticatable
         'Name',
         'Email',
         'Phone'
+    ];
+
+
+    protected $hidden = [
+        'PasswordHash',
+        'EmailHash',
+        'PhoneHash',
     ];
 
     /*
@@ -92,11 +102,13 @@ class User extends Authenticatable
     public function setEmailAttribute($value)
     {
         $this->attributes['Email'] = $this->encryptAttribute($value);
+        $this->attributes['EmailHash'] = hash('sha256', strtolower($value));
     }
 
     public function setPhoneAttribute($value)
     {
         $this->attributes['Phone'] = $this->encryptAttribute($value);
+        $this->attributes['PhoneHash'] = hash('sha256', strtolower($value));
     }
 
     /*
@@ -105,29 +117,29 @@ class User extends Authenticatable
     |--------------------------------------------------------------------------
     */
 
-    protected function decryptSafe($value)
-    {
-        if (!$value) {
-            return null;
-        }
+    // protected function decryptSafe($value)
+    // {
+    //     if (!$value) {
+    //         return null;
+    //     }
 
-        try {
+    //     try {
 
-            if (is_resource($value)) {
-                $value = stream_get_contents($value);
-            }
+    //         if (is_resource($value)) {
+    //             $value = stream_get_contents($value);
+    //         }
 
-            if (!is_string($value)) {
-                return null;
-            }
+    //         if (!is_string($value)) {
+    //             return null;
+    //         }
 
-            return app(\App\Services\AesEncryptionService::class)
-                ->decrypt($value);
+    //         return app(\App\Services\AesEncryptionService::class)
+    //             ->decrypt($value);
 
-        } catch (\Throwable $e) {
-            return null;
-        }
-    }
+    //     } catch (\Throwable $e) {
+    //         return null;
+    //     }
+    // }
 
     /*
     |--------------------------------------------------------------------------
