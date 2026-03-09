@@ -50,7 +50,7 @@
                 <select name="status" onchange="showLoader(); this.form.submit()" class="px-3 py-2 border rounded-md cursor-pointer">
                     <option value="">All Status</option>
                     <option value="1" {{ request('status') == 1 ? 'selected' : '' }}>Pending</option>
-                    <option value="2" {{ request('status') == 2 ? 'selected' : '' }}>Pending Review</option>
+                    {{-- <option value="2" {{ request('status') == 2 ? 'selected' : '' }}>Pending Review</option> --}}
                     <option value="3" {{ request('status') == 3 ? 'selected' : '' }}>Assigned</option>
                     <option value="4" {{ request('status') == 4 ? 'selected' : '' }}>Accepted</option>
                     <option value="5" {{ request('status') == 5 ? 'selected' : '' }}>Rejected</option>

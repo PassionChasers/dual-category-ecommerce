@@ -176,11 +176,11 @@
                     <td class="px-4 py-2">
                         <select
                             class="assign-store px-2 py-1 text-sm bg-transparent
-                            {{ in_array($order->Status, [5])
+                            {{ in_array($order->Status, [1,5])
                                 ? 'border rounded cursor-pointer appearance-auto'
                                 : 'border-0 pointer-events-none text-gray-600 appearance-none' }}"
                             data-order-id="{{ $order->OrderId }}"
-                            {{ !in_array($order->Status, [5]) ? 'disabled' : '' }}
+                            {{ !in_array($order->Status, [1,5]) ? 'disabled' : '' }}
                         >
                             <option value="">Assign Store</option>
 

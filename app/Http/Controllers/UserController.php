@@ -301,106 +301,72 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    public function update(Request $request, string $id)
+    {
+        $user = User::findOrFail($id);
+
+        if(!$user){
+            return back()->with('error', 'User not found.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:Users,EmailHash,' . $user->UserId . ',UserId',
+            'contact_number' => 'required|string|max:14|min:9',
+        ]);
+
+        $user->Name = $request->input('name');
+        $user->Email = $request->input('email');
+        $user->Phone = $request->input('contact_number');
+        $user->IsActive = $request->input('IsActive') ? true : false;
+        $user->save();
+
+        return match ($user->Role) {
+            4 => redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.'),
+            1 => redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.'),
+            2 => redirect()->route('users.medicalstores.index')->with('success', 'Medical Store updated successfully.'),
+            3 => redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated successfully.'),
+            5 => redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.'),
+            default => back()->with('success', 'User updated successfully.'),
+        };
+    }
+
+
+    
+
     // public function update(Request $request, string $id)
     // {
-    //     $user = User::findOrFail($id);
-    //     $user->Name = $request->input('name');
-    //     $user->Email = $request->input('email');
-    //     $user->IsActive = $request->input('IsActive') ? true : false;
-    //     // Update other fields as necessary
-    //     $user->save();
-
-    //     if ($user->Role == 4) {
-    //         return redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.');
-    //     } elseif ($user->Role == 1) {
-    //         return redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.');
-    //     } elseif ($user->Role == 2) {
-    //         return redirect()->route('users.medicalstores.index')->with('success', 'Medical Store user  updated successfully.');
-    //     } elseif ($user->Role == 3) {
-    //         return redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated user successfully.');
-    //     } elseif ($user->Role == 5) {
-    //         return redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.');
-    //     }       
-    //     // return redirect()->route('users.admin.index')->with('success', 'User updated successfully.');
-    // }
-
-
-    // public function update(Request $request, string $id)
-    // {
-    //     // dd($request->all(), $id);
     //     $user = User::findOrFail($id);
 
     //     $request->validate([
     //         'name' => 'required|string|max:255',
-    //         // 'email' => 'required|email',
     //         'email' => [
     //             'required',
     //             'email',
-    //             Rule::unique('Users', 'EmailHash')->ignore($user->UserId, 'UserId')
+    //             Rule::unique('Users', 'EmailHash')
+    //                 ->ignore($user->UserId, 'UserId')
     //         ],
-    //         // 'contact_number' => 'required|string|max:14|min:9',
     //     ]);
 
-    //     $user->fill([
-    //         'Name'  => $request->name,
-    //         'Email' => $request->email,
-    //         // 'EmailHash' => hash('sha256', strtolower($request->email)),
-    //         // 'Phone' => $request->contact_number,
-    //         // 'PhoneHash' => hash('sha256', $request->contact_number),
-    //     ]);
+    //     // 🔥 DO NOT manually set EmailHash
+    //     // Mutator will handle encryption + hash automatically
+
+    //     $user->Name  = $request->name;
+    //     $user->Email = $request->email;
 
     //     $user->IsActive = $request->has('IsActive');
 
     //     $user->save();
 
-    //     if ($user->Role == 4) {
-    //         return redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.');
-    //     } elseif ($user->Role == 1) {
-    //         return redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.');
-    //     } elseif ($user->Role == 2) {
-    //         return redirect()->route('users.medicalstores.index')->with('success', 'Medical Store user  updated successfully.');
-    //     } elseif ($user->Role == 3) {
-    //         return redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated user successfully.');
-    //     } elseif ($user->Role == 5) {
-    //         return redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.');
-    //     }  
-
-    //     // return back()->with('success', 'User updated successfully.');
+    //     return match ($user->Role) {
+    //         4 => redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.'),
+    //         1 => redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.'),
+    //         2 => redirect()->route('users.medicalstores.index')->with('success', 'Medical Store updated successfully.'),
+    //         3 => redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated successfully.'),
+    //         5 => redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.'),
+    //         default => back()->with('success', 'User updated successfully.'),
+    //     };
     // }
-
-    public function update(Request $request, string $id)
-{
-    $user = User::findOrFail($id);
-
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => [
-            'required',
-            'email',
-            Rule::unique('Users', 'EmailHash')
-                ->ignore($user->UserId, 'UserId')
-        ],
-    ]);
-
-    // 🔥 DO NOT manually set EmailHash
-    // Mutator will handle encryption + hash automatically
-
-    $user->Name  = $request->name;
-    $user->Email = $request->email;
-
-    $user->IsActive = $request->has('IsActive');
-
-    $user->save();
-
-    return match ($user->Role) {
-        4 => redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.'),
-        1 => redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.'),
-        2 => redirect()->route('users.medicalstores.index')->with('success', 'Medical Store updated successfully.'),
-        3 => redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated successfully.'),
-        5 => redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.'),
-        default => back()->with('success', 'User updated successfully.'),
-    };
-}
 
     /**
      * Remove the specified resource from storage.
