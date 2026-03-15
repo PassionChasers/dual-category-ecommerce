@@ -20,17 +20,38 @@ class MedicalStoreController extends Controller
     ***************************/
     public function allMedicalstores(Request $request)
     {
-        $query = MedicalStore::whereHas('user', function ($q) {
+        // $query = MedicalStore::whereHas('user', function ($q) {
+        //     $q->where('Role', 2);
+        // })->with('user');
+
+        $query = MedicalStore::select(
+            'MedicalStoreId',
+            'UserId',
+            'Name',
+            'Address',
+            'LicenseNumber',
+            'GSTIN',
+            'PAN',
+            'DeliveryFee',
+            'MinOrder',
+            'OpenTime',
+            'CloseTime',
+            'Latitude',
+            'Longitude',
+            'IsActive'
+        )
+        ->whereHas('user', function ($q) {
             $q->where('Role', 2);
-        })->with('user');
+        })
+        ->with(['user:UserId,Name,Email,Phone']);
 
         // search by name, license, gstin, pan
-        if ($search = $request->get('search')) {
+        if ($search = trim($request->get('search'))) {
             $query->where(function ($q) use ($search) {
-                $q->where('Name', 'ilike', "%{$search}%")
-                    ->orWhere('LicenseNumber', 'ilike', "%{$search}%")
-                    ->orWhere('GSTIN', 'ilike', "%{$search}%")
-                    ->orWhere('PAN', 'ilike', "%{$search}%");
+                $q->where('Name', 'ilike', "%{$search}%");
+                    // ->orWhere('LicenseNumber', 'ilike', "%{$search}%")
+                    // ->orWhere('GSTIN', 'ilike', "%{$search}%")
+                    // ->orWhere('PAN', 'ilike', "%{$search}%");
             });
         }
 
@@ -42,7 +63,7 @@ class MedicalStoreController extends Controller
         $perPage = (int) $request->get('per_page', 10);
         $perPage = in_array($perPage, [5,10,25,50]) ? $perPage : 10;
 
-        $users = $query->paginate($perPage)->appends($request->except('page'));
+        $users = $query->paginate($perPage)->appends($request->only(['search','onlineStatus','per_page']));
 
         if ($request->ajax()) {
             return view(
@@ -59,7 +80,8 @@ class MedicalStoreController extends Controller
     ***************************/
     public function show($id)
     {
-        $store = MedicalStore::findOrFail($id);
+        // $store = MedicalStore::findOrFail($id);
+        $store = MedicalStore::with('user')->findOrFail($id);
         return view('admin.users.medical_stores.show', compact('store'));
     }
 
@@ -153,13 +175,20 @@ class MedicalStoreController extends Controller
 
     /********* TOGGLE ACTIVE ***********
     *************************************/
-    public function toggleActive($id)
-    {
-        $store = MedicalStore::findOrFail($id);
-        $store->IsActive = !$store->IsActive;
-        $store->save();
-        return response()->json(['success' => true, 'IsActive' => $store->IsActive]);
-    }
+    // public function toggleActive($id)
+    // {
+    //     // $store = MedicalStore::findOrFail($id);
+    //     // $store->IsActive = !$store->IsActive;
+    //     // $store->save();
+
+    //     $store = MedicalStore::select('MedicalStoreId','IsActive')->findOrFail($id);
+
+    //     $store->update([
+    //         'IsActive' => !$store->IsActive
+    //     ]);
+
+    //     return response()->json(['success' => true, 'IsActive' => $store->IsActive]);
+    // }
 
 
 
@@ -316,107 +345,107 @@ class MedicalStoreController extends Controller
     // }
 
     public function store(Request $request)
-{
-    // Token check
-    $token = session('jwt_token');
-    if (!$token) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Session expired. Please login again.'
-        ], 401);
-    }
-
-    // -------------------------
-    // 1️⃣ Local validation
-    // -------------------------
-    try {
-        $validated = $request->validate([
-            'storeName'     => 'required|string|max:100|unique:MedicalStores,Name',
-            'storeAddress'  => 'required|string|max:200',
-            'licenseNumber' => 'required|string|max:100|unique:MedicalStores,LicenseNumber',
-            'gstin'         => 'required|string|max:50|unique:MedicalStores,GSTIN',
-            'pan'           => 'required|string|max:50|unique:MedicalStores,PAN',
-
-            'adminName'     => 'required|string|max:100',
-            'adminEmail'    => 'required|email|unique:Users,Email',
-            'adminPassword' => 'required|string|min:8|max:50',
-            'adminPhone'    => 'required|string|min:9|max:15',
-
-            'openTime'      => 'required|date_format:H:i',
-            'closeTime'     => 'required|date_format:H:i',
-            'deliveryFee'   => 'required|numeric|min:0',
-            'minOrder'      => 'required|numeric|min:0',
-
-            'latitude'      => 'required|numeric',
-            'longitude'     => 'required|numeric',
-        ]);
-    } catch (\Illuminate\Validation\ValidationException $e) {
-        // Return JSON for local validation errors
-        return response()->json([
-            'success' => false,
-            'errors' => $e->errors()
-        ], 422);
-    }
-
-    // -------------------------
-    // 2️⃣ API payload
-    // -------------------------
-    $payload = [
-        'storeName'     => $validated['storeName'],
-        'adminName'     => $validated['adminName'],
-        'adminEmail'    => $validated['adminEmail'],
-        'adminPassword' => $validated['adminPassword'],
-        'adminPhone'    => $validated['adminPhone'],
-        'storeAddress'  => $validated['storeAddress'],
-        'licenseNumber' => $validated['licenseNumber'],
-        'gstin'         => $validated['gstin'],
-        'pan'           => $validated['pan'],
-        'openTime'      => $validated['openTime'],
-        'closeTime'     => $validated['closeTime'],
-        'deliveryFee'   => $validated['deliveryFee'],
-        'minOrder'      => $validated['minOrder'],
-        'location'      => [
-            'latitude'  => $validated['latitude'],
-            'longitude' => $validated['longitude'],
-        ]
-    ];
-
-    // -------------------------
-    // 3️⃣ API request
-    // -------------------------
-    try {
-        $response = Http::withHeaders([
-            'Authorization' => 'Bearer ' . $token,
-            'Accept'        => 'application/json',
-        ])->post('https://pcsdecom.azurewebsites.net/api/admin/register/medical-store', $payload);
-
-        if ($response->failed()) {
-            // Handle API validation errors
-            $apiJson = $response->json();
-
+    {
+        // Token check
+        $token = session('jwt_token');
+        if (!$token) {
             return response()->json([
                 'success' => false,
-                'message' => $apiJson['message'] ?? 'Registration failed. OTP not sent.',
-                'errors'  => $apiJson['errors'] ?? null,
-                'status'  => $response->status(),
-            ], $response->status());
+                'message' => 'Session expired. Please login again.'
+            ], 401);
         }
 
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'API request failed: ' . $e->getMessage()
-        ], 500);
-    }
+        // -------------------------
+        // 1️⃣ Local validation
+        // -------------------------
+        try {
+            $validated = $request->validate([
+                'storeName'     => 'required|string|max:100|unique:MedicalStores,Name',
+                'storeAddress'  => 'required|string|max:200',
+                'licenseNumber' => 'required|string|max:100|unique:MedicalStores,LicenseNumber',
+                'gstin'         => 'required|string|max:50|unique:MedicalStores,GSTIN',
+                'pan'           => 'required|string|max:50|unique:MedicalStores,PAN',
 
-    // -------------------------
-    // 4️⃣ Success
-    // -------------------------
-    return response()->json([
-        'success' => true,
-        'message' => 'Medical store registered successfully'
-    ]);
-}
+                'adminName'     => 'required|string|max:100',
+                'adminEmail'    => 'required|email|unique:Users,Email',
+                'adminPassword' => 'required|string|min:8|max:50',
+                'adminPhone'    => 'required|string|min:9|max:15',
+
+                'openTime'      => 'required|date_format:H:i',
+                'closeTime'     => 'required|date_format:H:i',
+                'deliveryFee'   => 'required|numeric|min:0',
+                'minOrder'      => 'required|numeric|min:0',
+
+                'latitude'      => 'required|numeric',
+                'longitude'     => 'required|numeric',
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Return JSON for local validation errors
+            return response()->json([
+                'success' => false,
+                'errors' => $e->errors()
+            ], 422);
+        }
+
+        // -------------------------
+        // 2️⃣ API payload
+        // -------------------------
+        $payload = [
+            'storeName'     => $validated['storeName'],
+            'adminName'     => $validated['adminName'],
+            'adminEmail'    => $validated['adminEmail'],
+            'adminPassword' => $validated['adminPassword'],
+            'adminPhone'    => $validated['adminPhone'],
+            'storeAddress'  => $validated['storeAddress'],
+            'licenseNumber' => $validated['licenseNumber'],
+            'gstin'         => $validated['gstin'],
+            'pan'           => $validated['pan'],
+            'openTime'      => $validated['openTime'],
+            'closeTime'     => $validated['closeTime'],
+            'deliveryFee'   => $validated['deliveryFee'],
+            'minOrder'      => $validated['minOrder'],
+            'location'      => [
+                'latitude'  => $validated['latitude'],
+                'longitude' => $validated['longitude'],
+            ]
+        ];
+
+        // -------------------------
+        // 3️⃣ API request
+        // -------------------------
+        try {
+            $response = Http::timeout(5)->withHeaders([
+                'Authorization' => 'Bearer ' . $token,
+                'Accept'        => 'application/json',
+            ])->post('https://pcsdecom.azurewebsites.net/api/admin/register/medical-store', $payload);
+
+            if ($response->failed()) {
+                // Handle API validation errors
+                $apiJson = $response->json();
+
+                return response()->json([
+                    'success' => false,
+                    'message' => $apiJson['message'] ?? 'Registration failed. OTP not sent.',
+                    'errors'  => $apiJson['errors'] ?? null,
+                    'status'  => $response->status(),
+                ], $response->status());
+            }
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'API request failed: ' . $e->getMessage()
+            ], 500);
+        }
+
+        // -------------------------
+        // 4️⃣ Success
+        // -------------------------
+        return response()->json([
+            'success' => true,
+            'message' => 'Medical store registered successfully'
+        ]);
+    }
 
 
     // Verify OTP
@@ -427,7 +456,7 @@ class MedicalStoreController extends Controller
             'otp'   => 'required|digits:6',
         ]);
 
-        $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', [
+        $response = Http::timeout(5)->post('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', [
             'email' => $request->email,
             'code'  => $request->otp,
         ]);
@@ -455,7 +484,7 @@ class MedicalStoreController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/resend-verification', [
+        $response = Http::timeout(5)->post('https://pcsdecom.azurewebsites.net/api/Auth/resend-verification', [
             'email' => $request->email,
         ]);
 

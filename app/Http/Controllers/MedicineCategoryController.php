@@ -12,12 +12,22 @@ class MedicineCategoryController extends Controller
     // ================= INDEX =================
     public function index(Request $request)
     {
-        $query = MedicineCategory::query();
+        // $query = MedicineCategory::query();
+        $query = MedicineCategory::select(
+            'MedicineCategoryId',
+            'Name',
+            'Description',
+            'ImageUrl',
+            'IsActive',
+            'CreatedAt'
+        );
 
-        if ($search = $request->get('search')) {
+        if ($search = trim($request->get('search'))) {
             $query->where(function ($q) use ($search) {
-                $q->whereRaw('LOWER(Name) LIKE ?', ['%' . strtolower($search) . '%'])
-                  ->orWhereRaw('LOWER(Description) LIKE ?', ['%' . strtolower($search) . '%']);
+                // $q->whereRaw('LOWER(Name) LIKE ?', ['%' . strtolower($search) . '%'])
+                //   ->orWhereRaw('LOWER(Description) LIKE ?', ['%' . strtolower($search) . '%']);
+                $q->where('Name', 'ILIKE', "%{$search}%")
+                ->orWhere('Description', 'ILIKE', "%{$search}%");
             });
         }
 
@@ -31,7 +41,7 @@ class MedicineCategoryController extends Controller
 
         $categories = $query->orderBy('CreatedAt', 'desc')
                             ->paginate($perPage)
-                            ->appends($request->except('page'));
+                            ->appends($request->only(['search','status','per_page']));
 
         if ($request->ajax()) {
             return view('admin.products.medicine.categories_table', compact('categories', 'perPage', 'allowedPerPage'))->render();
@@ -92,7 +102,8 @@ class MedicineCategoryController extends Controller
     {
         // Validation
         $request->validate([
-            'Name' => 'required|string|max:255',
+            // 'Name' => 'required|string|max:255',
+            'Name' => "required|string|max:255|unique:MedicineCategories,Name,$id,MedicineCategoryId",
             'Description' => 'required|string',
             'ImageUrl' => 'required|url',
             'IsActive' => 'nullable|boolean',

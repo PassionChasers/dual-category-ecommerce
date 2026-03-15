@@ -13,21 +13,14 @@ class UserController extends Controller
 
     private function getUsersByRole(Request $request, $role, $viewPath)
     {
-        // $query = User::query()->where('Role', $role);
-
-        $query = User::select('UserId','Name','Email','Phone','Role','IsActive')
-        ->where('Role',$role);
-
-        if ($role == 5) {
-            $query->with('deliveryMan');
-        }
+        $query = User::query()->where('Role', $role);
 
         if ($request->filled('search')) {
-            $searchhash = hash('sha256', strtolower(trim($request->search)));
+            $searchhash = hash('sha256', strtolower($request->search));
 
             $query->where(function ($q) use ($searchhash) {
-                $q->where('EmailHash', $searchhash)
-                ->orWhere('PhoneHash', $searchhash);
+                $q->where('EmailHash', 'like', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'like', "%{$searchhash}%");
             });
         }
 
@@ -39,55 +32,289 @@ class UserController extends Controller
         $allowedPerPage = [5,10,25,50];
         $perPage = in_array($perPage,$allowedPerPage) ? $perPage : 10;
 
-        // Paginate results with query parameters
-        $users = $query->latest('UserId')->paginate($perPage)->appends($request->only(['search','onlineStatus','per_page']));
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
 
         if ($request->ajax()) {
-            return view("$viewPath", compact('users','perPage','allowedPerPage'))->render();
+            return view("$viewPath.searched", compact('users','perPage','allowedPerPage'))->render();
         }
 
         return view("$viewPath.index", compact('users','perPage','allowedPerPage'));
     } 
 
+    
     public function admin(Request $request)
     {
-        if($request->ajax()){
-            return $this->getUsersByRole($request,User::ROLE_ADMIN,'admin.users.searchedUsers');
+        $query = User::query()->where('Role', 4);
+
+        // Search by user name
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+            $searchhash = hash('sha256', strtolower($search));
+            // $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->where(function ($q) use ($searchhash) {
+
+                // $q->where('Name', 'ilike', "%{$search}%")
+                // ->orWhere('EmailHash', 'ilike', "%{$searchhash}%")
+                // ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
+                
+                $q->Where('EmailHash', 'ilike', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
+            });
         }
-        return $this->getUsersByRole($request,User::ROLE_ADMIN,'admin.users');
+
+        //Filter by online status
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus);
+        }
+
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
+
+        // Paginate results with query parameters
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.users.searchedUsers', compact('users','perPage', 'allowedPerPage'))->render();
+        }
+        //Normal load
+        return view('admin.users.index', compact('users','perPage', 'allowedPerPage'));
     }
 
     public function customers(Request $request)
     {
-        if($request->ajax()){
-            return $this->getUsersByRole($request,User::ROLE_CUSTOMER,'admin.users.customers.searchedCustomers');
+        $query = User::query()->where('Role', 1);
+
+        // Search by user name
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+            $searchhash = hash('sha256', strtolower($search));
+            // $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->where(function ($q) use ($searchhash) {
+
+                // $q->where('Name', 'ilike', "%{$search}%")
+                // ->orWhere('Email', 'ilike', "%{$search}%")
+                // ->orWhere('Phone', 'ilike', "%{$search}%");
+
+                $q->Where('EmailHash', 'ilike', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
+
+            });
         }
-        return $this->getUsersByRole($request,User::ROLE_CUSTOMER,'admin.users.customers');
+
+        //Filter by online status
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus);
+        }
+
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
+
+        // Paginate results with query parameters
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
+        // $allOrders = $medicineOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.users.customers.searchedCustomers', compact('users','perPage', 'allowedPerPage'))->render();
+        }
+        //Normal load
+        return view('admin.users.customers.index', compact('users','perPage', 'allowedPerPage'));
     }
 
     public function medicalstores(Request $request)
     {
-        if($request->ajax()){
-            return $this->getUsersByRole($request,User::ROLE_SUPPLIER,'admin.users.medical_stores.searchedMedicalstore');
+        $query = User::query()->where('Role', 2);
+
+        // Search by user name
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+            $searchhash = hash('sha256', strtolower($search));
+            // $search = ucfirst(strtolower($request->search)); // First letter uppercase
+
+            $query->where(function ($q) use ($searchhash) {
+
+                // $q->where('Name', 'ilike', "%{$search}%")
+                // ->orWhere('Email', 'ilike', "%{$search}%")
+                // ->orWhere('Phone', 'ilike', "%{$search}%");
+
+                $q->Where('EmailHash', 'ilike', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
+            });
         }
-        return $this->getUsersByRole($request,User::ROLE_SUPPLIER,'admin.users.medical_stores');
+
+        //Filter by online status
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus);
+        }
+
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
+
+        // Paginate results with query parameters
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
+        // $allOrders = $medicineOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.users.medical_stores.searchedMedicalstore', compact('users','perPage', 'allowedPerPage'))->render();
+        }
+        //Normal load
+        return view('admin.users.medical_stores.index', compact('users','perPage', 'allowedPerPage'));
     }
 
     public function restaurants(Request $request)
     {
-        if($request->ajax()){
-            return $this->getUsersByRole($request,User::ROLE_RESTAURANT,'admin.users.restaurants.searchedRestaurants');
+        $query = User::query()->where('Role', 3);
+
+        // Search by user name
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+            $searchhash = hash('sha256', strtolower($search));
+
+            $query->where(function ($q) use ($searchhash) {
+                // $q->where('Name', 'ilike', "%{$search}%")
+                // ->orWhere('Email', 'ilike', "%{$search}%")
+                // ->orWhere('Phone', 'ilike', "%{$search}%");
+
+                $q->Where('EmailHash', 'ilike', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
+            });
+            
         }
-        return $this->getUsersByRole($request,User::ROLE_RESTAURANT,'admin.users.restaurants');
+
+        //Filter by online status
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus);
+        }
+
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
+
+        // Paginate results with query parameters
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
+        // $allOrders = $medicineOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.users.restaurants.searchedRestaurants', compact('users','perPage', 'allowedPerPage'))->render();
+        }
+        //Normal load
+        return view('admin.users.restaurants.index', compact('users','perPage', 'allowedPerPage'));
     }
 
     public function deliveryMan(Request $request)
     {
-        if($request->ajax()){
-            return $this->getUsersByRole($request,User::ROLE_DELIVERY,'admin.users.deliveryMan.searchedDeliveryMan');
+        $query = User::with('deliveryMan')->where('Role', 5);
+
+        // Search by user name
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+            $searchhash = hash('sha256', strtolower($search));
+
+            $query->where(function ($q) use ($searchhash) {
+                // $q->where('Name', 'ilike', "%{$search}%")
+                // ->orWhere('Email', 'ilike', "%{$search}%")
+                // ->orWhere('Phone', 'ilike', "%{$search}%");
+
+                $q->Where('EmailHash', 'ilike', "%{$searchhash}%")
+                ->orWhere('PhoneHash', 'ilike', "%{$searchhash}%");
+            });
         }
-        return $this->getUsersByRole($request,User::ROLE_DELIVERY,'admin.users.deliveryMan');
-    }    
+
+        //Filter by Active status
+        if ($request->filled('onlineStatus')) {
+            $query->where('IsActive', $request->onlineStatus);
+        }
+
+        // Per-page
+        $allowedPerPage = [5, 10, 25, 50];
+        $perPage = (int) $request->get('per_page', 10);
+        $perPage = in_array($perPage, $allowedPerPage) ? $perPage : 10;
+
+        // Paginate results with query parameters
+        $users = $query->latest()->paginate($perPage)->appends($request->all());
+        // $allOrders = $medicineOrders;
+
+        //AJAX response
+        if($request->ajax()){
+            return view('admin.users.deliveryMan.searchedDeliveryMan', compact('users','perPage', 'allowedPerPage'))->render();
+        }
+        //Normal load
+        return view('admin.users.deliveryMan.index', compact('users','perPage', 'allowedPerPage'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        // Validation
+        $validated = $request->validate([
+            'name'               => 'required|string|max:255',
+            'email'              => 'required|email|unique:Users,Email',
+            'password'           => 'required|min:8',
+            'phone'              => 'nullable|string|max:20',
+            'avatar_url'         => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'role'               => 'required|string|in:Admin,Customer,Supplier,Restaurant',
+        ]);
+
+        // Map role string to numeric value
+        $roleMap = [
+            'Customer' => 1,
+            'Supplier' => 2,
+            'Restaurant' => 3,
+            'Admin' => 4,
+        ];
+
+        // Avatar Upload
+        $imagePath = null;
+        if ($request->hasFile('avatar_url')) {
+            $imagePath = $request->file('avatar_url')->store('uploads/users', 'public');
+        }
+
+        // Create User
+        User::create([
+            'Name'              => $validated['name'],
+            'Email'             => $validated['email'],
+            'PasswordHash'      => Hash::make($validated['password']),
+            'Phone'             => $validated['phone'] ?? null,
+            'AvatarUrl'         => $imagePath,
+            'Role'              => $roleMap[$validated['role']],
+            'IsActive'          => true,
+            'IsEmailVerified'   => false,
+            'IsBusinessAdmin'   => false,
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', $validated['role'] . ' created successfully.');
+    }
+
+    
 
     /**
      * Update the specified resource in storage.
@@ -158,6 +385,9 @@ class UserController extends Controller
     //     }
     // }
 
+
+    
+
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
@@ -197,9 +427,10 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        // $user = User::findOrFail($id);
+        $user = User::findOrFail($id);
+        
         try {
-            User::where('UserId',$id)->delete();
+            $user->delete();
             return back()->with('success', 'User deleted successfully.');
         } catch (\Exception $e) {
             return back()->with('error', 'User cannot be deleted.');
@@ -228,7 +459,7 @@ class UserController extends Controller
         ]);
 
         // API Call
-        $response = Http::timeout(5)->withHeaders([
+        $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json',
         ])->post('https://pcsdecom.azurewebsites.net/api/admin/system/system-admins', 
@@ -293,7 +524,7 @@ class UserController extends Controller
         ]);
 
         // API Call
-        $response = Http::timeout(5)->withHeaders([
+        $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json',
         ])->post('https://pcsdecom.azurewebsites.net/api/admin/register/delivery-man', 

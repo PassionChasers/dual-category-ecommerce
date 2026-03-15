@@ -8,6 +8,7 @@
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">#</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Restaurant Name</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Address</th>
+                <th class="px-4 py-2 text-left font-semibold text-gray-700">Is Pure Veg</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">IsActive</th>
                 <th class="px-4 py-2 text-left font-semibold text-gray-700">Actions</th>
             </tr>
@@ -25,10 +26,13 @@
                     {{ $user->Address ?? '-' }}
                 </td>
                 <td class="px-4 py-2 text-gray-600">
+                    {{ $user->IsPureVeg ? 'Yes' : 'No' }}
+                </td>
+                <td class="px-4 py-2 text-gray-600">
                     @if($user->IsActive)
-                        <p class="py-1 text-green-600 bg-green-100 text-center rounded">Active</p>
+                        <p class="py-1 text-blue-600 text-left rounded">Active</p>
                     @else
-                        <p class="py-1 text-red-600 bg-red-100 text-center rounded">InActive</p>
+                        <p class="py-1 text-red-600 text-left rounded">InActive</p>
                     @endif
                 </td>
                 <td class="px-4 py-2 flex space-x-2">

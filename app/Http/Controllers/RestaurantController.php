@@ -17,7 +17,8 @@ class RestaurantController extends Controller
      */
     public function show($id)
     {
-        $restaurant = Restaurant::findOrFail($id);
+        // $restaurant = Restaurant::findOrFail($id);
+        $$restauran = Restaurant::with('user')->findOrFail($id);
         return view('admin.users.restaurants.show', compact('restaurant'));
     }
 
@@ -94,10 +95,6 @@ class RestaurantController extends Controller
         return redirect()->route('admin.restaurants.list')->with('success', 'Restaurant updated successfully.');
     }
 
-
-
-
-
     /**
      * Remove the specified resource from storage.
      */
@@ -117,17 +114,36 @@ class RestaurantController extends Controller
      **********************************/
     public function allRestaurants(Request $request)
     {
-        $query = Restaurant::whereHas('user', function ($q) {
-            $q->where('Role', 3);
-        })->with('user');
+        // $query = Restaurant::whereHas('user', function ($q) {
+        //     $q->where('Role', 3);
+        // })->with('user');
 
-        // search by name, license, gstin, pan
-        if ($search = $request->get('search')) {
+        $query = Restaurant::select(
+            'RestaurantId',
+            'UserId',
+            'Name',
+            'FLICNo',
+            'GSTIN',
+            'PAN',
+            'Address',
+            'IsPureVeg',
+            'OpenTime',
+            'CloseTime',
+            'DeliveryFee',
+            'MinOrder',   
+            'Latitude',
+            'Longitude',
+            'IsActive'
+        )
+        ->whereHas('user', function ($q) {
+            $q->where('Role', 3);
+        })
+        ->with(['user:UserId,Name,Email,Phone']);
+
+        // search by name
+        if ($search = trim($request->get('search'))) {
             $query->where(function ($q) use ($search) {
-                $q->where('Name', 'ilike', "%{$search}%")
-                    ->orWhere('FLICNo', 'ilike', "%{$search}%")
-                    ->orWhere('GSTIN', 'ilike', "%{$search}%")
-                    ->orWhere('PAN', 'ilike', "%{$search}%");
+                $q->where('Name', 'ilike', "%{$search}%");
             });
         }
 
@@ -139,7 +155,7 @@ class RestaurantController extends Controller
         $perPage = (int) $request->get('per_page', 10);
         $perPage = in_array($perPage, [5,10,25,50]) ? $perPage : 10;
 
-        $users = $query->paginate($perPage)->appends($request->except('page'));
+        $users = $query->paginate($perPage)->appends($request->only(['search','onlineStatus','per_page']));
 
         if ($request->ajax()) {
             return view(
@@ -219,7 +235,7 @@ class RestaurantController extends Controller
         ];
 
         // API Call
-        $response = Http::withHeaders([
+        $response = Http::timeout(5)->withHeaders([
             'Authorization' => 'Bearer ' . $token,
             'Accept' => 'application/json',
         ])->post('https://pcsdecom.azurewebsites.net/api/admin/register/restaurant', $payload);
@@ -239,7 +255,6 @@ class RestaurantController extends Controller
         ]);
     }
 
-
     public function verifyOtp(Request $request)
     {
         $request->validate([
@@ -247,7 +262,7 @@ class RestaurantController extends Controller
             'otp'   => 'required|digits:6',
         ]);
 
-        $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', [
+        $response = Http::timeout(5)->post('https://pcsdecom.azurewebsites.net/api/Auth/verify-email', [
             'email' => $request->email,
             'code'  => $request->otp,
         ]);
@@ -273,7 +288,7 @@ class RestaurantController extends Controller
     {
         $request->validate(['email' => 'required|email']);
 
-        $response = Http::post('https://pcsdecom.azurewebsites.net/api/Auth/resend-verification', [
+        $response = Http::timeout(5)->post('https://pcsdecom.azurewebsites.net/api/Auth/resend-verification', [
             'email' => $request->email,
         ]);
 

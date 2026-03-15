@@ -24,6 +24,12 @@ class User extends Authenticatable
     const CREATED_AT = 'CreatedAt';
     const UPDATED_AT = null;
 
+    const ROLE_CUSTOMER = 1;
+    const ROLE_SUPPLIER = 2;
+    const ROLE_RESTAURANT = 3;
+    const ROLE_ADMIN = 4;
+    const ROLE_DELIVERY = 5;
+
     /*
     |--------------------------------------------------------------------------
     | Fillable Fields

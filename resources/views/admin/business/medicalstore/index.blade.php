@@ -17,7 +17,7 @@
                 <!-- Search Form -->
                 <div class=" group border b rounded-lg focus-within:border-2 ">
                     <input type="text" id="search" name="search"
-                        placeholder="Search by Name, PAN, LicenseNumber, GSTIN..." value="{{ request('search') }}"
+                        placeholder="Search by Store Name..." value="{{ request('search') }}"
                         class="border border-none focus:outline-none px-2 py-2 ">
                     <button type="button" id="search_icon" class="px-3 py-2 rounded-r-lg bg-gray-200 hover:bg-gray-400 ">
                         <i class="fas fa-search"></i>

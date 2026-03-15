@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MedicineRequest;
+use App\Models\MedicineCategory;
 use App\Models\Medicine;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -17,11 +18,29 @@ class MedicineController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Medicine::query();
+        // $query = Medicine::query();
+        $query = Medicine::select(
+            'MedicineId',
+            'Name',
+            'Price',
+            'PrescriptionRequired',
+            'Manufacturer',
+            'ExpiryDate',
+            'DosageForm',
+            'Strength',
+            'Packaging',
+            'ImageUrl',
+            'Description',
+            'MedicineCategoryId',
+            'BrandName',
+            'GenericName',
+            'IsActive',
+            'CreatedAt'
+        );
 
         // Search by name (case-insensitive)
-        if ($search = $request->get('search')) {
-            $query->whereRaw('LOWER("Name") LIKE ?', ["%{$search}%"]);
+        if ($search = trim($request->get('search'))) {
+            $query->where('Name', 'ILIKE', "%{$search}%");
         }
 
         // Filter by category
@@ -59,7 +78,10 @@ class MedicineController extends Controller
         $medicines = $query->paginate($perPage)->appends($request->except('page'));
 
         // Lightweight list of categories for filters (if your categories live in MedicineCategory model)
-        $categories = \App\Models\MedicineCategory::select('MedicineCategoryId', 'Name')->orderBy('Name')->get();
+        // $categories = \App\Models\MedicineCategory::select('MedicineCategoryId', 'Name')->orderBy('Name')->get();
+        $categories = MedicineCategory::select('MedicineCategoryId','Name')
+        ->orderBy('Name')
+        ->get();
 
         // Return partial for AJAX
         if ($request->ajax()) {
@@ -213,7 +235,7 @@ class MedicineController extends Controller
 
 
         // Prevent delete if used in orders
-        if ($medicine->orderItems()->exists()) {
+        if ($medicine->orderItems()->count() > 0) {
             return back()
             ->with('delete_error', "Medicine '{$name}' cannot be deleted because it is used in orders.");
         }
@@ -226,14 +248,20 @@ class MedicineController extends Controller
     }
 
 
-    public function toggleActive($id)
-    {
-        $medicine = Medicine::findOrFail($id);
-        $medicine->IsActive = !$medicine->IsActive;
-        $medicine->save();
+    // public function toggleActive($id)
+    // {
+    //     // $medicine = Medicine::findOrFail($id);
+    //     // $medicine->IsActive = !$medicine->IsActive;
+    //     // $medicine->save();
 
-        return response()->json(['success' => true, 'IsActive' => $medicine->IsActive]);
-    }
+    //     $medicine = Medicine::select('MedicineId','IsActive')->findOrFail($id);
+
+    //     $medicine->update([
+    //         'IsActive' => !$medicine->IsActive
+    //     ]);
+
+    //     return response()->json(['success' => true, 'IsActive' => $medicine->IsActive]);
+    // }
 
     
     public function show($id)
