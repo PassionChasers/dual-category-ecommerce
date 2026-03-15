@@ -24,9 +24,15 @@
                     class="inline-flex items-center gap-2 px-3 py-2 bg-gray-100 rounded hover:bg-gray-200 text-sm">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
-                <button id="printBtn" class="no-print px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                {{-- <button id="printBtn" class="no-print px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                     <i class="fas fa-print mr-2"></i> Print Order
-                </button>
+                </button> --}}
+                <a href="{{ route('orders.print', $order->OrderId) }}"
+                    target="_blank" data-no-loader
+                    class="no-print px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+
+                    <i class="fas fa-receipt mr-2"></i> Generate Order Receipt
+                </a>
             </div>
         </div>
         {{-- Header --}}

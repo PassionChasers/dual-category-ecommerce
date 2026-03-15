@@ -88,6 +88,14 @@ class OrderController extends Controller
         return redirect()->back()->with('success', 'Medicines added successfully!');
     }
 
+    public function print($id)
+    {
+        $order = Order::with(['items.medicine','customer.user'])
+                    ->where('OrderId', $id)
+                    ->firstOrFail();
+
+        return view('admin.receipts.receipt', compact('order'));
+    }
 
     //Show Medicine order  details 
     public function showMedicineDetails(Request $request, $orderId)

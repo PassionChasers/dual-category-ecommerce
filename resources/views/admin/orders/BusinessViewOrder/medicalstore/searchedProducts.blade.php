@@ -99,7 +99,7 @@
                     {{-- prescriptions--}}
                     <td class="px-4 py-2 text-gray-600 text-center">
                         @if($order->RequiresPrescription || $order->PrescriptionImageUrl)
-                            <a href="https://pcsdecom.azurewebsites.net{{$order->PrescriptionImageUrl}}" class="text-gray-800 py-1 px-2 bg-green-100 hover:bg-green-400 rounded"> 
+                            <a href="{{ $order->PrescriptionImageUrl }}" target="_blank" data-no-loader rel="noopener noreferrer" class="text-gray-800 py-1 px-2 bg-green-100 hover:bg-green-400 rounded"> 
                                 Yes/Uploaded   
                             </a> 
                         {{-- @elseif($order->RequiresPrescription && !$order->PrescriptionImageUrl)

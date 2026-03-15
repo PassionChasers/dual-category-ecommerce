@@ -24,9 +24,15 @@
                     class="inline-flex items-center gap-2 px-3 py-2 bg-gray-100 rounded hover:bg-gray-200 text-sm">
                     <i class="fas fa-arrow-left"></i> Back
                 </a>
-                <button id="printBtn" class="no-print px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+                {{-- <button id="printBtn" class="no-print px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                     <i class="fas fa-print mr-2"></i> Print Order
-                </button>
+                </button> --}}
+                <a href="{{ route('orders.print', $order->OrderId) }}"
+                    target="_blank" data-no-loader
+                    class="no-print px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+
+                    <i class="fas fa-receipt mr-2"></i> Generate Order Receipt
+                </a>
             </div>
         </div>
         {{-- Header --}}
@@ -78,9 +84,15 @@
 
                         <tr class="text-center border-b">
                             <td>{{ $key + 1 }}</td>
-                            <td class="px-4 py-2">
-                                {{-- <img src="{{ asset('storage/products/' . $item->ItemImageUrl) }}" alt="{{ $item->ItemName }}" class="thumb-lg mx-auto" /> --}}
+                            {{-- <td class="px-4 py-2">
                                 <img src="{{$item->food->ImageUrl}}" alt="{{ $item->ItemName }}" class="w-12 h-12 object-cover rounded mx-auto">
+                            </td> --}}
+                            <td class="px-4 py-2">
+                                @if($item->food->ImageUrl)
+                                    <img src="{{ $item->food->ImageUrl }}" class="thumb cursor-pointer w-12 h-12" onclick="showImage('{{ $item->food->ImageUrl }}')">
+                                @else
+                                    <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
+                                @endif
                             </td>
                             <td class="px-4 py-2 font-semibold">{{ $item->food->Name ?? 'N/A' }}</td>
                             <td class="px-4 py-2 font-semibold">{{ $item->Quantity ?? 'N/A' }}</td>

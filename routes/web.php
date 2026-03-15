@@ -161,6 +161,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/order-items', [OrderController::class, 'store'])->name('order-items.store');
     Route::post('/order-items/store-multiple', [OrderController::class, 'storeMultiple'])->name('order-items.storeMultiple');
 
+    // Print order details
+    Route::get('/orders/{id}/print', [OrderController::class,'print'])->name('orders.print');
 
     /*
     |----------------------------------------------------------------------

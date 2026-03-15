@@ -29,9 +29,15 @@
                 <i class="fas fa-arrow-left"></i> Back
             </a>
 
-            <button id="printBtn" class="no-print px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+            {{-- <button id="printBtn" class="no-print px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
                 <i class="fas fa-print mr-2"></i> Print Order
-            </button>
+            </button> --}}
+            <a href="{{ route('orders.print', $order->OrderId) }}"
+                target="_blank" data-no-loader
+                class="no-print px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
+
+                <i class="fas fa-receipt mr-2"></i> Generate Order Receipt
+            </a>
         </div>
     </div>
 
@@ -52,7 +58,7 @@
             
             @if($order->RequiresPrescription && $order->PrescriptionImageUrl)
                 <li class="mt-2">
-                    <a href="{{ $order->PrescriptionImageUrl }}" data-no-loader target="_blank" rel="noopener noreferrer"
+                    <a href="{{ $order->PrescriptionImageUrl }}" data-no-loader target="_blank" data-no-loader rel="noopener noreferrer"
                        class="inline-block px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700">
                         View Prescription Image
                     </a>
@@ -166,10 +172,17 @@
 
                         <tr class="text-center border-b">
                             <td>{{ $key + 1 }}</td>
-                            <td class="px-4 py-2">
+                            {{-- <td class="px-4 py-2">
                                 @if($item->medicine)
                                     <img src="{{ $item->medicine->ImageUrl }}" 
                                         alt="{{ $item->medicine->Name }}" class="w-12 h-12 object-cover rounded mx-auto">
+                                @endif
+                            </td> --}}
+                            <td class="px-4 py-2">
+                                @if($item->medicine->ImageUrl)
+                                    <img src="{{ $item->medicine->ImageUrl }}" class="thumb cursor-pointer w-12 h-12" onclick="showImage('{{ $item->medicine->ImageUrl }}')">
+                                @else
+                                    <div class="w-12 h-12 bg-gray-100 rounded flex items-center justify-center text-gray-400 text-xs">No</div>
                                 @endif
                             </td>
                             <td class="px-4 py-2 font-semibold">{{ $item->medicine->Name ?? 'N/A' }}</td>

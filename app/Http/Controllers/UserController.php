@@ -287,108 +287,108 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        // Find user
-        // $user = User::findOrFail($id);
-        $user = User::where('UserId', $id)->firstOrFail();
+    // public function update(Request $request, string $id)
+    // {
+    //     // Find user
+    //     // $user = User::findOrFail($id);
+    //     $user = User::where('UserId', $id)->firstOrFail();
 
-        // Check JWT token in session
-        $token = session('jwt_token');
-        if (!$token) {
-            return redirect()->route('login')
-                ->with('error', 'Session expired. Please login again.');
-        }
+    //     // Check JWT token in session
+    //     $token = session('jwt_token');
+    //     if (!$token) {
+    //         return redirect()->route('login')
+    //             ->with('error', 'Session expired. Please login again.');
+    //     }
 
-        // Validate request
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'contact_number' => 'required|string|min:9|max:14',
-        ]);
+    //     // Validate request
+    //     $validated = $request->validate([
+    //         'name' => 'required|string|max:255',
+    //         'contact_number' => 'required|string|min:9|max:14',
+    //     ]);
 
-        try {
+    //     try {
 
-            // API call (PUT)
-            $response = Http::withToken($token)
-                ->acceptJson()
-                ->put("https://pcsdecom.azurewebsites.net/api/admin/users/{$user->UserId}", [
-                    'name' => $validated['name'],
-                    'phone' => $validated['contact_number'],
-                    // 'isActive' => $request->boolean('IsActive'),
-                    'isActive' => $request->input('IsActive') ? true : false,
-                ]);
+    //         // API call (PUT)
+    //         $response = Http::withToken($token)
+    //             ->acceptJson()
+    //             ->put("https://pcsdecom.azurewebsites.net/api/admin/users/{$user->UserId}", [
+    //                 'name' => $validated['name'],
+    //                 'phone' => $validated['contact_number'],
+    //                 // 'isActive' => $request->boolean('IsActive'),
+    //                 'isActive' => $request->input('IsActive') ? true : false,
+    //             ]);
 
-            // If API fails
-            if ($response->failed()) {
-                return back()->with(
-                    'error',
-                    $response->json('message') ?? 'API request failed'
-                );
-            }
+    //         // If API fails
+    //         if ($response->failed()) {
+    //             return back()->with(
+    //                 'error',
+    //                 $response->json('message') ?? 'API request failed'
+    //             );
+    //         }
 
-            // Redirect based on role
-            return match ($user->Role) {
-                4 => redirect()->route('users.admin.index')
-                        ->with('success', 'Admin updated successfully.'),
+    //         // Redirect based on role
+    //         return match ($user->Role) {
+    //             4 => redirect()->route('users.admin.index')
+    //                     ->with('success', 'Admin updated successfully.'),
 
-                1 => redirect()->route('users.customers.index')
-                        ->with('success', 'Customer updated successfully.'),
+    //             1 => redirect()->route('users.customers.index')
+    //                     ->with('success', 'Customer updated successfully.'),
 
-                2 => redirect()->route('users.medicalstores.index')
-                        ->with('success', 'Medical Store updated successfully.'),
+    //             2 => redirect()->route('users.medicalstores.index')
+    //                     ->with('success', 'Medical Store updated successfully.'),
 
-                3 => redirect()->route('users.restaurants.index')
-                        ->with('success', 'Restaurant updated successfully.'),
+    //             3 => redirect()->route('users.restaurants.index')
+    //                     ->with('success', 'Restaurant updated successfully.'),
 
-                5 => redirect()->route('users.delivery-man.index')
-                        ->with('success', 'Delivery Man updated successfully.'),
+    //             5 => redirect()->route('users.delivery-man.index')
+    //                     ->with('success', 'Delivery Man updated successfully.'),
 
-                default => back()->with('success', 'User updated successfully.'),
-            };
+    //             default => back()->with('success', 'User updated successfully.'),
+    //         };
 
-        } catch (\Exception $e) {
+    //     } catch (\Exception $e) {
 
-            return back()->with('error', 'Something went wrong: ' . $e->getMessage());
+    //         return back()->with('error', 'Something went wrong: ' . $e->getMessage());
 
-        }
-    }
+    //     }
+    // }
 
 
     
 
-    // public function update(Request $request, string $id)
-    // {
-    //     $user = User::findOrFail($id);
+    public function update(Request $request, string $id)
+    {
+        $user = User::findOrFail($id);
 
-    //     // $request->validate([
-    //     //     'name' => 'required|string|max:255',
-    //     //     'email' => [
-    //     //         'required',
-    //     //         'email',
-    //     //         Rule::unique('Users', 'EmailHash')
-    //     //             ->ignore($user->UserId, 'UserId')
-    //     //     ],
-    //     // ]);
+        // $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'email' => [
+        //         'required',
+        //         'email',
+        //         Rule::unique('Users', 'EmailHash')
+        //             ->ignore($user->UserId, 'UserId')
+        //     ],
+        // ]);
 
-    //     // 🔥 DO NOT manually set EmailHash
-    //     // Mutator will handle encryption + hash automatically
+        // 🔥 DO NOT manually set EmailHash
+        // Mutator will handle encryption + hash automatically
 
-    //     // $user->Name  = $request->name;
-    //     // $user->Email = $request->email;
+        // $user->Name  = $request->name;
+        // $user->Email = $request->email;
 
-    //     $user->IsActive = $request->has('IsActive');
+        $user->IsActive = $request->has('IsActive');
 
-    //     $user->save();
+        $user->save();
 
-    //     return match ($user->Role) {
-    //         4 => redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.'),
-    //         1 => redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.'),
-    //         2 => redirect()->route('users.medicalstores.index')->with('success', 'Medical Store updated successfully.'),
-    //         3 => redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated successfully.'),
-    //         5 => redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.'),
-    //         default => back()->with('success', 'User updated successfully.'),
-    //     };
-    // }
+        return match ($user->Role) {
+            4 => redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.'),
+            1 => redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.'),
+            2 => redirect()->route('users.medicalstores.index')->with('success', 'Medical Store updated successfully.'),
+            3 => redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated successfully.'),
+            5 => redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.'),
+            default => back()->with('success', 'User updated successfully.'),
+        };
+    }
 
     /**
      * Remove the specified resource from storage.
