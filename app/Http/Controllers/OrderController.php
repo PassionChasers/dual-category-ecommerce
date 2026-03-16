@@ -419,11 +419,9 @@ class OrderController extends Controller
         }
     }
 
-
     //---------------------
     // Medicine Orders
     //---------------------
-
     public function medicineOrders(Request $request)
     {
         /* Pagination */
