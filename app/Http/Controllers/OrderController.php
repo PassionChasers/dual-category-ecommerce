@@ -42,7 +42,6 @@ class OrderController extends Controller
         return back()->with('success', 'Medicine added successfully.');
     }
 
-
     //Store multiple medicines for an order
 
     public function storeMultiple(Request $request)
@@ -133,8 +132,6 @@ class OrderController extends Controller
         };
     }
 
-
-
     //Show food order details
     public function showFoodDetails(Request $request, $orderId)
     {
@@ -164,12 +161,9 @@ class OrderController extends Controller
         };
     }
 
-
-
     /**
      * Update the specified resource in storage.
      */
-    
     public function update(Request $request)
     {
         $request->validate([
@@ -209,8 +203,6 @@ class OrderController extends Controller
 
         return redirect()->back()->with('success', 'Order updated successfully.');
     }
-
-
 
     // -----------------
     // Cancel order by admin
@@ -267,9 +259,6 @@ class OrderController extends Controller
         return redirect()->back()
             ->with('success', 'Order has been rejected successfully.');
     }
-
-
-
 
     // accept order by business
     public function accept($id)
