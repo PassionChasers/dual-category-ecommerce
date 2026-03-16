@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 use Illuminate\Http\Request;
 use App\Models\OrderRejection;
@@ -87,6 +88,14 @@ class OrderController extends Controller
         return redirect()->back()->with('success', 'Medicines added successfully!');
     }
 
+    public function print($id)
+    {
+        $order = Order::with(['items.medicine','customer.user'])
+                    ->where('OrderId', $id)
+                    ->firstOrFail();
+
+        return view('admin.receipts.receipt', compact('order'));
+    }
 
     //Show Medicine order  details 
     public function showMedicineDetails(Request $request, $orderId)
@@ -310,22 +319,37 @@ class OrderController extends Controller
                     ->paginate($perPage)
                     ->appends($request->except('page'));
 
+                    
+        // $allOrders = Cache::remember('latest_food_orders', 20, function () use ($request, $perPage){
+        //     return Order::whereHas('items', fn($q) => $q->whereNotNull('MenuItemId'))
+        //         ->with(['items.food' => fn($q) => $q->whereNotNull('MenuItemId')])
+        //         ->SearchFood($request->search)
+        //         ->filterStatus($request->status)
+        //         ->sort($request->sort_by ?? 'CreatedAt', $request->sort_order ?? 'desc')
+        //         ->paginate($perPage)
+        //         ->appends($request->except('page'));
+        // });
+
         // Cache heavy data
-        $itemTypes = cache()->rememberForever('food_order_item_types', function () {
+        $itemTypes = cache()->remember('food_order_item_types', 60, function () {
             return OrderItem::select('ItemType')->distinct()->pluck('ItemType');
         });
 
-        $allRestaurants = cache()->remember('active_restaurants', 3600, function () {
+        $allRestaurants = cache()->remember('active_restaurants', 60, function () {
             return Restaurant::where('IsActive', true)
                 ->orderBy('Priority', 'asc')
                 ->get();
         });
 
-        $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
-            return DeliveryMan::with('user')
-                ->whereHas('user', fn ($q) => $q->where('Role', 5))
-                ->get();
-        });
+        $allDeliveryMan = DeliveryMan::with('user')->where('IsOnline', true)
+            ->whereHas('user', fn ($q) => $q->where('Role', 5))
+            ->get();
+        
+        // $allDeliveryMan = cache()->remember('delivery_men', 60, function () {
+        //     return DeliveryMan::with('user')->where('IsOnline', true)
+        //         ->whereHas('user', fn ($q) => $q->where('Role', 5))
+        //         ->get();
+        // });
 
         //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
         if ($request->ajax()) {
@@ -356,18 +380,22 @@ class OrderController extends Controller
                 ->appends($request->except('page'));
 
         // Cache heavy data
-        $itemTypes = cache()->rememberForever('food_order_item_types', function () {
+        $itemTypes = cache()->remember('food_order_item_types', 60, function () {
             return OrderItem::select('ItemType')->distinct()->pluck('ItemType');
         });
 
-        $allRestaurants = cache()->remember('active_restaurants', 3600, function () {
+        $allRestaurants = cache()->remember('active_restaurants', 60, function () {
             return Restaurant::where('IsActive', true)
                 ->orderBy('Priority', 'asc')
                 ->get();
         });
 
-        $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
-            return DeliveryMan::with('user')
+        // $allDeliveryMan = DeliveryMan::with('user')->where('IsOnline', true)
+        //     ->whereHas('user', fn ($q) => $q->where('Role', 5))
+        //     ->get();
+
+        $allDeliveryMan = cache()->remember('delivery_men', 60, function () {
+            return DeliveryMan::with('user')->where('IsOnline', true)
                 ->whereHas('user', fn ($q) => $q->where('Role', 5))
                 ->get();
         });
@@ -403,22 +431,37 @@ class OrderController extends Controller
                     ->paginate($perPage)
                     ->appends($request->except('page'));
 
+        // $allOrders = Cache::remember('latest_medicine_orders', 20, function () use ($request, $perPage){
+        //     return   Order::whereDoesntHave('items', fn($q) => $q->where('ItemType', 'Food'))
+        //             ->with(['items.medicine'])  // <-- Add eager loading
+        //             ->searchMedicine($request->search)
+        //             ->filterStatus($request->status)
+        //             ->sort($request->sort_by, $request->sort_order)
+        //             ->paginate($perPage)
+        //             ->appends($request->except('page'));
+        // });
+
         // Cache heavy data
-        $itemTypes = cache()->rememberForever('medicine_order_item_types', function () {
+        $itemTypes = cache()->remember('medicine_order_item_types', 60, function () {
             return OrderItem::select('ItemType')->distinct()->pluck('ItemType');
         });
 
-        $allMedicalStores = cache()->remember('active_medicalstores', 3600, function () {
+        $allDeliveryMan = DeliveryMan::with('user')->where('IsOnline', true)
+        ->whereHas('user', fn ($q) => $q->where('Role', 5))
+        ->get();        
+
+        // $allDeliveryMan = cache()->remember('delivery_men', 60, function () {
+        //     return DeliveryMan::with('user')->where('IsOnline', true)
+        //         ->whereHas('user', fn ($q) => $q->where('Role', 5))
+        //         ->get();
+        // });
+
+        $allMedicalStores = cache()->remember('active_medicalstores', 60, function () {
             return MedicalStore::where('IsActive', true)
                 ->orderBy('Priority', 'asc')
                 ->get();
         });
-
-        $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
-            return DeliveryMan::with('user')
-                ->whereHas('user', fn ($q) => $q->where('Role', 5))
-                ->get();
-        });
+        
 
         //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
         if ($request->ajax()) {
@@ -451,18 +494,22 @@ class OrderController extends Controller
                     ->appends($request->except('page'));
 
         // Cache heavy data
-        $itemTypes = cache()->rememberForever('medicine_order_item_types', function () {
+        $itemTypes = cache()->remember('medicine_order_item_types', 60, function () {
             return OrderItem::select('ItemType')->distinct()->pluck('ItemType');
         });
 
-        $allMedicalStores = cache()->remember('active_medicalstores', 3600, function () {
+        $allMedicalStores = cache()->remember('active_medicalstores', 60, function () {
             return MedicalStore::where('IsActive', true)
                 ->orderBy('Priority', 'asc')
                 ->get();
         });
 
-        $allDeliveryMan = cache()->remember('delivery_men', 3600, function () {
-            return DeliveryMan::with('user')
+        // $allDeliveryMan = DeliveryMan::with('user')->where('IsOnline', true)
+        // ->whereHas('user', fn ($q) => $q->where('Role', 5))
+        // ->get();
+
+        $allDeliveryMan = cache()->remember('delivery_men', 60, function () {
+            return DeliveryMan::with('user')->where('IsOnline', true)
                 ->whereHas('user', fn ($q) => $q->where('Role', 5))
                 ->get();
         });
