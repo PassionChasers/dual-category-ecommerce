@@ -10,7 +10,7 @@
                 <th class="px-4 py-2 text-left">Product Name</th>
                 <th class="px-4 py-2 text-left">Qty</th>
                 {{-- <th class="px-4 py-2">Product Type</th> --}}
-                <!-- <th class="px-4 py-2">Total Amount</th> -->
+                <th class="px-4 py-2">Total Amount</th>
                 {{-- <th class="px-4 py-2">Delivery Address</th> --}}
                 {{-- <th class="px-4 py-2">Customer Name</th> --}}
                 {{-- <th class="px-4 py-2">Contact No.</th> --}}
@@ -18,7 +18,7 @@
                 <th class="px-4 py-2 text-left">Assign Store</th>
                 <th class="px-4 py-2 text-left">Assign Delivery Man</th>
                 <th class="px-4 py-2">Status</th>
-                <!-- <th class="px-4 py-2">Date</th> -->
+                <th class="px-4 py-2">Date</th>
                 <th class="px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -53,14 +53,6 @@
                                         <a href="#" class="text-sm bg-green-200 text-gray-400 ">
                                             <i>Review is Pending(Notes)Uploaded</i>
                                         </a>
-                                    {{-- @elseif($order->RequiresPrescription && !$order->PrescriptionImageUrl && !$order->OrderDescription)
-                                        <a href="#" class="text-sm bg-green-200 text-gray-400 ">
-                                            <i>Prescription Review is Pending(Not Uploaded)</i>
-                                        </a> --}}
-                                    {{-- @elseif(!$order->RequiresPrescription)
-                                        <a href="#" class="text-sm bg-red-100 text-gray-400 ">
-                                            <i>Wrong Order for Medicine</i>
-                                        </a> --}}
                                     @endif
                                 </div>
                             @elseif ($order->Status != 2) 
@@ -68,9 +60,7 @@
                                     <div class="text-sm">
                                         {{-- {{ $item->ItemName }}  --}}
                                         @if($item->MedicineId)
-                                            {{$item->medicine->Name}}
-                                        @elseif ($item->MenuItemId) 
-                                            {{$item->food->Name}}
+                                            {{ $item->medicine->Name ?? 'N/A' }}
                                         @endif
                                     </div>
                                 @endforeach
@@ -100,79 +90,12 @@
                         </div>
                     </td>
 
-                    {{-- Product Type --}}
-                    {{-- <td class="px-4 py-2 font-semibold">
-                        <div
-                            class="max-h-20 overflow-y-auto space-y-1
-                                [&::-webkit-scrollbar]:hidden
-                                [-ms-overflow-style:none]
-                                [scrollbar-width:none]"
-                        >
-                            @foreach($order->items as $item)
-                                <div class="text-sm">
-                                    {{ $item->ItemType }}
-                                </div>
-                            @endforeach
-                        </div>
-                    </td> --}}
-
                     {{-- Total Amount --}}
-                    {{-- <td class="px-4 py-2 text-center">
+                    <td class="px-4 py-2 text-center">
                         {{ $order->TotalAmount ?? 'N/A' }}
-                    </td>  --}}
+                    </td>
 
-                    {{-- Delivery Address --}}
-                    {{-- <td class="px-4 py-2">
-                        {{ $order->DeliveryAddress ?? 'N/A' }}
-                    </td> --}}
-
-                    {{-- Customer Name --}}
-                    {{-- <td class="px-4 py-2">
-                        {{ $order->customer->Name ?? 'N/A' }}
-                    </td> --}}
-
-                    {{-- Contact --}}
-                    {{-- <td class="px-4 py-2 text-gray-600">
-                        {{ $order->customer->user->Phone ?? 'N/A' }}
-                    </td> --}}
-
-                    {{-- prescriptions--}}
-                    {{-- <td class="px-4 py-2 text-gray-600 text-center">
-                        @if($order->RequiresPrescription && $order->PrescriptionImageUrl && $order->OrderDescription)
-                            <a href="https://pcsdecom.azurewebsites.net{{$order->PrescriptionImageUrl}}" class="text-gray-800 py-1 px-2 bg-green-100 hover:bg-green-400 rounded"> 
-                                Yes/Uploaded   
-                            </a> 
-                        @elseif($order->RequiresPrescription && $order->PrescriptionImageUrl && !$order->OrderDescription)
-                            <a href="https://pcsdecom.azurewebsites.net{{$order->PrescriptionImageUrl}}" class="text-gray-800 py-1 px-2 bg-green-100 hover:bg-green-400 rounded"> 
-                                Yes/Uploaded   
-                            </a> 
-                        @elseif(!$order->RequiresPrescription && !$order->PrescriptionImageUrl && $order->OrderDescription)
-                            <a href="#" class="text-gray-600 py-1 px-2 bg-red-100 rounded"> 
-                                Not   
-                            </a> 
-                        @elseif(!$order->RequiresPrescription && !$order->PrescriptionImageUrl && !$order->OrderDescription)
-                            <a href="#" class="text-gray-600 py-1 px-2 bg-red-100 rounded"> 
-                                Not  
-                            </a>
-                        @endif
-                    </td> --}}
-
-                    {{-- Assign Stores --}}
-                    {{-- <td class="px-4 py-2 text-center">
-                        <select class="assign-store border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}"     
-                            @if($order->Status == 10 || $order->Status == 9 || $order->Status == 8 || $order->Status == 7 || $order->Status == 6 || $order->Status == 4 || $order->Status == 3 || $order->Status == 2 )
-                                disabled
-                            @endif
-                        >
-                            <option value="">Assign Store</option>
-                            @foreach($allMedicalStores as $store)
-                                <option value="{{ $store->MedicalStoreId }}" {{ $order->BusinessId == $store->MedicalStoreId ? 'selected' : '' }}>
-                                    {{ $store->Name }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </td> --}}
-
+                    {{-- Assign Store --}}
                     <td class="px-4 py-2">
                         <select
                             class="assign-store px-2 py-1 text-sm bg-transparent
@@ -195,24 +118,6 @@
 
                     {{-- Assign Delivery man --}}
                     <td class="px-4 py-2">
-
-                        {{-- <form method="POST" action="{{ route('orders.assign-deliveryman') }}" class="assign-delivery-form">
-                            @csrf
-                            <input type="hidden" name="order_id" value="{{ $order->OrderId }}">
-                            <select name="delivery_man_id" class="assign-deliveryman border rounded px-2 py-1 text-sm" 
-                                @if($order->Status != 7) disabled @endif
-                            >
-                                <option value="">Assign Delivery Man</option>
-                                @foreach($allDeliveryMan as $deliveryMan)
-                                    <option value="{{ $deliveryMan->DeliveryManId }}"
-                                        {{ $order->DeliveryManId == $deliveryMan->DeliveryManId ? 'selected' : '' }}
-                                    >
-                                        {{ $deliveryMan->user->Name ?? 'N/A' }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </form> --}}
-
                         <form method="POST" action="{{ route('orders.assign-deliveryman') }}" class="assign-delivery-form">
                             @csrf
                             <input type="hidden" name="order_id" value="{{ $order->OrderId }}">
@@ -235,7 +140,6 @@
                                 @endforeach
                             </select>
                         </form>
-
                     </td>
 
                     {{-- Status --}}
@@ -258,7 +162,7 @@
                                     Accepted
                                 </p>
                             @elseif($order->Status == 5)
-                                <p class="py-1 px-2 bg-black-200 text-white rounded" >
+                                <p class="bg-red-200 py-1 px-2 text-center rounded">
                                     Rejected
                                 </p>
                             @elseif($order->Status == 6)
@@ -286,9 +190,9 @@
                     </td>
 
                     {{-- Date --}}
-                    {{-- <td class="px-4 py-2 text-center">
+                    <td class="px-4 py-2 text-center">
                         {{ $order->CreatedAt->format('Y-m-d') }}
-                    </td>  --}}
+                    </td> 
 
                     {{-- Actions --}}
                     <td class="px-4 py-2 text-center">

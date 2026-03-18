@@ -332,6 +332,7 @@ class OrderController extends Controller
         return view('admin.orders.index', compact('allOrders', 'itemTypes', 'allRestaurants', 'allMedicalStores'));
     }
 
+
     //----------------------
     // Food orders For admin view
     //----------------------
@@ -339,129 +340,83 @@ class OrderController extends Controller
     {
         /* Pagination */
         $perPage = in_array((int)$request->per_page, [5,10,25,50]) ? $request->per_page : 10;
+        
+        $allOrders = Order::whereHas('items', fn($q) => $q->whereNotNull('MenuItemId'))
+        ->with(['items.food' => fn($q) => $q->whereNotNull('MenuItemId')])
+        ->SearchFood($request->search)
+        ->filterStatus($request->status)
+        ->sort($request->sort_by ?? 'CreatedAt', $request->sort_order ?? 'desc')
+        ->paginate($perPage)
+        ->appends($request->except('page'));
 
-        $allOrders = Order::select([
-                'OrderId',
-                'CustomerId',
-                'BusinessId',
-                'DeliveryManId',
-                'Status',
-                'TotalAmount',
-                'CreatedAt'
-            ])
-            ->whereHas('items', fn($q) => $q->whereNotNull('MenuItemId'))
+                    
+        // $allOrders = Cache::remember('latest_food_orders', 20, function () use ($request, $perPage){
+        //     return Order::whereHas('items', fn($q) => $q->whereNotNull('MenuItemId'))
+        //         ->with(['items.food' => fn($q) => $q->whereNotNull('MenuItemId')])
+        //         ->SearchFood($request->search)
+        //         ->filterStatus($request->status)
+        //         ->sort($request->sort_by ?? 'CreatedAt', $request->sort_order ?? 'desc')
+        //         ->paginate($perPage)
+        //         ->appends($request->except('page'));
+        // });
 
-            ->with([
-                'items' => function ($q) {
-                    $q->select([
-                        'OrderItemId',
-                        'OrderId',    
-                        'MenuItemId', 
-                        'Quantity',
-                        'ItemType',
-                    ])
-                    ->whereNotNull('MenuItemId');
-                },
-
-                'items.food' => function ($q) {
-                    $q->select([
-                        'MenuItemId',
-                        'Name'
-                    ]);
-                }
-            ])
-
-            ->searchFood($request->search)
-            ->filterStatus($request->status)
-            ->sort($request->sort_by ?? 'CreatedAt', $request->sort_order ?? 'desc')
-            ->paginate($perPage)
-            ->appends($request->except('page'));
-
-        // Cache
+        // Cache heavy data
         $itemTypes = cache()->remember('food_order_item_types', 60, function () {
             return OrderItem::select('ItemType')->distinct()->pluck('ItemType');
         });
 
         $allRestaurants = $this->getActiveRestaurants();
+        
         $allDeliveryMan = $this->getOnlineDeliveryMen();
 
+        //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
         if ($request->ajax()) {
             return view(
                 'admin.orders.food-order.searchedProducts',
-                compact('allOrders', 'itemTypes','allRestaurants','allDeliveryMan')
+                compact('allOrders', 'itemTypes','allRestaurants', 'allDeliveryMan')
             );
         }
-
-        return view(
-            'admin.orders.food-order.index',
-            compact('allOrders', 'itemTypes','allRestaurants','allDeliveryMan')
-        );
+     
+        return view('admin.orders.food-order.index', 
+        compact('allOrders', 'itemTypes','allRestaurants', 'allDeliveryMan'));
     }
 
 
     //For Business view 
     public function RestaurantOrders(Request $request)
     {
-        $restaurantIds = auth()->user()->restaurants->pluck('RestaurantId')->toArray();
-
+        $RestaurantId = auth()->user()->restaurants->pluck('RestaurantId')->toArray();
         /* Pagination */
         $perPage = in_array((int)$request->per_page, [5,10,25,50]) ? $request->per_page : 10;
 
-        $allOrders = Order::select([
-                'OrderId',
-                // 'CustomerId',
-                'BusinessId',
-                // 'DeliveryManId',
-                'Status',
-                'TotalAmount',
-                'CreatedAt'
-            ])
-            ->whereIn('BusinessId', $restaurantIds)
+        $allOrders = Order::whereIn('BusinessId', $RestaurantId)
+                ->with(['items.food'])
+                ->SearchFood($request->search)
+                ->filterStatus($request->status)
+                ->sort($request->sort_by, $request->sort_order)
+                ->paginate($perPage)
+                ->appends($request->except('page'));
 
-            ->whereHas('items', fn($q) => $q->whereNotNull('MenuItemId'))
-
-            ->with([
-                'items' => function ($q) {
-                    $q->select([
-                        'OrderItemId',
-                        'OrderId',     
-                        'MenuItemId', 
-                        'ItemType',
-                        'Quantity'
-                    ])
-                    ->whereNotNull('MenuItemId');
-                },
-
-                'items.food' => function ($q) {
-                    $q->select([
-                        'MenuItemId',
-                        'Name'
-                    ]);
-                }
-            ])
-
-            ->searchFood($request->search)
-            ->filterStatus($request->status)
-            ->sort($request->sort_by ?? 'CreatedAt', $request->sort_order ?? 'desc')
-            ->paginate($perPage)
-            ->appends($request->except('page'));
-
-        // Cache
+        // Cache heavy data
         $itemTypes = cache()->remember('food_order_item_types', 60, function () {
             return OrderItem::select('ItemType')->distinct()->pluck('ItemType');
         });
 
+        $allRestaurants = $this->getActiveRestaurants();
+
+        $allDeliveryMan = $this->getOnlineDeliveryMen();
+
+        //AJAX CHECK (RETURN ONLY VIEW DIFFERENCE)
         if ($request->ajax()) {
             return view(
                 'admin.orders.BusinessViewOrder.restaurant.searchedProducts',
-                compact('allOrders', 'itemTypes')
+                compact('allOrders', 'itemTypes','allRestaurants', 'allDeliveryMan')
             );
         }
-
-        return view(
-            'admin.orders.BusinessViewOrder.restaurant.index',
-            compact('allOrders', 'itemTypes')
-        );
+        else{
+            return view('admin.orders.BusinessViewOrder.restaurant.index', 
+            compact('allOrders', 'itemTypes','allRestaurants', 'allDeliveryMan'));
+        }
     }
 
     //---------------------
@@ -478,7 +433,6 @@ class OrderController extends Controller
                 'BusinessId',
                 'DeliveryManId',
                 'Status',
-                'TotalAmount',
                 'RequiresPrescription',
                 'PrescriptionImageUrl',
                 'OrderDescription',
@@ -491,7 +445,7 @@ class OrderController extends Controller
                         'OrderItemId',
                         'OrderId',
                         'MedicineId',
-                        // 'MenuItemId',
+                        'MenuItemId',
                         'ItemType',
                         'Quantity'
                     ]);
@@ -539,15 +493,20 @@ class OrderController extends Controller
         /* Pagination */
         $perPage = in_array((int)$request->per_page, [5,10,25,50]) ? $request->per_page : 10;
 
+        // $allOrders = Order::whereIn('BusinessId', $medicalStoreId)
+        // ->with(['items.medicine'])
+        // ->searchMedicine($request->search)
+        // ->filterStatus($request->status)
+        // ->sort($request->sort_by, $request->sort_order)
+        // ->paginate($perPage)
+        // ->appends($request->except('page'));
+
         $allOrders = Order::select([
             'OrderId',
-            // 'CustomerId',
+            'CustomerId',
             'BusinessId',
-            // 'DeliveryManId',
+            'DeliveryManId',
             'Status',
-            'RequiresPrescription',
-            'PrescriptionImageUrl',
-            'OrderDescription',
             'TotalAmount',
             'CreatedAt'
         ])
@@ -560,7 +519,7 @@ class OrderController extends Controller
                     'MedicineId',
                     'Quantity',
                     'UnitPriceAtOrder',
-                    // 'ItemType'
+                    'ItemType'
                 ]);
             },
             'items.medicine' => function ($q) {

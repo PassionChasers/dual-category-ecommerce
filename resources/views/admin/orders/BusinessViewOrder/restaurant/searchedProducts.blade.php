@@ -5,17 +5,17 @@
 <table class="min-w-full divide-y divide-gray-200 text-sm">
     <thead class="bg-gray-50">
         <tr>
-            <th class="px-4 py-2">SN</th>
-            <th class="px-4 py-2">Product Name</th>
-            <th class="px-4 py-2">Quantity</th>
+            <th class="px-4 py-2 text-center">SN</th>
+            <th class="px-4 py-2 text-center">Product Name</th>
+            <th class="px-4 py-2 text-center">Quantity</th>
             {{-- <th class="px-4 py-2">Product Type</th> --}}
-            <th class="px-4 py-2">Total Amount</th>
-            <th class="px-4 py-2">Delivery Address</th>
-            <th class="px-4 py-2">Customer Name</th>
+            <th class="px-4 py-2 text-center">Total Amount</th>
+            {{-- <th class="px-4 py-2">Delivery Address</th>
+            <th class="px-4 py-2">Customer Name</th> --}}
             {{-- <th class="px-4 py-2">Contact No.</th> --}}
             {{-- <th class="px-4 py-2">Assign Delivery Man</th> --}}
             <th class="px-4 py-2">Status</th>
-            <th class="px-4 py-2">Date</th>
+            <th class="px-4 py-2 text-center">Date</th>
             <th class="px-4 py-2">Actions</th>
         </tr>
     </thead>
@@ -24,12 +24,12 @@
         @forelse($allOrders as $order)
             <tr>
                 {{-- Serial --}}
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center">
                     {{ ($allOrders->currentPage() - 1) * $allOrders->perPage() + $loop->iteration }}
                 </td>
 
                 {{-- Products --}}
-                <td class="px-4 py-2 font-semibold">
+                <td class="px-4 py-2 font-semibold text-center">
                     <div
                         class="max-h-20 overflow-y-auto space-y-1
                             [&::-webkit-scrollbar]:hidden
@@ -37,7 +37,7 @@
                             [scrollbar-width:none]"
                     >
                         @foreach($order->items as $item)
-                            <div class="text-sm">
+                            <div class="text-sm text-center">
                                 {{-- {{ $item->ItemName }}  --}}
                                 @if($item->MedicineId)
                                     {{$item->medicine->Name}}
@@ -50,7 +50,7 @@
                 </td>
 
                 {{-- Quantity --}}
-                <td class="px-4 py-2 font-semibold">
+                <td class="px-4 py-2 font-semibold text-center">
                     <div
                         class="max-h-20 overflow-y-auto space-y-1
                             [&::-webkit-scrollbar]:hidden
@@ -58,7 +58,7 @@
                             [scrollbar-width:none]"
                     >
                         @foreach($order->items as $item)
-                            <div class="text-sm">
+                            <div class="text-sm text-center">
                                 {{ $item->Quantity }}  
                             </div>
                         @endforeach
@@ -82,19 +82,19 @@
                 </td> --}}
 
                 {{-- Total Amount --}}
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center">
                     {{ $order->TotalAmount ?? 'N/A' }}
                 </td>
 
                 {{-- Delivery Address --}}
-                <td class="px-4 py-2">
+                {{-- <td class="px-4 py-2">
                     {{ $order->DeliveryAddress ?? 'N/A' }}
-                </td>
+                </td> --}}
 
                 {{-- Customer Name --}}
-                <td class="px-4 py-2">
+                {{-- <td class="px-4 py-2">
                     {{ $order->customer->Name ?? 'N/A' }}
-                </td>
+                </td> --}}
 
                 {{-- Contact --}}
                 {{-- <td class="px-4 py-2 text-gray-600">
@@ -165,7 +165,7 @@
                             Completed
                         </p>
                     @elseif($order->Status == 9)
-                        <p class="py-1 px-2 text-red-500 rounded" >
+                        <p class="py-1 px-2 text-center text-red-500 rounded" >
                             Cancelled
                         </p>
                     @endif
@@ -173,7 +173,7 @@
                 </td>
 
                 {{-- Date --}}
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-center">
                     {{ $order->CreatedAt->format('Y-m-d') }}
                 </td>
 

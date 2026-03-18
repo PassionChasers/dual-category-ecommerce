@@ -204,12 +204,22 @@ document.addEventListener('DOMContentLoaded', function () {
                     showConfirmButton: false,
                     timer: 1500
                 });
+
+                // Refresh page after message
+                // setTimeout(() => {
+                //     location.reload();
+                // }, 1600);
             })
             .catch(() => {
                 Swal.fire({
                     icon: 'error',
                     title: 'Something went wrong'
                 });
+
+                // Refresh page after message
+                // setTimeout(() => {
+                //     location.reload();
+                // }, 1600);
             })
             .finally(() => {
                 

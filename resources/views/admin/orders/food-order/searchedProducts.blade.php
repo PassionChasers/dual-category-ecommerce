@@ -10,14 +10,14 @@
                 <th class="px-4 py-2 text-left">Product Name</th>
                 <th class="px-4 py-2 text-left">Qty</th>
                 {{-- <th class="px-4 py-2">Product Type</th> --}}
-                {{-- <th class="px-4 py-2">Total Amount</th> --}}
+                <th class="px-4 py-2">Total Amount</th>
                 {{-- <th class="px-4 py-2">Delivery Address</th> --}}
                 {{-- <th class="px-4 py-2">Customer Name</th> --}}
                 {{-- <th class="px-4 py-2">Contact No.</th> --}}
                 <th class="px-4 py-2 text-left">Assign Store</th>
                 <th class="px-4 py-2 text-left">Assign Delivery Man</th>
                 <th class="px-4 py-2">Status</th>
-                {{-- <th class="px-4 py-2">Date</th> --}}
+                <th class="px-4 py-2">Date</th>
                 <th class="px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -83,9 +83,9 @@
                     </td> --}}
 
                     {{-- Total Amount --}}
-                    {{-- <td class="px-4 py-2 text-center">
+                    <td class="px-4 py-2 text-center">
                         {{ $order->TotalAmount ?? 'N/A' }}
-                    </td> --}}
+                    </td>
 
                     {{-- Assign Stores --}}
                     {{-- <td class="px-4 py-2 text-center">
@@ -234,9 +234,9 @@
                     </td>
 
                     {{-- Date --}}
-                    {{-- <td class="px-4 py-2 text-center">
+                    <td class="px-4 py-2 text-center">
                         {{ $order->CreatedAt->format('Y-m-d') }}
-                    </td> --}}
+                    </td>
 
                     {{-- Actions --}}
                     <td class="px-4 py-2 text-center">

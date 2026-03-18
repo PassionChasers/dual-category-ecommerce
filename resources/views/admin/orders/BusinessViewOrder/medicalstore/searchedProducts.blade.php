@@ -10,8 +10,8 @@
                 <th class="px-4 py-2">Quantity</th>
                 {{-- <th class="px-4 py-2">Product Type</th> --}}
                 <th class="px-4 py-2">Total Amount</th>
-                <th class="px-4 py-2">Delivery Address</th>
-                <th class="px-4 py-2">Customer Name</th>
+                {{-- <th class="px-4 py-2">Delivery Address</th> --}}
+                {{-- <th class="px-4 py-2">Customer Name</th> --}}
                 <th class="px-4 py-2">Prescription require</th>
                 {{-- <th class="px-4 py-2">Assign Delivery Man</th> --}}
                 <th class="px-4 py-2">Status</th>
@@ -87,14 +87,14 @@
                     </td>
 
                     {{-- Delivery Address --}}
-                    <td class="px-4 py-2 text-center">
+                    {{-- <td class="px-4 py-2 text-center">
                         {{ $order->DeliveryAddress ?? 'N/A' }}
-                    </td>
+                    </td> --}}
 
                     {{-- Customer Name --}}
-                    <td class="px-4 py-2 text-center">
+                    {{-- <td class="px-4 py-2 text-center">
                         {{ $order->customer->Name ?? 'N/A' }}
-                    </td>
+                    </td> --}}
 
                     {{-- prescriptions--}}
                     <td class="px-4 py-2 text-gray-600 text-center">
@@ -145,9 +145,9 @@
                                     <option value="6" {{ $order->Status == 6 ? 'selected' : '' }}>
                                         Preparing
                                     </option>
-                                    <option value="7" {{ $order->Status == 7 ? 'selected' : '' }}>
+                                    {{-- <option value="7" {{ $order->Status == 7 ? 'selected' : '' }}>
                                         Packed
-                                    </option>
+                                    </option> --}}
                                 </select>
                             @elseif($order->Status == 6)
                                 <select class="order-status border rounded px-2 py-1 text-sm" data-order-id="{{ $order->OrderId }}">
