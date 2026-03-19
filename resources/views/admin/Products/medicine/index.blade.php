@@ -19,28 +19,40 @@
 
 @section('contents')
 
-    <div class="flex-1 overflow-auto bg-gray-50 p-4 md:p-6">
+    <div class="flex-1 p-4 md:p-6 bg-gray-50 overflow-auto">
         {{-- HEADER --}}
-        <div class="mb-6 flex justify-between items-center flex-wrap">
-            <div class="mb-2 md:mb-0">
+        <div class="mb-6 flex justify-between items-center flex-wrap md:flex-nowrap gap-4">
+
+            <!-- LEFT SIDE -->
+            <div class="flex flex-col">
                 <h1 class="text-2xl font-semibold text-gray-800">Medicines</h1>
-                <p class="text-gray-500 mt-1">Create, view and manage medicines</p>
+                <p class="text-gray-500 text-sm">Create, view and manage medicines</p>
             </div>
 
-            {{-- FILTERS --}}
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-2 w-full md:w-auto">
-                <form id="filter-form" class="flex flex-wrap gap-2 w-full md:w-auto">
-                    <div class=" group border b rounded-lg focus-within:border-2 ">
-                        <input type="text" id="search-input" name="search" placeholder="Search by medicines name........"
+            <!-- RIGHT SIDE -->
+            <div class="flex flex-col md:flex-row md:items-center gap-2 w-full md:w-auto">
+
+                <form id="filter-form" class="flex flex-wrap md:flex-nowrap gap-2 w-full md:w-auto">
+
+                    <!-- Search -->
+                    <div class="flex items-center border rounded-lg focus-within:border-2">
+                        <input type="text"
+                            id="search-input"
+                            name="search"
+                            placeholder="Search medicines..."
                             value="{{ request('search') }}"
-                            class="border border-none focus:outline-none px-2 py-2 " 
+                            class="px-2 py-2 outline-none w-full md:w-[200px]"
                         />
-                        <button type="submit" onclick="showLoader()" class="px-3 py-2 rounded-r-lg bg-gray-200 hover:bg-gray-400 ">
+                        <button type="submit"
+                            onclick="showLoader()"
+                            class="px-3 py-2 bg-gray-200 hover:bg-gray-400 rounded-r-lg">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
 
-                    <select id="category-filter" name="category" class="px-3 py-2 border rounded-md text-sm">
+                    <!-- Category -->
+                    <select id="category-filter" name="category"
+                        class="px-3 py-2 border rounded-md text-sm">
                         <option value="">All categories</option>
                         @foreach ($categories as $cat)
                             <option value="{{ $cat->MedicineCategoryId }}"
@@ -50,25 +62,32 @@
                         @endforeach
                     </select>
 
-                    <select id="status-filter" name="status" class="px-3 py-2 border rounded-md text-sm">
+                    <!-- Status -->
+                    <select id="status-filter" name="status"
+                        class="px-3 py-2 border rounded-md text-sm">
                         <option value="">All Status</option>
                         <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
 
-                    <select name="per_page" id="per-page-filter" class="px-3 py-2 border rounded-md text-sm">
+                    <!-- Per Page -->
+                    <select name="per_page" id="per-page-filter"
+                        class="px-3 py-2 border rounded-md text-sm">
                         @foreach ($allowedPerPage as $pp)
-                            <option value="{{ $pp }}" {{ $perPage == $pp ? 'selected' : '' }}>{{ $pp }}
-                                per page</option>
+                            <option value="{{ $pp }}" {{ $perPage == $pp ? 'selected' : '' }}>
+                                {{ $pp }} per page
+                            </option>
                         @endforeach
                     </select>
 
                 </form>
 
+                <!-- Button -->
                 <button id="open-create-modal"
-                    class="w-full md:w-[240px] inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none">
+                    class="w-full md:w-[200px] flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700">
                     <i class="fas fa-plus mr-1"></i> New Medicine
                 </button>
+
             </div>
         </div>
 

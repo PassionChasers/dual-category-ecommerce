@@ -22,6 +22,14 @@ class UserController extends Controller
             $query->with('deliveryMan');
         }
 
+        if ($role == 2) {
+            $query->with('medicalstores');
+        }
+
+        if ($role == 3) {
+            $query->with('restaurants');
+        }
+
         if ($request->filled('search')) {
             $searchhash = hash('sha256', strtolower(trim($request->search)));
 
@@ -95,7 +103,6 @@ class UserController extends Controller
     public function update(Request $request, string $id)
     {
         // Find user
-        // $user = User::findOrFail($id);
         $user = User::where('UserId', $id)->firstOrFail();
 
         // Check JWT token in session
@@ -116,11 +123,10 @@ class UserController extends Controller
             // API call (PUT)
             $response = Http::withToken($token)
                 ->acceptJson()
-                ->put("https://pcsdecom.azurewebsites.net/api/admin/users/{$user->UserId}", [
+                ->put("https://pcsdecom.azurewebsites.net/api/admin/users/{$id}", [
                     'name' => $validated['name'],
                     'phone' => $validated['contact_number'],
-                    // 'isActive' => $request->boolean('IsActive'),
-                    'isActive' => $request->input('IsActive') ? true : false,
+                    'isActive' => $request->boolean('IsActive'),
                 ]);
 
             // If API fails

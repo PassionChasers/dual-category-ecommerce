@@ -21,7 +21,8 @@
                     {{$index + 1}}
                 </td>
                 <td class="px-4 py-2 font-semibold text-gray-800">
-                    {{ $user->Name }}
+                    <div class="font-medium text-gray-800">{{ $user->Name }}</div>
+                    <div class="text-xs text-gray-500">Store name: {{ $user->restaurants->first()->Name ?? '-' }}</div>
                 </td>
                 <td class="px-4 py-2 text-gray-600">
                     {{ $user->Email }}
