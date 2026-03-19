@@ -48,8 +48,8 @@
                     </button>
                     <form method="POST" action="{{ route('users.destroy', $user->UserId) }}" class="inline delete-form">
                         @csrf @method('DELETE')
-                        <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
-                        <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+                        {{-- <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
+                        <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}"> --}}
                         <button type="submit" class="text-red-600 hover:text-red-800">
                             <i class="fas fa-trash"></i>
                         </button>
