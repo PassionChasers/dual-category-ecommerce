@@ -198,7 +198,7 @@
 
 
 {{-- Modal --}}
-<div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
+{{-- <div id="edit-modal" class="fixed z-10 inset-0 overflow-y-auto hidden">
     <div class="flex items-center justify-center min-h-screen px-4">
         <!-- Overlay -->
         <div id="editOverlay" class="fixed inset-0 bg-blue-950/40"></div>
@@ -234,25 +234,12 @@
                         required>
                 </div>
 
-                {{-- <div>
-                    <label class="block text-sm font-medium text-gray-700">Password</label>
-                    <input type="password" name="password" id="customer-password" placeholder="Leave blank to keep unchanged"
-                        class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                </div> --}}
-
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Contact Number</label>
                     <input type="text" name="contact_number" id="customer_contact_number"
                         class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         required>
                 </div>
-
-                {{-- <div>
-                    <label class="block text-sm font-medium text-gray-700">Address</label>
-                    <input type="text" name="address" id="customer_address"
-                        class="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        required>
-                </div> --}}
 
                 <div class="flex items-center gap-2">
                     <input type="checkbox" name="IsActive" id="IsActive" value="1" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
@@ -266,7 +253,9 @@
             </form>
         </div>
     </div>
-</div>
+</div> --}}
+
+@include('admin.users.editusermodal')
 
 @endsection
 
@@ -274,26 +263,28 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        // ADD MODAL
+        //--------- 
+        //ADD MODAL
+        //---------
         const addModal = document.getElementById('AdminModal');
         const openAddBtn = document.getElementById('openAdminModal');
         const addCloseBtn = document.getElementById('add-close-btn');
-        const addCancelBtn = document.getElementById('add-cancel-btn');
-        const modalOverlay=document.getElementById('modalOverlay');
+        const addCancelBtn = document.getElementById('add-cancel-btn'); 
 
-        // EDIT MODAL
+        //--------------
+        //  EDIT MODAL
+        //---------------
         const editModal = document.getElementById('edit-modal');
+        const editOverlay = document.getElementById('editOverlay');
         const editCloseBtn = document.getElementById('edit-close-btn');
         const editCancelBtn = document.getElementById('edit-cancel-btn');
 
-        [editCloseBtn, editCancelBtn, modalOverlay ].forEach(btn => {
+        [editCloseBtn, editCancelBtn, editOverlay ].forEach(btn => {
             btn?.addEventListener('click', () => {
                 editModal.classList.add('hidden');
             });
         });
 
-        //for edit modal
-        const editmodal = document.getElementById('edit-modal');
         const form = document.getElementById('customer-form');
         const modalTitle = document.getElementById('modal-title');
         const methodInput = document.getElementById('form-method');
@@ -301,9 +292,7 @@
         const IsActiveInput = document.getElementById('IsActive');
         const contactNumberInput = document.getElementById('customer_contact_number');
         const emailInput = document.getElementById('customer-email');
-        // const passwordInput = document.getElementById('customer-password');
 
-        // Event delegation for edit buttons (works after AJAX too)
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('.edit-btn');
             if (btn) {
@@ -311,17 +300,15 @@
                 form.action = `/users/update/${btn.dataset.id}`;
                 methodInput.value = 'PUT';
                 nameInput.value = btn.dataset.name;
-                // addressInput.value = btn.dataset.address;
                 IsActiveInput.checked = btn.dataset.isactive === '1';
                 contactNumberInput.value = btn.dataset.contact_number;
                 emailInput.value = btn.dataset.email;
-                // passwordInput.value = '';
 
                 // Set hidden fields for current search/filter
                 document.getElementById('current-search').value = document.getElementById('search').value;
                 document.getElementById('current-onlineStatus').value = document.getElementById('onlineStatus').value;
 
-                editmodal.classList.remove('hidden');
+                editModal.classList.remove('hidden');
             }
         });
 
