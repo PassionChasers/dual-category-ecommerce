@@ -113,19 +113,42 @@ class UserController extends Controller
         }
 
         // Validate request
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'contact_number' => 'required|string|min:9|max:14',
-        ]);
+        // $validated = $request->validate([
+        //     'name' => 'required|string|max:255',
+        //     'contact_number' => 'required|string|min:9|max:14',
+        // ]);
+
+        $validated = $request->all();
+
+        // Generate hash of incoming phone
+            $newPhoneHash = hash('sha256', strtolower($validated['contact_number']));
+
+            // dd($user->PhoneHash, $newPhoneHash);
+
+            // Compare with existing hash in DB
+            $phone = ($newPhoneHash === $user->PhoneHash) ? null : $validated['contact_number'];
+
+            // dd($user->PhoneHash, $newPhoneHash, $phone);
+
+        // dd($request->all());
+
+//         dd([
+//     'existing_hash' => $user->PhoneHash,
+//     'new_hash' => $newPhoneHash,
+//     'input_phone' => $validated['contact_number'],
+//     'phone_to_update' => $phone,
+// ]);
 
         try {
+
+            
 
             // API call (PUT)
             $response = Http::withToken($token)
                 ->acceptJson()
                 ->put("https://pcsdecom.azurewebsites.net/api/admin/users/{$id}", [
                     'name' => $validated['name'],
-                    'phone' => $validated['contact_number'],
+                    'phone' => $phone,
                     'isActive' => $request->boolean('IsActive'),
                 ]);
 
