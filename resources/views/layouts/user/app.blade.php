@@ -8,8 +8,9 @@
     <title>{{ $settings->app_name ?? 'Ecommerce' }} - Modern Task Management System</title>
     
     <!-- Tailwind CDN -->
-    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
-    {{-- @vite(['resources/css/app.css', 'resources/js/app.js']) --}}
+    {{-- <link href="https://cdn.tailwindcss.com" rel="stylesheet"> --}}
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
