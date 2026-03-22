@@ -112,20 +112,33 @@ class UserController extends Controller
                 ->with('error', 'Session expired. Please login again.');
         }
 
-        // Validate request
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'contact_number' => 'required|string|min:9|max:14',
-        ]);
+        // try {
+            
+        // } catch (\Illuminate\Validation\ValidationException $e) {
+        //     return response()->json([
+        //         'errors' => $e->errors()
+        //     ], 422);
+        // }
 
         try {
+
+            $validated = $request->validate([
+                'name' => 'required|string|max:255',
+                'contact_number' => 'required|string|min:9|max:15',
+            ]);
+
+            // Compute hash of incoming phone
+            $incomingPhoneHash = strtolower(hash('sha256', $request->contact_number));
+
+            // Compare with existing hash (assuming your user model has PhoneHash)
+            $phoneToSend = $user->PhoneHash === $incomingPhoneHash ? null : $request->contact_number;
 
             // API call (PUT)
             $response = Http::withToken($token)
                 ->acceptJson()
                 ->put("https://pcsdecom.azurewebsites.net/api/admin/users/{$id}", [
-                    'name' => $validated['name'],
-                    'phone' => $validated['contact_number'],
+                    'name' => $request->name,
+                    'phone' => $phoneToSend,
                     'isActive' => $request->boolean('IsActive'),
                 ]);
 
@@ -163,40 +176,6 @@ class UserController extends Controller
 
         }
     }
-
-    // public function update(Request $request, string $id)
-    // {
-    //     $user = User::findOrFail($id);
-
-    //     // $request->validate([
-    //     //     'name' => 'required|string|max:255',
-    //     //     'email' => [
-    //     //         'required',
-    //     //         'email',
-    //     //         Rule::unique('Users', 'EmailHash')
-    //     //             ->ignore($user->UserId, 'UserId')
-    //     //     ],
-    //     // ]);
-
-    //     // 🔥 DO NOT manually set EmailHash
-    //     // Mutator will handle encryption + hash automatically
-
-    //     // $user->Name  = $request->name;
-    //     // $user->Email = $request->email;
-
-    //     $user->IsActive = $request->has('IsActive');
-
-    //     $user->save();
-
-    //     return match ($user->Role) {
-    //         4 => redirect()->route('users.admin.index')->with('success', 'Admin updated successfully.'),
-    //         1 => redirect()->route('users.customers.index')->with('success', 'Customer updated successfully.'),
-    //         2 => redirect()->route('users.medicalstores.index')->with('success', 'Medical Store updated successfully.'),
-    //         3 => redirect()->route('users.restaurants.index')->with('success', 'Restaurant updated successfully.'),
-    //         5 => redirect()->route('users.delivery-man.index')->with('success', 'Delivery Man updated successfully.'),
-    //         default => back()->with('success', 'User updated successfully.'),
-    //     };
-    // }
 
     /**
      * Remove the specified resource from storage.

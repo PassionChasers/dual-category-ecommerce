@@ -18,8 +18,8 @@
             <form id="customer-form" method="POST" class="space-y-4 px-6 mt-2">
                 @csrf
                 <input type="hidden" id="form-method" name="_method" value="POST">
-                <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
-                <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}">
+                {{-- <input type="hidden" name="search" id="current-search" value="{{ request('search') }}">
+                <input type="hidden" name="onlineStatus" id="current-onlineStatus" value="{{ request('onlineStatus') }}"> --}}
 
                 <div>
                     <label class="block text-sm font-medium text-gray-700">Name</label>

@@ -235,8 +235,8 @@ document.addEventListener('DOMContentLoaded', function() {
             emailInput.value = btn.dataset.email;
 
             // Set hidden fields for current search/filter
-            document.getElementById('current-search').value = document.getElementById('search').value;
-            document.getElementById('current-onlineStatus').value = document.getElementById('onlineStatus').value;
+            // document.getElementById('current-search').value = document.getElementById('search').value;
+            // document.getElementById('current-onlineStatus').value = document.getElementById('onlineStatus').value;
 
             editModal.classList.remove('hidden');
         }
