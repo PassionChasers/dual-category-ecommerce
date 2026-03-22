@@ -36,10 +36,6 @@ use App\Http\Controllers\MedicalStoreController;
 use App\Http\Controllers\RestaurantController;
 use App\Http\Controllers\RewardTransactionController;
 
-
-
-
-
 /*
 |--------------------------------------------------------------------------
 | Maintenance / Utility Routes
